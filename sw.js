@@ -1,6 +1,6 @@
 // Guarda o app para abrir sem internet. Ao mudar arquivos, subir a VERSAO.
-const VERSAO = 'rotina-20';
-const ARQUIVOS = ['./', 'index.html', 'app.css', 'base.js', 'app.js', 'extras.js', 'pencil.js', 'dia.js', 'redacao.js', 'questoes.js', 'banco.js', 'mais.js', 'metas.js', 'desempenho.js', 'nav.js', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
+const VERSAO = 'rotina-21';
+const ARQUIVOS = ['./', 'index.html', 'app.css', 'base.js', 'app.js', 'extras.js', 'pencil.js', 'dia.js', 'redacao.js', 'questoes.js', 'banco.js', 'mais.js', 'metas.js', 'planejar.js', 'desempenho.js', 'nav.js', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSAO).then(c => c.addAll(ARQUIVOS)).then(() => self.skipWaiting()));

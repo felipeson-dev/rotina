@@ -546,3 +546,22 @@ input[type="search"]:focus { border-color: var(--acento); }
 .q-nav > :last-child { margin-left: auto; }
 .q-hist { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; font-weight: 600; }
 .resolucao { margin-top: 6px; line-height: 1.6; }body.em-questao #rascunho-botao { display: none; }   /* a questão já tem o próprio botão de rascunho */
+
+/* agenda flexível do dia */
+.ag.passou { opacity: .5; }
+.ag.agora { box-shadow: 0 0 0 2px var(--acento); }
+.ag-ed { font-size: 13px; padding: 0; min-height: 28px; }
+.ag-agora { display: flex; align-items: center; gap: 8px; color: var(--tinta); font-size: 13px; font-weight: 800; }
+.ag-agora::before, .ag-agora::after { content: ''; flex: 1; height: 2px; background: var(--acento); border-radius: 2px; }
+.ag-form { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 16px; background: var(--painel); border: 2px solid var(--acento); }
+.ag-form input, .ag-form select { min-height: 42px; }
+/* planejamento */
+.pl-dias { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.pl-dia { background: var(--painel2); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.pl-dia.hoje { box-shadow: 0 0 0 2px var(--acento); }
+.pl-dia > .entre strong { text-transform: capitalize; }
+.pl-item { display: grid; grid-template-columns: auto 1fr auto auto; gap: 6px; align-items: center; font-size: 14px; line-height: 1.3; }
+.pl-item .ponto { background: var(--c); }
+.pl-item.feito span { color: var(--fraco); text-decoration: line-through; }
+.pl-item .link { font-size: 12px; padding: 0; min-height: 24px; }
+.pl-prev { border: 2px solid var(--acento); }

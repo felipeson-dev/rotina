@@ -70,7 +70,7 @@ function carregar() {
   s = Object.assign(JSON.parse(JSON.stringify(VAZIO)), s || {});
   s.perfil = Object.assign({}, VAZIO.perfil, s.perfil);
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
-  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.foco ||= []; s.focoAnalise ||= {};
+  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
   return s;
 }
@@ -235,7 +235,8 @@ const temChaveIa = () => temChave() || temLlama();
 
 const ACOES_IA = `Responda SÓ com JSON: {"resposta": "1 a 3 frases curtas para ela", "acoes": [ ... ]}
 Ações possíveis (use só as necessárias; lista vazia se for só conversa):
-- {"tipo":"marcar_semana","id":"<id do assunto>","dia":"AAAA-MM-DD"}  (qualquer data da semana desejada; o assunto passa a ser previsto para essa semana. Assuntos não têm dia fixo, só semana)
+- {"tipo":"marcar_semana","id":"<id do assunto>","dia":"AAAA-MM-DD"}  (qualquer data da semana desejada; o assunto passa a ser previsto para essa semana, sem dia fixo)
+- {"tipo":"marcar_dia","id":"<id do assunto>","dia":"AAAA-MM-DD"}  (só quando ela quer um assunto num dia certo)
 - {"tipo":"novo_assunto","mes":"AAAA-MM","materia":"<matéria>","titulo":"<assunto curto e específico>","dia":"AAAA-MM-DD" ou null,"min":150}  (min = minutos estimados)
 - {"tipo":"mover_mes","id":"<id>","mes":"AAAA-MM"}
 - {"tipo":"feito","id":"<id>","feito":true}
@@ -258,7 +259,7 @@ function contextoIa() {
     foco_dos_meses: S.meses,
     // semana = semana prevista (segunda-feira); min = minutos estimados
     assuntos: S.assuntos.filter(a => !a.feito ? semDe(a) <= somaDias(w, 14) : semDe(a) >= w)
-      .map(a => ({ id: a.id, mes: a.mes, semana: semDe(a), materia: a.materia, titulo: a.titulo, min: minDe(a), feito: a.feito, estado: estadoDe(a) })),
+      .map(a => ({ id: a.id, mes: a.mes, semana: semDe(a), ...(a.dia ? { dia: a.dia } : {}), materia: a.materia, titulo: a.titulo, min: minDe(a), feito: a.feito, estado: estadoDe(a) })),
     contexto_de_hoje: d?.contexto || null,
     horas_livres_hoje: d?.horas || null,
     blocos_de_hoje: (d?.blocos || []).map(b => ({ assuntoId: b.assuntoId, titulo: b.titulo, materia: b.materia, min: b.min,
@@ -276,6 +277,7 @@ function aplicar(acoes) {
         case 'marcar_semana': case 'marcar_dia':
           if (!x || !okData(a.dia)) break;
           x.semana = segunda(a.dia); x.mes = mesDe(somaDias(x.semana, 3));
+          if (a.tipo === 'marcar_dia' || x.dia) x.dia = a.tipo === 'marcar_dia' ? a.dia : null;   // dia fixo só quando pedido
           n++; break;
         case 'novo_assunto':
           if (!a.titulo) break;
@@ -356,7 +358,7 @@ async function pedirIa(pedido, rotulo = 'Pensando…', falaDela = null) {
 
 // ---------- telas ----------
 function menuHtml() {
-  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['pendencias', 'Pendências'], ['questoes', 'Questões'], ['desempenho', 'Desempenho'], ['caderno', 'Caderno']];
+  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['planejar', 'Planejamento'], ['pendencias', 'Pendências'], ['questoes', 'Questões'], ['desempenho', 'Desempenho'], ['caderno', 'Caderno']];
   return `<div class="marca">rotina</div>` +
     itens.map(([v, t]) => `<button data-acao="ir" data-v="${v}" ${ui.view === v ? 'aria-current="page"' : ''}>${icone(v)}<span>${t}</span></button>`).join('') +
     `<div class="espaco"></div><button data-acao="ir" data-v="ajustes" ${ui.view === 'ajustes' ? 'aria-current="page"' : ''}>${icone('ajustes')}<span>Ajustes</span></button>`;
@@ -417,13 +419,18 @@ function escolherProximo(fila, blocos, misturar = true) {
   return melhor;
 }
 
+/** Período planejado na aba Planejamento que vale hoje (ex.: revisão para o ENEM): nele, o dia usa só o que ela planejou. */
+const periodoDeHoje = () => (S.periodos || []).find(p => p.so && p.ini <= hoje() && hoje() <= p.fim);
+
 /** Enche o dia com assuntos até caber o tempo livre (menos 20% para distrações). `so`: matérias que ela pediu para hoje. */
 function montarHoje(cap, so = []) {
-  const d = diaHoje();
+  const d = diaHoje(), h = hoje(), per = periodoDeHoje();
   d.cap = cap > 0 ? cap : d.cap || 0;
   const mantidos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.passos.some(p => p.ok); });
   let usado = soma(mantidos, b => b.min || 0);
-  let fila = filaPlano().filter(a => !mantidos.some(b => b.assuntoId === a.id));
+  // o que tem dia marcado só entra no seu dia (ou depois, se atrasou); o que foi marcado para hoje vem antes de tudo
+  let fila = filaPlano().filter(a => !mantidos.some(b => b.assuntoId === a.id) && !(a.dia && a.dia > h) && (!per || a.periodo === per.id));
+  fila = [...fila.filter(a => a.dia && a.dia <= h), ...fila.filter(a => !(a.dia && a.dia <= h))];
   const pedidas = fila.filter(a => so.includes(a.materia));
   if (pedidas.length) fila = pedidas;
   const novos = [];
@@ -433,6 +440,9 @@ function montarHoje(cap, so = []) {
     if (!a) break;
     novos.push(blocoDe(a)); usado += minDe(a); fila = fila.filter(x => x !== a);
   }
+  // as pesadas vão para o começo do dia (cabeça mais descansada), depois redação, depois as leves; é só a ordem sugerida
+  const ordem = { pesada: 0, simulado: 0, redacao: 1, leve: 2 };
+  novos.sort((x, y) => ordem[tipoDe(x)] - ordem[tipoDe(y)]);
   d.blocos = [...mantidos, ...novos];
 }
 

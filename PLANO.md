@@ -133,3 +133,8 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Falhas ~4%: recitation (Gemini nao copia enunciado publicado), gabarito divergente, alternativas em figura -> ficam no modo imagem.
 - Log: C:\rotina-banco\log-transcrever.txt. Se o PC desligar: rodar de novo rodar-tudo.ps1 com GEMINI_KEYS.
 - Cota gratis (medida em 27/10): flash-lite 500 pedidos/dia e 15/min por chave; flash 20/dia. 3 chaves = ~1.500 questoes/dia (volta a meia-noite do Pacifico). transcrever.py registra cota e espera; resultados na ordem em que terminam.
+
+## v21 (27/10) - agenda flexivel e Planejamento
+- Dia: pesadas primeiro (depois redacao, depois leves), so ordem sugerida.
+- Meu dia: linha do tempo do dia inteiro (estudo, treino, refeicoes, compromissos), bloco 'agora', mudar/tirar/por, 'Atrasou? +15/+30/+1h' empurra o resto; assuntos se reencaixam (reajustarDia). Replanejar mantem o que ja passou.
+- planejar.js (aba Planejamento): IA distribui um periodo pelos dias (previa, ajuste, aplicar). Itens viram assuntos com a.dia e a.periodo; S.periodos {id,ini,fim,so}. Nos dias do periodo, montarHoje usa so o planejado. 'Mudar o cronograma' usa pedirIa (nova acao marcar_dia).
