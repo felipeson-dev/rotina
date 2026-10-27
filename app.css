@@ -268,3 +268,63 @@ label.campo small { font-weight: 400; color: var(--fraco); }
 .bola.personalizada { background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); overflow: hidden; cursor: pointer; }
 .bola.personalizada input { opacity: 0; width: 100%; height: 100%; cursor: pointer; border: 0; padding: 0; min-height: 0; }
 .col-mes .ringbox svg { width: 52px; height: 52px; display: block; }
+
+/* ---------- v4: caneta, caminho, matérias ---------- */
+.rascunho-botao { right: max(190px, calc(16px + 168px)) !important; background: var(--painel) !important; color: var(--texto) !important; box-shadow: 0 6px 20px -8px rgba(0,0,0,.3), inset 0 0 0 1.5px var(--linha) !important; }
+@media (max-width: 760px) { .rascunho-botao { right: auto !important; left: 16px; } }
+.acoes-bloco { gap: 4px; }
+.mat-linha { grid-template-columns: 1fr auto !important; row-gap: 4px; }
+.mat-linha .barras2 { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 3px; }
+.mat-linha small b { color: var(--texto); }
+.barra.fina { height: 4px; }
+
+.quadro { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.quadro-barra { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; position: sticky; top: 0; z-index: 3; background: var(--bg); padding: 6px 0; }
+.qb { border: 0; background: var(--painel2); border-radius: 999px; padding: 8px 14px; min-height: 40px; font-size: 14px; font-weight: 600; }
+.qb[aria-pressed="true"] { background: var(--acento); color: var(--sobre-acento); }
+.qcor { width: 28px; height: 28px; border-radius: 50%; border: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.18); position: relative; }
+.qcor[aria-pressed="true"]::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2.5px solid var(--acento); }
+.qsep { width: 1px; height: 24px; background: var(--linha); margin: 0 4px; }
+.quadro-area { position: relative; border-radius: 16px; overflow: hidden; background-color: #fff; box-shadow: inset 0 0 0 1.5px var(--linha); }
+.fundo-linhas .quadro-area { background-image: repeating-linear-gradient(to bottom, transparent 0 35px, #D7DEF2 35px 36px); }
+.fundo-quadriculado .quadro-area { background-image: linear-gradient(#E2E7F4 1px, transparent 1px), linear-gradient(90deg, #E2E7F4 1px, transparent 1px); background-size: 28px 28px; }
+.fundo-pontos .quadro-area { background-image: radial-gradient(#C9D0E4 1.3px, transparent 1.6px); background-size: 28px 28px; }
+.quadro-area canvas { position: absolute; left: 0; top: 0; touch-action: none; display: block; }
+.q-vivo { cursor: crosshair; }
+img.desenho { width: 100%; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--linha); display: block; min-height: 80px; object-fit: contain; }
+.cartao-rev { gap: 16px; }
+.nota { font-size: 40px; font-weight: 800; line-height: 1; } .nota small { font-size: 16px; color: var(--fraco); font-weight: 600; }
+.comp { display: flex; flex-direction: column; gap: 4px; }
+details summary { cursor: pointer; }
+
+.caminho-grade { grid-template-columns: minmax(0, 1fr) 300px; }
+.caminho-svg svg { width: 100%; height: auto; display: block; overflow: visible; }
+.painel-sem { background: var(--painel2); position: sticky; top: 16px; gap: 8px; }
+.trilha { fill: none; stroke: var(--linha); stroke-width: 9; stroke-linecap: round; transition: stroke .3s; }
+.trilha.ok { stroke: var(--acento); }
+.trilha.meio { stroke: color-mix(in srgb, var(--acento) 45%, var(--linha)); stroke-dasharray: 2 14; }
+.trilha.atras { stroke: #F4C7A6; }
+.no-sem { cursor: pointer; outline: none; transition: opacity .2s; }
+.no-sem .bolinha { fill: var(--painel); stroke: var(--linha); stroke-width: 4; transition: transform .15s, fill .3s; transform-box: fill-box; transform-origin: center; }
+.no-sem:hover .bolinha, .no-sem:focus .bolinha { transform: scale(1.35); stroke: var(--acento); }
+.no-sem.ok .bolinha { fill: var(--acento); stroke: var(--acento); }
+.no-sem.meio .bolinha { fill: var(--suave); stroke: var(--acento); }
+.no-sem.atras .bolinha { fill: #FFE8D6; stroke: #E8590C; }
+.no-sem.vazia .bolinha { stroke-dasharray: 3 4; }
+.no-sem .certo { fill: none; stroke: var(--sobre-acento); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.no-sem .meio-txt { fill: var(--acento); }
+.no-sem.apagado { opacity: .15; }
+.no-sem .pulso { fill: none; stroke: var(--acento); stroke-width: 3; animation: pulsar 1.8s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes pulsar { from { transform: scale(.7); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+.aqui { font-size: 15px; font-weight: 800; fill: var(--tinta); }
+.mes-txt { font-size: 15px; font-weight: 700; fill: var(--fraco); text-transform: capitalize; }
+.bandeira-svg line { stroke: var(--texto); stroke-width: 2.5; } .bandeira-svg path { fill: var(--acento); } .bandeira-svg text { fill: var(--sobre-acento); font-size: 12px; font-weight: 700; }
+.legenda-caminho { gap: 8px; font-size: 14px; color: var(--fraco); }
+.lg { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 3px solid var(--linha); background: var(--painel); margin-left: 8px; }
+.lg.ok { background: var(--acento); border-color: var(--acento); } .lg.meio { background: var(--suave); border-color: var(--acento); } .lg.atras { background: #FFE8D6; border-color: #E8590C; }
+.tag.hl { cursor: pointer; border: 0; }
+.mini-lista { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto; }
+.item-mini { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.3; }
+.item-mini .ponto { margin-top: 5px; }
+.item-mini.feito { color: var(--fraco); text-decoration: line-through; }
+@media (max-width: 980px) { .caminho-grade { grid-template-columns: minmax(0, 1fr); } .painel-sem { position: static; } }

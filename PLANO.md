@@ -59,3 +59,9 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Semana: progresso, selo "Adiantada", atrasados. Ano: Cartões e Mapa interativo. Tema único "cores" com acento e fundo personalizáveis. IA em formato de conversa (`S.chat`).
 - Ao mudar o formato dos dados: `v` em VAZIO/carregar (v:2 refaz o plano base).
 - Chaves só via link `#k=` ou Ajustes. gemini-3.8-flash às vezes dá 503: o app cai para gemini-3.5-flash-lite.
+## v4 (27/10/2026): caneta, questões, tempos, caminho
+- Novos arquivos: extras.js (questões, dia que se reabastece, calibração dos tempos, mapa Caminho) e pencil.js (quadro de escrita com Apple Pencil, rascunho->tarefas, redação ENEM 5 competências com visão do Gemini, cartões à mão com revisão espaçada, caderno por assunto). Desenhos em IndexedDB (não vão na cópia de segurança!).
+- Tempo do assunto = teoria + questões x min/questão por matéria (MIN_Q) x 1,25; a IA calibra teoria/q/densidade (a.calibrado).
+- Questões: registrar feitas/acertos; <70% agenda "Refazer os erros" na semana seguinte (S.qlog guarda o histórico).
+- Modelos grátis (só Flash): gemini-3.8-flash > 3.6-flash > 3.5-flash > 3.5-flash-lite; visão sem o lite. Pro e Argon exigem pagamento.
+- Teste: nunca matar todos os chrome.exe; só os com --user-data-dir de teste.
