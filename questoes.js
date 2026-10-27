@@ -55,7 +55,7 @@ function iniciarSessao(itens, extra = {}) {
 // ---------- telas ----------
 function vQuestoes() {
   const cab = (t = 'Questões') => `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">questões</span><h1>${t}</h1></div>
-    ${ui.qs ? '' : `<div class="alterna" role="group">${[['listas', 'Montar lista'], ['erros', `Erros (${S.erros.length})`], ['fora', 'Fiz por fora']].map(([v, t]) => `<button data-acao="qAba" data-v="${v}" aria-pressed="${ui.qAba === v}">${t}</button>`).join('')}</div>`}</header>${avisoIa()}`;
+    ${ui.qs ? '' : `<div class="alterna" role="group">${[['listas', 'Montar lista'], ['erros', `Erros (${S.erros.length})`]].map(([v, t]) => `<button data-acao="qAba" data-v="${v}" aria-pressed="${ui.qAba === v}">${t}</button>`).join('')}</div>`}</header>${avisoIa()}`;
   if (ui.qs) return cab(ui.qs.fim ? 'Resultado' : `Questão ${ui.qs.i + 1} de ${ui.qs.itens.length}`) + (ui.qs.fim ? qResultado() : qQuestao());
   if (ui.qAba === 'erros') return cab() + qErros();
   if (ui.qAba === 'fora') return cab() + qFora();
@@ -144,7 +144,7 @@ function finalizarSessao() {
   for (const [m, v] of Object.entries(porMat)) { const d = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); d.f += v.f; d.a += v.a; aprenderTempo(m, v.seg, v.f); }
   for (const q of feitas) {
     const ja = S.erros.find(e => e.enunciado === q.enunciado);
-    if (!q.certo) { if (ja) { ja.vezes = (ja.vezes || 0) + 1; ja.resp = q.resp; ja.rev = somaDias(hoje(), 3); } else S.erros.push({ id: uid(), dia: hoje(), rev: somaDias(hoje(), 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment }); }
+    if (!q.certo) { if (ja) { ja.vezes = (ja.vezes || 0) + 1; ja.resp = q.resp; ja.rev = somaDias(hoje(), 3); } else S.erros.push({ id: uid(), dia: hoje(), rev: somaDias(hoje(), 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment, qid: q.id || '', imagens: (q.imagens || []).filter(u => /^https:/.test(u)), modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '' }); }
     else if (ja && s.revisao) S.erros = S.erros.filter(e => e !== ja); // acertou de novo um erro antigo: sai do caderno
   }
   const a = s.assuntoId && achar(s.assuntoId);
@@ -169,7 +169,7 @@ Object.assign(ACOES, {
   },
   qRefazerErros: () => {
     const venc = S.erros.filter(e => e.rev <= hoje()), base = (venc.length ? venc : S.erros).slice(0, 15);
-    iniciarSessao(base.map(e => ({ fonte: e.fonte + ' · erro anterior', materia: e.materia, enunciado: e.enunciado, imagens: [], alts: e.alts, gab: e.gab, coment: e.coment })), { revisao: true });
+    iniciarSessao(base.map(e => ({ fonte: e.fonte + ' · erro anterior', materia: e.materia, enunciado: e.enunciado, imagens: e.imagens || [], alts: e.alts, gab: e.gab, coment: e.coment, id: e.qid || undefined, modo: e.modo || '', img: e.img || '', w: e.w, h: e.h, corte: e.corte, prev: e.prev || '' })), { revisao: true });
   },
   qResp: el => {
     const s = ui.qs, q = s.itens[s.i]; if (q.resp != null) return;

@@ -41,7 +41,7 @@ const BD = {
 };
 /** Chave do conteúdo (começo do enunciado + gabarito): o mesmo texto vindo de duas fontes não entra duas vezes. */
 function chaveQ(q) { const t = String(q.enunciado || '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '').slice(0, 120) + (q.gab || ''); let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length; }
-const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: (q.assunto || '').toLowerCase().slice(0, 140), d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0 });
+const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: (q.assunto || '').toLowerCase().slice(0, 140), d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0 });
 
 async function carregarBanco() {
   if (BANCO.pronto || BANCO.carregando) return;
@@ -79,6 +79,7 @@ function filtrarBanco() {
     if (f.mat && q.m !== f.mat) return false;
     if (f.dif && q.d !== f.dif) return false;
     if (f.semFig && q.f) return false;
+    if (f.res && !q.r) return false;
     if (tag && !q.s.includes(tag) && !q.b.toLowerCase().includes(tag)) return false;
     const h = S.qh[q.id];
     if (f.st === 'novas' && h) return false;
@@ -120,7 +121,7 @@ function qMontar() {
       <label class="campo">Assunto (procura nos temas da questão)<input type="search" data-qf="tag" value="${esc(f.tag)}" placeholder="Ex.: Segundo Reinado, escravidão, urbanização"></label>
       <div class="coluna" style="gap:8px"><span class="rotulo">área</span><div class="linha">${AREAS_Q.map(([v, t]) => `<button class="chip" data-acao="qfArea" data-v="${v}" aria-pressed="${f.area === v}">${t}</button>`).join('')}</div></div>
       <div class="coluna" style="gap:8px"><span class="rotulo">quais</span><div class="linha">${[['todas', 'Todas'], ['novas', 'Ainda não feitas'], ['erradas', 'As que errei'], ['acertadas', 'As que acertei']].map(([v, t]) => `<button class="chip" data-acao="qfSt" data-v="${v}" aria-pressed="${f.st === v}">${t}</button>`).join('')}
-        <button class="chip" data-acao="qfFig" aria-pressed="${f.semFig}">Sem figura (recomendado)</button></div></div>
+        <button class="chip" data-acao="qfFig" aria-pressed="${f.semFig}">Sem figura faltando</button><button class="chip" data-acao="qfRes" aria-pressed="${!!f.res}">Só com resolução comentada</button></div></div>
       <div class="linha"><span class="fraco">Quantas:</span>${[5, 10, 20, 30, 50].map(n => `<button class="chip" data-acao="qN" data-v="${n}" aria-pressed="${f.n === n}">${n}</button>`).join('')}
         <input type="number" min="1" max="200" data-qf="n" value="${[5, 10, 20, 30, 50].includes(f.n) ? '' : f.n}" placeholder="outra" style="width:90px">
         <div class="alterna" role="group"><button data-acao="qfOrdem" data-v="sorteio" aria-pressed="${f.ordem === 'sorteio'}">Sorteio</button><button data-acao="qfOrdem" data-v="ordem" aria-pressed="${f.ordem === 'ordem'}">Em ordem</button></div>
@@ -147,20 +148,30 @@ function metaQTabela() {
 // ---------- questão com resolução e dúvidas ----------
 function qQuestao() {
   const s = ui.qs, q = s.itens[s.i], resp = q.resp != null;
+  if (ui.qPrevImg && ui.qPrevImg.id !== q.prev) ui.qPrevImg = null;
   const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado" style="white-space:pre-wrap">${esc(q.res_ia)}</div></div>` : '';
   const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia" style="white-space:pre-wrap">${esc(d.r)}</div>`).join('');
   return `<section class="cartao questao"><div class="entre"><span class="tag" style="${cor(q.materia)}">${esc(q.materia)}</span><span class="fraco">${esc(q.fonte)}</span></div>
     ${q.fig ? '<p class="fraco" style="margin:0;font-size:13px">⚠ Pode depender de uma figura que não está no banco. Se não der para resolver, pule.</p>' : ''}
-    <div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>
-    <div class="alts">${q.alts.map(a => { const sel = q.resp === a.l, certa = resp && a.l === q.gab, errada = resp && sel && a.l !== q.gab;
+    ${q.modo === 'objetivo' ? `${q.prev ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ver'} o texto/figura da questão anterior (às vezes o texto-base está nela)</button>${ui.qPrevImg ? recorteObj(ui.qPrevImg, false) : ''}` : ''}
+      ${recorteObj(q, false)}` : `<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`}
+    <div class="alts ${q.modo === 'objetivo' ? 'so-letras' : ''}">${q.alts.map(a => { const sel = q.resp === a.l, certa = resp && a.l === q.gab, errada = resp && sel && a.l !== q.gab;
       return `<button class="alt ${sel ? 'sel' : ''} ${certa ? 'certa' : ''} ${errada ? 'errada' : ''}" data-acao="qResp" data-v="${a.l}" ${resp ? 'disabled' : ''}><b>${a.l}</b><span>${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</span></button>`; }).join('')}</div>
-    ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<p style="margin:6px 0 0;white-space:pre-wrap">${esc(q.coment)}</p>` : ''}</div>` : ''}
+    ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<p style="margin:6px 0 0;white-space:pre-wrap">${esc(q.coment)}</p>` : ''}</div>
+      ${q.modo === 'objetivo' ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
     <div class="linha"><button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar o rascunho' : 'Rascunho à mão'}</button>
       ${resp ? `<button class="botao grande" data-acao="qProx">${s.i + 1 < s.itens.length ? 'Próxima' : 'Ver o resultado'}</button>` : `<button class="botao claro" data-acao="qPular">Pular</button>`}
       <button class="link" data-acao="qSair">Sair da lista</button></div>
     ${ui.qRasc ? quadroHtml('qtmp', 420, 'quadriculado') : ''}
     ${resp ? `<div class="ajuda-ia"><div class="linha"><button class="botao claro" data-acao="resolIa" ${ui.carregando ? 'disabled' : ''}>${q.res_ia ? 'Resolver de novo com a IA' : 'Ver a resolução pela IA'}</button></div>${ia}${duv ? `<div class="msgs-duv">${duv}</div>` : ''}
       <div class="linha" style="flex-wrap:nowrap;align-items:flex-end"><textarea id="duvida-txt" data-ui="duvidaTxt" rows="2" placeholder="Tire uma dúvida específica: por que a C está errada? Como eu faria sem calculadora?" style="min-height:56px">${esc(ui.duvidaTxt || '')}</textarea><button class="botao" data-acao="duvidaIa" ${ui.carregando ? 'disabled' : ''}>Perguntar</button></div></div>` : ''}</section>`;
+}
+
+/** Mostra só a parte da imagem do Objetivo que interessa: o enunciado (de cima até o corte) ou a resolução (do corte para baixo). */
+function recorteObj(q, resolucao) {
+  if (!q?.img || !q.w) return '';
+  const alto = resolucao ? q.h - q.corte : q.corte;
+  return `<div class="obj-recorte" style="aspect-ratio:${q.w}/${Math.max(20, alto)}"><img src="${esc(q.img)}" alt="${resolucao ? 'resolução' : 'questão'}" loading="lazy" style="${resolucao ? `margin-top:-${(q.corte / q.w * 100).toFixed(3)}%` : ''}"></div>`;
 }
 
 const textoQuestao = q => `Questão (${q.fonte}${q.materia ? ', ' + q.materia : ''}):\n${q.enunciado}\n\nAlternativas:\n${q.alts.map(a => `${a.l}) ${a.t}`).join('\n')}\n\nGabarito oficial: ${q.gab}.${q.coment ? '\nResolução existente: ' + q.coment : ''}`;
@@ -195,6 +206,13 @@ async function baixarEnem() {
 }
 
 function normalizarImportada(q, i) {
+  // questões oficiais do Objetivo: a prova é a própria imagem (recortada até o enunciado); as alternativas são só as letras
+  if (q && q.modo === 'objetivo' && /^https:/.test(q.img || '') && /^[A-E]$/.test(q.gab || '') && q.corte > 0) {
+    const n = Math.max(2, Math.min(5, +q.nalts || 5));
+    return { id: q.id, banca: String(q.banca), tipo: 'real', ano: +q.ano || 0, area: q.area || AREA_DA_MATERIA[q.materia] || '', materia: q.materia || '', assunto: q.assunto || '', dif: '', fig: 0,
+      enunciado: String(q.enunciado || ''), imagens: [], alts: 'ABCDE'.slice(0, n).split('').map(l => ({ l, t: '', img: '' })), gab: q.gab, coment: '', fonte: 'Objetivo',
+      modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte, prev: q.prev || '', num: q.num || '', fase: q.fase || '' };
+  }
   if (!q || !(q.enunciado || q.pergunta) || !Array.isArray(q.alts || q.alternativas)) return null;
   const bruto = q.alts || q.alternativas;
   const alts = bruto.map((a, k) => typeof a === 'string' ? { l: 'ABCDE'[k], t: a, img: '' } : { l: a.l || a.letra || 'ABCDE'[k], t: a.t || a.texto || '', img: a.img || '' });
@@ -219,6 +237,12 @@ Object.assign(ACOES, {
   qfArea: el => { ui.qf.area = el.dataset.v; render(); },
   qfSt: el => { ui.qf.st = el.dataset.v; render(); },
   qfFig: () => { ui.qf.semFig = !ui.qf.semFig; render(); },
+  qfRes: () => { ui.qf.res = !ui.qf.res; render(); },
+  qPrev: async () => {
+    if (ui.qPrevImg) { ui.qPrevImg = null; render(); return; }
+    const q = ui.qs.itens[ui.qs.i], r = q.prev && await BD.get(q.prev);
+    ui.qPrevImg = r && r.img ? r : null; if (!ui.qPrevImg) ui.iaMsg = 'A questão anterior não está no banco.'; render();
+  },
   qfOrdem: el => { ui.qf.ordem = el.dataset.v; render(); },
   qfLimpar: () => { ui.qf = { ...ui.qf, bancas: [], buscaBanca: '', preset: '', a0: '', a1: '', area: '', mat: '', st: 'todas', dif: '', tag: '' }; render(); },
   qN: el => { ui.qf.n = +el.dataset.v; render(); },
@@ -227,8 +251,9 @@ Object.assign(ACOES, {
     l = ui.qf.ordem === 'ordem' ? l.slice().sort((a, b) => (a.a || 0) - (b.a || 0)) : l.slice().sort(() => Math.random() - 0.5);
     const ids = l.slice(0, Math.max(1, ui.qf.n)).map(m => m.id);
     const recs = (await Promise.all(ids.map(id => BD.get(id)))).filter(Boolean);
-    const itens = recs.map(q => ({ id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (rotuloArea(areaDeQ({ ar: q.area })) ? rotuloArea(areaDeQ({ ar: q.area })) + ' (' + q.banca + ')' : 'Questão'),
-      enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: q.res_ia || '', duvidas: q.duvidas || [] }));
+    const itens = recs.map(q => ({ id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
+      enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: q.res_ia || '', duvidas: q.duvidas || [],
+      modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '' }));
     if (itens.length) iniciarSessao(itens);
   },
   qIaBanco: async () => {
