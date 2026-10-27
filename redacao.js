@@ -58,7 +58,7 @@ function vRedDetalhe(e) {
     <div class="linha"><button class="link" data-acao="redDelCorr" data-id="${e.id}" data-c="${c.id}">Apagar esta correção</button></div></div>`).join('');
   return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">redação · ${diaCurto(e.dia)}</span><h2>${esc(e.tema || 'Sem tema')}</h2></div>
     <div class="linha"><button class="botao contorno" data-acao="redVoltar">‹ Voltar</button><button class="botao claro" data-acao="redReescrever" data-id="${e.id}">Reescrever</button></div></header>
-    <section class="cartao"><span class="rotulo">o texto</span>${e.modo === 'digitar' ? `<p style="margin:0;white-space:pre-wrap">${esc(e.texto || '')}</p>` : `<img class="desenho" data-desenho="red:${e.id}" data-prop="2" alt="redação à mão" style="min-height:200px">`}
+    <section class="cartao"><span class="rotulo">o texto</span>${!e.modo ? '<p class="fraco" style="margin:0">Esta redação foi registrada antes de o histórico existir, então o texto e a correção da IA não foram guardados. As próximas ficam completas.</p>' : e.modo === 'digitar' ? `<p style="margin:0;white-space:pre-wrap">${esc(e.texto || '')}</p>` : `<img class="desenho" data-desenho="red:${e.id}" data-prop="2" alt="redação à mão" style="min-height:200px">`}
       <div class="linha">${e.ia ? '' : `<button class="botao" data-acao="corrigirEntrada" data-id="${e.id}">Corrigir com a IA</button>`}<button class="link" data-acao="redApagar" data-id="${e.id}">Apagar a redação</button></div></section>
     ${ia ? `<section class="cartao">${ia}</section>` : ''}${corr ? `<section class="cartao">${corr}</section>` : ''}
     <section class="cartao"><h2>Adicionar a correção de outra pessoa</h2><p class="fraco" style="margin:0">Professor, cursinho, outra IA ou você mesma. Preencha só o que tiver: a nota total, as notas de cada competência, comentários e uma foto da correção.</p>
@@ -151,7 +151,8 @@ Object.assign(ACOES, {
 // ---------- cartões: digitados, gerados pela IA ou à mão ----------
 function cartaoLado(c, lado) {
   const t = lado === 'f' ? c.ft : c.vt;
-  return t != null ? `<div class="cartao-texto">${esc(t)}</div>` : `<img class="desenho" data-desenho="${c.id}:${lado}" data-prop="${lado === 'f' ? 0.4 : 0.5}" alt="${lado === 'f' ? 'frente' : 'verso'}">`;
+  const rot = lado === 'f' ? 'Pergunta' : 'Resposta';
+  return `<div class="lado ${lado === 'f' ? 'pergunta' : 'resposta'}"><span class="lado-rotulo">${rot}</span>${t != null ? `<div class="cartao-texto">${esc(t)}</div>` : `<img class="desenho" data-desenho="${c.id}:${lado}" data-prop="${lado === 'f' ? 0.4 : 0.5}" alt="${rot}">`}</div>`;
 }
 
 function vCartoes() {
@@ -183,7 +184,8 @@ function vCartoes() {
     <section class="cartao"><h2>Gerar cartões com a IA</h2><p class="fraco" style="margin:0">Diga o que você quer, com as características que preferir.</p>
       <div class="linha"><label class="campo" style="flex:1 1 180px">Matéria<select data-ui="cgMat">${Object.keys(MATERIAS).map(m => `<option ${ui.cgMat === m ? 'selected' : ''}>${m}</option>`).join('')}</select></label></div>
       <textarea id="cg-pedido" data-ui="cgPedido" placeholder="Ex.: 10 cartões sobre o ciclo de Krebs, com pergunta curta e resposta objetiva. Pode incluir um macete para decorar.">${esc(ui.cgPedido)}</textarea>
-      <div class="linha"><span class="fraco">Quantos:</span>${[5, 10, 15, 20].map(n => `<button class="chip" data-acao="cgN" data-v="${n}" aria-pressed="${ui.cgN === n}">${n}</button>`).join('')}
+      <div class="linha"><label class="fraco" for="cg-n">Quantos cartões:</label><input type="number" id="cg-n" min="1" max="50" value="${ui.cgN}" style="width:90px" data-cg-n>
+        ${[5, 10, 20, 30].map(n => `<button class="chip" data-acao="cgN" data-v="${n}" aria-pressed="${ui.cgN === n}">${n}</button>`).join('')}
         <button class="botao" data-acao="cgGerar">Gerar</button></div>
       ${g ? `<div class="coluna" style="gap:8px"><span class="rotulo">revise antes de adicionar</span>${g.map((x, i) => `<label class="cg-item"><input type="checkbox" data-acao="cgMarca" data-i="${i}" ${x.sel ? 'checked' : ''}><span><b>${esc(x.frente)}</b><br><span class="fraco">${esc(x.verso)}</span></span></label>`).join('')}
         <div class="linha"><button class="botao grande" data-acao="cgAdd">Adicionar ${g.filter(x => x.sel).length} ${g.filter(x => x.sel).length === 1 ? 'cartão' : 'cartões'}</button><button class="botao contorno" data-acao="cgDescartar">Descartar</button></div></div>` : ''}</section>
@@ -211,6 +213,7 @@ Object.assign(ACOES, {
   cgDescartar: () => { ui.cgLista = null; render(); },
   cgGerar: async () => {
     const pedido = ($('#cg-pedido')?.value ?? ui.cgPedido).trim(); ui.cgPedido = pedido;
+    const nIn = Math.round(+$('#cg-n')?.value); if (nIn >= 1) ui.cgN = Math.min(50, nIn);
     if (!pedido) { ui.iaMsg = 'Descreva os cartões que você quer.'; render(); return; }
     ui.carregando = 'Criando os cartões…'; ui.iaMsg = ''; render();
     try {

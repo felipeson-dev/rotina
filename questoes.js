@@ -137,7 +137,10 @@ function finalizarSessao() {
   const s = ui.qs; s.fim = true; ui.qRasc = false;
   const feitas = s.itens.filter(q => q.resp != null);
   const porMat = {};
-  for (const q of feitas) { const m = (porMat[q.materia] ||= { f: 0, a: 0, seg: 0 }); m.f++; m.a += q.certo ? 1 : 0; m.seg += q.seg; }
+  for (const q of feitas) {
+    const m = (porMat[q.materia] ||= { f: 0, a: 0, seg: 0 }); m.f++; m.a += q.certo ? 1 : 0; m.seg += q.seg;
+    if (q.id) S.qh[q.id] = { ok: !!q.certo, dia: hoje(), n: (S.qh[q.id]?.n || 0) + 1 }; // histórico por questão, para filtrar "ainda não feitas" e "as que errei"
+  }
   for (const [m, v] of Object.entries(porMat)) { const d = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); d.f += v.f; d.a += v.a; aprenderTempo(m, v.seg, v.f); }
   for (const q of feitas) {
     const ja = S.erros.find(e => e.enunciado === q.enunciado);

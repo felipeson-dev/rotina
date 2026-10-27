@@ -49,7 +49,7 @@ const icone = n => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
 const VAZIO = {
   perfil: { nome: 'Uany Rebeca', vestibular: 'ENEM e, logo depois, Medicina em SP: USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo e FMABC', dataProva: '', fortes: '', fracas: '', horarios: '',
     jeito: 'Primeiro foco total no ENEM. Cerca de 2 dias depois do ENEM, começar a estudar para as provas de Medicina em SP (USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC).' },
-  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, timer: null, provas: [], semeado: false, v: 2,
+  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, timer: null, provas: [], semeado: false, v: 2,
 };
 
 const provasFuturas = () => (S.provas || []).filter(p => okData(p.data) && p.data >= hoje()).sort((a, b) => a.data < b.data ? -1 : 1);
@@ -70,7 +70,7 @@ function carregar() {
   s = Object.assign(JSON.parse(JSON.stringify(VAZIO)), s || {});
   s.perfil = Object.assign({}, VAZIO.perfil, s.perfil);
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
-  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {};
+  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {};
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
   return s;
 }
@@ -101,7 +101,7 @@ const ui = { view: 'hoje', mesModo: 'lista', qs: null, mes: mesDe(hoje()), seman
 // A IA calibra `teoria` e `q` por assunto (densidade); itens com `min` fixo (redação, simulado, revisão) não mudam.
 const MIN_Q = { 'Matemática': 4.5, 'Física': 4, 'Química': 3.2, 'Biologia': 2.2, 'História': 2, 'Geografia': 2, 'Português': 2.5, 'Literatura': 2.3, 'Inglês': 2, 'Filosofia': 2, 'Sociologia': 2 };
 const Q_PADRAO = { 'Matemática': 25, 'Física': 20, 'Química': 20, 'Biologia': 25, 'História': 20, 'Geografia': 20, 'Português': 15, 'Literatura': 10, 'Inglês': 10, 'Filosofia': 10, 'Sociologia': 10 };
-const minPorQ = m => { const t = S.tq?.[m]; return t && t.n >= 8 ? Math.max(0.8, Math.min(12, t.seg / 60)) : MIN_Q[m] ?? 2.5; }; // aprende com o tempo real das listas de questões
+const minPorQ = m => { if (S.minQ?.[m] > 0) return S.minQ[m]; const t = S.tq?.[m]; return t && t.n >= 8 ? Math.max(0.8, Math.min(12, t.seg / 60)) : MIN_Q[m] ?? 2.5; }; // aprende com o tempo real das listas de questões
 const tempoDe = a => ({ t: a.teoria ?? 60, q: a.q ?? Q_PADRAO[a.materia] ?? 15 });
 const minDe = a => { if (a.min) return a.min; const { t, q } = tempoDe(a); return Math.round(t + q * minPorQ(a.materia) * 1.25); };
 const ehConteudo = a => !!a && !a.min;
@@ -112,9 +112,11 @@ const fmtMin = m => { const h = Math.floor(m / 60), r = Math.round(m % 60); retu
 const soma = (l, f) => l.reduce((s, x) => s + f(x), 0);
 const semanaCurta = s => `${deIso(s).getDate()}/${pad(deIso(s).getMonth() + 1)}`;
 
-function setFeito(a, ok) {
+function setFeito(a, ok, sincronizar = true) {
   if (!a || !!a.feito === ok) return;
   a.feito = ok;
+  // integração: marcar o assunto em qualquer tela (Mês, Semana, Ano) marca também os passos do bloco de hoje, e vice-versa
+  if (sincronizar) for (const d of Object.values(S.dias)) for (const b of d.blocos || []) if (b.assuntoId === a.id) b.passos.forEach(p => { if (p.ok !== ok) { p.ok = ok; } });
   if (ok) { a.feitoEm = hoje(); S.estudo[hoje()] = (S.estudo[hoje()] || 0) + minDe(a); }
   else { const d = a.feitoEm; if (d && S.estudo[d]) S.estudo[d] = Math.max(0, S.estudo[d] - minDe(a)); a.feitoEm = null; }
 }
@@ -354,7 +356,7 @@ async function pedirIa(pedido, rotulo = 'Pensando…', falaDela = null) {
 
 // ---------- telas ----------
 function menuHtml() {
-  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['questoes', 'Questões'], ['caderno', 'Caderno']];
+  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['pendencias', 'Pendências'], ['questoes', 'Questões'], ['caderno', 'Caderno']];
   return `<div class="marca">rotina</div>` +
     itens.map(([v, t]) => `<button data-acao="ir" data-v="${v}" ${ui.view === v ? 'aria-current="page"' : ''}>${icone(v)}<span>${t}</span></button>`).join('') +
     `<div class="espaco"></div><button data-acao="ir" data-v="ajustes" ${ui.view === 'ajustes' ? 'aria-current="page"' : ''}>${icone('ajustes')}<span>Ajustes</span></button>`;
@@ -445,6 +447,7 @@ function vHoje() {
         <button class="botao contorno" style="color:inherit" data-acao="timer" data-min="25" data-b="${prox.b.id}" data-i="${prox.i}">Foco 25</button></div>`
         : d.blocos.length ? `<span class="rotulo">hoje</span><h2>Tudo feito por hoje. Orgulho!</h2>` : `<span class="rotulo">hoje</span><h2>Diga quanto tempo tem e eu encho o dia.</h2>`}
     </div>
+    ${window.metaQHtml?.() ?? ''}${window.pendHojeHtml?.() ?? ''}
     <div class="cartao ia-cartao"><strong>${seq ? `${seq} ${seq === 1 ? 'dia' : 'dias'} seguidos estudando` : 'Um passo hoje já conta'}</strong>
       <span>${esc(faseAtual()?.objetivo || S.meses[mesDe(h)]?.foco || 'Comece pelo passo mais fácil. O resto vem.')}</span></div>
     ${d.blocos.length ? `<div class="linha"><button class="botao claro" data-acao="maisUm">Puxar mais um assunto</button>
@@ -647,7 +650,7 @@ function vAjustes() {
       ${campo('vestibular', 'Vestibular', 'text', 'Ex.: ENEM, Fuvest, Unicamp')}
       ${campo('fortes', 'Matérias em que vai bem')}
       ${campo('fracas', 'Matérias com mais dificuldade')}
-      ${caixa('horarios', 'Sua rotina', 'Aulas, trabalho, horários livres. A IA usa para montar os dias.', 'Ex.: aula de seg a sex até 13h; sábado livre; domingo só de manhã')}
+      <div class="linha" style="justify-content:space-between"><span class="fraco">A rotina base (horários de aula, refeições, exercício, sono) agora fica em <b>Meu dia</b>, junto de onde ela é usada.</span><button class="botao claro" data-acao="ir" data-v="meudia">Abrir Meu dia</button></div>
     </section>
     <section class="cartao"><h2>Do meu jeito</h2>
       ${caixa('jeito', 'Como você gosta que a IA te ajude', 'Tudo aqui a IA segue sempre. Ela também anota aqui o que você pedir pra ela lembrar.', 'Ex.: não gosto de química à noite; fala comigo de forma leve; prefiro blocos de 40 min')}
@@ -679,6 +682,7 @@ function vAjustes() {
       <div class="linha"><button class="botao claro" data-acao="testarIa">Testar a IA</button></div>
       <p class="fraco" style="margin:0;font-size:14px">Usos de hoje: ${Object.entries(usoHoje().n).map(([k, v]) => `${esc(k.split('|')[0])} ${v}${usoHoje().fim[k] ? ' (cota acabou)' : ''}`).join(' · ') || 'nenhum ainda'}.</p>
     </section>
+    ${window.ajustesQuestoesHtml?.() ?? ''}
     <section class="cartao"><h2>Tempos dos assuntos</h2>
       <p class="fraco" style="margin:0">O tempo de cada assunto soma a teoria e as questões (Matemática leva mais por questão que Biologia). A IA ajusta por densidade, e isso já acontece sozinho nas próximas 4 semanas. Aqui você calibra todos de uma vez.</p>
       <div class="linha"><button class="botao claro" data-acao="calibrarTodos">Calibrar todos com a IA</button></div></section>
@@ -722,6 +726,7 @@ function modalAssunto(a) {
     ${ehConteudo(a) ? `<span class="fraco" style="font-size:14px">${a.dens ? `Densidade ${'●'.repeat(a.dens)}${'○'.repeat(5 - a.dens)} · ` : ''}teoria ${fmtMin(tempoDe(a).t)} + ${tempoDe(a).q} questões (~${fmtMin(tempoDe(a).q * minPorQ(a.materia))})${a.calibrado ? ' · calibrado pela IA' : ''}</span>` : ''}
     <span class="rotulo">semana prevista</span>
     <div class="linha">${semanas.map((s, i) => `<button class="chip" aria-pressed="${semDe(a) === s}" data-acao="marcarSemana" data-id="${a.id}" data-v="${s}">${i === 0 ? 'Esta semana' : i === 1 ? 'Próxima' : semanaCurta(s)}</button>`).join('')}</div>
+    ${ehConteudo(a) && !a.feito ? window.tempoEditorHtml?.(a) ?? '' : ''}
     <div class="linha"><button class="botao" data-acao="feitoAssunto" data-id="${a.id}">${a.feito ? 'Desmarcar feito' : 'Marcar como feito'}</button>
       ${ehConteudo(a) ? `<button class="botao claro" data-acao="questoes" data-id="${a.id}">Questões</button>` : ''}<button class="botao claro" data-acao="caderno" data-id="${a.id}">Caderno à mão</button>
       ${a.feito ? '' : `<button class="botao claro" data-acao="fazerHoje" data-id="${a.id}">Fazer hoje</button>`}
@@ -813,7 +818,7 @@ function marcarPasso(b, i, ok) {
   if (!p || p.ok === ok) return;
   p.ok = ok;
   S.feitos[h] = Math.max(0, (S.feitos[h] || 0) + (ok ? 1 : -1));
-  if (bloco.assuntoId) setFeito(achar(bloco.assuntoId), bloco.passos.every(x => x.ok));
+  if (bloco.assuntoId) setFeito(achar(bloco.assuntoId), bloco.passos.every(x => x.ok), false);
 }
 
 function contextoAtual() { return [ui.ctxTexto.trim(), ui.ctxEnergia].filter(Boolean).join(' · '); }

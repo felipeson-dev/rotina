@@ -77,3 +77,8 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - redacao.js: histórico de redações (texto/desenho + IA + correções de outras pessoas com foto), cartões digitados e gerador de cartões por IA. Substitui vRedacao/vCartoes do pencil.js (código antigo ficou lá, sem uso).
 - dia.js: rotina base + o que contou hoje (substitui o item equivalente) + suposições visíveis.
 - IA: gemini-3.5-flash-lite é o padrão para texto (2-3 s, bom JSON). OpenRouter free: 50 req/dia, lento, JSON falha: não usar. Chave OpenRouter do Felipe NÃO foi gravada em lugar nenhum.
+## v7 (27/10/2026)
+- banco.js: banco de questões local (IndexedDB 'banco:enem|ia|import'), filtros (banca, ano, área, matéria, não feitas/erradas/acertadas, quantidade, sorteio/ordem), download do ENEM inteiro (api.enem.dev, limit máx 50), IA gera e guarda, importar JSON (formato em "Como importar?"). Histórico por questão em S.qh. PENDENTE (combinado p/ depois): trazer VUNESP, bancas de SP e federais em grande volume; classificar questões do ENEM por matéria com IA (lite, lotes de 40).
+- mais.js: Pendências (IA entende texto; avisos com o app aberto + .ics p/ o Calendário do iPad, único jeito de avisar com o app fechado sem servidor), metas diárias de questões por matéria (S.metaQ; padrão 50 mat/fís/quím e 100 nas demais), minutos por questão editáveis (S.minQ), tempo do assunto à mão (a.manual).
+- Integração: setFeito sincroniza os passos do bloco de hoje nos dois sentidos. Rotina base só em Meu dia (Ajustes aponta para lá).
+- Cartões: quantidade livre (1-50), pergunta rosa e resposta azul.
