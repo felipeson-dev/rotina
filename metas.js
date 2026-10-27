@@ -86,7 +86,7 @@ function painelQuestoes() {
   const abas = [['hoje', 'Hoje'], ['semana', 'Semana'], ['mes', 'Mês'], ['tudo', 'Tudo']];
   const ac = acerto(r.f, r.a, r.s), comp = meta - baseDia(hoje());
   const tempoMeta = minQuestoes(metas);
-  const capMin = S.dias[hoje()]?.cap || 0, avisoTempo = capMin && tempoMeta > capMin ? <p style="margin:0;color:#9C3D07">⚠ Essa meta ocupa ≈ ${fmtMin(tempoMeta)}, mais que o tempo de estudo de hoje (${fmtMin(capMin)}). Considere diminuir.</p> : '';
+  const capMin = S.dias[hoje()]?.cap || 0, avisoTempo = capMin && tempoMeta > capMin ? `<p style="margin:0;color:#9C3D07">⚠ Essa meta ocupa ≈ ${fmtMin(tempoMeta)}, mais que o tempo de estudo de hoje (${fmtMin(capMin)}). Considere diminuir.</p>` : '';
   const resumoDia = p.dias?.[deIso(hoje()).getDay()] === 0 ? 'Hoje está marcado como dia de descanso de questões.' : `Faltam <b>${Math.max(0, meta - feito)}</b> para a meta de hoje${meta ? ` (≈ ${fmtMin(tempoMeta)} do seu dia)` : ''}.`;
   return `<section class="cartao painel-q"><div class="pq-topo">${anelQ(feito, meta)}
       <div class="coluna" style="gap:6px"><h2>Questões de hoje</h2>
