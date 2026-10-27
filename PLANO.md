@@ -65,3 +65,9 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Questões: registrar feitas/acertos; <70% agenda "Refazer os erros" na semana seguinte (S.qlog guarda o histórico).
 - Modelos grátis (só Flash): gemini-3.8-flash > 3.6-flash > 3.5-flash > 3.5-flash-lite; visão sem o lite. Pro e Argon exigem pagamento.
 - Teste: nunca matar todos os chrome.exe; só os com --user-data-dir de teste.
+## v5 (27/10/2026)
+- dia.js: aba "Meu dia" (texto livre ou só horas -> IA monta agenda; calculadora: estudo líquido x 0,8 x fator de energia; rotina base em perfil.horarios; replanejar mantém o feito). Hoje = lista de assuntos; `b.sug` é só sugestão de horário.
+- IA por tarefa (rotaIa em app.js): texto = Llama (Groq/Cerebras/OpenRouter, chave em Ajustes, `rotina.llama`) > Gemini lite > flash; visão = Gemini flash. Cota esgotada (429) é pulada no dia (S.uso).
+- Cadernos: aba Caderno > Cadernos (S.notas indexa por matéria; páginas livres; desenhos na cópia de segurança). Redação: digitar ou à mão + nota manual do professor.
+- Caminho rosa com enchimento por minutos; selo "à frente do plano". Cores: prévia + "Salvar estas cores" (ui.coresPrev).
+- Testes: python -m http.server em pasta temporária, Chrome headless com --user-data-dir temporário; matar só processos com esse perfil.

@@ -123,11 +123,23 @@ class Quadro {
       for (let i = 3; i < p.length; i += 3) if (distSeg(x, y, p[i - 3], p[i - 2], p[i], p[i + 1]) < r + s.w / 2) return false; return true; });
     if (this.tr.length !== antes) { this.redesenhar(); this.salvar(); }
   }
-  salvar() { this.mudou = true; clearTimeout(this._t); this._t = setTimeout(() => DB.set('d:' + this.chave, { w: this.W0, s: this.tr }), 500); }
+  salvar() { this.mudou = true; clearTimeout(this._t); this._t = setTimeout(() => { DB.set('d:' + this.chave, { w: this.W0, s: this.tr }); registrarNota(this.chave, !this.tr.length); }, 500); }
   vazio() { return !this.tr.length; }
   /** Imagem jpeg (fundo branco) para mandar à IA ou mostrar. */
   imagem(max = 1400) { return imagemDe({ w: this.W0, s: this.tr }, this.altura / this.W0, max); }
 }
+
+/** Mantém o índice dos cadernos (por matéria e assunto) em S.notas. */
+function registrarNota(chave, vazio) {
+  if (!chave.startsWith('nota:')) return;
+  const id = chave.slice(5), a = achar(id); S.notas ||= {};
+  const antes = S.notas[id];
+  if (a) { if (vazio) delete S.notas[id]; else S.notas[id] = { materia: a.materia, titulo: a.titulo, t: hoje(), assunto: id }; }
+  else if (antes) antes.t = hoje();
+  salvar();
+}
+DB.todos = async function () { try { const db = await this.abrir(); return await new Promise(ok => { const o = {}; const q = db.transaction('d').objectStore('d').openCursor(); q.onsuccess = () => { const c = q.result; if (c) { o[c.key] = c.value; c.continue(); } else ok(o); }; q.onerror = () => ok(o); }); } catch { return {}; } };
+async function restaurarDesenhos(o) { for (const [k, v] of Object.entries(o || {})) await DB.set(k, v); }
 
 function imagemDe(d, prop, max = 1400) {
   const w = Math.min(max, Math.max(600, d.w)), k = w / d.w;
@@ -152,14 +164,14 @@ const quadroDe = chave => [...document.querySelectorAll('.quadro-vaga')].map(e =
 
 // ---------- telas ----------
 ICONES.caderno = '<path d="M5 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5z"/><path d="M9 3v18M13 8h3M13 12h3"/>';
-ui.cad = 'rascunho'; ui.redTema = ''; ui.redRes = null; ui.rascTarefas = null; ui.cartao = null; ui.novoCartao = false;
-S.cartoes ||= []; S.redacoes ||= [];
+ui.cad = 'cadernos'; ui.cadMat = ''; ui.redModo = 'mao'; ui.redTexto = ''; ui.redTema = ''; ui.redRes = null; ui.rascTarefas = null; ui.cartao = null; ui.novoCartao = false;
+S.cartoes ||= []; S.redacoes ||= []; S.notas ||= {};
 
 function vCaderno() {
-  const abas = [['rascunho', 'Rascunho'], ['redacao', 'Redação'], ['cartoes', 'Cartões']];
+  const abas = [['cadernos', 'Cadernos'], ['rascunho', 'Rascunho'], ['redacao', 'Redação'], ['cartoes', 'Cartões']];
   const cab = `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">caderno</span><h1>Escreva com a caneta</h1></div>
     <div class="alterna" role="group">${abas.map(([v, t]) => `<button data-acao="aba" data-v="${v}" aria-pressed="${ui.cad === v}">${t}</button>`).join('')}</div></header>${avisoIa()}`;
-  return cab + (ui.cad === 'redacao' ? vRedacao() : ui.cad === 'cartoes' ? vCartoes() : vRascunho());
+  return cab + (ui.cad === 'redacao' ? vRedacao() : ui.cad === 'cartoes' ? vCartoes() : ui.cad === 'rascunho' ? vRascunho() : vCadernos());
 }
 
 function propostasHtml() {
@@ -178,6 +190,25 @@ function vRascunho() {
       <button class="botao contorno" data-acao="rascunhoNova">Folha nova</button></div></section>${propostasHtml()}`;
 }
 
+function vCadernos() {
+  const notas = Object.entries(S.notas || {}).map(([id, n]) => ({ id, ...n }));
+  const mats = [...new Set(notas.map(n => n.materia || 'Outros'))];
+  const filtro = ui.cadMat;
+  const grupos = mats.filter(m => !filtro || m === filtro).map(m => {
+    const l = notas.filter(n => (n.materia || 'Outros') === m).sort((a, b) => (b.t || '') < (a.t || '') ? -1 : 1);
+    return `<section class="cartao"><div class="entre"><h2 style="${cor(m)}" class="linha"><i class="ponto"></i>${esc(m)}</h2><span class="fraco">${l.length} ${l.length === 1 ? 'caderno' : 'cadernos'}</span></div>
+      <div class="cadernos-grade">${l.map(n => `<button class="nota-card" data-acao="caderno" data-id="${n.id}" style="${cor(m)}">
+        <img class="desenho" data-desenho="nota:${n.id}" data-prop="0.55" alt="">
+        <strong>${esc(n.titulo || 'Sem título')}</strong><span class="fraco">${n.assunto ? 'assunto' : 'página livre'} · ${n.t ? diaCurto(n.t) : ''}</span></button>`).join('')}</div></section>`;
+  }).join('');
+  return `<section class="cartao"><p class="fraco" style="margin:0">Aqui ficam as suas anotações à mão, separadas por matéria e assunto. Para anotar num assunto, toque em "Caderno à mão" dentro dele (em Hoje, Semana, Mês ou no Mapa). Também dá para criar uma página livre. Tudo salva sozinho neste aparelho e vai junto na cópia de segurança.</p>
+    ${mats.length ? `<div class="linha"><button class="chip" data-acao="cadMat" data-v="" aria-pressed="${!filtro}">Todas</button>${mats.map(m => `<button class="chip" data-acao="cadMat" data-v="${esc(m)}" aria-pressed="${filtro === m}">${esc(m)}</button>`).join('')}</div>` : ''}
+    <div class="linha" style="align-items:flex-end"><label class="campo" style="flex:0 1 190px">Matéria<select id="pg-mat">${Object.keys(MATERIAS).map(m => `<option ${m === filtro ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
+      <label class="campo" style="flex:1 1 220px">Título da página<input type="text" id="pg-titulo" placeholder="Ex.: Resumo de genética"></label>
+      <button class="botao" data-acao="novaPagina">+ Nova página</button></div></section>
+    ${grupos || '<section class="cartao"><p class="fraco" style="margin:0">Nenhuma anotação ainda. Crie uma página acima ou abra o caderno de um assunto.</p></section>'}`;
+}
+
 function notaCor(n) { return n >= 160 ? '#2B8A3E' : n >= 100 ? '#E8890C' : '#D6336C'; }
 function vRedacao() {
   const w = semAtual();
@@ -194,11 +225,16 @@ function vRedacao() {
       <button class="botao contorno" data-acao="rascunhoNova" data-q="redacao">Folha nova</button></div></section>` : '';
   const hist = S.redacoes.slice(-6).reverse();
   return `<section class="cartao"><p class="fraco" style="margin:0">Escreva a redação à mão, direto aqui. A IA lê a letra e corrige pelas 5 competências do ENEM (cada uma de 0 a 200).</p>
+    <div class="alterna" role="group"><button data-acao="redModo" data-v="mao" aria-pressed="${ui.redModo !== 'digitar'}">Escrever à mão</button><button data-acao="redModo" data-v="digitar" aria-pressed="${ui.redModo === 'digitar'}">Digitar</button></div>
     <label class="campo">Tema<input type="text" id="red-tema" value="${esc(ui.redTema)}" placeholder="Ex.: Desafios da saúde mental" data-ui="redTema"></label>
     ${temas.length ? `<div class="linha">${temas.map(a => `<button class="chip" data-acao="temaRed" data-id="${a.id}">${esc(a.titulo.replace(/^Redação[^:]*:\s*/, ''))}</button>`).join('')}</div>` : ''}
-    ${quadroHtml('redacao', 1700, 'linhas')}
+    ${ui.redModo === 'digitar' ? `<textarea id="red-digitada" data-ui="redTexto" style="min-height:420px" placeholder="Digite a sua redação aqui (se estiver sem a caneta ou no notebook).">${esc(ui.redTexto)}</textarea>` : quadroHtml('redacao', 1700, 'linhas')}
     <div class="linha"><button class="botao grande" data-acao="corrigirRed">Corrigir com a IA</button></div></section>${res}
-    ${hist.length ? `<section class="cartao"><h2>Suas últimas redações</h2>${hist.map(h => `<div class="entre prova"><span>${esc(h.tema || 'Sem tema')} <span class="fraco">· ${diaCurto(h.dia)}</span></span><strong style="color:${notaCor(h.nota / 5)}">${h.nota}</strong></div>`).join('')}</section>` : ''}`;
+    <section class="cartao"><h2>Nota de outra correção</h2><p class="fraco" style="margin:0">Se um professor ou outra IA corrigiu, registre a nota aqui para comparar com a da IA do app.</p>
+      <div class="linha" style="align-items:flex-end"><label class="campo" style="flex:0 1 150px">Nota (0 a 1000)<input type="number" id="nm-nota" min="0" max="1000" step="10"></label>
+      <label class="campo" style="flex:1 1 240px">Quem corrigiu / observação<input type="text" id="nm-obs" placeholder="Ex.: Profa. Marina, faltou repertório"></label>
+      <button class="botao claro" data-acao="notaManual">Registrar</button></div></section>
+    ${hist.length ? `<section class="cartao"><h2>Suas últimas redações</h2>${hist.map(h => `<div class="entre prova"><span>${esc(h.tema || 'Sem tema')} <span class="fraco">· ${diaCurto(h.dia)}${h.manual?.obs ? ' · ' + esc(h.manual.obs) : ''}</span></span><span>${h.nota != null ? `<strong style="color:${notaCor(h.nota / 5)}">IA ${h.nota}</strong>` : ''}${h.manual ? `<strong style="margin-left:12px;color:${notaCor(h.manual.nota / 5)}">Prof. ${h.manual.nota}</strong>` : ''}</span></div>`).join('')}</section>` : ''}`;
 }
 
 const hojeIso = () => hoje();
@@ -231,8 +267,9 @@ function vCartoes() {
 
 // ---------- IA com letra à mão ----------
 async function iaComImagem(prompt, img, max = 6000) {
-  if (!temChave()) throw new Error('falta a chave da IA, em Ajustes');
-  return chamarIa(prompt, max, [img], MODELOS_VISAO);
+  if (!img) return chamarIa(prompt, max, [], 'texto'); // texto digitado: não precisa de visão
+  if (!temChave()) throw new Error('para ler a letra à mão preciso da chave do Gemini, em Ajustes');
+  return chamarIa(prompt, max, [img], 'visao');
 }
 
 Object.assign(VIEWS, { caderno: vCaderno });
@@ -266,15 +303,16 @@ Responda SÓ com JSON: {"resposta":"1 frase","tarefas":[{"titulo":"...","materia
   },
   temaRed: el => { const a = achar(el.dataset.id); if (a) { ui.redTema = a.titulo.replace(/^Redação[^:]*:\s*/, ''); ui.redAssunto = a.id; render(); } },
   corrigirRed: async () => {
-    const q = quadroDe('redacao');
-    if (!q || q.vazio()) { ui.iaMsg = 'A folha está em branco. Escreva a redação primeiro.'; render(); return; }
+    const digitar = ui.redModo === 'digitar', q = digitar ? null : quadroDe('redacao');
+    const digitado = digitar ? ($('#red-digitada')?.value || ui.redTexto || '').trim() : '';
+    if (digitar ? digitado.length < 80 : (!q || q.vazio())) { ui.iaMsg = digitar ? 'Escreva a redação (pelo menos algumas linhas) antes de corrigir.' : 'A folha está em branco. Escreva a redação primeiro.'; render(); return; }
     const tema = ($('#red-tema')?.value || ui.redTema || '').trim();
-    ui.redTema = tema; ui.carregando = 'Lendo e corrigindo a redação…'; ui.iaMsg = ''; render();
+    ui.redTema = tema; ui.carregando = digitar ? 'Corrigindo a redação…' : 'Lendo e corrigindo a redação…'; ui.iaMsg = ''; render();
     try {
-      const r = await iaComImagem(`A imagem é uma redação manuscrita no modelo ENEM (texto dissertativo-argumentativo)${tema ? `, tema: "${tema}"` : ''}. Primeiro transcreva o texto. Depois corrija pelas 5 competências do ENEM, com rigor e sem inflar a nota (notas só 0, 40, 80, 120, 160 ou 200 por competência):
+      const r = await iaComImagem(`${digitar ? 'Abaixo está uma redação digitada' : 'A imagem é uma redação manuscrita'} no modelo ENEM (texto dissertativo-argumentativo)${tema ? `, tema: "${tema}"` : ''}.${digitar ? `\n\nTEXTO DA REDAÇÃO:\n${digitado}\n\n` : ''} Primeiro ${digitar ? 'repita o texto na transcrição' : 'transcreva o texto'}. Depois corrija pelas 5 competências do ENEM, com rigor e sem inflar a nota (notas só 0, 40, 80, 120, 160 ou 200 por competência):
 C1 domínio da norma culta; C2 compreensão do tema e estrutura dissertativa; C3 seleção e organização de argumentos; C4 coesão (conectivos); C5 proposta de intervenção (agente, ação, meio, finalidade, detalhamento).
 Se a letra estiver difícil de ler, diga isso nos comentários. Responda SÓ com JSON:
-{"transcricao":"...","competencias":[{"n":1,"nome":"...","nota":0,"comentario":"1 ou 2 frases"},{"n":2,...},{"n":3,...},{"n":4,...},{"n":5,...}],"nota_total":0,"pontos_fortes":["..."],"melhorar":["..."],"proximo_passo":"1 frase gentil e prática"}`, q.imagem(), 8000);
+{"transcricao":"...","competencias":[{"n":1,"nome":"...","nota":0,"comentario":"1 ou 2 frases"},{"n":2,...},{"n":3,...},{"n":4,...},{"n":5,...}],"nota_total":0,"pontos_fortes":["..."],"melhorar":["..."],"proximo_passo":"1 frase gentil e prática"}`, digitar ? null : q.imagem(), 8000);
       const comps = (r.competencias || []).map(c => ({ ...c, nota: Math.max(0, Math.min(200, Math.round((+c.nota || 0) / 40) * 40)) }));
       r.competencias = comps; r.nota_total = comps.reduce((s, c) => s + c.nota, 0); r.assuntoId = ui.redAssunto || null;
       ui.redRes = r; S.redacoes.push({ dia: hoje(), tema, nota: r.nota_total, comps: comps.map(c => c.nota) }); S.redacoes = S.redacoes.slice(-30); salvar();
@@ -308,12 +346,44 @@ Se a letra estiver difícil de ler, diga isso nos comentários. Responda SÓ com
   },
   fimRevisao: () => { ui.cartao = null; render(); },
   // caderno de cada assunto e rascunho rápido (em qualquer tela)
-  caderno: el => { const a = achar(el.dataset.id); if (a) { ui.chatAberto = false; abrirModal(`<div class="entre"><div>${tag(a.materia)}</div><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
-    <h2>${esc(a.titulo)}</h2><span class="fraco">Anotações à mão deste assunto. Salvam sozinhas.</span>${quadroHtml('nota:' + a.id, 800, 'quadriculado')}`); } },
+  caderno: el => {
+    const id = el.dataset.id, a = achar(id), n = (S.notas ||= {})[id];
+    const mat = a?.materia || n?.materia, titulo = a?.titulo || n?.titulo;
+    if (!mat && !titulo) return;
+    ui.chatAberto = false;
+    abrirModal(`<div class="entre"><div>${tag(mat)}</div><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
+      <h2>${esc(titulo)}</h2><span class="fraco">${a ? 'Anotações à mão deste assunto.' : 'Página livre.'} Salvam sozinhas e ficam em Caderno → Cadernos.</span>${quadroHtml('nota:' + id, 800, 'quadriculado')}
+      ${!a ? `<div class="linha"><button class="link" data-acao="apagarPagina" data-id="${id}">Apagar esta página</button></div>` : ''}`);
+  },
+  cadMat: el => { ui.cadMat = el.dataset.v; render(); },
+  novaPagina: () => {
+    const titulo = ($('#pg-titulo')?.value || '').trim(), materia = $('#pg-mat')?.value || 'Outros';
+    if (!titulo) { ui.iaMsg = 'Dê um título para a página.'; render(); return; }
+    const id = 'p' + uid(); (S.notas ||= {})[id] = { materia, titulo, t: hoje() }; salvar(); render(); ACOES.caderno({ dataset: { id } });
+  },
+  apagarPagina: async el => { await DB.del('d:nota:' + el.dataset.id); delete S.notas[el.dataset.id]; salvar(); fecharModal(); render(); },
+  redModo: el => { ui.redModo = el.dataset.v; render(); },
+  notaManual: () => {
+    const nota = Math.round(+$('#nm-nota')?.value), obs = ($('#nm-obs')?.value || '').trim();
+    if (!(nota >= 0 && nota <= 1000)) { ui.iaMsg = 'Informe uma nota de 0 a 1000.'; render(); return; }
+    const ult = S.redacoes[S.redacoes.length - 1], tema = ui.redTema;
+    if (ui.redRes && ult && ult.tema === tema && !ult.manual) ult.manual = { nota, obs };
+    else S.redacoes.push({ dia: hoje(), tema, nota: null, manual: { nota, obs } });
+    salvar(); ui.iaMsg = 'Nota registrada.'; render();
+  },
   abrirRascunho: () => { ui.chatAberto = false; ui.rascTarefas = null; abrirModal(`<div class="entre"><h2>Rascunho rápido</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
     <span class="fraco">Escreva o que vier à cabeça. Salva sozinho.</span>${quadroHtml('rascunho', 800, 'pontos')}
     <div class="linha"><button class="botao" data-acao="rascunhoTarefas">Virar tarefas com a IA</button></div>`); },
 });
+
+// a cópia de segurança leva os desenhos junto
+exportar = async function () {
+  const blob = new Blob([JSON.stringify({ ...S, desenhos: await DB.todos() })], { type: 'application/json' });
+  const nome = `rotina-copia-${hoje()}.json`, arq = new File([blob], nome, { type: 'application/json' });
+  if (navigator.canShare?.({ files: [arq] })) { navigator.share({ files: [arq], title: nome }).catch(() => { }); return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+};
 
 // monta os quadros sempre que a tela ou uma janela mudar
 {

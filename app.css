@@ -328,3 +328,39 @@ details summary { cursor: pointer; }
 .item-mini .ponto { margin-top: 5px; }
 .item-mini.feito { color: var(--fraco); text-decoration: line-through; }
 @media (max-width: 980px) { .caminho-grade { grid-template-columns: minmax(0, 1fr); } .painel-sem { position: static; } }
+/* ---------- v5: caminho rosa, agenda do dia, prévia de cores, cadernos ---------- */
+:root { --rosa: #E8478B; --rosa-suave: #FBD3E4; }
+.trilha.base { stroke: var(--linha); stroke-dasharray: none; }
+.trilha.base.atras { stroke: #F4C7A6; }
+.trilha.rosa { stroke: var(--rosa); stroke-dasharray: none; transition: stroke-dasharray .6s; }
+.no-sem.ok .bolinha { fill: var(--rosa); stroke: var(--rosa); }
+.no-sem.meio .bolinha { fill: var(--rosa-suave); stroke: var(--rosa); }
+.no-sem:hover .bolinha, .no-sem:focus .bolinha { stroke: var(--rosa); }
+.no-sem .meio-txt { fill: var(--rosa); }
+.no-sem .certo { stroke: #fff; }
+.no-sem .pulso { stroke: var(--rosa); }
+.lg.ok { background: var(--rosa); border-color: var(--rosa); } .lg.meio { background: var(--rosa-suave); border-color: var(--rosa); }
+.aqui { fill: var(--rosa); }
+.painel-sem { background: color-mix(in srgb, var(--rosa) 8%, var(--bg)); }
+
+.resumo-dia { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.resumo-dia > div { background: var(--painel2); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; }
+.resumo-dia strong { font-size: 24px; } .resumo-dia span { font-size: 13px; color: var(--fraco); }
+.agenda { display: flex; flex-direction: column; gap: 8px; }
+.ag { display: grid; grid-template-columns: 62px 1fr; gap: 12px; padding: 10px 12px; border-radius: 16px; background: var(--painel2); border-left: 5px solid var(--linha); }
+.ag-h { font-weight: 800; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; line-height: 1.2; } .ag-h small { color: var(--fraco); font-weight: 500; }
+.ag-c { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ag-ass { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.ag.estudo { border-left-color: var(--acento); background: color-mix(in srgb, var(--acento) 9%, var(--bg)); }
+.ag.refeicao { border-left-color: #E8890C; } .ag.exercicio { border-left-color: #2B8A3E; } .ag.compromisso, .ag.trabalho { border-left-color: #3B5BDB; } .ag.pausa, .ag.lazer { border-left-color: #A9B0C2; }
+
+.grade-cores { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 22px; align-items: start; }
+.previa { background: var(--bg); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: inset 0 0 0 2px var(--linha); }
+.trilha-previa { display: flex; align-items: center; gap: 0; } .trilha-previa i { width: 22px; height: 22px; border-radius: 50%; background: var(--rosa); flex: none; } .trilha-previa i + i { margin-left: 18px; position: relative; } .trilha-previa b { flex: 1; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--rosa), var(--linha)); margin-left: 6px; }
+@media (max-width: 760px) { .grade-cores { grid-template-columns: minmax(0, 1fr); } }
+
+.cadernos-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.nota-card { border: 0; text-align: left; background: color-mix(in srgb, var(--c) 9%, var(--bg)); border-radius: 18px; padding: 10px; display: flex; flex-direction: column; gap: 6px; transition: transform .15s; }
+.nota-card:hover { transform: translateY(-3px); }
+.nota-card img.desenho { height: 120px; object-fit: cover; object-position: top; }
+.nota-card strong { font-size: 15px; line-height: 1.25; } .nota-card .fraco { font-size: 12px; }

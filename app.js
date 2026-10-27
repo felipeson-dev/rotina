@@ -3,9 +3,6 @@
 
 const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
-// Só os "flash" são grátis (Pro e Argon exigem pagamento). Ordem: o mais novo; se estiver sobrecarregado (503), cai para o próximo.
-const MODELOS = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'];
-const MODELOS_VISAO = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash'];
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -169,36 +166,65 @@ function sistema() {
   ].filter(Boolean).join('\n');
 }
 
-/** Chama o Gemini (grátis) tentando chave 1, chave 2 e os modelos em ordem. `imagens` = dataURLs jpeg (letra à mão). */
-async function chamarIa(prompt, max = 8000, imagens = [], modelos = MODELOS) {
+/* Rotas de IA por tarefa (cada uma com seus provedores, na ordem). O que acabou a cota do dia é pulado até amanhã.
+   texto  : conversa, planejar o dia, calibrar tempos  -> Llama (se tiver chave) e Gemini lite (cota maior); flash só se precisar
+   visao  : ler letra à mão (redação, rascunho)         -> Gemini flash (lê imagem) */
+const PROVEDORES = {
+  groq: { nome: 'Groq', url: 'https://api.groq.com/openai/v1/chat/completions', modelo: 'llama-3.3-70b-versatile' },
+  cerebras: { nome: 'Cerebras', url: 'https://api.cerebras.ai/v1/chat/completions', modelo: 'llama-3.3-70b' },
+  openrouter: { nome: 'OpenRouter', url: 'https://openrouter.ai/api/v1/chat/completions', modelo: 'meta-llama/llama-3.3-70b-instruct:free' },
+};
+const CHAVE_LLAMA = 'rotina.llama';
+const lerLlama = () => { try { return JSON.parse(localStorage.getItem(CHAVE_LLAMA) || '{}'); } catch { return {}; } };
+const gravarLlama = o => { try { localStorage.setItem(CHAVE_LLAMA, JSON.stringify(o)); } catch { } };
+const temLlama = () => !!lerLlama().chave;
+const GEMINI = { texto: ['gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.5-flash'], visao: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'] };
+
+const usoHoje = () => { S.uso ||= {}; if (S.uso.dia !== hoje()) S.uso = { dia: hoje(), n: {}, fim: {} }; return S.uso; };
+const marcarUso = (id, ok = true) => { const u = usoHoje(); u.n[id] = (u.n[id] || 0) + 1; if (!ok) u.fim[id] = true; };
+
+function rotaIa(tarefa) {
+  const l = lerLlama(), r = [];
+  const gem = GEMINI[tarefa] || GEMINI.texto;
+  if (tarefa === 'texto' && l.chave) r.push({ t: 'llama', id: 'llama', prov: l.prov || 'groq', modelo: l.modelo || PROVEDORES[l.prov || 'groq'].modelo, chave: l.chave });
   const chaves = lerChaves().map(k => (k || '').trim()).filter(Boolean);
+  for (const m of gem) for (const k of chaves) r.push({ t: 'gemini', id: m + '|' + chaves.indexOf(k), modelo: m, chave: k });
+  const fim = usoHoje().fim;
+  return [...r.filter(x => !fim[x.id]), ...r.filter(x => fim[x.id])]; // os esgotados vão para o fim, por garantia
+}
+
+/** Chama a IA conforme a tarefa. `imagens` = dataURLs jpeg (letra à mão). Devolve o JSON da resposta. */
+async function chamarIa(prompt, max = 8000, imagens = [], tarefa = imagens.length ? 'visao' : 'texto') {
   let erro = 'sem chave';
-  const partes = [{ text: prompt }, ...imagens.map(d => ({ inlineData: { mimeType: 'image/jpeg', data: d.split(',')[1] } }))];
-  for (const k of chaves) {
-    for (const modelo of modelos) {
-      let r;
-      try {
-        r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': k },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: sistema() }] },
-            contents: [{ role: 'user', parts: partes }],
-            generationConfig: { responseMimeType: 'application/json', maxOutputTokens: max, temperature: 0.6 },
-          }),
-          signal: AbortSignal.timeout(40000),
-        });
-      } catch (e) { erro = e.name === 'TimeoutError' ? 'a IA demorou demais' : 'sem internet?'; continue; }
-      if (r.ok) {
-        const j = await r.json();
-        const t = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
-        try { return JSON.parse(t.replace(/^```(json)?|```$/g, '').trim()); } catch { erro = 'resposta incompleta'; continue; }
+  const rota = rotaIa(tarefa);
+  if (!rota.length) throw new Error('sem chave. Cole a chave em Ajustes');
+  for (const x of rota) {
+    let r;
+    try {
+      if (x.t === 'llama') {
+        if (imagens.length) continue;
+        r = await fetch(PROVEDORES[x.prov].url, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + x.chave },
+          body: JSON.stringify({ model: x.modelo, temperature: 0.6, max_tokens: Math.min(max, 8000), response_format: { type: 'json_object' },
+            messages: [{ role: 'system', content: sistema() + '\nResponda sempre em JSON válido.' }, { role: 'user', content: prompt }] }), signal: AbortSignal.timeout(40000) });
+      } else {
+        const partes = [{ text: prompt }, ...imagens.map(d => ({ inlineData: { mimeType: 'image/jpeg', data: d.split(',')[1] } }))];
+        r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${x.modelo}:generateContent`, { method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': x.chave },
+          body: JSON.stringify({ systemInstruction: { parts: [{ text: sistema() }] }, contents: [{ role: 'user', parts: partes }],
+            generationConfig: { responseMimeType: 'application/json', maxOutputTokens: max, temperature: 0.6 } }), signal: AbortSignal.timeout(40000) });
       }
-      erro = r.status === 429 ? 'a cota grátis acabou por agora' : r.status === 503 ? 'a IA está sobrecarregada' : `erro ${r.status}`;
+    } catch (e) { erro = e.name === 'TimeoutError' ? 'a IA demorou demais' : 'sem internet?'; continue; }
+    if (r.ok) {
+      const j = await r.json();
+      const t = x.t === 'llama' ? (j.choices?.[0]?.message?.content || '') : (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+      try { const out = JSON.parse(t.replace(/^```(json)?|```$/g, '').trim()); marcarUso(x.id); ui.ultimaIa = x.t === 'llama' ? 'Llama · ' + x.modelo : x.modelo; salvar(); return out; } catch { erro = 'resposta incompleta'; continue; }
     }
+    if (r.status === 429) { marcarUso(x.id, false); erro = 'a cota grátis acabou por agora'; }
+    else erro = r.status === 503 ? 'a IA está sobrecarregada' : r.status === 401 || r.status === 403 ? 'chave recusada (' + (x.t === 'llama' ? 'Llama' : 'Gemini') + ')' : `erro ${r.status}`;
   }
   throw new Error(erro);
 }
+const temChaveIa = () => temChave() || temLlama();
 
 const ACOES_IA = `Responda SÓ com JSON: {"resposta": "1 a 3 frases curtas para ela", "acoes": [ ... ]}
 Ações possíveis (use só as necessárias; lista vazia se for só conversa):
@@ -294,7 +320,7 @@ async function pedirIa(pedido, rotulo = 'Pensando…', falaDela = null) {
   const chat = ui.chatAberto;
   S.chat ||= [];
   if (falaDela) S.chat.push({ r: 'u', t: falaDela });
-  if (!temChave()) {
+  if (!temChaveIa()) {
     if (chat) { S.chat.push({ r: 'ia', t: 'Falta a chave da IA. Cole a chave grátis do Gemini em Ajustes.', erro: true }); salvar(); desenharChat(); return; }
     abrirModal(`<h2>Falta a chave da IA</h2><p>Cole a sua chave grátis do Gemini em <b>Ajustes</b> para a IA funcionar.</p>
       <div class="linha"><button class="botao" data-acao="ir" data-v="ajustes">Abrir Ajustes</button><button class="botao contorno" data-acao="fechar">Agora não</button></div>`);
@@ -323,7 +349,7 @@ async function pedirIa(pedido, rotulo = 'Pensando…', falaDela = null) {
 
 // ---------- telas ----------
 function menuHtml() {
-  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['caderno', 'Caderno']];
+  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['caderno', 'Caderno']];
   return `<div class="marca">rotina</div>` +
     itens.map(([v, t]) => `<button data-acao="ir" data-v="${v}" ${ui.view === v ? 'aria-current="page"' : ''}>${icone(v)}<span>${t}</span></button>`).join('') +
     `<div class="espaco"></div><button data-acao="ir" data-v="ajustes" ${ui.view === 'ajustes' ? 'aria-current="page"' : ''}>${icone('ajustes')}<span>Ajustes</span></button>`;
@@ -364,10 +390,9 @@ const filaPlano = () => S.assuntos.filter(a => !a.feito)
   .sort((x, y) => semDe(x) < semDe(y) ? -1 : semDe(x) > semDe(y) ? 1 : x.mes < y.mes ? -1 : x.mes > y.mes ? 1 : (x.ord || 0) - (y.ord || 0));
 
 /** Enche o dia com assuntos até caber o tempo livre (menos 20% para distrações). */
-function montarHoje() {
+function montarHoje(cap) {
   const d = diaHoje();
-  const fator = { 'cansada': 0.7, 'sem vontade': 0.5 }[ui.ctxEnergia] || 1;
-  d.cap = Math.round((d.horas || 4) * 60 * 0.8 * fator);
+  d.cap = cap > 0 ? cap : d.cap || 0;
   const mantidos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.passos.some(p => p.ok); });
   let usado = soma(mantidos, b => b.min || 0);
   const novos = [];
@@ -395,7 +420,8 @@ function vHoje() {
   const painel = d.blocos.length ? `<section class="cartao dia-resumo">
       <div class="entre"><strong>${fmtMin(feitoMin)} de ${fmtMin(meta)} estudados</strong><span class="fraco">${d.horas}h livres · 20% reservado para pausas</span></div>
       <div class="barra grossa"><i style="width:${pct}%"></i></div><div class="linha">${selos}</div></section>` : '';
-  const planejar = (!d.blocos.length || ui.planejar) ? planejarHtml(d) : '';
+  const planejar = d.blocos.length ? '' : `<section class="cartao"><h2>Ainda não há plano para hoje</h2><p class="fraco" style="margin:0">Conte como vai ser o seu dia (ou só quantas horas tem livres) e eu monto tudo: agenda, pausas e os assuntos certos.</p>
+    <div class="linha"><button class="botao grande" data-acao="ir" data-v="meudia">Planejar meu dia</button></div></section>`;
 
   const grupos = [['atrasado', 'Atrasados'], ['semana', 'Desta semana'], ['futuro', 'Adiantando a próxima semana'], ['feito', 'Já feitos']];
   const dos = b => { const a = b.assuntoId && achar(b.assuntoId); return a ? (a.feito ? 'feito' : estadoDe(a)) : 'semana'; };
@@ -417,7 +443,7 @@ function vHoje() {
     <div class="cartao ia-cartao"><strong>${seq ? `${seq} ${seq === 1 ? 'dia' : 'dias'} seguidos estudando` : 'Um passo hoje já conta'}</strong>
       <span>${esc(faseAtual()?.objetivo || S.meses[mesDe(h)]?.foco || 'Comece pelo passo mais fácil. O resto vem.')}</span></div>
     ${d.blocos.length ? `<div class="linha"><button class="botao claro" data-acao="maisUm">Puxar mais um assunto</button>
-      <button class="botao contorno" data-acao="${ui.planejar ? 'fecharPlanejar' : 'abrirPlanejar'}">${ui.planejar ? 'Fechar' : 'Refazer o dia'}</button>
+      <button class="botao contorno" data-acao="ir" data-v="meudia">Meu dia</button>
       <button class="botao contorno" data-acao="novaTarefa">+ Tarefa</button></div>` : ''}
   </aside>`;
   return topo + avisoIa() + painel + planejar + (d.blocos.length ? `<div class="grade2"><section class="coluna" aria-label="Assuntos de hoje">${lista}</section>${lado}</div>` : '');
@@ -444,7 +470,7 @@ function blocoHtml(b) {
   const rot = { atrasado: 'atrasado', futuro: 'adiantando', feito: 'feito' }[est];
   return `<article class="cartao bloco ${est}" style="${cor(b.materia)}">
     <div class="bloco-topo"><h3>${esc(b.titulo)}</h3>
-      <span class="hora">≈ ${fmtMin(b.min || 0)}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
+      <span class="hora">≈ ${fmtMin(b.min || 0)}${b.sug ? ` · sugerido ${b.sug}` : ''}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
       <button class="x" data-acao="tirarBloco" data-b="${b.id}" aria-label="Tirar bloco">×</button></div>
     ${b.passos.map((p, i) => `<label class="passo ${p.ok ? 'ok' : ''}"><input type="checkbox" data-acao="passo" data-b="${b.id}" data-i="${i}" ${p.ok ? 'checked' : ''}><span>${esc(p.t)}</span></label>`).join('')}
     ${a ? `<div class="linha acoes-bloco">${ehConteudo(a) ? `<button class="link" data-acao="questoes" data-id="${a.id}">${a.questoes ? `Questões: ${a.questoes.acertos}/${a.questoes.feitas}` : 'Registrar questões'}</button>` : ''}
@@ -600,13 +626,14 @@ function anoMapa(meses, m0) {
 }
 
 function vAjustes() {
-  const p = S.perfil, ks = lerChaves();
+  const p = S.perfil, ks = lerChaves(), ll = lerLlama();
   const campo = (k, rot, tipo = 'text', dica = '') => `<label class="campo">${rot}${dica ? `<small>${dica}</small>` : ''}
     <input type="${tipo}" data-campo="${k}" value="${esc(p[k])}"></label>`;
   const caixa = (k, rot, dica, ph) => `<label class="campo">${rot}<small>${dica}</small><textarea data-campo="${k}" placeholder="${ph}">${esc(p[k])}</textarea></label>`;
   const acentos = [['#C2255C', 'Rosa'], ['#E64980', 'Rosa claro'], ['#7048E8', 'Roxo'], ['#3B5BDB', 'Azul'], ['#0C8599', 'Turquesa'], ['#2B8A3E', 'Verde'], ['#E8590C', 'Laranja'], ['#16181D', 'Grafite']];
   const fundos = [['#FFFFFF', 'Branco'], ['#FFF5F8', 'Rosa suave'], ['#F6F3FF', 'Lavanda'], ['#F1F8FF', 'Céu'], ['#F0FAF4', 'Menta'], ['#FFFAF0', 'Creme'], ['#F3F4F6', 'Cinza']];
-  const bolas = (campo, lista) => lista.map(([c, n]) => `<button class="bola" style="background:${c}" data-acao="cor" data-campo="${campo}" data-v="${c}" aria-label="${n}" title="${n}" aria-pressed="${S.cores[campo].toLowerCase() === c.toLowerCase()}"></button>`).join('');
+  const cc = ui.coresPrev || S.cores, mudouCores = !!ui.coresPrev && (ui.coresPrev.acento !== S.cores.acento || ui.coresPrev.fundo !== S.cores.fundo);
+  const bolas = (campo, lista) => lista.map(([c, n]) => `<button class="bola" style="background:${c}" data-acao="cor" data-campo="${campo}" data-v="${c}" aria-label="${n}" title="${n}" aria-pressed="${cc[campo].toLowerCase() === c.toLowerCase()}"></button>`).join('');
   return `<header><span class="rotulo">ajustes</span><h1>Do seu jeito</h1></header>
     ${avisoIa()}
     <section class="cartao"><h2>Sobre você</h2>
@@ -620,16 +647,31 @@ function vAjustes() {
       ${caixa('jeito', 'Como você gosta que a IA te ajude', 'Tudo aqui a IA segue sempre. Ela também anota aqui o que você pedir pra ela lembrar.', 'Ex.: não gosto de química à noite; fala comigo de forma leve; prefiro blocos de 40 min')}
     </section>
     <section class="cartao"><h2>Cores</h2>
-      <div class="coluna" style="gap:8px"><span class="rotulo">cor de destaque</span><div class="linha">${bolas('acento', acentos)}
-        <label class="bola personalizada" title="Outra cor"><input type="color" data-cor="acento" value="${esc(S.cores.acento)}" aria-label="Escolher outra cor de destaque"></label></div></div>
-      <div class="coluna" style="gap:8px"><span class="rotulo">cor do fundo</span><div class="linha">${bolas('fundo', fundos)}
-        <label class="bola personalizada" title="Outra cor"><input type="color" data-cor="fundo" value="${esc(S.cores.fundo)}" aria-label="Escolher outra cor de fundo"></label></div></div>
+      <p class="fraco" style="margin:0">Escolha e veja a prévia ao lado. Só vale de vez quando você tocar em "Salvar estas cores".</p>
+      <div class="grade-cores"><div class="coluna" style="gap:16px">
+        <div class="coluna" style="gap:8px"><span class="rotulo">cor de destaque</span><div class="linha">${bolas('acento', acentos)}
+          <label class="bola personalizada" title="Outra cor"><input type="color" data-cor="acento" value="${esc(cc.acento)}" aria-label="Escolher outra cor de destaque"></label></div></div>
+        <div class="coluna" style="gap:8px"><span class="rotulo">cor do fundo</span><div class="linha">${bolas('fundo', fundos)}
+          <label class="bola personalizada" title="Outra cor"><input type="color" data-cor="fundo" value="${esc(cc.fundo)}" aria-label="Escolher outra cor de fundo"></label></div></div>
+        <div class="linha"><button class="botao" data-acao="salvarCores" ${mudouCores ? '' : 'disabled'}>Salvar estas cores</button>
+          ${mudouCores ? '<button class="botao contorno" data-acao="descartarCores">Descartar</button>' : '<span class="fraco">Cores salvas.</span>'}</div></div>
+        <div class="previa"><span class="rotulo">prévia</span><h3>Bom dia, Uany</h3>
+          <div class="linha"><button class="botao" tabindex="-1">Só 5 minutos</button><button class="botao claro" tabindex="-1">Puxar mais um</button></div>
+          <div class="linha"><span class="tag" style="--c:var(--mat)">Matemática</span><span class="tag" style="--c:var(--nat)">Biologia</span><span class="tag" style="--c:var(--lin)">Redação</span></div>
+          <div class="barra grossa"><i style="width:62%"></i></div>
+          <div class="trilha-previa"><i></i><i></i><i></i><b></b></div></div></div>
     </section>
     <section class="cartao"><h2>IA (Gemini grátis)</h2>
       <p class="fraco" style="margin:0">A chave fica salva só neste iPad. Se a primeira acabar a cota do dia, uso a segunda.</p>
       <label class="campo">Chave 1<input type="password" data-chave="0" value="${esc(ks[0] || '')}" autocomplete="off"></label>
       <label class="campo">Chave 2 (opcional)<input type="password" data-chave="1" value="${esc(ks[1] || '')}" autocomplete="off"></label>
+      <hr>
+      <p class="fraco" style="margin:0"><strong>Llama (opcional)</strong>: uma segunda IA grátis, mais folgada em quantidade. Ela cuida de conversa, planejar o dia e calibrar tempos, e deixa o Gemini para ler a sua letra à mão.</p>
+      <label class="campo">Serviço<select data-llama="prov">${Object.entries(PROVEDORES).map(([k, v]) => `<option value="${k}" ${(ll.prov || 'groq') === k ? 'selected' : ''}>${v.nome}</option>`).join('')}</select></label>
+      <label class="campo">Chave do Llama<input type="password" data-llama="chave" value="${esc(ll.chave || '')}" autocomplete="off"></label>
+      <label class="campo">Modelo<small>Deixe em branco para usar o padrão (${esc(PROVEDORES[ll.prov || 'groq'].modelo)}).</small><input type="text" data-llama="modelo" value="${esc(ll.modelo || '')}" placeholder="${esc(PROVEDORES[ll.prov || 'groq'].modelo)}"></label>
       <div class="linha"><button class="botao claro" data-acao="testarIa">Testar a IA</button></div>
+      <p class="fraco" style="margin:0;font-size:14px">Usos de hoje: ${Object.entries(usoHoje().n).map(([k, v]) => `${esc(k.split('|')[0])} ${v}${usoHoje().fim[k] ? ' (cota acabou)' : ''}`).join(' · ') || 'nenhum ainda'}.</p>
     </section>
     <section class="cartao"><h2>Tempos dos assuntos</h2>
       <p class="fraco" style="margin:0">O tempo de cada assunto soma a teoria e as questões (Matemática leva mais por questão que Biologia). A IA ajusta por densidade, e isso já acontece sozinho nas próximas 4 semanas. Aqui você calibra todos de uma vez.</p>
@@ -772,7 +814,8 @@ function contextoAtual() { return [ui.ctxTexto.trim(), ui.ctxEnergia].filter(Boo
 
 /** Cores personalizadas: tudo sai do acento e do fundo escolhidos. */
 function aplicarCores() {
-  const c = S.cores || {}, r = document.documentElement.style;
+  if (ui.view !== 'ajustes') ui.coresPrev = null;
+  const c = ui.coresPrev || S.cores || {}, r = document.documentElement.style;
   const hex = x => /^#[0-9a-f]{6}$/i.test(x || '');
   const a = hex(c.acento) ? c.acento : '#C2255C', f = hex(c.fundo) ? c.fundo : '#FFFFFF';
   const n = parseInt(a.slice(1), 16), lum = (0.299 * (n >> 16) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
@@ -829,7 +872,9 @@ const ACOES = {
   anoModo: el => { ui.anoModo = el.dataset.v; render(); },
   anoMes: el => { ui.anoMes = el.dataset.v; render(); },
   anoMat: el => { ui.anoMat = ui.anoMat === el.dataset.v ? '' : el.dataset.v; render(); },
-  cor: el => { S.cores = { ...S.cores, [el.dataset.campo]: el.dataset.v }; salvar(); render(); },
+  cor: el => { const y = window.scrollY; ui.coresPrev = { ...(ui.coresPrev || S.cores), [el.dataset.campo]: el.dataset.v }; render(); window.scrollTo(0, y); },
+  salvarCores: () => { const y = window.scrollY; if (ui.coresPrev) S.cores = { ...ui.coresPrev }; ui.coresPrev = null; salvar(); ui.iaMsg = 'Cores salvas.'; render(); window.scrollTo(0, y); },
+  descartarCores: () => { const y = window.scrollY; ui.coresPrev = null; render(); window.scrollTo(0, y); },
   passo: el => { marcarPasso(el.dataset.b, +el.dataset.i, el.checked); salvar(); render(); },
   tirarBloco: el => { const d = diaHoje(); d.blocos = d.blocos.filter(b => b.id !== el.dataset.b); salvar(); render(); },
   novaTarefa: () => modalTarefa(),
@@ -880,8 +925,8 @@ const ACOES = {
   },
   testarIa: async () => {
     ui.carregando = 'Testando…'; render();
-    try { const r = await chamarIa('Responda {"resposta":"ok"} com uma saudação curta e animada para ela no lugar de ok.', 400); ui.iaMsg = 'A IA está funcionando: ' + (r.resposta || 'ok'); }
-    catch (e) { ui.iaMsg = 'A IA não respondeu: ' + e.message + '. Confira a chave.'; }
+    try { const r = await chamarIa('Responda {"resposta":"ok"} com uma saudação curta e animada para ela no lugar de ok.', 400); ui.iaMsg = 'A IA está funcionando' + (ui.ultimaIa ? ' (via ' + ui.ultimaIa + ')' : '') + ': ' + (r.resposta || 'ok'); }
+    catch (e) { ui.iaMsg = 'A IA não respondeu: ' + e.message + '.'; }
     ui.carregando = ''; render();
   },
   exportar: () => exportar(),
@@ -905,14 +950,15 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   const el = e.target;
   if (el.dataset.campo) { S.perfil[el.dataset.campo] = el.value.trim(); salvar(); if (el.dataset.campo === 'nome') $('#menu').innerHTML = menuHtml(); }
-  if (el.dataset.cor) { S.cores = { ...S.cores, [el.dataset.cor]: el.value }; salvar(); aplicarCores(); }
+  if (el.dataset.cor) { const y = window.scrollY; ui.coresPrev = { ...(ui.coresPrev || S.cores), [el.dataset.cor]: el.value }; render(); window.scrollTo(0, y); }
   if (el.id === 'horas-livres') { const v = parseFloat(el.value); if (v > 0) { ui.horas = Math.min(16, v); diaHoje().horas = ui.horas; salvar(); } }
+  if (el.dataset.llama) { gravarLlama({ ...lerLlama(), [el.dataset.llama]: el.value.trim() }); if (el.dataset.llama === 'prov') render(); }
   if (el.dataset.chave) { const ks = lerChaves(); ks[+el.dataset.chave] = el.value.trim(); gravarChaves(ks); }
   if (el.dataset.acaoArquivo === 'importar' && el.files?.[0]) {
     el.files[0].text().then(t => {
-      const novo = JSON.parse(t);
+      const novo = JSON.parse(t); const desenhos = novo.desenhos; delete novo.desenhos;
       if (!novo || !Array.isArray(novo.assuntos)) throw new Error('arquivo não é uma cópia da Rotina');
-      S = Object.assign(JSON.parse(JSON.stringify(VAZIO)), novo); salvar(); ui.iaMsg = 'Cópia restaurada.'; render();
+      S = Object.assign(JSON.parse(JSON.stringify(VAZIO)), novo); salvar(); if (desenhos && window.restaurarDesenhos) restaurarDesenhos(desenhos); ui.iaMsg = 'Cópia restaurada.'; render();
     }).catch(err => { ui.iaMsg = 'Não consegui restaurar: ' + err.message; render(); });
   }
 });

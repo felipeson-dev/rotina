@@ -49,7 +49,7 @@ function reabastecer() {
 
 // ---------- tempos calibrados pela IA ----------
 async function calibrarTempos(todos = false) {
-  if (!temChave() || ui.calibrando) return 0;
+  if (!temChaveIa() || ui.calibrando) return 0;
   const limite = todos ? '9999-12-31' : somaDias(semAtual(), 28);
   const alvo = S.assuntos.filter(a => !a.feito && ehConteudo(a) && !a.calibrado && semDe(a) <= limite);
   if (!alvo.length) return 0;
@@ -111,7 +111,9 @@ function anoCaminho() {
   const H = topo + (Math.ceil(ws.length / PL) - 1) * dy + 70, sts = ws.map(statusSemana);
   const seg = pos.slice(1).map((q, i) => { const p = pos[i], lado = p.r % 2 ? -1 : 1;
     const d = p.r === q.r ? `M${p.x} ${p.y} C${(p.x + q.x) / 2} ${p.y},${(p.x + q.x) / 2} ${q.y},${q.x} ${q.y}` : `M${p.x} ${p.y} C${p.x + lado * 90} ${p.y},${q.x + lado * 90} ${q.y},${q.x} ${q.y}`;
-    return `<path class="trilha ${sts[i].st}" d="${d}"/>`; }).join('');
+    const l = sts[i].l, tot = soma(l, minDe), fz = soma(l.filter(a => a.feito), minDe), frac = tot ? fz / tot : 0;
+    // trilha cinza por baixo e, por cima, o trecho rosa que enche conforme os minutos feitos naquela semana
+    return `<path class="trilha base ${sts[i].st === 'atras' ? 'atras' : ''}" d="${d}"/>${frac > 0 ? `<path class="trilha rosa" pathLength="1" stroke-dasharray="${frac.toFixed(3)} 1" d="${d}"/>` : ''}`; }).join('');
   const nomes = pos.map((p, i) => {
     const m = mesDe(somaDias(p.w, 3)); if (i && mesDe(somaDias(pos[i - 1].w, 3)) === m) return '';
     return `<text class="mes-txt" x="${p.x}" y="${p.y + 34}" text-anchor="middle">${nomeMes(m).slice(0, 3)} ${m.slice(2, 4)}</text>`; }).join('');
@@ -127,8 +129,15 @@ function anoCaminho() {
   const total = S.assuntos.length, fz = S.assuntos.filter(a => a.feito).length, pct = total ? Math.round(fz / total * 100) : 0;
   const mats = [...new Set(S.assuntos.map(a => a.materia))];
   const agora = ws.includes(ui.caminhoSem) ? ui.caminhoSem : semAtual();
+  // quanto está à frente (ou atrás) do plano: assuntos feitos de semanas futuras x atrasados
+  const adiant = S.assuntos.filter(a => a.feito && semDe(a) > semAtual()), atras = S.assuntos.filter(a => estadoDe(a) === 'atrasado');
+  const pendMin = soma(S.assuntos.filter(a => !a.feito), minDe), semRest = Math.max(1, ws.filter(w => w >= semAtual()).length);
+  const diasPlano = pendMin / semRest / 6; // minutos de assunto previstos por dia de estudo
+  const diasFrente = diasPlano ? soma(adiant, minDe) / diasPlano : 0;
+  const situ = adiant.length ? `<div class="selo adiante grande">Você está à frente do plano: ${adiant.length} ${adiant.length === 1 ? 'assunto' : 'assuntos'} de semanas futuras já feitos (≈ ${diasFrente < 1 ? 'menos de 1 dia' : Math.round(diasFrente) + (Math.round(diasFrente) === 1 ? ' dia' : ' dias')} de estudo ganhos).</div>`
+    : atras.length ? `<div class="selo atraso grande">${atras.length} ${atras.length === 1 ? 'assunto atrasado' : 'assuntos atrasados'}: eles entram primeiro no seu dia.</div>` : '<div class="selo grande">No ritmo do plano.</div>';
   return `<section class="cartao"><div class="entre"><h2>Seu caminho até a prova</h2><span class="fraco">${fz} de ${total} assuntos · ${pct}%</span></div>
-    <p class="fraco" style="margin:0">Cada bolinha é uma semana. Passe o mouse (ou toque) para ver o que foi feito e o que falta. O caminho se pinta conforme você conclui.</p>
+    <p class="fraco" style="margin:0">Cada bolinha é uma semana. Passe o mouse (ou toque) para ver o que foi feito e o que falta. O caminho se pinta de rosa conforme você conclui, e se você adiantar semanas ele enche mais rápido.</p>${situ}
     <div class="linha legenda-caminho"><span class="lg ok"></span>completa <span class="lg meio"></span>em andamento <span class="lg falta"></span>por vir <span class="lg atras"></span>atrasada</div>
     <div class="linha">${mats.map(m => `<span class="tag hl" style="${cor(m)}" data-hl="${esc(m)}">${esc(m)}</span>`).join('')}</div>
     <div class="grade2 caminho-grade"><div class="caminho-svg"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Caminho do ano">${seg}${nomes}${nos}</svg></div>
