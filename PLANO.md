@@ -111,3 +111,8 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - oficiais.py: só provas de 2010 em diante.
 ## v14 (27/10/2026): banco normal
 - Cada questão tem MATÉRIA e ASSUNTO do plano de estudos (classificar.py, Gemini lite, 4 em paralelo, CONTEUDO de base.js). App: chips de matéria e de assunto com contagem, busca no texto (OCR indexado, sem acento, singular, '2º grau' = quadrática), contagem ao vivo, Resolver (N) e Ver a lista paginada. Reimportar atualiza o assunto das já importadas.
+
+## v16 (27/10) - questoes em TEXTO lidas por IA (teste)
+- ferramentas/transcrever.py: IA (Gemini, visao) le a imagem do Objetivo -> enunciado limpo (LaTeX), alternativas, resolucao em texto, assunto, figuras recortadas (caixa da IA + folga + corte pelas linhas de texto do OCR). Chaves so em GEMINI_KEYS (ambiente).
+- Teste: C:\rotina-banco\para-o-ipad\00-TESTE-questoes-em-texto.json.gz (46 questoes). Processamento total SO depois da aprovacao dele.
+- mdLite: tabelas markdown e italico.
