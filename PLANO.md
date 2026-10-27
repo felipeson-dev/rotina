@@ -109,3 +109,5 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 ## v13 (27/10/2026)
 - Metas simplificadas: orçamento em PONTOS por dia (padrão 120; questão leve = 1 ponto, Mat/Fís/Quím = 2), repartido igualmente entre as matérias do dia; meta em questões = pontos/matéria/custo. S.planoQ {total, dias, compensar}, S.qmeta guarda a meta de cada dia. Detalhes retráteis (<details data-k>, estado em ui.ab). Banco: filtros extras e gerador de IA retráteis.
 - oficiais.py: só provas de 2010 em diante.
+## v14 (27/10/2026): banco normal
+- Cada questão tem MATÉRIA e ASSUNTO do plano de estudos (classificar.py, Gemini lite, 4 em paralelo, CONTEUDO de base.js). App: chips de matéria e de assunto com contagem, busca no texto (OCR indexado, sem acento, singular, '2º grau' = quadrática), contagem ao vivo, Resolver (N) e Ver a lista paginada. Reimportar atualiza o assunto das já importadas.

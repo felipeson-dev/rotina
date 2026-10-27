@@ -12,6 +12,7 @@ SAIDA = r'C:\rotina-banco'
 CACHE = os.path.join(SAIDA, 'cache', 'objetivo')
 UA = {'User-Agent': 'Mozilla/5.0'}
 BASE = 'https://www.curso-objetivo.br/vestibular/resolucao-comentada/'
+SUF = os.environ.get('SUFIXO', '')
 OCR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ocr.ps1')
 NOME = {'fuvest': 'Fuvest', 'unesp': 'UNESP', 'unicamp': 'Unicamp', 'unifesp': 'UNIFESP', 'santacasa': 'Santa Casa', 'alberteinstein': 'Albert Einstein', 'famema': 'FAMEMA',
         'fmj': 'FMJ', 'famerp': 'FAMERP', 'fmabc': 'FMABC', 'pucsp': 'PUC-SP', 'fgvsp': 'FGV-SP', 'ita': 'ITA', 'ime': 'IME', 'fatec': 'FATEC', 'insper': 'Insper', 'ufscar': 'UFSCar',
@@ -116,6 +117,8 @@ def processar(banca, fase=None, desde=0):
         ano = int(re.search(r'(\d{4})', pg).group(1))
         if ano < desde or (fase and fase not in pg and re.search(r'\dfase', pg)):
             continue
+        if os.environ.get('SO_CACHE') and not os.path.exists(os.path.join(CACHE, banca, pg, '_ocr.json')):
+            continue   # modo amostra: só o que já está baixado e lido
         lista = entradas(banca, pg)
         if not lista:
             continue
@@ -136,7 +139,7 @@ def processar(banca, fase=None, desde=0):
                         'nalts': n, 'img': url, 'w': info['w'], 'h': info['h'], 'corte': corte, 'enunciado': texto, 'tipo': 'real', 'modo': 'objetivo', 'fonte': 'Objetivo', 'prev': anterior})
             anterior = out[-1]['id']   # o texto-base de um grupo de questões costuma estar na primeira do grupo
         print(f'  {pg}: {len(lista)} questões, total {len(out)}, falhas {falhas}', flush=True)
-    json.dump(out, open(os.path.join(SAIDA, f'objetivo-{banca}.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    json.dump(out, open(os.path.join(SAIDA, f'objetivo-{banca}{SUF}.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     print(f'>> {banca}: {len(out)} questões (falhas de recorte: {falhas})', flush=True)
 
 if __name__ == '__main__':

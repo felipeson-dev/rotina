@@ -6,7 +6,7 @@
 
 S.qh ||= {}; // histórico por questão: { id: { ok, dia, n } }
 const BANCO = { itens: [], pronto: false, carregando: false, msg: '', baixando: false };
-ui.qf = { bancas: [], buscaBanca: '', preset: '', a0: '', a1: '', area: '', mat: '', st: 'todas', dif: '', tag: '', semFig: true, n: 10, ordem: 'sorteio' };
+ui.qf = { assunto: '', bancas: [], buscaBanca: '', preset: '', a0: '', a1: '', area: '', mat: '', st: 'todas', dif: '', tag: '', semFig: true, n: 10, ordem: 'sorteio' };
 
 const AREAS_Q = [['', 'Todas'], ['ciencias-natureza', 'Natureza'], ['matematica', 'Matemática'], ['ciencias-humanas', 'Humanas'], ['linguagens', 'Linguagens']];
 const AREA_DA_MATERIA = { 'Biologia': 'ciencias-natureza', 'Química': 'ciencias-natureza', 'Física': 'ciencias-natureza', 'Matemática': 'matematica', 'História': 'ciencias-humanas', 'Geografia': 'ciencias-humanas', 'Filosofia': 'ciencias-humanas', 'Sociologia': 'ciencias-humanas', 'Português': 'linguagens', 'Literatura': 'linguagens', 'Inglês': 'linguagens' };
@@ -41,7 +41,18 @@ const BD = {
 };
 /** Chave do conteúdo (começo do enunciado + gabarito): o mesmo texto vindo de duas fontes não entra duas vezes. */
 function chaveQ(q) { const t = String(q.enunciado || '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '').slice(0, 120) + (q.gab || ''); let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length; }
-const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: (q.assunto || '').toLowerCase().slice(0, 140), d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0 });
+const normTxt = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+/** Texto para busca: sem acento, "2º" vira "2", plural vira singular (funções = função), para achar "funções de segundo grau". */
+const normBusca = s => normTxt(s).replace(/(\d)\s*[º°ª]/g, '$1').replace(/oes\b/g, 'ao').replace(/s\b/g, '');
+const PARADAS = new Set(['de', 'da', 'do', 'das', 'dos', 'e', 'a', 'o', 'em', 'no', 'na', 'um', 'uma', 'com', 'que']);
+function tokensBusca(q) {
+  let t = normBusca(q);
+  const extra = [];
+  if (/\b(2|segundo)\s*grau\b/.test(t)) { t = t.replace(/\b(2|segundo)\s*grau\b/g, ' '); extra.push('quadrat'); }
+  if (/\b(1|primeiro)\s*grau\b/.test(t)) { t = t.replace(/\b(1|primeiro)\s*grau\b/g, ' '); extra.push('afim'); }
+  return [...t.split(/\s+/).filter(w => w && !PARADAS.has(w)), ...extra];
+}
+const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(q.assunto).slice(0, 140), as: q.assunto || '', x: q.modo === 'objetivo' ? normBusca(q.enunciado).slice(0, 600) : '', n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0 });
 
 async function carregarBanco() {
   if (BANCO.pronto || BANCO.carregando) return;
@@ -63,6 +74,10 @@ async function carregarBanco() {
 /** Acrescenta questões ao banco (sem repetir ids) e devolve quantas entraram. */
 async function adicionarQuestoes(lista) {
   const ja = new Set(BANCO.itens.map(m => m.id)), ks = new Set(BANCO.itens.map(m => m.k).filter(Boolean)), novos = [];
+  // reimportar um arquivo melhorado (agora com assunto) atualiza as questões que já estavam no banco
+  const pos = new Map(BANCO.itens.map((m, i) => [m.id, i])), atual = [];
+  for (const q of lista) { const i = q && pos.get(q.id); if (i != null && q.assunto && !BANCO.itens[i].as) { atual.push(q); BANCO.itens[i] = metaDe(q); } }
+  if (atual.length) { await BD.put(atual); await BD.setMeta(BANCO.itens); BANCO.atualizadas = (BANCO.atualizadas || 0) + atual.length; }
   for (const q of lista) { if (!q || !q.id || ja.has(q.id)) continue; const k = chaveQ(q); if (ks.has(k)) { BANCO.repetidas = (BANCO.repetidas || 0) + 1; continue; } ja.add(q.id); ks.add(k); novos.push(q); }
   if (!novos.length) return 0;
   await BD.put(novos); BANCO.itens.push(...novos.map(metaDe)); await BD.setMeta(BANCO.itens);
@@ -70,7 +85,7 @@ async function adicionarQuestoes(lista) {
 }
 
 function filtrarBanco() {
-  const f = ui.qf, pre = f.preset && PRESETS_BANCA[f.preset] ? PRESETS_BANCA[f.preset][1] : null, tag = f.tag.trim().toLowerCase();
+  const f = ui.qf, pre = f.preset && PRESETS_BANCA[f.preset] ? PRESETS_BANCA[f.preset][1] : null, toks = tokensBusca(f.tag);
   return BANCO.itens.filter(q => {
     if (f.bancas.length ? !f.bancas.includes(q.b) : (pre && !pre.test(q.b))) return false;
     if (f.a0 && q.a && q.a < +f.a0) return false;
@@ -80,7 +95,8 @@ function filtrarBanco() {
     if (f.dif && q.d !== f.dif) return false;
     if (f.semFig && q.f) return false;
     if (f.res && !q.r) return false;
-    if (tag && !q.s.includes(tag) && !q.b.toLowerCase().includes(tag)) return false;
+    if (f.assunto && q.as !== f.assunto) return false;
+    if (toks.length) { const alvo = q.s + ' ' + (q.x || '') + ' ' + normBusca(q.b) + ' ' + normBusca(q.m); if (!toks.every(w => alvo.includes(w))) return false; }
     const h = S.qh[q.id];
     if (f.st === 'novas' && h) return false;
     if (f.st === 'erradas' && !(h && !h.ok)) return false;
@@ -111,21 +127,22 @@ function qMontar() {
       <label class="botao claro" style="display:inline-flex;align-items:center">Importar arquivos<input type="file" accept="application/json,.json,.gz,application/gzip" multiple data-acao-arquivo="bancoImportar" hidden></label>
       <button class="link" data-acao="bancoAjuda">Como importar?</button></div></section>
     <section class="cartao"><h2>Escolha as questões</h2>
-      ${todos.length ? `<div class="coluna" style="gap:8px"><span class="rotulo">grupos de bancas</span><div class="linha">${Object.entries(PRESETS_BANCA).map(([k, [t]]) => `<button class="chip" data-acao="qfPreset" data-v="${k}" aria-pressed="${f.preset === k}">${t} · ${contaPreset(k).toLocaleString('pt-BR')}</button>`).join('')}</div></div>
-      <div class="linha" style="align-items:flex-end"><label class="campo" style="flex:1 1 170px">Matéria${sel('mat', f.mat, [['', 'todas'], ...mats.map(m => [m, m])])}</label>
-        <div class="linha" style="flex:2 1 300px"><span class="fraco">Quantas:</span>${[10, 20, 30, 50].map(n => `<button class="chip" data-acao="qN" data-v="${n}" aria-pressed="${f.n === n}">${n}</button>`).join('')}<input type="number" min="1" max="200" data-qf="n" value="${[10, 20, 30, 50].includes(f.n) ? '' : f.n}" placeholder="outra" style="width:84px"></div></div>
-      ${detalhe('filtros', 'Mais filtros (banca, ano, assunto, área, quais)', `<div class="coluna" style="gap:8px"><span class="rotulo">banca específica ${f.bancas.length ? `(${f.bancas.length} escolhida${f.bancas.length > 1 ? 's' : ''})` : ''}</span>
-        <input type="search" data-qf="buscaBanca" value="${esc(f.buscaBanca)}" placeholder="Procurar banca: Vunesp, UERJ, UFRGS, Medicina…">
+      ${todos.length ? `<div class="coluna" style="gap:8px"><span class="rotulo">matéria</span><div class="linha"><button class="chip" data-acao="qfMat" data-v="" aria-pressed="${!f.mat}">Todas <small>${todos.length.toLocaleString('pt-BR')}</small></button>${Object.entries(porMat).sort((a, b) => b[1] - a[1]).map(([m, n]) => `<button class="chip" data-acao="qfMat" data-v="${esc(m)}" aria-pressed="${f.mat === m}">${esc(m)} <small>${n.toLocaleString('pt-BR')}</small></button>`).join('')}</div></div>
+      ${f.mat ? `<div class="coluna" style="gap:8px"><span class="rotulo">assunto de ${esc(f.mat)}</span><div class="linha assuntos-q"><button class="chip" data-acao="qfAssunto" data-v="" aria-pressed="${!f.assunto}">Todos os assuntos</button>${assuntosDe(f.mat, todos).map(([a, n]) => `<button class="chip" data-acao="qfAssunto" data-v="${esc(a)}" aria-pressed="${f.assunto === a}">${esc(a)} <small>${n}</small></button>`).join('')}</div></div>` : ''}
+      <label class="campo">Procurar no texto das questões<input type="search" data-qf="tag" value="${esc(f.tag)}" placeholder="Ex.: função quadrática, vértice da parábola, Segundo Reinado"></label>
+      <div class="linha"><span class="fraco">Quantas:</span>${[10, 20, 30, 50].map(n => `<button class="chip" data-acao="qN" data-v="${n}" aria-pressed="${f.n === n}">${n}</button>`).join('')}<button class="chip" data-acao="qN" data-v="9999" aria-pressed="${f.n >= 9999}">todas</button><input type="number" min="1" max="500" data-qf="n" value="${[10, 20, 30, 50].includes(f.n) || f.n >= 9999 ? '' : f.n}" placeholder="outra" style="width:84px"></div>
+      ${detalhe('filtros', 'Mais filtros (banca, ano, área, quais)', `<div class="coluna" style="gap:8px"><span class="rotulo">grupos de bancas</span><div class="linha">${Object.entries(PRESETS_BANCA).map(([k, [t]]) => `<button class="chip" data-acao="qfPreset" data-v="${k}" aria-pressed="${f.preset === k}">${t} · ${contaPreset(k).toLocaleString('pt-BR')}</button>`).join('')}</div></div>
+      <div class="coluna" style="gap:8px"><span class="rotulo">banca específica ${f.bancas.length ? `(${f.bancas.length} escolhida${f.bancas.length > 1 ? 's' : ''})` : ''}</span>
+        <input type="search" data-qf="buscaBanca" value="${esc(f.buscaBanca)}" placeholder="Procurar banca: Fuvest, Unicamp, Medicina…">
         <div class="linha">${f.bancas.map(b => `<button class="chip" data-acao="qfBanca" data-v="${esc(b)}" aria-pressed="true">${esc(b)} ✕</button>`).join('')}${bancasLista.filter(([k]) => !f.bancas.includes(k)).map(([k, n]) => `<button class="chip" data-acao="qfBanca" data-v="${esc(k)}" aria-pressed="false">${esc(k)} <small>${n}</small></button>`).join('')}</div></div>
       <div class="linha"><label class="campo" style="flex:1 1 120px">Ano, de${sel('a0', f.a0, [['', 'qualquer'], ...anos.map(a => [a, a])])}</label><label class="campo" style="flex:1 1 120px">até${sel('a1', f.a1, [['', 'qualquer'], ...anos.map(a => [a, a])])}</label>
         ${dificuldades.length ? `<label class="campo" style="flex:1 1 130px">Dificuldade${sel('dif', f.dif, [['', 'qualquer'], ...dificuldades.map(d => [d, d])])}</label>` : ''}</div>
-      <label class="campo">Assunto (procura nos temas da questão)<input type="search" data-qf="tag" value="${esc(f.tag)}" placeholder="Ex.: Segundo Reinado, escravidão, urbanização"></label>
-      <div class="coluna" style="gap:8px"><span class="rotulo">área</span><div class="linha">${AREAS_Q.map(([v, t]) => `<button class="chip" data-acao="qfArea" data-v="${v}" aria-pressed="${f.area === v}">${t}</button>`).join('')}</div></div>
       <div class="coluna" style="gap:8px"><span class="rotulo">quais</span><div class="linha">${[['todas', 'Todas'], ['novas', 'Ainda não feitas'], ['erradas', 'As que errei'], ['acertadas', 'As que acertei']].map(([v, t]) => `<button class="chip" data-acao="qfSt" data-v="${v}" aria-pressed="${f.st === v}">${t}</button>`).join('')}
         <button class="chip" data-acao="qfFig" aria-pressed="${f.semFig}">Sem figura faltando</button><button class="chip" data-acao="qfRes" aria-pressed="${!!f.res}">Só com resolução comentada</button></div></div>
-      <div class="linha"><div class="alterna" role="group"><button data-acao="qfOrdem" data-v="sorteio" aria-pressed="${f.ordem === 'sorteio'}">Sorteio</button><button data-acao="qfOrdem" data-v="ordem" aria-pressed="${f.ordem === 'ordem'}">Em ordem</button></div><button class="link" data-acao="qfLimpar">Limpar filtros</button></div>`)}
-      <div class="entre contagem"><strong>${achadas.length.toLocaleString('pt-BR')} ${achadas.length === 1 ? 'questão bate' : 'questões batem'} com os filtros</strong>
-        <div class="linha"><button class="botao grande" data-acao="qGerar" ${achadas.length ? '' : 'disabled'}>Começar${achadas.length ? ` (${Math.min(f.n, achadas.length)})` : ''}</button>${S.erros.length ? `<button class="botao claro" data-acao="qRefazerErros">Refazer meus erros (${S.erros.length})</button>` : ''}</div></div>` : ''}</section>
+      <div class="linha"><div class="alterna" role="group"><button data-acao="qfOrdem" data-v="sorteio" aria-pressed="${f.ordem === 'sorteio'}">Sorteio</button><button data-acao="qfOrdem" data-v="ordem" aria-pressed="${f.ordem === 'ordem'}">Mais novas primeiro</button></div><button class="link" data-acao="qfLimpar">Limpar filtros</button></div>`)}
+      <div class="entre contagem"><strong>${achadas.length.toLocaleString('pt-BR')} ${achadas.length === 1 ? 'questão' : 'questões'}${f.mat ? ' de ' + esc(f.mat) : ''}${f.assunto ? ' · ' + esc(f.assunto) : ''}</strong>
+        <div class="linha"><button class="botao grande" data-acao="qGerar" ${achadas.length ? '' : 'disabled'}>Resolver${achadas.length ? ` (${Math.min(f.n, achadas.length)})` : ''}</button><button class="botao claro" data-acao="qVerLista" ${achadas.length ? '' : 'disabled'}>Ver a lista</button>${S.erros.length ? `<button class="botao claro" data-acao="qRefazerErros">Refazer meus erros (${S.erros.length})</button>` : ''}</div></div>
+      ${ui.qLista ? listaQuestoes(achadas) : ''}` : ''}</section>
     <section class="cartao"><details class="det-q" data-k="iaq" ${ui.ab.iaq ? 'open' : ''}><summary>Completar o banco com questões feitas pela IA</summary><div class="det-corpo"><p class="fraco" style="margin:0">A IA escreve questões inéditas no estilo da banca e elas ficam guardadas no banco. Podem ter erros: confira.</p>
       <div class="linha"><label class="campo" style="flex:1 1 170px">Banca<select data-ui="qBanca">${BANCAS.map(b => `<option ${ui.qBanca === b ? 'selected' : ''}>${b}</option>`).join('')}</select></label>
         <label class="campo" style="flex:1 1 170px">Matéria<select data-ui="qMat">${Object.keys(MIN_Q).map(m => `<option ${ui.qMat === m ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
@@ -149,7 +166,7 @@ function qQuestao() {
   if (ui.qPrevImg && ui.qPrevImg.id !== q.prev) ui.qPrevImg = null;
   const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado" style="white-space:pre-wrap">${esc(q.res_ia)}</div></div>` : '';
   const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia" style="white-space:pre-wrap">${esc(d.r)}</div>`).join('');
-  return `<section class="cartao questao"><div class="entre"><span class="tag" style="${cor(q.materia)}">${esc(q.materia)}</span><span class="fraco">${esc(q.fonte)}</span></div>
+  return `<section class="cartao questao"><div class="entre"><span class="linha" style="gap:6px"><span class="tag" style="${cor(q.materia)}">${esc(q.materia)}</span>${q.assunto ? `<span class="selo">${esc(q.assunto)}</span>` : ''}</span><span class="fraco">${esc(q.fonte)}${q.num ? ' · nº ' + esc(q.num) : ''}</span></div>
     ${q.fig ? '<p class="fraco" style="margin:0;font-size:13px">⚠ Pode depender de uma figura que não está no banco. Se não der para resolver, pule.</p>' : ''}
     ${q.modo === 'objetivo' ? `${q.prev ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ver'} o texto/figura da questão anterior (às vezes o texto-base está nela)</button>${ui.qPrevImg ? recorteObj(ui.qPrevImg, false) : ''}` : ''}
       ${recorteObj(q, false)}` : `<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`}
@@ -242,16 +259,18 @@ Object.assign(ACOES, {
     ui.qPrevImg = r && r.img ? r : null; if (!ui.qPrevImg) ui.iaMsg = 'A questão anterior não está no banco.'; render();
   },
   qfOrdem: el => { ui.qf.ordem = el.dataset.v; render(); },
-  qfLimpar: () => { ui.qf = { ...ui.qf, bancas: [], buscaBanca: '', preset: '', a0: '', a1: '', area: '', mat: '', st: 'todas', dif: '', tag: '' }; render(); },
+  qfLimpar: () => { ui.qf = { ...ui.qf, bancas: [], buscaBanca: '', preset: '', a0: '', a1: '', area: '', mat: '', assunto: '', st: 'todas', dif: '', tag: '' }; render(); },
   qN: el => { ui.qf.n = +el.dataset.v; render(); },
   qGerar: async () => {
     let l = filtrarBanco();
     l = ui.qf.ordem === 'ordem' ? l.slice().sort((a, b) => (a.a || 0) - (b.a || 0)) : l.slice().sort(() => Math.random() - 0.5);
-    const ids = l.slice(0, Math.max(1, ui.qf.n)).map(m => m.id);
+    await ACOES.qIniciarIds(l.slice(0, Math.max(1, ui.qf.n)).map(m => m.id));
+  },
+  qIniciarIds: async ids => {
     const recs = (await Promise.all(ids.map(id => BD.get(id)))).filter(Boolean);
     const itens = recs.map(q => ({ id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
       enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: q.res_ia || '', duvidas: q.duvidas || [],
-      modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '' }));
+      modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', assunto: q.assunto || '', num: q.num || '' }));
     if (itens.length) iniciarSessao(itens);
   },
   qIaBanco: async () => {
@@ -316,6 +335,35 @@ document.addEventListener('change', e => {
   }
 });
 
+// ---------- assuntos e lista de questões (banco "normal": escolhe matéria, assunto, vê a lista) ----------
+/** Assuntos de uma matéria com quantidade de questões, na ordem do plano de estudos (os sem questão ficam de fora). */
+function assuntosDe(mat, itens) {
+  const c = {}; for (const q of itens) if (q.m === mat && q.as) c[q.as] = (c[q.as] || 0) + 1;
+  const ordem = (typeof CONTEUDO !== 'undefined' && CONTEUDO[mat]) || [];
+  return [...ordem.filter(a => c[a]).map(a => [a, c[a]]), ...Object.entries(c).filter(([a]) => !ordem.includes(a)).sort((x, y) => y[1] - x[1])];
+}
+const ordenarLista = l => l.slice().sort((a, b) => (b.a || 0) - (a.a || 0) || String(a.b).localeCompare(String(b.b)) || (+a.n || 0) - (+b.n || 0));
+function listaQuestoes(achadas) {
+  const l = ordenarLista(achadas), pg = ui.qPag || 0, por = 20, ini = pg * por, fatia = l.slice(ini, ini + por);
+  return `<div class="lista-q"><div class="entre"><span class="rotulo">lista · ${ini + 1} a ${Math.min(l.length, ini + por)} de ${l.length.toLocaleString('pt-BR')}</span>
+    <div class="linha"><button class="botao contorno" data-acao="qPag" data-v="-1" ${pg ? '' : 'disabled'}>‹</button><button class="botao contorno" data-acao="qPag" data-v="1" ${ini + por < l.length ? '' : 'disabled'}>›</button></div></div>
+    ${fatia.map((q, i) => { const h = S.qh[q.id];
+      return `<button class="linha-q" data-acao="qComecarDe" data-i="${ini + i}"><span class="st ${h ? (h.ok ? 'ok' : 'x') : ''}" title="${h ? (h.ok ? 'você acertou' : 'você errou') : 'ainda não feita'}"></span>
+        <span class="lq-corpo"><strong>${esc(q.b)} ${q.a || ''}${q.n ? ' · nº ' + esc(q.n) : ''}</strong><small class="fraco">${esc(q.m || '')}${q.as ? ' · ' + esc(q.as) : ''}</small>
+        ${q.x ? `<small class="lq-texto">${esc(q.x.slice(0, 140))}…</small>` : ''}</span></button>`; }).join('')}</div>`;
+}
+Object.assign(ACOES, {
+  qfMat: el => { ui.qf.mat = el.dataset.v; ui.qf.assunto = ''; ui.qPag = 0; render(); },
+  qfAssunto: el => { ui.qf.assunto = el.dataset.v; ui.qPag = 0; render(); },
+  qVerLista: () => { ui.qLista = !ui.qLista; ui.qPag = 0; render(); },
+  qPag: el => { ui.qPag = Math.max(0, (ui.qPag || 0) + +el.dataset.v); render(); },
+  qComecarDe: async el => {
+    const l = ordenarLista(filtrarBanco()), i = +el.dataset.i, ids = l.slice(i, i + Math.min(ui.qf.n, 50)).map(m => m.id);
+    await ACOES.qIniciarIds(ids);
+  },
+});
+
+// fórmulas (LaTeX das provas)
 // fórmulas (LaTeX das provas) viram matemática de verdade quando o KaTeX carrega (precisa de internet na primeira vez)
 function tipografarMath() {
   if (!window.renderMathInElement) return;
