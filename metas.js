@@ -19,7 +19,7 @@ const baseDia = d => { const p = planoQ(), wd = deIso(d).getDay(); return p.dias
 /** Meta do dia = base + até 25% do que faltou ontem (se ligado). */
 function metaTotal(d = hoje()) {
   const b = baseDia(d); if (!b) return 0;
-  if (!planoQ().compensar) return b;
+  if (!planoQ().compensar || !Object.keys(S.qlog).some(x => x < d && feitasDia(x) > 0)) return b; // só compensa depois que ela já começou a registrar
   const ont = somaDias(d, -1), falta = Math.max(0, baseDia(ont) - feitasDia(ont));
   return b + Math.min(Math.round(b * 0.25 / 5) * 5, Math.round(falta / 2 / 5) * 5);
 }
