@@ -41,7 +41,7 @@ function tratarAgenda(lista, agoraMin) {
 
 async function planejarDia(texto, horas) {
   const d = diaHoje(), agora = new Date(), agoraMin = agora.getHours() * 60 + agora.getMinutes();
-  ui.carregando = 'Montando o seu dia…'; ui.iaMsg = ''; render();
+  d.suposicoes = []; ui.carregando = 'Montando o seu dia…'; ui.iaMsg = ''; render();
   const { chat: _c, ...resto } = S; const antes = JSON.stringify(resto);
   try {
     let estudoMin = 0, fator = 1, resposta = '', ag = [];
@@ -56,10 +56,11 @@ async function planejarDia(texto, horas) {
 Rotina base dela: ${basal || '(não informada)'}.
 ${ontem ? `Ontem: contexto "${ontem.contexto || 'sem registro'}"; estudou ${fmtMin(S.estudo[somaDias(hoje(), -1)] || 0)}.` : 'Ontem: sem registro.'} Hoje há ${atras} assuntos atrasados.
 Hoje ela disse: "${texto.trim() || '(nada: use a rotina base)'}"${horas > 0 ? `. Ela também informou ${horas}h livres para estudar` : ''}.
-Monte a agenda do restante do dia (a partir de agora, até a hora de dormir) com TODOS os blocos: aula ou trabalho, refeições, exercício, compromissos, pausas, lazer e as janelas de estudo (tipo "estudo") nos espaços livres. O que ela contou hoje manda sobre a rotina base; o que ela contou sobre ontem ou o cansaço entra no "fator". Ela é uma estudante de vestibular que quer render: use para estudo todo espaço livre razoável do dia (manhã, tarde e noite), deixando refeições, descanso e lazer curtos e realistas. Janelas de estudo de pelo menos 40 min, e quebre janelas longas com pausas curtas.
-Responda SÓ com JSON: {"resposta":"2 frases curtas e gentis resumindo o dia","fator":1,"motivo":"curto","agenda":[{"inicio":"HH:MM","fim":"HH:MM","titulo":"...","tipo":"estudo|refeicao|exercicio|compromisso|trabalho|pausa|lazer|outro"}],"atualizar_rotina":""}
+Monte a agenda do restante do dia (a partir de agora, até a hora de dormir) com TODOS os blocos: aula ou trabalho, refeições, exercício, compromissos, pausas, lazer e as janelas de estudo (tipo "estudo") nos espaços livres. COMO COMBINAR: parta da rotina base e aplique por cima o que ela contou hoje. Tudo que ela NÃO mencionou hoje vem da rotina base. O que ela mencionou hoje SUBSTITUI o item equivalente da rotina base (ex.: se hoje ela janta das 17h às 19h, esqueça o jantar padrão da rotina; se hoje tem aula em outro horário, ignore o horário padrão). Se nem hoje nem a rotina base dizem algo essencial (hora de dormir, almoço, jantar, café), assuma um horário típico e liste em "suposicoes". O que ela contou sobre ontem ou o cansaço entra no "fator". Ela é uma estudante de vestibular que quer render: use para estudo todo espaço livre razoável do dia (manhã, tarde e noite), deixando refeições, descanso e lazer curtos e realistas. Janelas de estudo de pelo menos 40 min, e quebre janelas longas com pausas curtas.
+Responda SÓ com JSON: {"resposta":"2 frases curtas e gentis resumindo o dia","fator":1,"motivo":"curto","agenda":[{"inicio":"HH:MM","fim":"HH:MM","titulo":"...","tipo":"estudo|refeicao|exercicio|compromisso|trabalho|pausa|lazer|outro"}],"suposicoes":["o que você assumiu por falta de informação, curto"],"atualizar_rotina":""}
 "fator" vai de 0.5 a 1 (1 = energia normal; menos se ela disse que está cansada, dormiu mal, doente etc.). "atualizar_rotina" só se ela disse que algo mudou de vez (ex.: "agora acordo às 6h"): devolva a rotina base inteira já atualizada, senão deixe vazio.`, 3000);
       ag = tratarAgenda(r.agenda, agoraMin);
+      d.suposicoes = (Array.isArray(r.suposicoes) ? r.suposicoes : []).map(x => String(x).slice(0, 120)).slice(0, 4);
       fator = Math.min(1, Math.max(0.5, +r.fator || 1)); resposta = String(r.resposta || '').trim();
       if (r.motivo && fator < 1) resposta += ` (${String(r.motivo).trim()})`;
       if (r.atualizar_rotina && String(r.atualizar_rotina).trim().length > 10) { S.perfil.horarios = String(r.atualizar_rotina).trim().slice(0, 1500); resposta += ' Atualizei a sua rotina base.'; }
@@ -103,6 +104,7 @@ function vMeuDia() {
       <div class="agenda">${d.agenda.map(x => `<div class="ag ${x.tipo}"><span class="ag-h">${x.inicio ? `${x.inicio}<small>${x.fim}</small>` : '·'}</span>
         <div class="ag-c"><strong>${esc(x.titulo)}</strong><span class="fraco">${TIPOS_DIA[x.tipo]}</span>
         ${x.tipo === 'estudo' ? `<div class="ag-ass">${(x.inicio ? dosBlocos(x) : d.blocos).map(b => `<span class="tag" style="${cor(b.materia)}">${b.sug ? b.sug + ' · ' : ''}${esc(b.titulo.length > 34 ? b.titulo.slice(0, 33) + '…' : b.titulo)}</span>`).join('')}</div>` : ''}</div></div>`).join('')}</div>
+      ${d.suposicoes?.length ? `<p class="fraco" style="margin:0;font-size:14px"><b>Assumi:</b> ${d.suposicoes.map(esc).join(' · ')}. Se estiver errado, conte acima e eu ajusto.</p>` : ''}
       <p class="fraco" style="margin:0;font-size:14px">Os horários dos assuntos são só uma sugestão: faça na ordem que fizer sentido. Se algo mudar, conte acima e eu replanejo o resto do dia sem perder o que já foi feito.</p></section>`;
   }
   return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">${dataLonga(h)}</span><h1>Meu dia</h1></div></header>${avisoIa()}${planejar}${agenda}${rotina}`;
@@ -111,6 +113,8 @@ function vMeuDia() {
 Object.assign(VIEWS, { meudia: vMeuDia });
 Object.assign(ACOES, {
   planejarDia: () => {
+    const ta = document.querySelector('[data-campo="horarios"]'); // a rotina base vale mesmo que o campo ainda não tenha "saído do foco"
+    if (ta && ta.value.trim() !== (S.perfil.horarios || '')) { S.perfil.horarios = ta.value.trim(); salvar(); }
     const horas = parseFloat($('#dia-horas')?.value) || 0;
     ui.diaHoras = horas ? String(horas) : '';
     const t = ui.diaTexto.trim();

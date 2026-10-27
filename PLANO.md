@@ -71,3 +71,9 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Cadernos: aba Caderno > Cadernos (S.notas indexa por matéria; páginas livres; desenhos na cópia de segurança). Redação: digitar ou à mão + nota manual do professor.
 - Caminho rosa com enchimento por minutos; selo "à frente do plano". Cores: prévia + "Salvar estas cores" (ui.coresPrev).
 - Testes: python -m http.server em pasta temporária, Chrome headless com --user-data-dir temporário; matar só processos com esse perfil.
+## v6 (27/10/2026)
+- Ano: só Cartões e Caminho (provas só nos cartões). O Mapa agora fica no Mês (colunas por semana, Lista | Mapa). Caminho redesenhado: estrada rosa, anel de progresso e nº de assuntos que faltam por semana, fases, bandeiras de provas.
+- questoes.js: aba Questões. ENEM real (api.enem.dev, CORS aberto, gabarito oficial) ou IA no estilo da banca (Fuvest, Vunesp…; podem ter erros). Caderno de erros (revisão em 3 dias), "Fiz por fora", tempo real por questão aprende o min/questão por matéria (S.tq; minPorQ).
+- redacao.js: histórico de redações (texto/desenho + IA + correções de outras pessoas com foto), cartões digitados e gerador de cartões por IA. Substitui vRedacao/vCartoes do pencil.js (código antigo ficou lá, sem uso).
+- dia.js: rotina base + o que contou hoje (substitui o item equivalente) + suposições visíveis.
+- IA: gemini-3.5-flash-lite é o padrão para texto (2-3 s, bom JSON). OpenRouter free: 50 req/dia, lento, JSON falha: não usar. Chave OpenRouter do Felipe NÃO foi gravada em lugar nenhum.

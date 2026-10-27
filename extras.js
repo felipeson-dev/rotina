@@ -14,6 +14,21 @@ function modalQuestoes(a) {
     <div class="linha"><button class="botao" data-acao="salvarQuestoes" data-id="${a.id}">Salvar</button></div>`);
 }
 
+/** Registra questões feitas/acertadas de um assunto (e do dia). Abaixo de 70%: agenda a revisão dos erros. Devolve a mensagem. */
+function registrarQ(a, f, ac) {
+  const m = a.materia, ant = a.questoes;
+  if (ant && S.qlog[a.qdia]?.[m]) { const v = S.qlog[a.qdia][m]; v.f = Math.max(0, v.f - ant.feitas); v.a = Math.max(0, v.a - ant.acertos); }
+  a.questoes = { feitas: f, acertos: ac }; a.qdia = hoje();
+  const v = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); v.f += f; v.a += ac;
+  let msg = `Anotado: ${ac} de ${f}.`;
+  if (f >= 10 && ac / f < 0.7 && !a.revisao) {
+    a.revisao = true;
+    S.assuntos.push({ id: uid(), mes: mesDe(somaDias(semAtual(), 7)), materia: m, titulo: `Refazer os erros: ${a.titulo}`, semana: somaDias(semAtual(), 7), ord: 0.5, min: 45, feito: false });
+    msg += ' Foi abaixo de 70%, então agendei uma revisão dos erros para a semana que vem.';
+  } else if (f >= 10 && ac / f >= 0.9) msg += ' Excelente!';
+  return msg;
+}
+
 function questoesSemana(w) {
   const tot = {};
   for (let i = 0; i < 7; i++) for (const [m, v] of Object.entries(S.qlog[somaDias(w, i)] || {})) { const t = tot[m] ||= { f: 0, a: 0 }; t.f += v.f; t.a += v.a; }
@@ -106,43 +121,89 @@ function infoSemana(w) {
     ${pend.length ? `<span class="rotulo">falta</span><div class="mini-lista">${pend.map(item).join('')}</div>` : ''}`;
 }
 function anoCaminho() {
-  const ws = semanasDoPlano(), PL = 8, W = 1000, mx = 70, dx = (W - 2 * mx) / (PL - 1), dy = 128, topo = 80;
+  const ws = semanasDoPlano(), PL = 8, W = 1000, mx = 70, dx = (W - 2 * mx) / (PL - 1), dy = 150, topo = 96;
   const pos = ws.map((w, i) => { const r = Math.floor(i / PL), c = i % PL; return { w, r, x: r % 2 ? W - mx - c * dx : mx + c * dx, y: topo + r * dy + Math.sin(c * 1.1 + r * 2) * 16 }; });
-  const H = topo + (Math.ceil(ws.length / PL) - 1) * dy + 70, sts = ws.map(statusSemana);
-  const seg = pos.slice(1).map((q, i) => { const p = pos[i], lado = p.r % 2 ? -1 : 1;
-    const d = p.r === q.r ? `M${p.x} ${p.y} C${(p.x + q.x) / 2} ${p.y},${(p.x + q.x) / 2} ${q.y},${q.x} ${q.y}` : `M${p.x} ${p.y} C${p.x + lado * 90} ${p.y},${q.x + lado * 90} ${q.y},${q.x} ${q.y}`;
-    const l = sts[i].l, tot = soma(l, minDe), fz = soma(l.filter(a => a.feito), minDe), frac = tot ? fz / tot : 0;
-    // trilha cinza por baixo e, por cima, o trecho rosa que enche conforme os minutos feitos naquela semana
-    return `<path class="trilha base ${sts[i].st === 'atras' ? 'atras' : ''}" d="${d}"/>${frac > 0 ? `<path class="trilha rosa" pathLength="1" stroke-dasharray="${frac.toFixed(3)} 1" d="${d}"/>` : ''}`; }).join('');
+  const H = topo + (Math.ceil(ws.length / PL) - 1) * dy + 80, sts = ws.map(statusSemana);
+  const caminho = pos.slice(1).map((q, i) => { const p = pos[i], lado = p.r % 2 ? -1 : 1;
+    return p.r === q.r ? `M${p.x} ${p.y} C${(p.x + q.x) / 2} ${p.y},${(p.x + q.x) / 2} ${q.y},${q.x} ${q.y}` : `M${p.x} ${p.y} C${p.x + lado * 95} ${p.y},${q.x + lado * 95} ${q.y},${q.x} ${q.y}`; });
+  // estrada: faixa larga com tracejado no meio; o rosa enche por cima conforme os minutos feitos
+  const estrada = caminho.map(d => `<path class="estrada" d="${d}"/>`).join('') + caminho.map(d => `<path class="estrada-meio" d="${d}"/>`).join('');
+  const preenchida = caminho.map((d, i) => { const l = sts[i].l, tot = soma(l, minDe), fz = soma(l.filter(a => a.feito), minDe), frac = tot ? fz / tot : 0;
+    return `${sts[i].st === 'atras' ? `<path class="estrada-atras" d="${d}"/>` : ''}${frac > 0 ? `<path class="trilha rosa" pathLength="1" stroke-dasharray="${Math.min(1, frac).toFixed(3)} 1" d="${d}"/>` : ''}`; }).join('');
   const nomes = pos.map((p, i) => {
     const m = mesDe(somaDias(p.w, 3)); if (i && mesDe(somaDias(pos[i - 1].w, 3)) === m) return '';
-    return `<text class="mes-txt" x="${p.x}" y="${p.y + 34}" text-anchor="middle">${nomeMes(m).slice(0, 3)} ${m.slice(2, 4)}</text>`; }).join('');
+    const sm = pos.filter((q, j) => mesDe(somaDias(q.w, 3)) === m).map(q => statusSemana(q.w));
+    const completo = sm.length && sm.every(x => x.st === 'ok');
+    return `<text class="mes-txt" x="${p.x}" y="${p.y + 40}" text-anchor="middle">${nomeMes(m).slice(0, 3)} ${m.slice(2, 4)}${completo ? ' ✦' : ''}</text>`; }).join('');
+  const fases = S.fases || [];
+  const faseDe = w => fases.find(f => f.inicio <= mesDe(somaDias(w, 3)) && mesDe(somaDias(w, 3)) <= f.fim);
+  const faixas = pos.map((p, i) => { const f = faseDe(p.w); if (!f || (i && faseDe(pos[i - 1].w) === f)) return '';
+    return `<g class="fase-tag"><rect x="${p.x - 8}" y="${p.y - 70}" width="${Math.max(70, f.nome.length * 7.4 + 22)}" height="22" rx="11"/><text x="${p.x + 3}" y="${p.y - 55}">${esc(f.nome)}</text></g>`; }).join('');
   const provasPorSem = {};
   for (const p of S.provas || []) if (okData(p.data)) (provasPorSem[segunda(p.data)] ||= []).push(p);
+  const C = 2 * Math.PI * 19;
   const nos = pos.map((p, i) => {
-    const s = sts[i], mats = [...new Set(s.l.map(a => a.materia))].join('|'), agora = p.w === semAtual(), pr = provasPorSem[p.w];
-    return `<g class="no-sem ${s.st} ${agora ? 'agora' : ''}" data-w="${p.w}" data-mats="${esc(mats)}" tabindex="0" role="button" aria-label="Semana de ${semanaCurta(p.w)}: ${s.f} de ${s.l.length} assuntos">
-      ${agora ? `<circle class="pulso" cx="${p.x}" cy="${p.y}" r="20"/>` : ''}<circle class="bolinha" cx="${p.x}" cy="${p.y}" r="${pr ? 15 : 12}"/>
-      ${s.st === 'ok' ? `<path class="certo" d="M${p.x - 5} ${p.y} l4 4 l7 -8"/>` : s.st === 'meio' ? `<path class="meio-txt" d="M${p.x} ${p.y - 12} a12 12 0 0 0 0 24z"/>` : ''}
-      ${pr ? `<g class="bandeira-svg"><line x1="${p.x}" y1="${p.y - 15}" x2="${p.x}" y2="${p.y - 46}"/><path d="M${p.x} ${p.y - 46} h${Math.min(120, 8 + pr[0].nome.length * 6.6)} l-8 8 l8 8 h-${Math.min(120, 8 + pr[0].nome.length * 6.6)}z"/><text x="${p.x + 6}" y="${p.y - 33}">${esc(pr[0].nome.slice(0, 16))}</text></g>` : ''}
-      ${agora ? `<text class="aqui" x="${p.x}" y="${p.y - 26}" text-anchor="middle">você está aqui</text>` : ''}</g>`; }).join('');
+    const s = sts[i], tot = soma(s.l, minDe), fz = soma(s.l.filter(a => a.feito), minDe), frac = tot ? fz / tot : 0;
+    const mats = [...new Set(s.l.map(a => a.materia))].join('|'), agora = p.w === semAtual(), pr = provasPorSem[p.w], sel = p.w === ui.caminhoSem;
+    return `<g class="no-sem ${s.st} ${agora ? 'agora' : ''} ${sel ? 'sel' : ''}" data-w="${p.w}" data-mats="${esc(mats)}" tabindex="0" role="button" aria-label="Semana de ${semanaCurta(p.w)}: ${s.f} de ${s.l.length} assuntos">
+      ${agora ? `<circle class="pulso" cx="${p.x}" cy="${p.y}" r="22"/>` : ''}
+      <circle class="anel-fundo" cx="${p.x}" cy="${p.y}" r="19"/><circle class="anel-prog" cx="${p.x}" cy="${p.y}" r="19" stroke-dasharray="${(C * frac).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${p.x} ${p.y})"/>
+      <circle class="bolinha" cx="${p.x}" cy="${p.y}" r="13"/>
+      ${s.st === 'ok' ? `<path class="certo" d="M${p.x - 5} ${p.y} l4 4 l7 -8"/>` : s.l.length ? `<text class="qtd" x="${p.x}" y="${p.y + 4.5}" text-anchor="middle">${s.l.length - s.f}</text>` : ''}
+      ${agora ? `<g class="avatar"><text x="${p.x}" y="${p.y - 30}" text-anchor="middle">♥</text></g>` : ''}
+      ${pr ? `<g class="bandeira-svg"><line x1="${p.x}" y1="${p.y - 22}" x2="${p.x}" y2="${p.y - 62}"/><path d="M${p.x} ${p.y - 62} h${Math.min(124, 10 + pr[0].nome.length * 6.8)} l-8 9 l8 9 h-${Math.min(124, 10 + pr[0].nome.length * 6.8)}z"/><text x="${p.x + 6}" y="${p.y - 48}">${esc(pr[0].nome.slice(0, 17))}</text></g>` : ''}</g>`; }).join('');
   const total = S.assuntos.length, fz = S.assuntos.filter(a => a.feito).length, pct = total ? Math.round(fz / total * 100) : 0;
   const mats = [...new Set(S.assuntos.map(a => a.materia))];
   const agora = ws.includes(ui.caminhoSem) ? ui.caminhoSem : semAtual();
   // quanto está à frente (ou atrás) do plano: assuntos feitos de semanas futuras x atrasados
   const adiant = S.assuntos.filter(a => a.feito && semDe(a) > semAtual()), atras = S.assuntos.filter(a => estadoDe(a) === 'atrasado');
   const pendMin = soma(S.assuntos.filter(a => !a.feito), minDe), semRest = Math.max(1, ws.filter(w => w >= semAtual()).length);
-  const diasPlano = pendMin / semRest / 6; // minutos de assunto previstos por dia de estudo
+  const diasPlano = pendMin / semRest / 6;
   const diasFrente = diasPlano ? soma(adiant, minDe) / diasPlano : 0;
   const situ = adiant.length ? `<div class="selo adiante grande">Você está à frente do plano: ${adiant.length} ${adiant.length === 1 ? 'assunto' : 'assuntos'} de semanas futuras já feitos (≈ ${diasFrente < 1 ? 'menos de 1 dia' : Math.round(diasFrente) + (Math.round(diasFrente) === 1 ? ' dia' : ' dias')} de estudo ganhos).</div>`
     : atras.length ? `<div class="selo atraso grande">${atras.length} ${atras.length === 1 ? 'assunto atrasado' : 'assuntos atrasados'}: eles entram primeiro no seu dia.</div>` : '<div class="selo grande">No ritmo do plano.</div>';
   return `<section class="cartao"><div class="entre"><h2>Seu caminho até a prova</h2><span class="fraco">${fz} de ${total} assuntos · ${pct}%</span></div>
-    <p class="fraco" style="margin:0">Cada bolinha é uma semana. Passe o mouse (ou toque) para ver o que foi feito e o que falta. O caminho se pinta de rosa conforme você conclui, e se você adiantar semanas ele enche mais rápido.</p>${situ}
+    <p class="fraco" style="margin:0">Cada bolinha é uma semana: o número é quantos assuntos faltam e o anel enche conforme você estuda. Passe o mouse (ou toque) para ver os detalhes. Adiantando semanas, a estrada enche mais rápido.</p>${situ}
     <div class="linha legenda-caminho"><span class="lg ok"></span>completa <span class="lg meio"></span>em andamento <span class="lg falta"></span>por vir <span class="lg atras"></span>atrasada</div>
     <div class="linha">${mats.map(m => `<span class="tag hl" style="${cor(m)}" data-hl="${esc(m)}">${esc(m)}</span>`).join('')}</div>
-    <div class="grade2 caminho-grade"><div class="caminho-svg"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Caminho do ano">${seg}${nomes}${nos}</svg></div>
+    <div class="grade2 caminho-grade"><div class="caminho-svg"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Caminho do ano">${estrada}${preenchida}${nomes}${faixas}${nos}</svg></div>
       <aside class="cartao painel-sem" id="caminho-info">${infoSemana(agora)}</aside></div></section>`;
 }
+
+/** Mapa do mês: uma coluna por semana (anel, barras por área, minutos), filtro por matéria e detalhe da semana tocada. */
+function mesMapa(m) {
+  const ws = []; for (let w = segunda(m + '-01'); w <= somaDias(somaMes(m, 1) + '-01', -1) && ws.length < 6; w = somaDias(w, 7)) if (mesDe(somaDias(w, 3)) === m) ws.push(w);
+  const sel = ws.includes(ui.mesSem) ? ui.mesSem : (ws.includes(semAtual()) ? semAtual() : ws[0]);
+  const filtro = a => !ui.anoMat || a.materia === ui.anoMat;
+  const ars = ['mat', 'nat', 'hum', 'lin'], maxN = 12;
+  const C = 2 * Math.PI * 17, ring = pct => `<svg viewBox="0 0 44 44" width="56" height="56" aria-hidden="true"><circle cx="22" cy="22" r="17" fill="none" stroke="var(--linha)" stroke-width="5"/>
+    <circle cx="22" cy="22" r="17" fill="none" stroke="var(--rosa)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C * pct).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 22 22)"/></svg>`;
+  const cols = ws.map((w, i) => {
+    const l = S.assuntos.filter(a => a.semana === w && filtro(a)), f = l.filter(a => a.feito).length, min = soma(l, minDe), fz = soma(l.filter(a => a.feito), minDe);
+    return `<button class="col-mes ${w === semAtual() ? 'atual' : ''} ${w === sel ? 'sel' : ''}" data-acao="mesSem" data-v="${w}" style="--fc: var(--rosa)">
+      <span class="faixa"></span><span class="fn">semana ${i + 1}</span><strong>${deIso(w).getDate()}/${pad(deIso(w).getMonth() + 1)}</strong><small>a ${deIso(somaDias(w, 6)).getDate()}/${pad(deIso(somaDias(w, 6)).getMonth() + 1)}</small>
+      <div class="ringbox">${ring(min ? fz / min : 0)}<b>${min ? Math.round(fz / min * 100) : 0}%</b></div>
+      <div class="mini">${ars.map(ar => { const x = l.filter(a => area(a.materia) === ar), fx = x.filter(a => a.feito).length;
+        return `<i style="--c:var(--${ar});height:${Math.max(x.length ? 8 : 2, Math.min(100, x.length / maxN * 100))}%" title="${AREAS[ar]}: ${fx} de ${x.length}"><u style="height:${x.length ? Math.round(fx / x.length * 100) : 0}%"></u></i>`; }).join('')}</div>
+      <span class="n">${f} de ${l.length} · ${fmtMin(min)}</span></button>`;
+  }).join('');
+  const mats = [...new Set(S.assuntos.map(a => a.materia))];
+  const porMat = mats.map(mt => {
+    const ano = S.assuntos.filter(a => a.materia === mt), fa = ano.filter(a => a.feito).length;
+    const mes = ano.filter(a => a.mes === m), fm = mes.filter(a => a.feito).length, pc = (f, n) => n ? Math.round(f / n * 100) : 0;
+    return `<button class="mat-linha ${ui.anoMat === mt ? 'sel' : ''}" style="${cor(mt)}" data-acao="anoMat" data-v="${esc(mt)}">
+      <span><i class="ponto"></i>${esc(mt)}</span><small><b>${nomeMes(m).slice(0, 3)}:</b> ${fm}/${mes.length} · <b>ano:</b> ${fa}/${ano.length}</small>
+      <div class="barras2"><div class="barra"><i style="width:${pc(fm, mes.length)}%;background:var(--c)"></i></div><div class="barra fina"><i style="width:${pc(fa, ano.length)}%;background:var(--c);opacity:.45"></i></div></div></button>`; }).join('');
+  const det = S.assuntos.filter(a => a.semana === sel && filtro(a)), porMateria = [...new Set(det.map(a => a.materia))];
+  return `<section class="cartao"><div class="entre"><h2>Mapa de ${nomeMes(m)}</h2><span class="fraco" style="font-size:14px">Toque numa semana para ver os assuntos. Toque numa matéria para filtrar.</span></div>
+    <div class="mapa-rolagem"><div class="mapa">${cols}</div></div></section>
+    <div class="grade2"><section class="cartao"><div class="entre"><h2>Semana de ${deIso(sel).getDate()}/${pad(deIso(sel).getMonth() + 1)}${ui.anoMat ? ` · ${esc(ui.anoMat)}` : ''}</h2>
+        <button class="botao claro" data-acao="irSemana" data-v="${sel}">Abrir a semana</button></div>
+      ${porMateria.length ? porMateria.map(mt => `<div class="coluna" style="gap:6px"><span class="rotulo" style="${cor(mt)}"><i class="ponto"></i> ${esc(mt)}</span>
+        <div class="itens">${det.filter(a => a.materia === mt).map(a => `<button class="item ${a.feito ? 'feito' : ''}" style="${cor(a.materia)}" data-acao="assunto" data-id="${a.id}"><i class="ponto"></i><span>${esc(a.titulo)}</span></button>`).join('')}</div></div>`).join('') : '<p class="fraco" style="margin:0">Nada nesta semana.</p>'}</section>
+      <section class="cartao"><div class="entre"><h2>Por matéria</h2>${ui.anoMat ? '<button class="link" data-acao="anoMat" data-v="">Limpar filtro</button>' : ''}</div>${porMat}</section></div>`;
+}
+
 document.addEventListener('pointerover', e => {
   const no = e.target.closest?.('.no-sem'), hl = e.target.closest?.('[data-hl]');
   if (no) { ui.caminhoSem = no.dataset.w; const el = $('#caminho-info'); if (el) el.innerHTML = infoSemana(no.dataset.w); }
@@ -157,18 +218,12 @@ Object.assign(ACOES, {
   salvarQuestoes: el => {
     const a = achar(el.dataset.id), f = Math.round(+$('#q-feitas').value), ac = Math.round(+$('#q-acertos').value);
     if (!a || !(f >= 0) || !(ac >= 0) || ac > f) { ui.iaMsg = 'Confira os números: os acertos não podem passar das questões feitas.'; fecharModal(); render(); return; }
-    const m = a.materia, ant = a.questoes;
-    if (ant && S.qlog[a.qdia]?.[m]) { const v = S.qlog[a.qdia][m]; v.f = Math.max(0, v.f - ant.feitas); v.a = Math.max(0, v.a - ant.acertos); }
-    a.questoes = { feitas: f, acertos: ac }; a.qdia = hoje();
-    const v = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); v.f += f; v.a += ac;
-    let msg = `Anotado: ${ac} de ${f}.`;
-    if (f >= 10 && ac / f < 0.7 && !a.revisao) {
-      a.revisao = true;
-      S.assuntos.push({ id: uid(), mes: mesDe(somaDias(semAtual(), 7)), materia: m, titulo: `Refazer os erros: ${a.titulo}`, semana: somaDias(semAtual(), 7), ord: 0.5, min: 45, feito: false });
-      msg += ` Foi abaixo de 70%, então agendei uma revisão dos erros para a semana que vem.`;
-    } else if (f >= 10 && ac / f >= 0.9) msg += ' Excelente!';
+    const msg = registrarQ(a, f, ac);
     salvar(); fecharModal(); ui.iaMsg = msg; ui.desfazer = null; render();
   },
+  mesModo: el => { ui.mesModo = el.dataset.v; render(); },
+  mesSem: el => { ui.mesSem = el.dataset.v; render(); },
+  irSemana: el => { ui.semana = Math.round((deIso(el.dataset.v) - deIso(semAtual())) / 604800000); ui.view = 'semana'; window.scrollTo(0, 0); render(); },
   calibrarTodos: async () => {
     ui.iaMsg = 'Calibrando os tempos com a IA…'; render();
     const n = await calibrarTempos(true);
