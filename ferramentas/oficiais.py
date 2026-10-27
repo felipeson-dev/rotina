@@ -25,7 +25,7 @@ def roda(item):
     if os.path.exists(arq) and os.path.getsize(arq) > 100:
         log('já existe', banca); return arq
     try:
-        o.processar(banca, fase, 0)
+        o.processar(banca, fase, 2010)   # só provas de 2010 em diante: o estilo de antes de 2010 é bem diferente
     except Exception as e:
         log('!! falhou', banca, repr(e)[:200])
     return arq

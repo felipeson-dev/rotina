@@ -484,3 +484,11 @@ input[type="search"]:focus { border-color: var(--acento); }
 .q-dias .col u { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed var(--texto); opacity: .55; }
 .q-dias.denso { gap: 2px; } .q-dias.denso small { font-size: 9px; } .q-dias.denso .col { border-radius: 3px; } .q-dias.denso .col i { border-radius: 3px 3px 0 0; }
 .q-dias .hoje small { color: var(--tinta); font-weight: 800; }
+/* ---------- v13: detalhes retráteis ---------- */
+.det-q { background: var(--painel2); border-radius: 16px; padding: 4px 14px; }
+.det-q > summary { cursor: pointer; font-weight: 700; padding: 12px 0; list-style: none; display: flex; justify-content: space-between; align-items: center; min-height: 44px; }
+.det-q > summary::-webkit-details-marker { display: none; }
+.det-q > summary::after { content: '＋'; color: var(--tinta); font-size: 18px; }
+.det-q[open] > summary::after { content: '－'; }
+.det-corpo { display: flex; flex-direction: column; gap: 12px; padding: 0 0 14px; }
+.chip-q { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; padding: 4px 12px; border-radius: 999px; background: color-mix(in srgb, var(--c) 14%, transparent); color: color-mix(in srgb, var(--c) 70%, var(--texto)); }

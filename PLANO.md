@@ -106,3 +106,6 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Foco removido (o iPad não deixa app web ler o Tempo de Uso).
 - metas.js reescrito: meta do dia = UM total (planoQ.total, por dia da semana em planoQ.dias, compensa até 25% do que faltou ontem), repartido pelas matérias do dia por pesos (Mat/Fís/Quím 1, demais 2). Períodos Hoje/Semana/Mês/Tudo (feitas, acerto, tempo, dias que bateu), gráfico com linha da meta, planejamento por texto (IA) e aviso se a meta passa do tempo do dia. qlog guarda {f,a,s,t}.
 - objetivo.py: regex de "Resolução" aceita OCR quebrado ("Resol u..."); "falhas" no log é cumulativo por banca.
+## v13 (27/10/2026)
+- Metas simplificadas: orçamento em PONTOS por dia (padrão 120; questão leve = 1 ponto, Mat/Fís/Quím = 2), repartido igualmente entre as matérias do dia; meta em questões = pontos/matéria/custo. S.planoQ {total, dias, compensar}, S.qmeta guarda a meta de cada dia. Detalhes retráteis (<details data-k>, estado em ui.ab). Banco: filtros extras e gerador de IA retráteis.
+- oficiais.py: só provas de 2010 em diante.

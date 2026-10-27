@@ -105,36 +105,34 @@ function qMontar() {
   const feitas = Object.keys(S.qh).length;
   return `<section class="cartao"><div class="entre"><h2>Banco de questões</h2><span class="fraco">${todos.length.toLocaleString('pt-BR')} no banco · ${feitas} já respondidas</span></div>
     ${todos.length ? '' : '<p style="margin:0">O banco está vazio. Baixe o ENEM, importe os arquivos de questões (veja "Como importar") ou gere com a IA.</p>'}
-    ${todos.length ? `<div class="linha">${Object.entries(porMat).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([m, n]) => `<span class="tag" style="${cor(m)}">${esc(m)} · ${n.toLocaleString('pt-BR')}</span>`).join('')}</div>` : ''}
+    ${todos.length ? detalhe('bancoinfo', 'O que há no banco', `<div class="linha">${Object.entries(porMat).sort((a, b) => b[1] - a[1]).map(([m, n]) => `<span class="tag" style="${cor(m)}">${esc(m)} · ${n.toLocaleString('pt-BR')}</span>`).join('')}</div>`) : ''}
     ${BANCO.msg ? `<p style="margin:0">${esc(BANCO.msg)}</p>` : ''}
     <div class="linha"><button class="botao claro" data-acao="bancoEnem" ${BANCO.baixando ? 'disabled' : ''}>${BANCO.baixando ? 'Baixando…' : todos.some(q => q.b === 'ENEM') ? 'Atualizar ENEM' : 'Baixar o ENEM (2009–2023)'}</button>
       <label class="botao claro" style="display:inline-flex;align-items:center">Importar arquivos<input type="file" accept="application/json,.json,.gz,application/gzip" multiple data-acao-arquivo="bancoImportar" hidden></label>
       <button class="link" data-acao="bancoAjuda">Como importar?</button></div></section>
     <section class="cartao"><h2>Escolha as questões</h2>
       ${todos.length ? `<div class="coluna" style="gap:8px"><span class="rotulo">grupos de bancas</span><div class="linha">${Object.entries(PRESETS_BANCA).map(([k, [t]]) => `<button class="chip" data-acao="qfPreset" data-v="${k}" aria-pressed="${f.preset === k}">${t} · ${contaPreset(k).toLocaleString('pt-BR')}</button>`).join('')}</div></div>
-      <div class="coluna" style="gap:8px"><span class="rotulo">banca específica ${f.bancas.length ? `(${f.bancas.length} escolhida${f.bancas.length > 1 ? 's' : ''})` : ''}</span>
+      <div class="linha" style="align-items:flex-end"><label class="campo" style="flex:1 1 170px">Matéria${sel('mat', f.mat, [['', 'todas'], ...mats.map(m => [m, m])])}</label>
+        <div class="linha" style="flex:2 1 300px"><span class="fraco">Quantas:</span>${[10, 20, 30, 50].map(n => `<button class="chip" data-acao="qN" data-v="${n}" aria-pressed="${f.n === n}">${n}</button>`).join('')}<input type="number" min="1" max="200" data-qf="n" value="${[10, 20, 30, 50].includes(f.n) ? '' : f.n}" placeholder="outra" style="width:84px"></div></div>
+      ${detalhe('filtros', 'Mais filtros (banca, ano, assunto, área, quais)', `<div class="coluna" style="gap:8px"><span class="rotulo">banca específica ${f.bancas.length ? `(${f.bancas.length} escolhida${f.bancas.length > 1 ? 's' : ''})` : ''}</span>
         <input type="search" data-qf="buscaBanca" value="${esc(f.buscaBanca)}" placeholder="Procurar banca: Vunesp, UERJ, UFRGS, Medicina…">
         <div class="linha">${f.bancas.map(b => `<button class="chip" data-acao="qfBanca" data-v="${esc(b)}" aria-pressed="true">${esc(b)} ✕</button>`).join('')}${bancasLista.filter(([k]) => !f.bancas.includes(k)).map(([k, n]) => `<button class="chip" data-acao="qfBanca" data-v="${esc(k)}" aria-pressed="false">${esc(k)} <small>${n}</small></button>`).join('')}</div></div>
       <div class="linha"><label class="campo" style="flex:1 1 120px">Ano, de${sel('a0', f.a0, [['', 'qualquer'], ...anos.map(a => [a, a])])}</label><label class="campo" style="flex:1 1 120px">até${sel('a1', f.a1, [['', 'qualquer'], ...anos.map(a => [a, a])])}</label>
-        <label class="campo" style="flex:1 1 170px">Matéria${sel('mat', f.mat, [['', 'todas'], ...mats.map(m => [m, m])])}</label>
         ${dificuldades.length ? `<label class="campo" style="flex:1 1 130px">Dificuldade${sel('dif', f.dif, [['', 'qualquer'], ...dificuldades.map(d => [d, d])])}</label>` : ''}</div>
       <label class="campo">Assunto (procura nos temas da questão)<input type="search" data-qf="tag" value="${esc(f.tag)}" placeholder="Ex.: Segundo Reinado, escravidão, urbanização"></label>
       <div class="coluna" style="gap:8px"><span class="rotulo">área</span><div class="linha">${AREAS_Q.map(([v, t]) => `<button class="chip" data-acao="qfArea" data-v="${v}" aria-pressed="${f.area === v}">${t}</button>`).join('')}</div></div>
       <div class="coluna" style="gap:8px"><span class="rotulo">quais</span><div class="linha">${[['todas', 'Todas'], ['novas', 'Ainda não feitas'], ['erradas', 'As que errei'], ['acertadas', 'As que acertei']].map(([v, t]) => `<button class="chip" data-acao="qfSt" data-v="${v}" aria-pressed="${f.st === v}">${t}</button>`).join('')}
         <button class="chip" data-acao="qfFig" aria-pressed="${f.semFig}">Sem figura faltando</button><button class="chip" data-acao="qfRes" aria-pressed="${!!f.res}">Só com resolução comentada</button></div></div>
-      <div class="linha"><span class="fraco">Quantas:</span>${[5, 10, 20, 30, 50].map(n => `<button class="chip" data-acao="qN" data-v="${n}" aria-pressed="${f.n === n}">${n}</button>`).join('')}
-        <input type="number" min="1" max="200" data-qf="n" value="${[5, 10, 20, 30, 50].includes(f.n) ? '' : f.n}" placeholder="outra" style="width:90px">
-        <div class="alterna" role="group"><button data-acao="qfOrdem" data-v="sorteio" aria-pressed="${f.ordem === 'sorteio'}">Sorteio</button><button data-acao="qfOrdem" data-v="ordem" aria-pressed="${f.ordem === 'ordem'}">Em ordem</button></div>
-        <button class="link" data-acao="qfLimpar">Limpar filtros</button></div>
+      <div class="linha"><div class="alterna" role="group"><button data-acao="qfOrdem" data-v="sorteio" aria-pressed="${f.ordem === 'sorteio'}">Sorteio</button><button data-acao="qfOrdem" data-v="ordem" aria-pressed="${f.ordem === 'ordem'}">Em ordem</button></div><button class="link" data-acao="qfLimpar">Limpar filtros</button></div>`)}
       <div class="entre contagem"><strong>${achadas.length.toLocaleString('pt-BR')} ${achadas.length === 1 ? 'questão bate' : 'questões batem'} com os filtros</strong>
         <div class="linha"><button class="botao grande" data-acao="qGerar" ${achadas.length ? '' : 'disabled'}>Começar${achadas.length ? ` (${Math.min(f.n, achadas.length)})` : ''}</button>${S.erros.length ? `<button class="botao claro" data-acao="qRefazerErros">Refazer meus erros (${S.erros.length})</button>` : ''}</div></div>` : ''}</section>
-    <section class="cartao"><h2>Aumentar o banco com a IA</h2><p class="fraco" style="margin:0">A IA escreve questões inéditas no estilo da banca e elas ficam guardadas no banco. Podem ter erros: confira.</p>
+    <section class="cartao"><details class="det-q" data-k="iaq" ${ui.ab.iaq ? 'open' : ''}><summary>Completar o banco com questões feitas pela IA</summary><div class="det-corpo"><p class="fraco" style="margin:0">A IA escreve questões inéditas no estilo da banca e elas ficam guardadas no banco. Podem ter erros: confira.</p>
       <div class="linha"><label class="campo" style="flex:1 1 170px">Banca<select data-ui="qBanca">${BANCAS.map(b => `<option ${ui.qBanca === b ? 'selected' : ''}>${b}</option>`).join('')}</select></label>
         <label class="campo" style="flex:1 1 170px">Matéria<select data-ui="qMat">${Object.keys(MIN_Q).map(m => `<option ${ui.qMat === m ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
         <label class="campo" style="flex:1 1 130px">Dificuldade<select data-ui="qDif">${['fácil', 'média', 'difícil'].map(d => `<option ${ui.qDif === d ? 'selected' : ''}>${d}</option>`).join('')}</select></label>
         <div class="campo" style="flex:0 1 190px">Quantas questões<div class="linha">${stepperHtml('qia-n', ui.qNIa || 10, 1, 60)}</div></div></div>
       <label class="campo">Assunto<input type="text" data-ui="qTema" id="q-tema" value="${esc(ui.qTema)}" placeholder="Ex.: genética, leis de Mendel"></label>
-      <div class="linha"><button class="botao" data-acao="qIaBanco">Gerar e guardar no banco</button></div></section>
+      <div class="linha"><button class="botao" data-acao="qIaBanco">Gerar e guardar no banco</button></div></div></details></section>
     ${metaQTabela()}`;
 }
 
