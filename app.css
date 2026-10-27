@@ -500,3 +500,6 @@ input[type="search"]:focus { border-color: var(--acento); }
 .linha-q .st.ok { background: #2B8A3E; } .linha-q .st.x { background: #D6336C; }
 .lq-corpo { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .lq-texto { color: var(--fraco); font-size: 12.5px; line-height: 1.35; overflow-wrap: anywhere; }
+.q-tab { border-collapse: collapse; margin: 10px 0; font-size: 14px; max-width: 100%; display: block; overflow-x: auto; } .q-tab th, .q-tab td { border: 1px solid var(--linha); padding: 6px 10px; text-align: left; } .q-tab th { background: var(--painel2); }
+
+.q-tab { border-collapse: collapse; margin: 10px 0; font-size: 14px; max-width: 100%; display: block; overflow-x: auto; } .q-tab th, .q-tab td { border: 1px solid var(--linha); padding: 6px 10px; text-align: left; } .q-tab th { background: var(--painel2); }

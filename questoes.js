@@ -12,9 +12,17 @@ const AREAS_ENEM = [['ciencias-natureza', 'Natureza (Física, Química, Biologia
 const ROTULO_AREA = Object.fromEntries(AREAS_ENEM);
 
 /** Markdown bem simples (imagens https, negrito, quebras) com HTML escapado. */
+/** Tabelas em markdown ("| a | b |") viram tabela de verdade. */
+function tabelasMd(s) {
+  const linhas = String(s || '').split('\n'), out = []; let tab = [];
+  const fecha = () => { if (!tab.length) return; const lin = tab.filter(l => !/^\s*\|?\s*:?-{2,}/.test(l)); out.push('\u0001<table class="q-tab">' + lin.map((l, i) => '<tr>' + l.replace(/^\s*\||\|\s*$/g, '').split('|').map(c => `<${i ? 'td' : 'th'}>${esc(c.trim())}</${i ? 'td' : 'th'}>`).join('') + '</tr>').join('') + '</table>\u0002'); tab = []; };
+  for (const l of linhas) { if (/^\s*\|.*\|\s*$/.test(l)) tab.push(l); else { fecha(); out.push(l); } }
+  fecha(); return out.join('\n');
+}
 function mdLite(s) {
+  if (/^\s*\|.*\|\s*$/m.test(s || '')) { const partes = tabelasMd(s).split(/(\u0001.*?\u0002)/s); return partes.map(p => p.startsWith('\u0001') ? p.slice(1, -1) : mdLite(p)).join(''); }
   return esc(s || '').replace(/!\[[^\]]*\]\((https:\/\/[^)\s]+)\)/g, (_, u) => /broken-image/.test(u) ? '' : `<img class="q-img" src="${u}" alt="figura" loading="lazy">`)
-    .replace(/\[([^\]]+)\]\(https?:[^)\s]+\)/g, '$1').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>');
+    .replace(/\[([^\]]+)\]\(https?:[^)\s]+\)/g, '$1').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|[^*\w$])\*([^*\n]+?)\*(?![*\w])/g, '$1<em>$2</em>').replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>');
 }
 
 // ---------- montar listas ----------

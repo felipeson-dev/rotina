@@ -1,5 +1,5 @@
-// Guarda o app para abrir sem internet. Ao mudar arquivos, subir a VERSAO.
-const VERSAO = 'rotina-15';
+﻿// Guarda o app para abrir sem internet. Ao mudar arquivos, subir a VERSAO.
+const VERSAO = 'rotina-16';
 const ARQUIVOS = ['./', 'index.html', 'app.css', 'base.js', 'app.js', 'extras.js', 'pencil.js', 'dia.js', 'redacao.js', 'questoes.js', 'banco.js', 'mais.js', 'metas.js', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
 
 self.addEventListener('install', e => {
@@ -16,7 +16,7 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.hostname === 'generativelanguage.googleapis.com') return;
   if (url.origin === location.origin) {
-    // rede primeiro (pega atualizações), cache se estiver sem internet
+    // rede primeiro (pega atualizaÃ§Ãµes), cache se estiver sem internet
     e.respondWith(fetch(e.request)
       .then(r => { const c = r.clone(); caches.open(VERSAO).then(x => x.put(e.request, c)); return r; })
       .catch(() => caches.match(e.request, { ignoreSearch: true })));
