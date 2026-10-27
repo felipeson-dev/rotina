@@ -52,3 +52,10 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Chrome headless com `--user-data-dir` temporário. Nunca usar a janela do Felipe.
 - Para semear dados de exemplo: um `teste.html` que grava `rotina.dados` e redireciona para `index.html#hoje|semana|mes|ano`. Ele fica fora da pasta do app.
 - Prévia dos estilos: https://claude.ai/artifact/NqKPPEXQn2dis5xNBnUwHW
+
+## v3 (27/10/2026): reformulação
+- Plano base completo de Medicina SP em base.js (assuntos com `ord` e `min`). Provas em `S.provas` (datas de 2027 estimadas).
+- Modelo novo: cada assunto tem `semana` prevista (segunda-feira), sem dia fixo. Hoje = fila (atrasados, semana, adiantar) preenchida pelas horas livres x 0,8 (x0,7 cansada, x0,5 sem vontade). Estudo feito por dia em `S.estudo`.
+- Semana: progresso, selo "Adiantada", atrasados. Ano: Cartões e Mapa interativo. Tema único "cores" com acento e fundo personalizáveis. IA em formato de conversa (`S.chat`).
+- Ao mudar o formato dos dados: `v` em VAZIO/carregar (v:2 refaz o plano base).
+- Chaves só via link `#k=` ou Ajustes. gemini-3.8-flash às vezes dá 503: o app cai para gemini-3.5-flash-lite.

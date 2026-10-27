@@ -50,7 +50,7 @@ const icone = n => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
 const VAZIO = {
   perfil: { nome: 'Uany Rebeca', vestibular: 'ENEM e, logo depois, Medicina em SP: USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo e FMABC', dataProva: '', fortes: '', fracas: '', horarios: '',
     jeito: 'Primeiro foco total no ENEM. Cerca de 2 dias depois do ENEM, começar a estudar para as provas de Medicina em SP (USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC).' },
-  tema: 'caderno', fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, timer: null, provas: [], semeado: false,
+  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], timer: null, provas: [], semeado: false, v: 2,
 };
 
 const provasFuturas = () => (S.provas || []).filter(p => okData(p.data) && p.data >= hoje()).sort((a, b) => a.data < b.data ? -1 : 1);
@@ -62,8 +62,7 @@ function aplicarPlanoBase(inicio) {
   const b = montarPlanoBase(inicio);
   S.fases = b.fases; S.meses = b.meses; S.assuntos = b.assuntos; S.dias = {}; S.timer = null;
   S.provas = PROVAS_BASE.map(p => ({ ...p })); S.semeado = true;
-  const ini = segunda(hoje());
-  for (let i = 0; i < 3; i++) distribuir(somaDias(ini, i * 7));
+  distribuirSemanas();
 }
 
 function carregar() {
@@ -71,6 +70,8 @@ function carregar() {
   try { s = JSON.parse(localStorage.getItem(CHAVE) || 'null'); } catch { }
   s = Object.assign(JSON.parse(JSON.stringify(VAZIO)), s || {});
   s.perfil = Object.assign({}, VAZIO.perfil, s.perfil);
+  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= [];
+  if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
   return s;
 }
 function salvar() {
@@ -88,22 +89,51 @@ try {
 
 let S = carregar();
 const ui = { view: S.perfil.nome ? 'hoje' : 'ajustes', mes: mesDe(hoje()), semana: 0, iaMsg: '', desfazer: null, carregando: '',
-  ctxTexto: '', ctxEnergia: '', ctxTempo: '', iaTexto: '', apagar: false };
+  ctxTexto: '', ctxEnergia: '', horas: 0, planejar: false, iaTexto: '', apagar: false, chatAberto: false, anoModo: 'cartoes', anoMes: '', anoMat: '' };
 
-/** O que atrasou não some: volta para "encaixar" (semana) ou passa para o mês atual, sem atrasar o resto. */
+// ---------- planejamento: o plano é uma fila; cada assunto tem uma semana prevista, mas pode ser feito antes (adiantado) ou depois (atrasado) ----------
+const MIN_PADRAO = 150;
+const minDe = a => a.min || (a.materia === 'Redação' ? 60 : MIN_PADRAO);
+const semAtual = () => segunda(hoje());
+const semDe = a => a.semana || semAtual();
+const estadoDe = a => a.feito ? 'feito' : semDe(a) < semAtual() ? 'atrasado' : semDe(a) === semAtual() ? 'semana' : 'futuro';
+const fmtMin = m => { const h = Math.floor(m / 60), r = Math.round(m % 60); return h ? (r ? `${h}h${pad(r)}` : `${h}h`) : `${r} min`; };
+const soma = (l, f) => l.reduce((s, x) => s + f(x), 0);
+const semanaCurta = s => `${deIso(s).getDate()}/${pad(deIso(s).getMonth() + 1)}`;
+
+function setFeito(a, ok) {
+  if (!a || !!a.feito === ok) return;
+  a.feito = ok;
+  if (ok) { a.feitoEm = hoje(); S.estudo[hoje()] = (S.estudo[hoje()] || 0) + minDe(a); }
+  else { const d = a.feitoEm; if (d && S.estudo[d]) S.estudo[d] = Math.max(0, S.estudo[d] - minDe(a)); a.feitoEm = null; }
+}
+
+/** Dá uma semana prevista aos assuntos que ainda não têm, repartindo o mês em partes iguais e misturando as matérias. */
+function distribuirSemanas() {
+  const w0 = semAtual(), porMes = {};
+  for (const a of S.assuntos) if (!a.feito && !a.semana) (porMes[a.mes] ||= []).push(a);
+  for (const [m, lista] of Object.entries(porMes)) {
+    const ini = m + '-01', fim = somaDias(somaMes(m, 1) + '-01', -1);
+    let ws = [];
+    for (let w = segunda(ini); w <= fim; w = somaDias(w, 7)) if (w >= w0 && mesDe(somaDias(w, 3)) === m) ws.push(w);
+    if (!ws.length) ws = [segunda(ini) >= w0 ? segunda(ini) : w0];
+    lista.sort((x, y) => (x.ord || 0) - (y.ord || 0));
+    lista.forEach((a, i) => { a.semana = ws[Math.min(ws.length - 1, Math.floor(i * ws.length / lista.length))]; });
+  }
+}
+
 function rolar() {
-  const h = hoje(), m = mesDe(h);
+  const m = mesDe(hoje());
   let mudou = false;
   for (const a of S.assuntos) {
-    if (a.feito) continue;
-    if (a.dia && a.dia < h) { a.dia = null; a.atrasou = (a.atrasou || 0) + 1; mudou = true; }
-    if (a.mes < m) { a.mes = m; a.atrasou = (a.atrasou || 0) + 1; mudou = true; }
+    if (!a.feito && a.mes < m) { a.mes = m; mudou = true; }
   }
+  if (S.assuntos.some(a => !a.feito && !a.semana)) { distribuirSemanas(); mudou = true; }
   if (mudou) salvar();
 }
 
 const achar = id => S.assuntos.find(a => a.id === id);
-const diaHoje = () => (S.dias[hoje()] ||= { contexto: '', blocos: [] });
+const diaHoje = () => (S.dias[hoje()] ||= { contexto: '', horas: 0, cap: 0, blocos: [] });
 
 function faseAtual(m = mesDe(hoje())) { return S.fases.find(f => f.inicio <= m && m <= f.fim); }
 
@@ -145,14 +175,15 @@ async function chamarIa(prompt, max = 8000) {
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
             generationConfig: { responseMimeType: 'application/json', maxOutputTokens: max, temperature: 0.6 },
           }),
+          signal: AbortSignal.timeout(40000),
         });
-      } catch (e) { erro = 'sem internet?'; continue; }
+      } catch (e) { erro = e.name === 'TimeoutError' ? 'a IA demorou demais' : 'sem internet?'; continue; }
       if (r.ok) {
         const j = await r.json();
         const t = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
         try { return JSON.parse(t.replace(/^```(json)?|```$/g, '').trim()); } catch { erro = 'resposta incompleta'; continue; }
       }
-      erro = r.status === 429 ? 'a cota grátis acabou por agora' : `erro ${r.status}`;
+      erro = r.status === 429 ? 'a cota grátis acabou por agora' : r.status === 503 ? 'a IA está sobrecarregada' : `erro ${r.status}`;
     }
   }
   throw new Error(erro);
@@ -160,32 +191,33 @@ async function chamarIa(prompt, max = 8000) {
 
 const ACOES_IA = `Responda SÓ com JSON: {"resposta": "1 a 3 frases curtas para ela", "acoes": [ ... ]}
 Ações possíveis (use só as necessárias; lista vazia se for só conversa):
-- {"tipo":"marcar_dia","id":"<id do assunto>","dia":"AAAA-MM-DD" ou null}  (null = volta para "sem dia")
-- {"tipo":"novo_assunto","mes":"AAAA-MM","materia":"<matéria>","titulo":"<assunto curto e específico>","dia":"AAAA-MM-DD" ou null}
+- {"tipo":"marcar_semana","id":"<id do assunto>","dia":"AAAA-MM-DD"}  (qualquer data da semana desejada; o assunto passa a ser previsto para essa semana. Assuntos não têm dia fixo, só semana)
+- {"tipo":"novo_assunto","mes":"AAAA-MM","materia":"<matéria>","titulo":"<assunto curto e específico>","dia":"AAAA-MM-DD" ou null,"min":150}  (min = minutos estimados)
 - {"tipo":"mover_mes","id":"<id>","mes":"AAAA-MM"}
 - {"tipo":"feito","id":"<id>","feito":true}
 - {"tipo":"remover_assunto","id":"<id>"}  (só se ela pedir)
-- {"tipo":"blocos_hoje","blocos":[{"assuntoId":"<id ou null>","titulo":"...","materia":"...","inicio":"HH:MM","fim":"HH:MM","passos":["...","..."]}]}  (substitui os blocos de hoje)
+- {"tipo":"blocos_hoje","blocos":[{"assuntoId":"<id ou null>","titulo":"...","materia":"...","min":150,"passos":["...","..."]}]}  (substitui os assuntos de hoje, sem horário marcado; só os que ainda não foram começados)
 - {"tipo":"foco_mes","mes":"AAAA-MM","foco":"1 frase com as prioridades do mês"}
 - {"tipo":"fases","fases":[{"nome":"...","inicio":"AAAA-MM","fim":"AAAA-MM","objetivo":"..."}]}  (substitui as fases do ano)
 - {"tipo":"prova","nome":"<nome da prova, igual ou novo>","data":"AAAA-MM-DD","estimada":false}  (corrige ou cria a data de uma prova)
 - {"tipo":"lembrar","texto":"preferência dela, curta"}  (quando ela disser como gosta das coisas)
 Regras: matérias válidas: ${Object.keys(MATERIAS).join(', ')}. Use os ids exatamente como vieram. Mexa só no necessário.
-Atrasos não são problema: encaixe nos próximos dias para o mês fechar. Blocos de 25 a 50 min com pausas entre eles; 2 a 4 passos por bloco, o primeiro bem fácil.`;
+Atrasos não são problema: o que atrasou passa para as semanas seguintes e o mês fecha. O dia dela é uma lista de assuntos para concluir, sem horários: encha o tempo livre (horas_livres_hoje, menos 20% de folga) somando "min" dos assuntos; primeiro os atrasados, depois os da semana, depois adiantar os da próxima. De 3 a 5 passos concretos por assunto, o primeiro bem fácil.`;
 
 function contextoIa() {
-  const h = hoje(), m = mesDe(h), ini = segunda(h);
-  const d = S.dias[h];
+  const h = hoje(), w = semAtual(), d = S.dias[h];
   return {
     hoje: h,
-    semana_atual: Array.from({ length: 7 }, (_, i) => somaDias(ini, i)),
+    semana_atual_comeca_em: w,
     provas: provasFuturas().slice(0, 8),
     fases: S.fases,
     foco_dos_meses: S.meses,
-    assuntos: S.assuntos.filter(a => a.mes <= somaMes(m, 1) && (!a.feito || a.mes === m))
-      .map(a => ({ id: a.id, mes: a.mes, materia: a.materia, titulo: a.titulo, dia: a.dia, feito: a.feito, atrasou: a.atrasou || 0 })),
+    // semana = semana prevista (segunda-feira); min = minutos estimados
+    assuntos: S.assuntos.filter(a => !a.feito ? semDe(a) <= somaDias(w, 14) : semDe(a) >= w)
+      .map(a => ({ id: a.id, mes: a.mes, semana: semDe(a), materia: a.materia, titulo: a.titulo, min: minDe(a), feito: a.feito, estado: estadoDe(a) })),
     contexto_de_hoje: d?.contexto || null,
-    blocos_de_hoje: (d?.blocos || []).map(b => ({ titulo: b.titulo, materia: b.materia, inicio: b.inicio, fim: b.fim,
+    horas_livres_hoje: d?.horas || null,
+    blocos_de_hoje: (d?.blocos || []).map(b => ({ assuntoId: b.assuntoId, titulo: b.titulo, materia: b.materia, min: b.min,
       passos: b.passos.map(p => p.t + (p.ok ? ' (feito)' : '')) })),
   };
 }
@@ -197,30 +229,33 @@ function aplicar(acoes) {
     try {
       const x = a.id ? achar(a.id) : null;
       switch (a.tipo) {
-        case 'marcar_dia':
-          if (!x) break;
-          x.dia = okData(a.dia) ? a.dia : null;
-          if (x.dia) x.mes = mesDe(x.dia);
+        case 'marcar_semana': case 'marcar_dia':
+          if (!x || !okData(a.dia)) break;
+          x.semana = segunda(a.dia); x.mes = mesDe(somaDias(x.semana, 3));
           n++; break;
         case 'novo_assunto':
           if (!a.titulo) break;
           S.assuntos.push({ id: uid(), mes: okMes(a.mes) ? a.mes : mesDe(okData(a.dia) ? a.dia : h), materia: String(a.materia || 'Outra').slice(0, 30),
-            titulo: String(a.titulo).slice(0, 140), dia: okData(a.dia) ? a.dia : null, feito: false, atrasou: 0 });
+            titulo: String(a.titulo).slice(0, 140), semana: okData(a.dia) ? segunda(a.dia) : null, min: +a.min > 0 ? Math.round(+a.min) : 0, ord: 0.5, feito: false });
           n++; break;
         case 'mover_mes':
-          if (x && okMes(a.mes)) { x.mes = a.mes; x.dia = null; n++; } break;
+          if (x && okMes(a.mes)) { x.mes = a.mes; x.semana = null; n++; } break;
         case 'feito':
-          if (x) { x.feito = a.feito !== false; n++; } break;
+          if (x) { setFeito(x, a.feito !== false); n++; } break;
         case 'remover_assunto':
           if (x) { S.assuntos = S.assuntos.filter(y => y !== x); n++; } break;
         case 'blocos_hoje':
           if (!Array.isArray(a.blocos)) break;
-          diaHoje().blocos = a.blocos.map(b => {
-            const ref = b.assuntoId && achar(b.assuntoId);
-            if (ref) { ref.dia = h; ref.mes = mesDe(h); }
-            return { id: uid(), assuntoId: ref ? ref.id : null, titulo: String(b.titulo || ref?.titulo || 'Bloco'), materia: b.materia || ref?.materia || '',
-              inicio: b.inicio || '', fim: b.fim || '', passos: (b.passos || []).map(t => ({ t: String(t), ok: false })) };
-          });
+          { // o que já foi começado fica como está; o resto é trocado
+            const d = diaHoje();
+            const feitos = d.blocos.filter(b => b.passos.some(p => p.ok) || achar(b.assuntoId)?.feito);
+            const novos = a.blocos.map(b => {
+              const ref = b.assuntoId && achar(b.assuntoId);
+              return { id: uid(), assuntoId: ref ? ref.id : null, titulo: String(b.titulo || ref?.titulo || 'Tarefa'), materia: b.materia || ref?.materia || '',
+                min: +b.min > 0 ? Math.round(+b.min) : ref ? minDe(ref) : 30, passos: (b.passos || []).map(t => ({ t: String(t), ok: false })) };
+            }).filter(b => b.passos.length && !feitos.some(f => f.assuntoId && f.assuntoId === b.assuntoId));
+            d.blocos = [...feitos, ...novos];
+          }
           n++; break;
         case 'foco_mes':
           if (okMes(a.mes)) { S.meses[a.mes] = { ...(S.meses[a.mes] || {}), foco: String(a.foco || '') }; n++; } break;
@@ -244,27 +279,35 @@ function aplicar(acoes) {
   return n;
 }
 
-async function pedirIa(pedido, rotulo = 'Pensando…') {
+async function pedirIa(pedido, rotulo = 'Pensando…', falaDela = null) {
+  const chat = ui.chatAberto;
+  S.chat ||= [];
+  if (falaDela) S.chat.push({ r: 'u', t: falaDela });
   if (!temChave()) {
+    if (chat) { S.chat.push({ r: 'ia', t: 'Falta a chave da IA. Cole a chave grátis do Gemini em Ajustes.', erro: true }); salvar(); desenharChat(); return; }
     abrirModal(`<h2>Falta a chave da IA</h2><p>Cole a sua chave grátis do Gemini em <b>Ajustes</b> para a IA funcionar.</p>
       <div class="linha"><button class="botao" data-acao="ir" data-v="ajustes">Abrir Ajustes</button><button class="botao contorno" data-acao="fechar">Agora não</button></div>`);
     return;
   }
-  fecharModal();
-  ui.carregando = rotulo; render();
+  if (!chat) fecharModal();
+  ui.carregando = rotulo; chat ? desenharChat() : render();
   try {
     const r = await chamarIa(`${ACOES_IA}\n\nSituação atual (JSON):\n${JSON.stringify(contextoIa())}\n\nPedido dela: ${pedido}`);
-    const antes = JSON.stringify(S);
+    const { chat: _c, ...resto } = S;
+    const antes = JSON.stringify(resto);
     const n = aplicar(r.acoes);
     ui.desfazer = n ? antes : null;
     ui.iaMsg = String(r.resposta || (n ? 'Pronto, organizei.' : '')).trim();
-    salvar();
+    if (ui.iaMsg) S.chat.push({ r: 'ia', t: ui.iaMsg, desfazer: !!n });
   } catch (e) {
     ui.iaMsg = `Não consegui falar com a IA agora (${e.message}). Tenta de novo daqui a pouco.`;
+    S.chat.push({ r: 'ia', t: ui.iaMsg, erro: true });
     ui.desfazer = null;
   }
+  S.chat = S.chat.slice(-40);
+  salvar();
   ui.carregando = '';
-  render();
+  if (ui.chatAberto) { ui.iaMsg = ''; desenharChat(); } else render();
 }
 
 // ---------- telas ----------
@@ -295,84 +338,138 @@ function fasesHtml() {
   }).join('') + `</section>`;
 }
 
+// ---------- telas ----------
+const passosPadrao = a => /^Redação/.test(a.titulo) ? ['Escolher a proposta e planejar a estrutura', 'Escrever o texto', 'Reler e marcar o que melhorar']
+  : /^Simulado/.test(a.titulo) ? ['Fazer cronometrado', 'Corrigir com calma', 'Anotar os erros no caderno']
+    : ['Teoria: ler o resumo ou ver a aula', 'Exercícios simples', 'Exercícios de prova', 'Corrigir e anotar os erros'];
+const blocoDe = a => ({ id: uid(), assuntoId: a.id, titulo: a.titulo, materia: a.materia, min: minDe(a), passos: passosPadrao(a).map(t => ({ t, ok: false })) });
+
+/** Fila do plano: atrasados primeiro, depois a semana atual, depois as próximas (adiantar). */
+const filaPlano = () => S.assuntos.filter(a => !a.feito)
+  .sort((x, y) => semDe(x) < semDe(y) ? -1 : semDe(x) > semDe(y) ? 1 : x.mes < y.mes ? -1 : x.mes > y.mes ? 1 : (x.ord || 0) - (y.ord || 0));
+
+/** Enche o dia com assuntos até caber o tempo livre (menos 20% para distrações). */
+function montarHoje() {
+  const d = diaHoje();
+  const fator = { 'cansada': 0.7, 'sem vontade': 0.5 }[ui.ctxEnergia] || 1;
+  d.cap = Math.round((d.horas || 4) * 60 * 0.8 * fator);
+  const mantidos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.passos.some(p => p.ok); });
+  let usado = soma(mantidos, b => b.min || 0);
+  const novos = [];
+  for (const a of filaPlano()) {
+    if (usado >= d.cap) break;
+    if (mantidos.some(b => b.assuntoId === a.id)) continue;
+    const m = minDe(a);
+    if (usado + m > d.cap * 1.15 && (novos.length || mantidos.length)) continue;
+    novos.push(blocoDe(a)); usado += m;
+  }
+  d.blocos = [...mantidos, ...novos];
+}
+
 function vHoje() {
-  const h = hoje(), d = S.dias[h] || { contexto: '', blocos: [] };
+  const h = hoje(), d = S.dias[h] || { contexto: '', horas: 0, cap: 0, blocos: [] };
   const hr = new Date().getHours();
   const saud = hr < 5 ? 'Boa noite' : hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
-  const nome = S.perfil.nome ? `, ${esc(S.perfil.nome)}` : '';
-  const topo = `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">${dataLonga(h)}</span><h1>${saud}${nome}</h1></div>
-    ${d.contexto ? `<button class="link mao" data-acao="mudarContexto" title="Mudar">${esc(d.contexto)}</button>` : ''}</header>`;
+  const topo = `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">${dataLonga(h)}</span><h1>${saud}, ${esc(S.perfil.nome.split(' ')[0] || '')}</h1></div></header>`;
+  const atrasados = S.assuntos.filter(a => estadoDe(a) === 'atrasado').length;
+  const adiantados = S.assuntos.filter(a => a.feito && semDe(a) > semAtual());
+  const feitoMin = S.estudo[h] || 0, meta = d.cap || 0;
+  const pct = meta ? Math.min(100, Math.round(feitoMin / meta * 100)) : 0;
+  const selos = `${atrasados ? `<span class="selo atraso">${atrasados} ${atrasados === 1 ? 'atrasado' : 'atrasados'} da semana passada</span>` : ''}
+    ${adiantados.length ? `<span class="selo adiante">${adiantados.length} ${adiantados.length === 1 ? 'assunto adiantado' : 'assuntos adiantados'} · ${fmtMin(soma(adiantados, minDe))}</span>` : ''}`;
+  const painel = d.blocos.length ? `<section class="cartao dia-resumo">
+      <div class="entre"><strong>${fmtMin(feitoMin)} de ${fmtMin(meta)} estudados</strong><span class="fraco">${d.horas}h livres · 20% reservado para pausas</span></div>
+      <div class="barra grossa"><i style="width:${pct}%"></i></div><div class="linha">${selos}</div></section>` : '';
+  const planejar = (!d.blocos.length || ui.planejar) ? planejarHtml(d) : '';
 
-  if (!d.contexto) return topo + avisoIa() + fasesHtml() + contextoHtml();
-
-  const blocos = d.blocos.length ? d.blocos.map(blocoHtml).join('') : `<div class="cartao vazio">
-      <p>Nenhum bloco ainda.</p><div class="linha" style="justify-content:center">
-      <button class="botao" data-acao="montarDia">Montar meu dia</button><button class="botao contorno" data-acao="novaTarefa">+ Tarefa</button></div></div>`;
+  const grupos = [['atrasado', 'Atrasados'], ['semana', 'Desta semana'], ['futuro', 'Adiantando a próxima semana'], ['feito', 'Já feitos']];
+  const dos = b => { const a = b.assuntoId && achar(b.assuntoId); return a ? (a.feito ? 'feito' : estadoDe(a)) : 'semana'; };
+  const lista = grupos.map(([k, t]) => {
+    const bs = d.blocos.filter(b => dos(b) === k);
+    return bs.length ? `<h3 class="grupo ${k}">${t}<span class="fraco"> · ${fmtMin(soma(bs, b => b.min || 0))}</span></h3>${bs.map(blocoHtml).join('')}` : '';
+  }).join('');
 
   let prox = null;
-  for (const b of d.blocos) { const i = b.passos.findIndex(p => !p.ok); if (i >= 0) { prox = { b, i }; break; } }
+  for (const b of d.blocos) { const a = b.assuntoId && achar(b.assuntoId); if (a?.feito) continue; const i = b.passos.findIndex(p => !p.ok); if (i >= 0) { prox = { b, i }; break; } }
   const seq = sequencia();
   const lado = `<aside class="coluna">
     <div class="cartao proximo">
       ${prox ? `<span class="rotulo">próximo passo</span><h2>${esc(prox.b.passos[prox.i].t)}</h2><span class="fraco" style="color:inherit;opacity:.75">${esc(prox.b.titulo)}</span>
         <div class="linha"><button class="botao destaque grande" data-acao="timer" data-min="5" data-b="${prox.b.id}" data-i="${prox.i}">Só 5 minutos</button>
         <button class="botao contorno" style="color:inherit" data-acao="timer" data-min="25" data-b="${prox.b.id}" data-i="${prox.i}">Foco 25</button></div>`
-        : d.blocos.length ? `<span class="rotulo">hoje</span><h2>Tudo feito por hoje. Orgulho!</h2>` : `<span class="rotulo">hoje</span><h2>Monte o dia e eu te digo por onde começar.</h2>`}
+        : d.blocos.length ? `<span class="rotulo">hoje</span><h2>Tudo feito por hoje. Orgulho!</h2>` : `<span class="rotulo">hoje</span><h2>Diga quanto tempo tem e eu encho o dia.</h2>`}
     </div>
     <div class="cartao ia-cartao"><strong>${seq ? `${seq} ${seq === 1 ? 'dia' : 'dias'} seguidos estudando` : 'Um passo hoje já conta'}</strong>
       <span>${esc(faseAtual()?.objetivo || S.meses[mesDe(h)]?.foco || 'Comece pelo passo mais fácil. O resto vem.')}</span></div>
-    <div class="linha"><button class="botao claro" data-acao="montarDia">Refazer com a IA</button><button class="botao contorno" data-acao="novaTarefa">+ Tarefa</button></div>
+    ${d.blocos.length ? `<div class="linha"><button class="botao claro" data-acao="maisUm">Puxar mais um assunto</button>
+      <button class="botao contorno" data-acao="${ui.planejar ? 'fecharPlanejar' : 'abrirPlanejar'}">${ui.planejar ? 'Fechar' : 'Refazer o dia'}</button>
+      <button class="botao contorno" data-acao="novaTarefa">+ Tarefa</button></div>` : ''}
   </aside>`;
-  return topo + avisoIa() + fasesHtml() + `<div class="grade2"><section class="coluna" aria-label="Blocos de hoje">${blocos}</section>${lado}</div>`;
+  return topo + avisoIa() + painel + planejar + (d.blocos.length ? `<div class="grade2"><section class="coluna" aria-label="Assuntos de hoje">${lista}</section>${lado}</div>` : '');
 }
 
-function contextoHtml() {
+function planejarHtml(d) {
   const chips = (campo, ops) => ops.map(o => `<button class="chip" data-acao="ctx" data-campo="${campo}" data-v="${o}" aria-pressed="${ui[campo] === o}">${o}</button>`).join('');
-  const doDia = S.assuntos.filter(a => a.dia === hoje() && !a.feito);
+  const horas = d.horas || ui.horas || 0;
   return `<section class="cartao" style="gap:16px">
     <h2>Como está seu dia?</h2>
-    <p class="fraco" style="margin:0">Me conta rapidinho que eu monto o dia do tamanho certo. ${doDia.length ? `Marcados pra hoje: ${doDia.map(a => esc(a.titulo)).join(', ')}.` : ''}</p>
-    <textarea data-ui="ctxTexto" placeholder="Ex.: aula até 13h, à tarde livre, tenho dentista às 17h">${esc(ui.ctxTexto)}</textarea>
+    <div class="coluna" style="gap:8px"><span class="rotulo">horas livres para estudar hoje</span>
+      <div class="linha">${[2, 3, 4, 6, 8, 10, 12].map(n => `<button class="chip" data-acao="horas" data-v="${n}" aria-pressed="${horas === n}">${n}h</button>`).join('')}
+      <input type="number" min="1" max="16" step="0.5" id="horas-livres" placeholder="outro" value="${horas && ![2, 3, 4, 6, 8, 10, 12].includes(horas) ? horas : ''}" style="width:90px" data-ui-horas></div>
+      <span class="fraco" style="font-size:14px">Eu encho o dia com assuntos para ${horas ? fmtMin(Math.round(horas * 48)) : 'esse tempo'} de estudo e deixo 20% livre para distrações e pausas.</span></div>
     <div class="coluna" style="gap:8px"><span class="rotulo">energia</span><div class="linha">${chips('ctxEnergia', ['cheia de energia', 'normal', 'cansada', 'sem vontade'])}</div></div>
-    <div class="coluna" style="gap:8px"><span class="rotulo">tempo livre pra estudar</span><div class="linha">${chips('ctxTempo', ['1h', '2h', '3h', '4h', '5h ou mais'])}</div></div>
-    <div class="linha"><button class="botao grande" data-acao="montarDia">Montar meu dia</button>
-      <button class="link" data-acao="montarSimples">Montar sem IA</button></div>
+    <textarea data-ui="ctxTexto" placeholder="Algum compromisso ou pedido? Ex.: dentista às 17h, quero mais matemática">${esc(ui.ctxTexto)}</textarea>
+    <div class="linha"><button class="botao grande" data-acao="montarDia">Montar meu dia</button></div>
   </section>`;
 }
 
 function blocoHtml(b) {
-  return `<article class="cartao bloco" style="${cor(b.materia)}">
+  const a = b.assuntoId && achar(b.assuntoId);
+  const est = a ? estadoDe(a) : '';
+  const rot = { atrasado: 'atrasado', futuro: 'adiantando', feito: 'feito' }[est];
+  return `<article class="cartao bloco ${est}" style="${cor(b.materia)}">
     <div class="bloco-topo"><h3>${esc(b.titulo)}</h3>
-      <span class="hora">${esc([b.inicio, b.fim].filter(Boolean).join(' – '))}</span>${b.materia ? tag(b.materia) : ''}
+      <span class="hora">≈ ${fmtMin(b.min || 0)}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
       <button class="x" data-acao="tirarBloco" data-b="${b.id}" aria-label="Tirar bloco">×</button></div>
     ${b.passos.map((p, i) => `<label class="passo ${p.ok ? 'ok' : ''}"><input type="checkbox" data-acao="passo" data-b="${b.id}" data-i="${i}" ${p.ok ? 'checked' : ''}><span>${esc(p.t)}</span></label>`).join('')}
   </article>`;
 }
 
 function vSemana() {
-  const h = hoje(), ini = somaDias(segunda(h), ui.semana * 7);
-  const dias = Array.from({ length: 7 }, (_, i) => somaDias(ini, i));
-  const meses = [...new Set(dias.map(mesDe))];
-  const soltos = S.assuntos.filter(a => !a.feito && !a.dia && meses.includes(a.mes)).sort((a, b) => (b.atrasou || 0) - (a.atrasou || 0));
+  const h = hoje(), w = somaDias(semAtual(), ui.semana * 7), fim = somaDias(w, 6);
+  const lista = S.assuntos.filter(a => a.semana === w);
+  const atras = ui.semana === 0 ? S.assuntos.filter(a => estadoDe(a) === 'atrasado') : [];
+  const tot = lista.length, fz = lista.filter(a => a.feito).length;
+  const minTot = soma(lista, minDe), minFz = soma(lista.filter(a => a.feito), minDe);
+  const pct = tot ? Math.round(fz / tot * 100) : 0;
+  const prox = S.assuntos.filter(a => a.semana === somaDias(w, 7));
+  const proxFz = prox.filter(a => a.feito);
+  const dias = Array.from({ length: 7 }, (_, i) => somaDias(w, i));
+  const maxMin = Math.max(240, ...dias.map(d => S.estudo[d] || 0));
   const item = a => `<button class="item ${a.feito ? 'feito' : ''}" style="${cor(a.materia)}" data-acao="assunto" data-id="${a.id}">
-    <i class="ponto"></i><span>${esc(a.titulo)}${a.atrasou && !a.dia ? ' <span class="atraso">· atrasou</span>' : ''}</span></button>`;
-  const fim = dias[6];
-  return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">semana</span>
-      <h1>${deIso(ini).getDate()} de ${nomeMes(ini)} – ${deIso(fim).getDate()} de ${nomeMes(fim)}</h1></div>
+    <i class="ponto"></i><span>${esc(a.titulo)} <span class="fraco" style="font-size:12px">· ${fmtMin(minDe(a))}${a.feito && a.feitoEm ? ' · feito ' + diaCurto(a.feitoEm) : ''}</span></span></button>`;
+  const grade = l => `<div class="itens">${l.map(item).join('')}</div>`;
+  const ordenar = l => l.slice().sort((x, y) => (x.feito - y.feito) || (x.ord || 0) - (y.ord || 0));
+  return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">semana${ui.semana === 0 ? ' · esta' : ''}</span>
+      <h1>${deIso(w).getDate()} de ${nomeMes(w)} – ${deIso(fim).getDate()} de ${nomeMes(fim)}</h1></div>
     <div class="linha"><button class="botao contorno" data-acao="semana" data-v="-1" aria-label="Semana anterior">‹</button>
       ${ui.semana ? '<button class="botao contorno" data-acao="semana" data-v="0">Esta semana</button>' : ''}
       <button class="botao contorno" data-acao="semana" data-v="1" aria-label="Próxima semana">›</button></div></header>
     ${avisoIa()}
-    <section class="cartao"><div class="entre"><h2>Para encaixar <span class="fraco" style="font-size:16px">(${soltos.length})</span></h2>
-      <div class="linha"><button class="botao claro" data-acao="distribuir" data-ini="${ini}" ${soltos.length ? '' : 'disabled'}>Distribuir sozinho</button>
-      <button class="botao" data-acao="reorganizar" data-ini="${ini}">Reorganizar com a IA</button></div></div>
-      ${soltos.length ? `<div class="linha">${soltos.map(a => `<div style="flex:0 1 260px;min-width:0">${item(a)}</div>`).join('')}</div>`
-        : '<p class="fraco" style="margin:0">Tudo do mês já tem dia. Toque num assunto para mudar.</p>'}
+    <section class="cartao">
+      <div class="entre"><strong>${fz} de ${tot} assuntos · ${fmtMin(minFz)} de ${fmtMin(minTot)}</strong><span class="fraco">${pct}%</span></div>
+      <div class="barra grossa"><i style="width:${pct}%"></i></div>
+      ${ui.semana === 0 && proxFz.length ? `<div class="selo adiante grande">Adiantada: você já fez ${proxFz.length} ${proxFz.length === 1 ? 'assunto' : 'assuntos'} da próxima semana (${fmtMin(soma(proxFz, minDe))}).</div>` : ''}
+      ${atras.length ? `<div class="selo atraso grande">${atras.length} ${atras.length === 1 ? 'assunto atrasado' : 'assuntos atrasados'} de semanas anteriores. Eles entram primeiro no seu dia.</div>` : ''}
+      <div class="dias-estudo">${dias.map(d => { const m = S.estudo[d] || 0; return `<div class="de ${d === h ? 'hoje' : ''}"><div class="coluna-barra"><i style="height:${Math.round(m / maxMin * 100)}%"></i></div><span>${SEMANA[deIso(d).getDay()].slice(0, 3)}</span><small>${m ? fmtMin(m) : '·'}</small></div>`; }).join('')}</div>
+      <p class="fraco" style="margin:0;font-size:14px">Os assuntos da semana não têm dia fixo: faça no seu ritmo. Se terminar cedo, o app puxa os da próxima semana.</p>
     </section>
-    <section class="semana">${dias.map(d => {
-      const its = S.assuntos.filter(a => a.dia === d);
-      return `<div class="dia ${d === h ? 'hoje' : ''} ${d < h ? 'passou' : ''}"><h3>${diaCurto(d)}${d === h ? ' · hoje' : ''}</h3>${its.map(item).join('') || '<span class="fraco" style="font-size:14px">livre</span>'}</div>`;
-    }).join('')}</section>`;
+    ${atras.length ? `<section class="cartao"><h2>Atrasados <span class="fraco" style="font-size:16px">(${atras.length})</span></h2>${grade(atras)}</section>` : ''}
+    <section class="cartao"><div class="entre"><h2>Desta semana <span class="fraco" style="font-size:16px">(${tot})</span></h2>
+      <button class="botao" data-acao="reorganizar" data-ini="${w}">Reorganizar com a IA</button></div>
+      ${tot ? grade(ordenar(lista)) : '<p class="fraco" style="margin:0">Nenhum assunto previsto para esta semana.</p>'}</section>
+    ${prox.length ? `<section class="cartao"><div class="entre"><h2>Próxima semana <span class="fraco" style="font-size:16px">(${proxFz.length} de ${prox.length} feitos)</span></h2>
+      <button class="link" data-acao="semana" data-v="1">Ver semana</button></div>${grade(ordenar(prox).slice(0, 8))}</section>` : ''}`;
 }
 
 function vMes() {
@@ -396,7 +493,7 @@ function vMes() {
     ${grupos.map(([ar, l]) => `<section class="cartao"><h2 class="linha" style="${`--c: var(--${ar})`}"><i class="ponto"></i>${AREAS[ar]}</h2><div class="lista">
       ${l.map(a => `<div class="assunto ${a.feito ? 'feito' : ''}"><input type="checkbox" data-acao="feitoAssunto" data-id="${a.id}" ${a.feito ? 'checked' : ''} aria-label="Feito">
         <button class="titulo" data-acao="assunto" data-id="${a.id}">${esc(a.titulo)} <span class="fraco" style="font-size:13px">· ${esc(a.materia)}</span></button>
-        <span class="quando">${a.dia ? diaCurto(a.dia) : a.feito ? '' : 'sem dia'}</span></div>`).join('')}
+        <span class="quando">${a.feito ? '' : estadoDe(a) === 'atrasado' ? 'atrasado' : 'sem. ' + semanaCurta(semDe(a))}</span></div>`).join('')}
     </div></section>`).join('')}
     <section class="cartao"><h2>Adicionar assunto</h2>
       <div class="linha" style="align-items:stretch"><select id="nova-materia" style="flex:0 1 200px">${opcoes}</select>
@@ -407,25 +504,28 @@ function vMes() {
 }
 
 function vAno() {
-  const p = S.perfil, m0 = mesDe(hoje());
+  const m0 = mesDe(hoje());
   const prox = proximaProva(), ult = ultimaProva();
   if (!prox) return `<header><span class="rotulo">ano</span><h1>Seu ano até a prova</h1></header>${avisoIa()}
     <section class="cartao"><p style="margin:0">Ainda não há provas com data. Peça para a IA ou recomece o plano base em Ajustes.</p>
     <div class="linha"><button class="botao" data-acao="ir" data-v="ajustes">Abrir Ajustes</button></div></section>`;
-  const fimM = mesDe(ult.data);
   const meses = [];
-  for (let m = m0; m <= fimM && meses.length < 30; m = somaMes(m, 1)) meses.push(m);
+  for (let m = m0; m <= mesDe(ult.data) && meses.length < 30; m = somaMes(m, 1)) meses.push(m);
   const linhaProva = x => `<div class="entre prova"><span>${esc(x.nome)}</span><span class="fraco">${okData(x.data) ? `${dataLonga(x.data)}${x.estimada ? ' (estimada)' : ''} · ${diasAte(x.data)} dias` : 'data a confirmar'}</span></div>`;
   const semData = (S.provas || []).filter(x => !okData(x.data));
-  return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">próxima prova</span>
+  const modo = ui.anoModo === 'mapa';
+  const cabeca = `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">próxima prova</span>
       <h1>${esc(prox.nome)} em ${diasAte(prox.data)} dias</h1><span class="fraco">${dataLonga(prox.data)}${prox.estimada ? ' (data estimada)' : ''}</span></div>
-    <button class="botao" data-acao="planoAno">Refazer o plano com a IA</button></header>
-    ${avisoIa()}
-    <section class="cartao"><h2>Provas</h2>${provasFuturas().concat(semData).map(linhaProva).join('')}
-      <p class="fraco" style="margin:0">As datas de 2027 são estimadas pelo padrão de 2026. Quando saírem os editais, mude pela IA ("a Fuvest será dia tal").</p></section>
-    ${S.fases.length ? `<section class="cartao">${fasesHtml()}<div class="coluna" style="gap:6px">${S.fases.map(f =>
+    <div class="linha"><div class="alterna" role="group" aria-label="Modo de ver o ano">
+      <button data-acao="anoModo" data-v="cartoes" aria-pressed="${!modo}">Cartões</button>
+      <button data-acao="anoModo" data-v="mapa" aria-pressed="${modo}">Mapa interativo</button></div>
+    <button class="botao" data-acao="planoAno">Refazer o plano com a IA</button></div></header>${avisoIa()}`;
+  const provas = `<section class="cartao"><h2>Provas</h2>${provasFuturas().concat(semData).map(linhaProva).join('')}
+      <p class="fraco" style="margin:0">As datas de 2027 são estimadas pelo padrão de 2026. Quando saírem os editais, mude pela IA ("a Fuvest será dia tal").</p></section>`;
+  if (modo) return cabeca + anoMapa(meses, m0) + provas;
+  return cabeca + provas + `${S.fases.length ? `<section class="cartao">${fasesHtml()}<div class="coluna" style="gap:6px">${S.fases.map(f =>
       `<div><strong>${esc(f.nome)}</strong> <span class="fraco">· ${nomeMes(f.inicio)} a ${nomeMes(f.fim)}${f.objetivo ? ' — ' + esc(f.objetivo) : ''}</span></div>`).join('')}</div></section>`
-      : '<p class="fraco" style="margin:0">A IA divide o tempo até a prova em fases (base, aprofundamento, revisão, reta final) e dá um foco para cada mês.</p>'}
+      : '<p class="fraco" style="margin:0">A IA divide o tempo até a prova em fases e dá um foco para cada mês.</p>'}
     <section class="meses">${meses.map(m => {
       const l = S.assuntos.filter(a => a.mes === m), f = l.filter(a => a.feito).length;
       return `<button class="cartao mes-cartao ${m === m0 ? 'atual' : ''}" data-acao="abrirMes" data-v="${m}">
@@ -436,12 +536,53 @@ function vAno() {
     }).join('')}</section>`;
 }
 
+/** Mapa interativo: uma coluna por mês (anel de progresso, barras por área, provas), filtro por matéria e detalhe do mês tocado. */
+function anoMapa(meses, m0) {
+  const sel = meses.includes(ui.anoMes) ? ui.anoMes : m0;
+  const filtro = a => !ui.anoMat || a.materia === ui.anoMat;
+  const corFase = f => { const i = S.fases.indexOf(f); return ['--mat', '--nat', '--hum', '--lin'][i < 0 ? 4 : i % 4] || '--out'; };
+  const ars = ['mat', 'nat', 'hum', 'lin'];
+  const ring = pct => { const c = 2 * Math.PI * 17; return `<svg viewBox="0 0 44 44" width="52" height="52" aria-hidden="true"><circle cx="22" cy="22" r="17" fill="none" stroke="var(--linha)" stroke-width="5"/>
+    <circle cx="22" cy="22" r="17" fill="none" stroke="var(--acento)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(c * pct).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 22 22)"/></svg>`; };
+  const cols = meses.map(m => {
+    const l = S.assuntos.filter(a => a.mes === m && filtro(a)), f = l.filter(a => a.feito).length, fase = faseAtual(m);
+    const provas = (S.provas || []).filter(p => okData(p.data) && mesDe(p.data) === m);
+    const maxN = 14;
+    return `<button class="col-mes ${m === m0 ? 'atual' : ''} ${m === sel ? 'sel' : ''}" data-acao="anoMes" data-v="${m}" style="--fc: var(${fase ? corFase(fase) : '--out'})">
+      <span class="faixa"></span><span class="fn">${fase ? esc(fase.nome) : ''}</span>
+      <strong>${nomeMes(m).slice(0, 3)}</strong><small>${m.slice(2, 4)}</small>
+      <div class="ringbox">${ring(l.length ? f / l.length : 0)}<b>${l.length ? Math.round(f / l.length * 100) : 0}%</b></div>
+      <div class="mini">${ars.map(ar => { const x = l.filter(a => area(a.materia) === ar), fx = x.filter(a => a.feito).length;
+        return `<i style="--c:var(--${ar});height:${Math.max(x.length ? 6 : 2, Math.min(100, x.length / maxN * 100))}%" title="${AREAS[ar]}: ${fx} de ${x.length}"><u style="height:${x.length ? Math.round(fx / x.length * 100) : 0}%"></u></i>`; }).join('')}</div>
+      <span class="n">${l.length} assuntos</span>
+      ${provas.map(p => `<span class="bandeira">${esc(p.nome)}</span>`).join('')}
+    </button>`;
+  }).join('');
+  const mats = [...new Set(S.assuntos.map(a => a.materia))];
+  const porMat = mats.map(mt => { const l = S.assuntos.filter(a => a.materia === mt), f = l.filter(a => a.feito).length;
+    return `<button class="mat-linha ${ui.anoMat === mt ? 'sel' : ''}" style="${cor(mt)}" data-acao="anoMat" data-v="${esc(mt)}"><span><i class="ponto"></i>${esc(mt)}</span>
+      <div class="barra"><i style="width:${l.length ? Math.round(f / l.length * 100) : 0}%;background:var(--c)"></i></div><small>${f}/${l.length}</small></button>`; }).join('');
+  const det = S.assuntos.filter(a => a.mes === sel && filtro(a));
+  const porMateria = [...new Set(det.map(a => a.materia))];
+  return `<section class="cartao"><div class="entre"><h2>Mapa do ano</h2><span class="fraco" style="font-size:14px">Toque num mês para ver os assuntos. Toque numa matéria para filtrar.</span></div>
+    <div class="mapa-rolagem"><div class="mapa">${cols}</div></div></section>
+    <div class="grade2"><section class="cartao"><div class="entre"><h2>${nomeMes(sel)} ${sel.slice(0, 4)}${ui.anoMat ? ` · ${esc(ui.anoMat)}` : ''}</h2>
+        <button class="botao claro" data-acao="abrirMes" data-v="${sel}">Abrir o mês</button></div>
+      ${S.meses[sel]?.foco ? `<p class="mao" style="margin:0">${esc(S.meses[sel].foco)}</p>` : ''}
+      ${porMateria.length ? porMateria.map(mt => `<div class="coluna" style="gap:6px"><span class="rotulo" style="${cor(mt)}"><i class="ponto"></i> ${esc(mt)}</span>
+        <div class="itens">${det.filter(a => a.materia === mt).map(a => `<button class="item ${a.feito ? 'feito' : ''}" style="${cor(a.materia)}" data-acao="assunto" data-id="${a.id}"><i class="ponto"></i><span>${esc(a.titulo)}</span></button>`).join('')}</div></div>`).join('')
+        : '<p class="fraco" style="margin:0">Nada neste mês.</p>'}</section>
+      <section class="cartao"><div class="entre"><h2>Por matéria</h2>${ui.anoMat ? '<button class="link" data-acao="anoMat" data-v="">Limpar filtro</button>' : ''}</div>${porMat}</section></div>`;
+}
+
 function vAjustes() {
   const p = S.perfil, ks = lerChaves();
   const campo = (k, rot, tipo = 'text', dica = '') => `<label class="campo">${rot}${dica ? `<small>${dica}</small>` : ''}
     <input type="${tipo}" data-campo="${k}" value="${esc(p[k])}"></label>`;
   const caixa = (k, rot, dica, ph) => `<label class="campo">${rot}<small>${dica}</small><textarea data-campo="${k}" placeholder="${ph}">${esc(p[k])}</textarea></label>`;
-  const temas = [['caderno', 'Caderno', ['#FCF4F6', '#C2477A', '#F6E3A0']], ['noite', 'Noite calma', ['#10141F', '#F4A6C0', '#FFB38A']], ['cores', 'Cores das áreas', ['#FFFFFF', '#3B5BDB', '#C2255C']]];
+  const acentos = [['#C2255C', 'Rosa'], ['#E64980', 'Rosa claro'], ['#7048E8', 'Roxo'], ['#3B5BDB', 'Azul'], ['#0C8599', 'Turquesa'], ['#2B8A3E', 'Verde'], ['#E8590C', 'Laranja'], ['#16181D', 'Grafite']];
+  const fundos = [['#FFFFFF', 'Branco'], ['#FFF5F8', 'Rosa suave'], ['#F6F3FF', 'Lavanda'], ['#F1F8FF', 'Céu'], ['#F0FAF4', 'Menta'], ['#FFFAF0', 'Creme'], ['#F3F4F6', 'Cinza']];
+  const bolas = (campo, lista) => lista.map(([c, n]) => `<button class="bola" style="background:${c}" data-acao="cor" data-campo="${campo}" data-v="${c}" aria-label="${n}" title="${n}" aria-pressed="${S.cores[campo].toLowerCase() === c.toLowerCase()}"></button>`).join('');
   return `<header><span class="rotulo">ajustes</span><h1>${p.nome ? 'Do seu jeito' : 'Vamos começar'}</h1></header>
     ${avisoIa()}
     <section class="cartao"><h2>Sobre você</h2>
@@ -454,8 +595,12 @@ function vAjustes() {
     <section class="cartao"><h2>Do meu jeito</h2>
       ${caixa('jeito', 'Como você gosta que a IA te ajude', 'Tudo aqui a IA segue sempre. Ela também anota aqui o que você pedir pra ela lembrar.', 'Ex.: não gosto de química à noite; fala comigo de forma leve; prefiro blocos de 40 min')}
     </section>
-    <section class="cartao"><h2>Visual</h2><div class="temas">${temas.map(([v, t, cs]) =>
-      `<button class="tema-op" data-acao="tema" data-v="${v}" aria-pressed="${S.tema === v}"><div class="amostra">${cs.map(c => `<i style="background:${c}"></i>`).join('')}</div><strong>${t}</strong></button>`).join('')}</div></section>
+    <section class="cartao"><h2>Cores</h2>
+      <div class="coluna" style="gap:8px"><span class="rotulo">cor de destaque</span><div class="linha">${bolas('acento', acentos)}
+        <label class="bola personalizada" title="Outra cor"><input type="color" data-cor="acento" value="${esc(S.cores.acento)}" aria-label="Escolher outra cor de destaque"></label></div></div>
+      <div class="coluna" style="gap:8px"><span class="rotulo">cor do fundo</span><div class="linha">${bolas('fundo', fundos)}
+        <label class="bola personalizada" title="Outra cor"><input type="color" data-cor="fundo" value="${esc(S.cores.fundo)}" aria-label="Escolher outra cor de fundo"></label></div></div>
+    </section>
     <section class="cartao"><h2>IA (Gemini grátis)</h2>
       <p class="fraco" style="margin:0">A chave fica salva só neste iPad. Se a primeira acabar a cota do dia, uso a segunda.</p>
       <label class="campo">Chave 1<input type="password" data-chave="0" value="${esc(ks[0] || '')}" autocomplete="off"></label>
@@ -480,7 +625,8 @@ function vAjustes() {
 const VIEWS = { hoje: vHoje, semana: vSemana, mes: vMes, ano: vAno, ajustes: vAjustes };
 
 function render() {
-  document.documentElement.dataset.tema = S.tema;
+  document.documentElement.dataset.tema = 'cores';
+  aplicarCores();
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#FCF4F6';
   $('#menu').innerHTML = menuHtml();
@@ -493,28 +639,36 @@ function abrirModal(html) { const m = $('#modal'); m.innerHTML = `<div class="ja
 function fecharModal() { const m = $('#modal'); m.hidden = true; m.innerHTML = ''; }
 
 function modalAssunto(a) {
-  const ini = segunda(a.dia && a.dia >= hoje() ? a.dia : hoje());
-  const dias = Array.from({ length: 7 }, (_, i) => somaDias(ini, i)).filter(d => d >= hoje());
+  const w0 = semAtual();
+  const semanas = [0, 1, 2, 3].map(i => somaDias(w0, i * 7));
   abrirModal(`<div class="entre"><div>${tag(a.materia)}</div><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
     <h2>${esc(a.titulo)}</h2>
-    <span class="fraco">${a.dia ? 'Marcado para ' + dataLonga(a.dia) : 'Sem dia ainda'} · ${nomeMes(a.mes)}</span>
-    <span class="rotulo">colocar no dia</span>
-    <div class="linha">${dias.map(d => `<button class="chip" aria-pressed="${a.dia === d}" data-acao="marcarDia" data-id="${a.id}" data-v="${d}">${diaCurto(d)}</button>`).join('')}
-      <button class="chip" data-acao="marcarDia" data-id="${a.id}" data-v="">sem dia</button></div>
+    <span class="fraco">${a.feito ? 'Feito' + (a.feitoEm ? ' em ' + dataLonga(a.feitoEm) : '') : `Previsto para a semana de ${semanaCurta(semDe(a))} (${estadoDe(a) === 'atrasado' ? 'atrasado' : estadoDe(a) === 'futuro' ? 'adiantável' : 'esta semana'})`} · ≈ ${fmtMin(minDe(a))} · ${nomeMes(a.mes)}</span>
+    <span class="rotulo">semana prevista</span>
+    <div class="linha">${semanas.map((s, i) => `<button class="chip" aria-pressed="${semDe(a) === s}" data-acao="marcarSemana" data-id="${a.id}" data-v="${s}">${i === 0 ? 'Esta semana' : i === 1 ? 'Próxima' : semanaCurta(s)}</button>`).join('')}</div>
     <div class="linha"><button class="botao" data-acao="feitoAssunto" data-id="${a.id}">${a.feito ? 'Desmarcar feito' : 'Marcar como feito'}</button>
+      ${a.feito ? '' : `<button class="botao claro" data-acao="fazerHoje" data-id="${a.id}">Fazer hoje</button>`}
       <button class="botao contorno" data-acao="proxMes" data-id="${a.id}">Passar pro próximo mês</button>
       <button class="link" data-acao="removerAssunto" data-id="${a.id}">Apagar</button></div>`);
 }
 
-function modalIa() {
+function desenharChat() {
+  if (!ui.chatAberto) return;
+  const m = $('#modal'), antes = $('#ia-texto')?.value ?? ui.iaTexto;
+  const msgs = (S.chat || []).map((x, i, l) => `<div class="msg ${x.r} ${x.erro ? 'erro' : ''}">${esc(x.t)}${x.desfazer && ui.desfazer && i === l.length - 1 ? '<button class="link" data-acao="desfazer">Desfazer</button>' : ''}</div>`).join('');
   const sug = ['Hoje não vou conseguir estudar', 'Tô sem vontade, me ajuda a começar', 'Quero mais matemática essa semana', 'Amanhã tenho compromisso à tarde'];
-  abrirModal(`<div class="entre"><h2>Falar com a IA</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
-    <p class="fraco" style="margin:0">Peça qualquer mudança no plano, ou só desabafe. Ela reorganiza o que precisar.</p>
-    <textarea id="ia-texto" data-ui="iaTexto" placeholder="Ex.: amanhã tenho dentista às 15h">${esc(ui.iaTexto)}</textarea>
-    <div class="linha">${sug.map(s => `<button class="chip" data-acao="sugestaoIa" data-v="${esc(s)}">${esc(s)}</button>`).join('')}</div>
-    <div class="linha"><button class="botao grande" data-acao="enviarIa">Enviar</button></div>`);
-  setTimeout(() => $('#ia-texto')?.focus(), 50);
+  m.innerHTML = `<div class="janela chat" role="dialog" aria-modal="true">
+    <div class="entre"><h2>Falar com a IA</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
+    <div class="msgs" id="msgs">${msgs || '<p class="fraco" style="margin:0">Peça qualquer mudança no plano, ou só desabafe. Ela reorganiza o que precisar.</p>'}
+      ${ui.carregando ? `<div class="msg ia pensando">${esc(ui.carregando)}</div>` : ''}</div>
+    ${(S.chat || []).length ? '' : `<div class="linha">${sug.map(s => `<button class="chip" data-acao="sugestaoIa" data-v="${esc(s)}">${esc(s)}</button>`).join('')}</div>`}
+    <div class="linha" style="flex-wrap:nowrap;align-items:flex-end"><textarea id="ia-texto" data-ui="iaTexto" rows="2" placeholder="Ex.: amanhã tenho dentista às 15h" style="min-height:56px">${esc(antes)}</textarea>
+      <button class="botao" data-acao="enviarIa" ${ui.carregando ? 'disabled' : ''}>Enviar</button></div></div>`;
+  m.hidden = false;
+  const ms = $('#msgs'); if (ms) ms.scrollTop = ms.scrollHeight;
 }
+function modalIa() { ui.chatAberto = true; desenharChat(); setTimeout(() => $('#ia-texto')?.focus(), 50); }
+
 
 function modalTarefa() {
   const opcoes = Object.keys(MATERIAS).map(x => `<option>${x}</option>`).join('');
@@ -582,42 +736,23 @@ function marcarPasso(b, i, ok) {
   if (!p || p.ok === ok) return;
   p.ok = ok;
   S.feitos[h] = Math.max(0, (S.feitos[h] || 0) + (ok ? 1 : -1));
-  if (bloco.assuntoId) { const a = achar(bloco.assuntoId); if (a) a.feito = bloco.passos.every(x => x.ok); }
+  if (bloco.assuntoId) setFeito(achar(bloco.assuntoId), bloco.passos.every(x => x.ok));
 }
 
-function montarSimples() {
-  const h = hoje(), d = diaHoje();
-  let lista = S.assuntos.filter(a => a.dia === h && !a.feito);
-  if (!lista.length) {
-    lista = S.assuntos.filter(a => !a.feito && !a.dia && a.mes === mesDe(h)).slice(0, 2);
-    lista.forEach(a => a.dia = h);
-  }
-  d.blocos = lista.map(a => ({ id: uid(), assuntoId: a.id, titulo: a.titulo, materia: a.materia, inicio: '', fim: '',
-    passos: ['Ler o resumo ou ver a aula (15 min)', 'Fazer 5 exercícios', 'Corrigir e anotar o que errou'].map(t => ({ t, ok: false })) }));
-}
+function contextoAtual() { return [ui.ctxTexto.trim(), ui.ctxEnergia].filter(Boolean).join(' · '); }
 
-function contextoAtual() { return [ui.ctxTexto.trim(), ui.ctxEnergia, ui.ctxTempo && ui.ctxTempo + ' livres'].filter(Boolean).join(' · '); }
-
-function distribuir(ini) {
-  const h = hoje();
-  const dias = Array.from({ length: 7 }, (_, i) => somaDias(ini, i)).filter(d => d >= h);
-  if (!dias.length) return 0;
-  const m = mesDe(dias[0]);
-  const fimMes = somaDias(somaMes(m, 1) + '-01', -1);
-  const semanasRestantes = Math.max(1, Math.ceil((diasAte(fimMes) + 1) / 7));
-  const restantes = S.assuntos.filter(a => a.mes === m && !a.feito).length;
-  const naSemana = S.assuntos.filter(a => !a.feito && a.dia && a.dia >= dias[0] && a.dia <= dias[dias.length - 1]).length;
-  let cota = Math.ceil(restantes / semanasRestantes) - naSemana;
-  const soltos = S.assuntos.filter(a => !a.feito && !a.dia && a.mes === m).sort((a, b) => (b.atrasou || 0) - (a.atrasou || 0));
-  const uteis = dias.filter(d => deIso(d).getDay() !== 0);
-  const alvo = uteis.length ? uteis : dias;
-  let n = 0;
-  for (const a of soltos) {
-    if (cota-- <= 0) break;
-    alvo.sort((x, y) => S.assuntos.filter(b => b.dia === x).length - S.assuntos.filter(b => b.dia === y).length || (x < y ? -1 : 1));
-    a.dia = alvo[0]; n++;
-  }
-  return n;
+/** Cores personalizadas: tudo sai do acento e do fundo escolhidos. */
+function aplicarCores() {
+  const c = S.cores || {}, r = document.documentElement.style;
+  const hex = x => /^#[0-9a-f]{6}$/i.test(x || '');
+  const a = hex(c.acento) ? c.acento : '#C2255C', f = hex(c.fundo) ? c.fundo : '#FFFFFF';
+  const n = parseInt(a.slice(1), 16), lum = (0.299 * (n >> 16) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
+  const set = (k, v) => r.setProperty(k, v);
+  set('--bg', f); set('--acento', a); set('--sobre-acento', lum > 0.62 ? '#16181D' : '#FFFFFF');
+  set('--painel', `color-mix(in srgb, ${f} 93%, #4a5068)`); set('--painel2', `color-mix(in srgb, ${a} 9%, ${f})`);
+  set('--linha', `color-mix(in srgb, #4a5068 13%, ${f})`); set('--suave', `color-mix(in srgb, ${a} 15%, ${f})`);
+  set('--destaque', `color-mix(in srgb, ${a} 26%, ${f})`); set('--sobre-destaque', '#16181D');
+  set('--tinta', `color-mix(in srgb, ${a} 80%, #000)`);
 }
 
 function exportar() {
@@ -632,19 +767,40 @@ function exportar() {
 
 const ACOES = {
   ir: el => { ui.view = el.dataset.v; ui.apagar = false; fecharModal(); window.scrollTo(0, 0); render(); },
-  fechar: () => fecharModal(),
+  fechar: () => { ui.chatAberto = false; fecharModal(); },
   fecharAviso: () => { ui.iaMsg = ''; ui.desfazer = null; render(); },
-  desfazer: () => { if (ui.desfazer) { S = JSON.parse(ui.desfazer); salvar(); } ui.desfazer = null; ui.iaMsg = 'Desfeito.'; render(); },
-  ctx: el => { ui[el.dataset.campo] = ui[el.dataset.campo] === el.dataset.v ? '' : el.dataset.v; render(); },
-  montarDia: () => {
-    const h = hoje(), d = diaHoje();
-    if (!d.contexto) d.contexto = contextoAtual() || 'dia normal';
-    salvar();
-    pedirIa(`Monte meu dia de hoje com a ação blocos_hoje. Contexto de hoje: ${d.contexto}. Comece a partir de ${agoraHm()}.
-Use os assuntos marcados para hoje (${h}); se for pouco para o tempo livre, puxe assuntos sem dia ou atrasados do mês com marcar_dia para hoje. Se ela estiver cansada ou sem vontade, faça um dia mais curto e leve.`, 'Montando seu dia…');
+  desfazer: () => {
+    if (ui.desfazer) { const chat = S.chat; S = { ...JSON.parse(ui.desfazer), chat }; S.chat.push({ r: 'ia', t: 'Desfeito.' }); salvar(); }
+    ui.desfazer = null; ui.iaMsg = 'Desfeito.'; ui.chatAberto ? desenharChat() : render();
   },
-  montarSimples: () => { const d = diaHoje(); d.contexto = contextoAtual() || 'dia normal'; montarSimples(); salvar(); render(); },
-  mudarContexto: () => { const d = diaHoje(); ui.ctxTexto = d.contexto; d.contexto = ''; salvar(); render(); },
+  ctx: el => { ui[el.dataset.campo] = ui[el.dataset.campo] === el.dataset.v ? '' : el.dataset.v; render(); },
+  horas: el => { ui.horas = +el.dataset.v; diaHoje().horas = ui.horas; salvar(); render(); },
+  abrirPlanejar: () => { ui.planejar = true; render(); },
+  fecharPlanejar: () => { ui.planejar = false; render(); },
+  montarDia: () => {
+    const d = diaHoje();
+    const outro = parseFloat($('#horas-livres')?.value);
+    if (outro > 0) d.horas = Math.min(16, outro);
+    if (!d.horas) { ui.iaMsg = 'Escolha quantas horas livres você tem hoje.'; render(); return; }
+    d.contexto = contextoAtual() || 'dia normal';
+    montarHoje(); ui.planejar = false; salvar(); render();
+    if (temChave() && d.blocos.length) pedirIa(`Ajuste e detalhe meu dia. Contexto de hoje: ${d.contexto}. Tenho ${d.horas}h livres (uso ${fmtMin(d.cap)} com a folga de 20%). Devolva blocos_hoje com os assuntos de blocos_de_hoje (mantenha assuntoId e min; só tire ou troque algum se o contexto pedir) e, para cada um, de 3 a 5 passos concretos e específicos do assunto, o primeiro bem fácil. Se eu pedi algo no contexto (ex.: mais de uma matéria), troque os assuntos por outros da lista com o mesmo total de minutos.`, 'Detalhando seus passos…');
+  },
+  maisUm: () => {
+    const d = diaHoje(), a = filaPlano().find(x => !d.blocos.some(b => b.assuntoId === x.id));
+    if (!a) { ui.iaMsg = 'Não há mais assuntos na fila.'; render(); return; }
+    d.blocos.push(blocoDe(a)); d.cap = (d.cap || 0) + minDe(a); salvar(); render();
+  },
+  fazerHoje: el => {
+    const a = achar(el.dataset.id), d = diaHoje();
+    if (a && !d.blocos.some(b => b.assuntoId === a.id)) { d.blocos.push(blocoDe(a)); d.cap = Math.max(d.cap || 0, soma(d.blocos, b => b.min || 0)); }
+    salvar(); fecharModal(); ui.view = 'hoje'; render();
+  },
+  marcarSemana: el => { const a = achar(el.dataset.id); if (a) { a.semana = el.dataset.v; a.mes = mesDe(somaDias(a.semana, 3)); salvar(); } fecharModal(); render(); },
+  anoModo: el => { ui.anoModo = el.dataset.v; render(); },
+  anoMes: el => { ui.anoMes = el.dataset.v; render(); },
+  anoMat: el => { ui.anoMat = ui.anoMat === el.dataset.v ? '' : el.dataset.v; render(); },
+  cor: el => { S.cores = { ...S.cores, [el.dataset.campo]: el.dataset.v }; salvar(); render(); },
   passo: el => { marcarPasso(el.dataset.b, +el.dataset.i, el.checked); salvar(); render(); },
   tirarBloco: el => { const d = diaHoje(); d.blocos = d.blocos.filter(b => b.id !== el.dataset.b); salvar(); render(); },
   novaTarefa: () => modalTarefa(),
@@ -653,7 +809,7 @@ Use os assuntos marcados para hoje (${h}); se for pouco para o tempo livre, puxe
     const passos = $('#t-passos').value.split('\n').map(x => x.trim()).filter(Boolean);
     const d = diaHoje();
     if (!d.contexto) d.contexto = 'dia normal';
-    d.blocos.push({ id: uid(), assuntoId: null, titulo: t, materia: $('#t-materia').value, inicio: '', fim: '',
+    d.blocos.push({ id: uid(), assuntoId: null, titulo: t, materia: $('#t-materia').value, min: 30,
       passos: (passos.length ? passos : ['Começar (5 min)', 'Terminar']).map(x => ({ t: x, ok: false })) });
     salvar(); fecharModal(); render();
   },
@@ -663,21 +819,20 @@ Use os assuntos marcados para hoje (${h}); se for pouco para o tempo livre, puxe
   timerParar: () => { S.timer = null; salvar(); renderTimer(); render(); },
   timerFeito: () => { const t = S.timer; if (t?.b) marcarPasso(t.b, t.i, true); S.timer = null; salvar(); render(); },
   semana: el => { ui.semana = el.dataset.v === '0' ? 0 : ui.semana + +el.dataset.v; render(); },
-  distribuir: el => { const n = distribuir(el.dataset.ini); ui.iaMsg = n ? `Encaixei ${n} ${n === 1 ? 'assunto' : 'assuntos'} nesta semana.` : 'A cota desta semana já está cheia. O resto fica pras próximas.'; ui.desfazer = null; salvar(); render(); },
   reorganizar: el => {
     const ini = el.dataset.ini, fim = somaDias(ini, 6);
-    pedirIa(`Reorganize a semana de ${ini} a ${fim}: encaixe os assuntos sem dia e os atrasados nos dias que faltam (a partir de hoje, ${hoje()}), equilibrando as matérias e respeitando minha rotina, para o mês fechar em dia sem sobrecarregar nenhum dia. Use marcar_dia.`, 'Reorganizando a semana…');
+    pedirIa(`Reorganize a semana de ${ini} a ${fim}: redistribua os assuntos atrasados e os da semana entre as semanas que faltam do mês, equilibrando as matérias e a carga de minutos, para o mês fechar em dia sem sobrecarregar nenhuma semana. Use marcar_semana.`, 'Reorganizando a semana…', 'Reorganize minha semana');
   },
   assunto: el => { const a = achar(el.dataset.id); if (a) modalAssunto(a); },
-  marcarDia: el => { const a = achar(el.dataset.id); if (a) { a.dia = el.dataset.v || null; if (a.dia) a.mes = mesDe(a.dia); salvar(); } fecharModal(); render(); },
-  feitoAssunto: el => { const a = achar(el.dataset.id); if (a) { a.feito = !a.feito; salvar(); } fecharModal(); render(); },
-  proxMes: el => { const a = achar(el.dataset.id); if (a) { a.mes = somaMes(a.mes, 1); a.dia = null; salvar(); } fecharModal(); render(); },
+  feitoAssunto: el => { const a = achar(el.dataset.id); if (a) { setFeito(a, !a.feito); salvar(); } fecharModal(); render(); },
+  proxMes: el => { const a = achar(el.dataset.id); if (a) { a.mes = somaMes(a.mes, 1); a.semana = null; salvar(); } fecharModal(); render(); },
   removerAssunto: el => { S.assuntos = S.assuntos.filter(a => a.id !== el.dataset.id); salvar(); fecharModal(); render(); },
   mes: el => { ui.mes = somaMes(ui.mes, +el.dataset.v); render(); },
   abrirMes: el => { ui.mes = el.dataset.v; ui.view = 'mes'; window.scrollTo(0, 0); render(); },
   addAssunto: () => {
     const t = $('#novo-titulo').value.trim(); if (!t) return;
-    S.assuntos.push({ id: uid(), mes: ui.mes, materia: $('#nova-materia').value, titulo: t, dia: null, feito: false, atrasou: 0 });
+    S.assuntos.push({ id: uid(), mes: ui.mes, materia: $('#nova-materia').value, titulo: t, semana: null, ord: 0.5, feito: false });
+    distribuirSemanas();
     salvar(); render(); $('#novo-titulo')?.focus();
   },
   sugerirMes: () => {
@@ -694,7 +849,6 @@ Use os assuntos marcados para hoje (${h}); se for pouco para o tempo livre, puxe
     aplicarPlanoBase(d); salvar(); ui.mes = mesDe(hoje() > d ? hoje() : d); ui.view = 'ano';
     ui.iaMsg = 'Plano base refeito.'; ui.desfazer = null; render();
   },
-  tema: el => { S.tema = el.dataset.v; salvar(); render(); },
   testarIa: async () => {
     ui.carregando = 'Testando…'; render();
     try { const r = await chamarIa('Responda {"resposta":"ok"} com uma saudação curta e animada para ela no lugar de ok.', 400); ui.iaMsg = 'A IA está funcionando: ' + (r.resposta || 'ok'); }
@@ -707,7 +861,7 @@ Use os assuntos marcados para hoje (${h}); se for pouco para o tempo livre, puxe
   apagarSim: () => { S = JSON.parse(JSON.stringify(VAZIO)); salvar(); ui.apagar = false; ui.view = 'ajustes'; render(); },
   abrirIa: () => modalIa(),
   sugestaoIa: el => { const t = $('#ia-texto'); ui.iaTexto = el.dataset.v; if (t) t.value = el.dataset.v; },
-  enviarIa: () => { const t = ($('#ia-texto')?.value || '').trim(); if (!t) return; ui.iaTexto = ''; pedirIa(t); },
+  enviarIa: () => { const t = ($('#ia-texto')?.value || '').trim(); if (!t || ui.carregando) return; ui.iaTexto = ''; pedirIa(t, 'Pensando…', t); },
 };
 
 document.addEventListener('click', e => {
@@ -722,6 +876,8 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   const el = e.target;
   if (el.dataset.campo) { S.perfil[el.dataset.campo] = el.value.trim(); salvar(); if (el.dataset.campo === 'nome') $('#menu').innerHTML = menuHtml(); }
+  if (el.dataset.cor) { S.cores = { ...S.cores, [el.dataset.cor]: el.value }; salvar(); aplicarCores(); }
+  if (el.id === 'horas-livres') { const v = parseFloat(el.value); if (v > 0) { ui.horas = Math.min(16, v); diaHoje().horas = ui.horas; salvar(); } }
   if (el.dataset.chave) { const ks = lerChaves(); ks[+el.dataset.chave] = el.value.trim(); gravarChaves(ks); }
   if (el.dataset.acaoArquivo === 'importar' && el.files?.[0]) {
     el.files[0].text().then(t => {
@@ -730,6 +886,9 @@ document.addEventListener('change', e => {
       S = Object.assign(JSON.parse(JSON.stringify(VAZIO)), novo); salvar(); ui.iaMsg = 'Cópia restaurada.'; render();
     }).catch(err => { ui.iaMsg = 'Não consegui restaurar: ' + err.message; render(); });
   }
+});
+document.addEventListener('keydown', e => {
+  if (e.target.id === 'ia-texto' && e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); ACOES.enviarIa(); }
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { rolar(); render(); } });
 

@@ -51,28 +51,31 @@ function montarPlanoBase(inicio) {
   for (const p of pesos) { ac += p / total; limites.push(ac); }
 
   const assuntos = [];
-  const novo = (mes, materia, titulo) => assuntos.push({ id: uid(), mes, materia, titulo, dia: null, feito: false, atrasou: 0 });
+  // ord (0 a 1) é a posição dentro do mês: mistura as matérias ao repartir em semanas. min = minutos estimados.
+  const novo = (mes, materia, titulo, ord = 0.5, min = 0) => assuntos.push({ id: uid(), mes, materia, titulo, semana: null, ord, min, feito: false });
   for (const [materia, lista] of Object.entries(CONTEUDO)) {
+    const n = lista.length, noMes = {};
     lista.forEach((t, i) => {
-      const pos = (i + 0.5) / lista.length;
-      novo(meses[Math.max(0, limites.findIndex(l => pos <= l + 1e-9))] || meses[meses.length - 1], materia, t);
+      const mes = meses[Math.max(0, limites.findIndex(l => (i + 0.5) / n <= l + 1e-9))] || meses[meses.length - 1];
+      (noMes[mes] ||= []).push(t);
     });
+    for (const [mes, ts] of Object.entries(noMes)) ts.forEach((t, j) => novo(mes, materia, t, (j + Math.random() * 0.3 + 0.2) / ts.length));
   }
   // redação: um tema por semana ao longo do estudo
   let k = 0;
-  for (const m of meses) for (let s = 0; s < 4; s++) novo(m, 'Redação', `Redação ${k + 1}: ${TEMAS_REDACAO[k++ % TEMAS_REDACAO.length]}`);
+  for (const m of meses) for (let s = 0; s < 4; s++) novo(m, 'Redação', `Redação ${k + 1}: ${TEMAS_REDACAO[k++ % TEMAS_REDACAO.length]}`, (s + 0.5) / 4, 60);
 
   // revisão e reta final
   const rev = ['Biologia', 'Química', 'Física', 'Matemática', 'História', 'Geografia', 'Português', 'Literatura'];
   ['2027-07', '2027-08'].forEach((m, j) => {
-    rev.forEach((mat, i) => { if (i % 2 === j) { novo(m, mat, `Revisão geral de ${mat}: erros do caderno`); novo(m, mat, `Questões de provas antigas: ${mat}`); } });
-    for (let s = 0; s < 4; s++) novo(m, 'Redação', `Redação de revisão ${j * 4 + s + 1}: ${TEMAS_REDACAO[(k++) % TEMAS_REDACAO.length]}`);
+    rev.forEach((mat, i) => { if (i % 2 === j) { novo(m, mat, `Revisão geral de ${mat}: erros do caderno`, 0.3 + i / 20, 120); novo(m, mat, `Questões de provas antigas: ${mat}`, 0.6 + i / 20, 120); } });
+    for (let s = 0; s < 4; s++) novo(m, 'Redação', `Redação de revisão ${j * 4 + s + 1}: ${TEMAS_REDACAO[(k++) % TEMAS_REDACAO.length]}`, (s + 0.5) / 4, 60);
   });
   ['2027-09', '2027-10', '2027-11', '2027-12'].forEach(m => {
-    for (let s = 1; s <= 2; s++) novo(m, 'Matemática', `Simulado ${m.slice(5)}/${s}: exatas`);
-    novo(m, 'Biologia', `Simulado ${m.slice(5)}: biológicas e química`);
-    novo(m, 'Português', `Simulado ${m.slice(5)}: humanas e linguagens`);
-    for (let s = 0; s < 3; s++) novo(m, 'Redação', `Redação ${m.slice(5)}/${s + 1}: ${TEMAS_REDACAO[(k++) % TEMAS_REDACAO.length]}`);
+    for (let s = 1; s <= 2; s++) novo(m, 'Matemática', `Simulado ${m.slice(5)}/${s}: exatas`, s * 0.4, 240);
+    novo(m, 'Biologia', `Simulado ${m.slice(5)}: biológicas e química`, 0.5, 240);
+    novo(m, 'Português', `Simulado ${m.slice(5)}: humanas e linguagens`, 0.9, 240);
+    for (let s = 0; s < 3; s++) novo(m, 'Redação', `Redação ${m.slice(5)}/${s + 1}: ${TEMAS_REDACAO[(k++) % TEMAS_REDACAO.length]}`, (s + 0.5) / 4, 60);
   });
 
   const focos = {};
