@@ -85,7 +85,7 @@ def cortar(info):
     if len(ls) < 3:
         return None
     ys = [l['y'] for l in ls]
-    i_res = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resolu', l['t'])), None)
+    i_res = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resol\s*u', l['t'], re.I)), None)
     i_resp = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resposta', l['t'])), len(ls))
     alts = [i for i, l in enumerate(ls[:i_resp]) if ALT.match(l['t'])]
     letras = sorted({ALT.match(ls[i]['t']).group(1).lower() for i in alts})

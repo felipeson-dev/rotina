@@ -141,7 +141,7 @@ function finalizarSessao() {
     const m = (porMat[q.materia] ||= { f: 0, a: 0, seg: 0 }); m.f++; m.a += q.certo ? 1 : 0; m.seg += q.seg;
     if (q.id) S.qh[q.id] = { ok: !!q.certo, dia: hoje(), n: (S.qh[q.id]?.n || 0) + 1 }; // histórico por questão, para filtrar "ainda não feitas" e "as que errei"
   }
-  for (const [m, v] of Object.entries(porMat)) { const d = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); d.f += v.f; d.a += v.a; aprenderTempo(m, v.seg, v.f); }
+  for (const [m, v] of Object.entries(porMat)) { const d = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); d.f += v.f; d.a += v.a; d.t = (d.t || 0) + Math.round(v.seg); aprenderTempo(m, v.seg, v.f); }
   for (const q of feitas) {
     const ja = S.erros.find(e => e.enunciado === q.enunciado);
     if (!q.certo) { if (ja) { ja.vezes = (ja.vezes || 0) + 1; ja.resp = q.resp; ja.rev = somaDias(hoje(), 3); } else S.erros.push({ id: uid(), dia: hoje(), rev: somaDias(hoje(), 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment, qid: q.id || '', imagens: (q.imagens || []).filter(u => /^https:/.test(u)), modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '' }); }

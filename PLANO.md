@@ -102,3 +102,7 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - NOVA FONTE: resoluções comentadas do Curso Objetivo (curso-objetivo.br + API sistemas.objetivo.br/ResolucaoComentadaApi/templates/prova/<cod>): gabarito oficial + imagem de cada questão com a resolução. ferramentas/objetivo.py baixa, faz OCR com o Windows (ferramentas/ocr.ps1, pt-BR) e acha o corte entre enunciado e "Resolução". O app mostra a imagem direto do site, recortada (modo 'objetivo'); depois de responder, a resolução. A imagem fica em cache no service worker depois da 1ª vez.
 - ferramentas/oficiais.py roda tudo (bancas de SP, medicina, exatas, ENEM), classifica matéria (classificar.py, Gemini lite, chaves só no ambiente) e gera pacotes 6 a 9 em para-o-ipad.
 - metas.js: painel "Questões de hoje" (meta = soma das metas das matérias do dia; +5/+10/+20 e "fiz fora do app" com acertos opcionais; semana). Metas saíram de Ajustes.
+## v12 (27/10/2026)
+- Foco removido (o iPad não deixa app web ler o Tempo de Uso).
+- metas.js reescrito: meta do dia = UM total (planoQ.total, por dia da semana em planoQ.dias, compensa até 25% do que faltou ontem), repartido pelas matérias do dia por pesos (Mat/Fís/Quím 1, demais 2). Períodos Hoje/Semana/Mês/Tudo (feitas, acerto, tempo, dias que bateu), gráfico com linha da meta, planejamento por texto (IA) e aviso se a meta passa do tempo do dia. qlog guarda {f,a,s,t}.
+- objetivo.py: regex de "Resolução" aceita OCR quebrado ("Resol u..."); "falhas" no log é cumulativo por banca.
