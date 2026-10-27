@@ -92,3 +92,8 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Gerar cartões e questões da IA: quantidade livre (contador − / +), em lotes. Cartões: pergunta rosa, resposta azul, conferido em foto.
 - foco.js: aba Foco (diário de distrações: cronômetro, app, gatilho, justificativa, ler captura do Tempo de Uso com a IA, relatório semanal e análise). O iPad não deixa app web ler o Tempo de Uso sozinho.
 - O token do Hugging Face foi colado no chat: usado só no PC para baixar; não gravar. Sugerir revogar.
+## v10 (27/10/2026): figuras e fórmulas
+- montar_banco.py agora traz figuras: UNESP/Vunesp 2014-2025 (985 questões, 424 com figura; repo lubashima/UNESP-University_Entrance_Exam-PTBR), Unicamp 2019-2025 (535, 200 com figura; images.rar extraído com tar), BLUEX USP/Unicamp (1018, 454 com figura). Imagens reduzidas a JPEG 860px q70 (~40 KB) e embutidas na questão (data URI). Pillow e pyarrow só em C:\rotina-banco\libs.
+- Pacotes para o iPad em C:\rotina-banco\para-o-ipad (.json.gz, 71,7 MB no total; o app lê .gz): 1-com-figuras (46 MB), 2-Quimica-Fisica-Biologia, 3-Portugues-Sociologia-Filosofia, 4-Historia, 5-Geografia. Total ~63 mil questões.
+- Fórmulas LaTeX das provas renderizam com KaTeX (cdnjs, cacheado pelo service worker).
+- ENEM de enem.dev traz figuras por URL (precisa de internet).

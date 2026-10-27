@@ -107,7 +107,7 @@ function qMontar() {
     ${todos.length ? `<div class="linha">${Object.entries(porMat).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([m, n]) => `<span class="tag" style="${cor(m)}">${esc(m)} · ${n.toLocaleString('pt-BR')}</span>`).join('')}</div>` : ''}
     ${BANCO.msg ? `<p style="margin:0">${esc(BANCO.msg)}</p>` : ''}
     <div class="linha"><button class="botao claro" data-acao="bancoEnem" ${BANCO.baixando ? 'disabled' : ''}>${BANCO.baixando ? 'Baixando…' : todos.some(q => q.b === 'ENEM') ? 'Atualizar ENEM' : 'Baixar o ENEM (2009–2023)'}</button>
-      <label class="botao claro" style="display:inline-flex;align-items:center">Importar arquivos<input type="file" accept="application/json,.json" multiple data-acao-arquivo="bancoImportar" hidden></label>
+      <label class="botao claro" style="display:inline-flex;align-items:center">Importar arquivos<input type="file" accept="application/json,.json,.gz,application/gzip" multiple data-acao-arquivo="bancoImportar" hidden></label>
       <button class="link" data-acao="bancoAjuda">Como importar?</button></div></section>
     <section class="cartao"><h2>Escolha as questões</h2>
       ${todos.length ? `<div class="coluna" style="gap:8px"><span class="rotulo">grupos de bancas</span><div class="linha">${Object.entries(PRESETS_BANCA).map(([k, [t]]) => `<button class="chip" data-acao="qfPreset" data-v="${k}" aria-pressed="${f.preset === k}">${t} · ${contaPreset(k).toLocaleString('pt-BR')}</button>`).join('')}</div></div>
@@ -201,7 +201,7 @@ function normalizarImportada(q, i) {
   const gab = String(q.gab || q.gabarito || '').toUpperCase().trim();
   if (alts.length < 2 || !/^[A-E]$/.test(gab)) return null;
   return { id: q.id || `imp-${Date.now().toString(36)}-${i}`, banca: String(q.banca || 'Importada'), tipo: 'real', ano: +q.ano || 0, area: q.area || '', materia: q.materia || '', assunto: q.assunto || '', dif: q.dif || q.dificuldade || '', fig: q.fig ? 1 : 0,
-    enunciado: String(q.enunciado || q.pergunta), imagens: (q.imagens || []).filter(u => /^https:/.test(u)), alts, gab, coment: String(q.coment || q.comentario || ''), fonte: q.fonte || '' };
+    enunciado: String(q.enunciado || q.pergunta), imagens: (q.imagens || []).filter(u => /^(https:|data:image\/)/.test(u)), alts, gab, coment: String(q.coment || q.comentario || ''), fonte: q.fonte || '' };
 }
 
 Object.assign(ACOES, {
@@ -281,7 +281,8 @@ document.addEventListener('change', e => {
       for (const arq of arquivos) {
         try {
           BANCO.msg = `Lendo ${arq.name}…`; render();
-          const j = JSON.parse(await arq.text()), lista = Array.isArray(j) ? j : j.questoes || [];
+          const txt = /\.gz$/i.test(arq.name) ? await new Response(arq.stream().pipeThrough(new DecompressionStream('gzip'))).text() : await arq.text();
+          const j = JSON.parse(txt), lista = Array.isArray(j) ? j : j.questoes || [];
           const ok = lista.map(normalizarImportada).filter(Boolean); ignoradas += lista.length - ok.length;
           BANCO.msg = `Guardando ${ok.length.toLocaleString('pt-BR')} questões de ${arq.name}…`; render();
           total += await adicionarQuestoes(ok);
@@ -291,4 +292,13 @@ document.addEventListener('change', e => {
     })();
   }
 });
+
+// fórmulas (LaTeX das provas) viram matemática de verdade quando o KaTeX carrega (precisa de internet na primeira vez)
+function tipografarMath() {
+  if (!window.renderMathInElement) return;
+  const el = document.getElementById('tela'); if (!el) return;
+  try { window.renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '\\[', right: '\\]', display: true }, { left: '\\(', right: '\\)', display: false }, { left: '$', right: '$', display: false }], throwOnError: false }); } catch { }
+}
+{ const r1 = render; render = function () { r1.apply(this, arguments); tipografarMath(); }; }
+window.addEventListener('load', () => setTimeout(() => render(), 300));
 render();

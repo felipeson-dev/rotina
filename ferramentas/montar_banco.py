@@ -66,7 +66,7 @@ def materia_de(texto):
             return v
     return ''
 
-def monta(id_, banca, ano, materia, enun, alts, gab, assunto='', dif='', coment='', fonte=''):
+def monta(id_, banca, ano, materia, enun, alts, gab, assunto='', dif='', coment='', fonte='', imagens=None):
     enun = limpa(enun)
     gab = str(gab).strip().upper()
     alts = [limpa(a) for a in alts]
@@ -76,9 +76,10 @@ def monta(id_, banca, ano, materia, enun, alts, gab, assunto='', dif='', coment=
     if k in VISTAS:
         return None
     VISTAS.add(k)
-    fig = 1 if re.search(r'\b(imagem|figura|charge|tirinha|gr[aá]fico|mapa|ilustra|tabela|quadro|foto)\b', enun.lower()) and len(enun) < 700 else 0
+    imagens = imagens or []
+    fig = 0 if imagens else 1 if re.search(r'\b(imagem|figura|charge|tirinha|gr[aá]fico|mapa|ilustra|tabela|quadro|foto)\b', enun.lower()) and len(enun) < 700 else 0
     return {'id': id_, 'banca': banca, 'ano': ano, 'area': AREA.get(materia, ''), 'materia': materia, 'assunto': assunto, 'dif': dif, 'fig': fig,
-            'enunciado': enun, 'alts': [{'l': 'ABCDE'[i], 't': t} for i, t in enumerate(alts)], 'gab': gab, 'coment': coment, 'fonte': fonte}
+            'enunciado': enun, 'imagens': imagens, 'alts': [{'l': 'ABCDE'[i], 't': t} for i, t in enumerate(alts)], 'gab': gab, 'coment': coment, 'fonte': fonte}
 
 def salvar(nome, itens):
     p = os.path.join(SAIDA, nome)
@@ -99,38 +100,104 @@ def canon(titulo):
         base += ' Medicina'
     alias = {'FUVEST': 'Fuvest', 'Fuvest': 'Fuvest', 'USP': 'USP'}
     return alias.get(base, base) or titulo
-# ---------- Unicamp 2019-2025 (Objetivo) ----------
-def unicamp():
+# ---------- imagens: reduz e converte para JPEG (data URI) para caber no aparelho ----------
+def img_uri(dados, largura=860, qualidade=70):
+    sys.path.insert(0, os.path.join(SAIDA, 'libs'))
+    from PIL import Image
+    import base64, io
+    im = Image.open(io.BytesIO(dados))
+    if im.mode in ('RGBA', 'LA', 'P'):
+        im = im.convert('RGBA'); fundo = Image.new('RGB', im.size, (255, 255, 255)); fundo.paste(im, mask=im.split()[-1]); im = fundo
+    else:
+        im = im.convert('RGB')
+    if im.width > largura:
+        im = im.resize((largura, round(im.height * largura / im.width)), Image.LANCZOS)
+    b = io.BytesIO(); im.save(b, 'JPEG', quality=qualidade, optimize=True)
+    return 'data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode()
+
+def baixa_bytes(url):
+    req = urllib.request.Request(url, headers={'User-Agent': 'rotina-banco'} | ({'Authorization': 'Bearer ' + TOKEN} if TOKEN else {}))
+    for i in range(4):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return r.read()
+        except Exception:
+            time.sleep(2 + i * 3)
+    return None
+
+def estilo_objetivo(nome_arq, fonte_ds, banca, base_img, ler_img):
+    """Conjuntos no formato 'Objetivo' (Unicamp, UNESP): options + answer (índice 0) + image_png."""
     out = []
-    for r in linhas('letmarchezi/unicamp_2019_2025', 'default', 'train'):
-        if r.get('image_type'):
-            continue
-        m = materia_de(r.get('category_en') or r.get('category_original_lang'))
+    for n, r in enumerate(nome_arq):
         opts = r['options'] if isinstance(r['options'], list) else []
         try:
             gab = 'ABCDE'[int(r['answer'])]
         except Exception:
             continue
-        q = monta(f"unicamp-{r['file_name']}-{r['original_question_num']}", 'Unicamp', ano_de(r['file_name']), m, r['question'], opts, gab, fonte='letmarchezi/unicamp_2019_2025')
+        imgs = []
+        if r.get('image_png'):
+            dados = ler_img(r['image_png'])
+            if not dados:
+                continue
+            try:
+                imgs = [img_uri(dados)]
+            except Exception:
+                continue
+        q = monta(f"{banca.lower()}-{r['file_name']}-{r['original_question_num']}", banca, ano_de(r['file_name']), materia_de(r.get('category_en') or r.get('category_original_lang')),
+                  r['question'], opts, gab, fonte=fonte_ds, imagens=imgs)
         if q:
             out.append(q)
-    salvar('unicamp.json', out)
+        if n % 100 == 0:
+            print(f'  {banca}: {n}/{len(nome_arq)}', flush=True)
+    return out
 
-# ---------- BLUEX (USP e Unicamp), só questões sem figura ----------
+# ---------- Unicamp 2019-2025 (Objetivo), com figuras ----------
+def unicamp():
+    d = json.load(open(os.path.join(SAIDA, 'cache', 'UNICAMP_bruto.json'), encoding='utf-8'))
+    pasta = os.path.join(SAIDA, 'cache', 'unicamp_img', 'images')
+    def ler(nome):
+        p = os.path.join(pasta, nome)
+        return open(p, 'rb').read() if os.path.exists(p) else None
+    salvar('unicamp.json', estilo_objetivo(d, 'letmarchezi/unicamp_2019_2025', 'Unicamp', pasta, ler))
+
+# ---------- UNESP (Vunesp) 2014-2025, com figuras ----------
+def unesp():
+    d = json.load(open(os.path.join(SAIDA, 'cache', 'UNESP_bruto.json'), encoding='utf-8'))
+    def ler(nome):
+        return baixa_bytes('https://huggingface.co/datasets/lubashima/UNESP-University_Entrance_Exam-PTBR/resolve/main/images/' + urllib.parse.quote(nome))
+    salvar('unesp-vunesp.json', estilo_objetivo(d, 'lubashima/UNESP-University_Entrance_Exam-PTBR', 'UNESP', None, ler))
+
+# ---------- BLUEX (USP e Unicamp), com figuras ----------
 def bluex():
+    sys.path.insert(0, os.path.join(SAIDA, 'libs'))
+    import pyarrow.parquet as pq, base64
+    arq = os.path.join(SAIDA, 'cache', 'bluex.parquet')
+    if not os.path.exists(arq):
+        dados = baixa_bytes('https://huggingface.co/datasets/portuguese-benchmark-datasets/BLUEX/resolve/main/data/questions-00000-of-00001.parquet')
+        open(arq, 'wb').write(dados)
     out = []
-    for r in linhas('portuguese-benchmark-datasets/BLUEX', 'default', 'questions'):
-        if r.get('has_associated_images'):
+    for n, r in enumerate(pq.read_table(arq).to_pylist()):
+        if str(r.get('alternatives_type')).lower().startswith('image'):
             continue
         alts = r['alternatives'] if isinstance(r['alternatives'], list) else []
         alts = [re.sub(r'^\s*[a-eA-E]\)\s*', '', a) for a in alts]
+        imgs = []
+        if r.get('has_associated_images'):
+            for b in r.get('associated_images') or []:
+                try:
+                    imgs.append(img_uri(base64.b64decode(b)))
+                except Exception:
+                    imgs = None; break
+            if not imgs:
+                continue
         parts = str(r['id']).split('_')
-        banca = parts[0].upper().replace('UNICAMP', 'Unicamp')
-        q = monta(f"bluex-{r['id']}", banca, int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 0, materia_de(r.get('subject')), r['question'], alts, r['answer'], fonte='BLUEX')
+        banca = 'Unicamp' if parts[0].upper() == 'UNICAMP' else parts[0].upper()
+        q = monta(f"bluex-{r['id']}", banca, int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 0, materia_de(r.get('subject')), r['question'], alts, r['answer'], fonte='BLUEX', imagens=imgs)
         if q:
             out.append(q)
+        if n % 200 == 0:
+            print(f'  BLUEX: {n}', flush=True)
     salvar('usp-unicamp-bluex.json', out)
-
 # ---------- ENEM 2024 (Maritaca) ----------
 def enem2024():
     out = []
@@ -198,7 +265,7 @@ def grande():
     for k in range(0, len(out), 12000):    # arquivos de ~15 MB: mais leves para o iPad
         salvar(f'vestibulares-65k-parte{k // 12000 + 1}.json', out[k:k + 12000])
 if __name__ == '__main__':
-    etapas = [unicamp, bluex, enem2024, ceia] + ([grande] if TOKEN else [])
+    etapas = [unesp, unicamp, bluex, enem2024, ceia] + ([grande] if TOKEN else [])
     if '--so' in sys.argv:  # ex.: --so bluex,unicamp
         pedidas = sys.argv[sys.argv.index('--so') + 1].split(',')
         etapas = [f for f in etapas + [grande] if f.__name__ in pedidas]
