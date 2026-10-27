@@ -50,8 +50,21 @@ const icone = n => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
 const VAZIO = {
   perfil: { nome: 'Uany Rebeca', vestibular: 'ENEM e, logo depois, Medicina em SP: USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo e FMABC', dataProva: '', fortes: '', fracas: '', horarios: '',
     jeito: 'Primeiro foco total no ENEM. Cerca de 2 dias depois do ENEM, começar a estudar para as provas de Medicina em SP (USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC).' },
-  tema: 'caderno', fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, timer: null,
+  tema: 'caderno', fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, timer: null, provas: [], semeado: false,
 };
+
+const provasFuturas = () => (S.provas || []).filter(p => okData(p.data) && p.data >= hoje()).sort((a, b) => a.data < b.data ? -1 : 1);
+const proximaProva = () => provasFuturas()[0];
+const ultimaProva = () => provasFuturas().slice(-1)[0];
+
+/** Troca o plano pelo plano base (SP) a partir de `inicio`. Só usa dados novos; o perfil fica. */
+function aplicarPlanoBase(inicio) {
+  const b = montarPlanoBase(inicio);
+  S.fases = b.fases; S.meses = b.meses; S.assuntos = b.assuntos; S.dias = {}; S.timer = null;
+  S.provas = PROVAS_BASE.map(p => ({ ...p })); S.semeado = true;
+  const ini = segunda(hoje());
+  for (let i = 0; i < 3; i++) distribuir(somaDias(ini, i * 7));
+}
 
 function carregar() {
   let s = null;
@@ -104,7 +117,7 @@ function sequencia() {
 // ---------- IA ----------
 function sistema() {
   const p = S.perfil;
-  const falta = okData(p.dataProva) ? ` A prova é em ${p.dataProva} (faltam ${diasAte(p.dataProva)} dias).` : '';
+  const falta = provasFuturas().length ? ` Provas: ${provasFuturas().map(x => `${x.nome} em ${x.data}${x.estimada ? ' (data estimada)' : ''}`).join('; ')}.` : '';
   return [
     `Você é a assistente de estudos de ${p.nome || 'uma estudante'}, que estuda para o vestibular (${p.vestibular || 'ENEM'}).${falta}`,
     'Fale em português do Brasil, de um jeito leve, acolhedor e direto, com frases curtas. Nada de sermão ou culpa.',
@@ -155,6 +168,7 @@ Ações possíveis (use só as necessárias; lista vazia se for só conversa):
 - {"tipo":"blocos_hoje","blocos":[{"assuntoId":"<id ou null>","titulo":"...","materia":"...","inicio":"HH:MM","fim":"HH:MM","passos":["...","..."]}]}  (substitui os blocos de hoje)
 - {"tipo":"foco_mes","mes":"AAAA-MM","foco":"1 frase com as prioridades do mês"}
 - {"tipo":"fases","fases":[{"nome":"...","inicio":"AAAA-MM","fim":"AAAA-MM","objetivo":"..."}]}  (substitui as fases do ano)
+- {"tipo":"prova","nome":"<nome da prova, igual ou novo>","data":"AAAA-MM-DD","estimada":false}  (corrige ou cria a data de uma prova)
 - {"tipo":"lembrar","texto":"preferência dela, curta"}  (quando ela disser como gosta das coisas)
 Regras: matérias válidas: ${Object.keys(MATERIAS).join(', ')}. Use os ids exatamente como vieram. Mexa só no necessário.
 Atrasos não são problema: encaixe nos próximos dias para o mês fechar. Blocos de 25 a 50 min com pausas entre eles; 2 a 4 passos por bloco, o primeiro bem fácil.`;
@@ -165,7 +179,7 @@ function contextoIa() {
   return {
     hoje: h,
     semana_atual: Array.from({ length: 7 }, (_, i) => somaDias(ini, i)),
-    prova: S.perfil.dataProva || null,
+    provas: provasFuturas().slice(0, 8),
     fases: S.fases,
     foco_dos_meses: S.meses,
     assuntos: S.assuntos.filter(a => a.mes <= somaMes(m, 1) && (!a.feito || a.mes === m))
@@ -216,6 +230,12 @@ function aplicar(acoes) {
               .map(f => ({ nome: String(f.nome || 'Fase'), inicio: f.inicio, fim: f.fim, objetivo: String(f.objetivo || '') }));
             n++;
           } break;
+        case 'prova': {
+          if (!a.nome || !okData(a.data)) break;
+          const p = (S.provas ||= []).find(y => y.nome.toLowerCase() === String(a.nome).toLowerCase());
+          if (p) { p.data = a.data; p.estimada = !!a.estimada; } else S.provas.push({ nome: String(a.nome).slice(0, 60), data: a.data, estimada: !!a.estimada });
+          n++; break;
+        }
         case 'lembrar':
           if (a.texto) { S.perfil.jeito = (S.perfil.jeito ? S.perfil.jeito.trim() + '\n' : '') + '- ' + String(a.texto).trim(); n++; } break;
       }
@@ -388,16 +408,21 @@ function vMes() {
 
 function vAno() {
   const p = S.perfil, m0 = mesDe(hoje());
-  if (!okData(p.dataProva)) return `<header><span class="rotulo">ano</span><h1>Seu ano até a prova</h1></header>${avisoIa()}
-    <section class="cartao"><p style="margin:0">Coloque a data da prova em Ajustes para eu montar o ano inteiro.</p>
+  const prox = proximaProva(), ult = ultimaProva();
+  if (!prox) return `<header><span class="rotulo">ano</span><h1>Seu ano até a prova</h1></header>${avisoIa()}
+    <section class="cartao"><p style="margin:0">Ainda não há provas com data. Peça para a IA ou recomece o plano base em Ajustes.</p>
     <div class="linha"><button class="botao" data-acao="ir" data-v="ajustes">Abrir Ajustes</button></div></section>`;
-  const fimM = mesDe(p.dataProva);
+  const fimM = mesDe(ult.data);
   const meses = [];
-  for (let m = m0; m <= fimM && meses.length < 24; m = somaMes(m, 1)) meses.push(m);
-  return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">ano</span>
-      <h1>Faltam ${diasAte(p.dataProva)} dias</h1><span class="fraco">${esc(p.vestibular || 'Vestibular')} · ${dataLonga(p.dataProva)}</span></div>
-    <button class="botao" data-acao="planoAno">${S.fases.length ? 'Refazer o plano com a IA' : 'Montar o plano do ano com a IA'}</button></header>
+  for (let m = m0; m <= fimM && meses.length < 30; m = somaMes(m, 1)) meses.push(m);
+  const linhaProva = x => `<div class="entre prova"><span>${esc(x.nome)}</span><span class="fraco">${okData(x.data) ? `${dataLonga(x.data)}${x.estimada ? ' (estimada)' : ''} · ${diasAte(x.data)} dias` : 'data a confirmar'}</span></div>`;
+  const semData = (S.provas || []).filter(x => !okData(x.data));
+  return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">próxima prova</span>
+      <h1>${esc(prox.nome)} em ${diasAte(prox.data)} dias</h1><span class="fraco">${dataLonga(prox.data)}${prox.estimada ? ' (data estimada)' : ''}</span></div>
+    <button class="botao" data-acao="planoAno">Refazer o plano com a IA</button></header>
     ${avisoIa()}
+    <section class="cartao"><h2>Provas</h2>${provasFuturas().concat(semData).map(linhaProva).join('')}
+      <p class="fraco" style="margin:0">As datas de 2027 são estimadas pelo padrão de 2026. Quando saírem os editais, mude pela IA ("a Fuvest será dia tal").</p></section>
     ${S.fases.length ? `<section class="cartao">${fasesHtml()}<div class="coluna" style="gap:6px">${S.fases.map(f =>
       `<div><strong>${esc(f.nome)}</strong> <span class="fraco">· ${nomeMes(f.inicio)} a ${nomeMes(f.fim)}${f.objetivo ? ' — ' + esc(f.objetivo) : ''}</span></div>`).join('')}</div></section>`
       : '<p class="fraco" style="margin:0">A IA divide o tempo até a prova em fases (base, aprofundamento, revisão, reta final) e dá um foco para cada mês.</p>'}
@@ -422,7 +447,6 @@ function vAjustes() {
     <section class="cartao"><h2>Sobre você</h2>
       ${campo('nome', 'Seu nome')}
       ${campo('vestibular', 'Vestibular', 'text', 'Ex.: ENEM, Fuvest, Unicamp')}
-      ${campo('dataProva', 'Data da prova', 'date')}
       ${campo('fortes', 'Matérias em que vai bem')}
       ${campo('fracas', 'Matérias com mais dificuldade')}
       ${caixa('horarios', 'Sua rotina', 'Aulas, trabalho, horários livres. A IA usa para montar os dias.', 'Ex.: aula de seg a sex até 13h; sábado livre; domingo só de manhã')}
@@ -437,6 +461,11 @@ function vAjustes() {
       <label class="campo">Chave 1<input type="password" data-chave="0" value="${esc(ks[0] || '')}" autocomplete="off"></label>
       <label class="campo">Chave 2 (opcional)<input type="password" data-chave="1" value="${esc(ks[1] || '')}" autocomplete="off"></label>
       <div class="linha"><button class="botao claro" data-acao="testarIa">Testar a IA</button></div>
+    </section>
+    <section class="cartao"><h2>Plano base</h2>
+      <p class="fraco" style="margin:0">Todos os assuntos de Medicina em SP, distribuídos até dezembro de 2027. Refazer troca os assuntos e dias (o perfil e as chaves ficam).</p>
+      <label class="campo">Começar a estudar em<input type="date" id="base-inicio" value="${hoje() < '2026-11-17' ? '2026-11-17' : hoje()}"></label>
+      <div class="linha"><button class="botao claro" data-acao="refazerBase">Refazer o plano base</button></div>
     </section>
     <section class="cartao"><h2>Cópia de segurança</h2>
       <p class="fraco" style="margin:0">Os dados ficam neste aparelho. De vez em quando, salve uma cópia.</p>
@@ -656,8 +685,14 @@ Use os assuntos marcados para hoje (${h}); se for pouco para o tempo livre, puxe
     pedirIa(`Sugira os assuntos de ${nomeMes(m)} de ${m.slice(0, 4)} (mês ${m}) com novo_assunto: entre 8 e 16, títulos curtos e específicos, matérias variadas, mais peso nas matérias em que tenho dificuldade${f ? `, na fase "${f.nome}" (${f.objetivo})` : ''}. Não repita assuntos que já existem. Se o mês não tiver foco, defina com foco_mes.`, 'Pensando nos assuntos…');
   },
   planoAno: () => {
-    const p = S.perfil;
-    pedirIa(`Monte meu plano até a prova (${p.dataProva}): use "fases" (3 a 5 fases do mês ${mesDe(hoje())} até ${mesDe(p.dataProva)}, por exemplo base, aprofundamento, revisão e reta final, com objetivo curto) e foco_mes para cada mês desse período. Depois crie os assuntos do mês atual (${mesDe(hoje())}) com novo_assunto (8 a 14), sem repetir os que já existem.`, 'Montando seu ano…');
+    const fim = ultimaProva()?.data || hoje();
+    pedirIa(`Refaça meu plano até a última prova (${fim}): use "fases" (3 a 5 fases do mês ${mesDe(hoje())} até ${mesDe(fim)}, por exemplo base, aprofundamento, revisão e reta final, com objetivo curto) e foco_mes para cada mês desse período. Depois crie os assuntos do mês atual (${mesDe(hoje())}) com novo_assunto (8 a 14), sem repetir os que já existem.`, 'Montando seu ano…');
+  },
+  refazerBase: () => {
+    const d = $('#base-inicio')?.value;
+    if (!okData(d)) return;
+    aplicarPlanoBase(d); salvar(); ui.mes = mesDe(hoje() > d ? hoje() : d); ui.view = 'ano';
+    ui.iaMsg = 'Plano base refeito.'; ui.desfazer = null; render();
   },
   tema: el => { S.tema = el.dataset.v; salvar(); render(); },
   testarIa: async () => {
@@ -700,6 +735,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) { ro
 
 // ---------- início ----------
 if (VIEWS[location.hash.slice(1)] && S.perfil.nome) ui.view = location.hash.slice(1);
+if (!S.semeado && !S.assuntos.length) { aplicarPlanoBase(hoje()); salvar(); } // 1ª abertura: começa hoje, para testar. Em Ajustes dá para recomeçar em 17/11.
 rolar();
 render();
 try { navigator.storage?.persist?.(); } catch { }
