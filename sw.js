@@ -1,5 +1,5 @@
 // Guarda o app para abrir sem internet. Ao mudar arquivos, subir a VERSAO.
-const VERSAO = 'rotina-1';
+const VERSAO = 'rotina-2';
 const ARQUIVOS = ['./', 'index.html', 'app.css', 'app.js', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
 
 self.addEventListener('install', e => {

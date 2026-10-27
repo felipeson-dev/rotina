@@ -37,8 +37,12 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - **Testado:** telas no Chrome headless (perfil temporário) com dados de exemplo.
 - **Não testado:** a chamada real da IA (falta a chave), e o app no iPad.
 
+## Publicado (27/10/2026)
+- Git e gh instalados; login feito como felipeson-dev. Repo: https://github.com/felipeson-dev/rotina (público). Link do app: https://felipeson-dev.github.io/rotina/
+- Para atualizar: subir `VERSAO` no sw.js, depois `git add -A; git commit -m ...; git push` (em C:\rotina; recarregar o PATH se o terminal for antigo).
+
 ## Próximos passos
-1. Publicar no GitHub Pages. O PC não tem git nem gh. Proposta: instalar Git e GitHub CLI com o winget (pedir autorização ao Felipe), ele faz `gh auth login` uma vez, depois criar o repositório público e ativar o Pages.
+1. (FEITO) Publicar no GitHub Pages. O PC não tem git nem gh. Proposta: instalar Git e GitHub CLI com o winget (pedir autorização ao Felipe), ele faz `gh auth login` uma vez, depois criar o repositório público e ativar o Pages.
 2. No iPad: Safari → link → Compartilhar → "Adicionar à Tela de Início". Depois colar as chaves em Ajustes e tocar em "Testar a IA".
 3. Ajustar conforme o uso dela.
 4. v2: Apple Pencil (redação e flashcards à mão, rascunho que vira tarefas).

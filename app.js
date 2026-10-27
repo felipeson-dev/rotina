@@ -48,7 +48,8 @@ const icone = n => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
 
 // ---------- dados ----------
 const VAZIO = {
-  perfil: { nome: '', vestibular: 'ENEM', dataProva: '', fortes: '', fracas: '', horarios: '', jeito: '' },
+  perfil: { nome: 'Uany Rebeca', vestibular: 'ENEM e, logo depois, Medicina em SP: USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo e FMABC', dataProva: '', fortes: '', fracas: '', horarios: '',
+    jeito: 'Primeiro foco total no ENEM. Cerca de 2 dias depois do ENEM, começar a estudar para as provas de Medicina em SP (USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC).' },
   tema: 'caderno', fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, timer: null,
 };
 
@@ -65,6 +66,12 @@ function salvar() {
 function lerChaves() { try { return JSON.parse(localStorage.getItem(CHAVE_IA) || '[]'); } catch { return []; } }
 function gravarChaves(ks) { try { localStorage.setItem(CHAVE_IA, JSON.stringify(ks)); } catch { } }
 const temChave = () => lerChaves().some(k => k && k.trim());
+
+// Link de configuração única: #k=<base64 de ["chave1","chave2"]>. Guarda no aparelho e apaga do endereço.
+try {
+  const m = location.hash.match(/^#k=(.+)$/);
+  if (m) { const ks = JSON.parse(atob(decodeURIComponent(m[1]))); if (Array.isArray(ks)) gravarChaves(ks.map(String)); history.replaceState(null, '', location.pathname); }
+} catch { }
 
 let S = carregar();
 const ui = { view: S.perfil.nome ? 'hoje' : 'ajustes', mes: mesDe(hoje()), semana: 0, iaMsg: '', desfazer: null, carregando: '',
