@@ -82,3 +82,8 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - mais.js: Pendências (IA entende texto; avisos com o app aberto + .ics p/ o Calendário do iPad, único jeito de avisar com o app fechado sem servidor), metas diárias de questões por matéria (S.metaQ; padrão 50 mat/fís/quím e 100 nas demais), minutos por questão editáveis (S.minQ), tempo do assunto à mão (a.manual).
 - Integração: setFeito sincroniza os passos do bloco de hoje nos dois sentidos. Rotina base só em Meu dia (Ajustes aponta para lá).
 - Cartões: quantidade livre (1-50), pergunta rosa e resposta azul.
+## v8 (27/10/2026): banco grande
+- banco.js reescrito: IndexedDB "rotina-banco" (store q = questão completa, m = lista de fichas leves em memória). Filtros: grupos de bancas (SP, Medicina, "exigentes"), busca de banca, ano, matéria, dificuldade, assunto, área, novas/erradas/acertadas, sem figura. Resolução pela IA + caixa de dúvidas por questão (salvas na questão).
+- ferramentas/montar_banco.py: baixa conjuntos abertos do Hugging Face e gera JSON em C:\rotina-banco (FORA do repositório; licença dos conjuntos é desconhecida, uso pessoal). Fontes: CEIA-POSITIVO/vestibular-gen_qa (15,3 mil, só História e Geografia, 354 bancas do país), BLUEX (USP/Unicamp sem figura), letmarchezi/unicamp_2019_2025, maritaca-ai/enem 2024. Com --token hf_xxx baixa também Fazzioni/Vestibular_65k_sem_imagem (65 mil, todas as matérias; conjunto "gated": exige conta grátis e aceitar os termos).
+- datasets-server do HF limita pedidos (429): o script espera e guarda cache de páginas em C:\rotina-banco\cache (pode apagar depois).
+- Teste: o Chrome headless com --virtual-time-budget NÃO espera IndexedDB; usar o controle por DevTools (scratchpad cdp.ps1) ou esperar em tempo real.

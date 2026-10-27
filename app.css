@@ -429,3 +429,10 @@ details summary { cursor: pointer; }
 .lado .cartao-texto { box-shadow: none; }
 .lado.pergunta .cartao-texto { color: #4A1230; } .lado.resposta .cartao-texto { color: #12305F; }
 .cartao-rev hr { display: none; }
+/* ---------- v8: banco grande, resolução e dúvidas ---------- */
+input[type="search"] { width: 100%; border: 1.5px solid var(--linha); background: var(--painel); border-radius: 14px; padding: 11px 14px; min-height: 46px; outline: none; }
+input[type="search"]:focus { border-color: var(--acento); }
+.ajuda-ia { display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--linha); padding-top: 14px; }
+.res-ia { background: var(--painel2); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.msgs-duv { display: flex; flex-direction: column; gap: 8px; }
+.chip small { opacity: .65; }
