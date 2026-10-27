@@ -37,6 +37,7 @@ const BD = {
   },
   async get(id) { const db = await this.abrir(); return new Promise(ok => { const q = db.transaction('q').objectStore('q').get(id); q.onsuccess = () => ok(q.result || null); q.onerror = () => ok(null); }); },
   async meta() { const db = await this.abrir(); return new Promise(ok => { const q = db.transaction('m').objectStore('m').get('lista'); q.onsuccess = () => ok(q.result || []); q.onerror = () => ok([]); }); },
+  async del(ids) { const db = await this.abrir(); return new Promise(ok => { const t = db.transaction('q', 'readwrite'), s = t.objectStore('q'); ids.forEach(id => s.delete(id)); t.oncomplete = ok; t.onerror = ok; }); },
   async cada(fn) { const db = await this.abrir(); return new Promise(ok => { const r = db.transaction('q').objectStore('q').openCursor(); r.onsuccess = () => { const c = r.result; if (!c) return ok(); fn(c.value); c.continue(); }; r.onerror = () => ok(); }); },
   async setMeta(l) { const db = await this.abrir(); return new Promise(ok => { const t = db.transaction('m', 'readwrite'); t.objectStore('m').put(l, 'lista'); t.oncomplete = ok; t.onerror = ok; }); },
 };
@@ -56,7 +57,7 @@ function tokensBusca(q) {
 /** Começo do enunciado para a lista (sem fórmulas nem marcações). */
 const previa = s => String(s || '').replace(/\$\$?[^$]*\$\$?/g, ' [fórmula] ').replace(/[*_#|>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 130);
 const META_V = 2;   // muda quando a ficha leve ganha campos: refaz as fichas a partir das questões guardadas
-const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(q.assunto).slice(0, 140), as: q.assunto || '', x: normBusca(q.enunciado).slice(0, 400), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0 });
+const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(q.assunto).slice(0, 140), as: q.assunto || '', x: normBusca(q.enunciado).slice(0, 400), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0, v: +q.v || 0 });
 
 async function carregarBanco() {
   if (BANCO.pronto || BANCO.carregando) return;
@@ -81,17 +82,27 @@ async function carregarBanco() {
 
 /** Acrescenta questões ao banco (sem repetir ids) e devolve quantas entraram. */
 async function adicionarQuestoes(lista) {
-  const ja = new Set(BANCO.itens.map(m => m.id)), ks = new Set(BANCO.itens.map(m => m.k).filter(Boolean)), novos = [];
-  // reimportar um arquivo melhorado (agora com assunto) atualiza as questões que já estavam no banco
   const pos = new Map(BANCO.itens.map((m, i) => [m.id, i])), atual = [];
-  for (const q of lista) { const i = q && pos.get(q.id); if (i != null && q.assunto && !BANCO.itens[i].as) { atual.push(q); BANCO.itens[i] = metaDe(q); } }
-  if (atual.length) { await BD.put(atual); await BD.setMeta(BANCO.itens); BANCO.atualizadas = (BANCO.atualizadas || 0) + atual.length; }
+  // versão melhor de uma questão que já está no banco (a mesma questão agora em texto, "v" maior) ou que ganhou assunto: troca,
+  // guardando o que ela já fez nela (resolução da IA e dúvidas). O histórico de acertos continua, porque o id é o mesmo.
+  for (const q of lista) {
+    const i = q && pos.get(q.id); if (i == null) continue;
+    const m = BANCO.itens[i];
+    if ((q.v || 0) > (m.v || 0) || (q.assunto && !m.as)) {
+      const velho = await BD.get(q.id);
+      atual.push(velho ? { ...q, res_ia: velho.res_ia || q.res_ia || '', duvidas: velho.duvidas || q.duvidas || [] } : q); BANCO.itens[i] = metaDe(q);
+    }
+  }
+  // a versão de teste (id "tx-…") sai quando chega a definitiva, para não ficar repetida
+  const teste = new Set(lista.filter(q => q && q.v >= 2 && pos.has('tx-' + q.id)).map(q => 'tx-' + q.id));
+  if (teste.size) { BANCO.itens = BANCO.itens.filter(m => !teste.has(m.id)); await BD.del([...teste]); }
+  if (atual.length) { await BD.put(atual); BANCO.atualizadas = (BANCO.atualizadas || 0) + atual.length; }
+  const ja = new Set(BANCO.itens.map(m => m.id)), ks = new Set(BANCO.itens.map(m => m.k).filter(Boolean)), novos = [];
   for (const q of lista) { if (!q || !q.id || ja.has(q.id)) continue; const k = chaveQ(q); if (ks.has(k)) { BANCO.repetidas = (BANCO.repetidas || 0) + 1; continue; } ja.add(q.id); ks.add(k); novos.push(q); }
-  if (!novos.length) return 0;
-  await BD.put(novos); BANCO.itens.push(...novos.map(metaDe)); await BD.setMeta(BANCO.itens);
+  if (novos.length) { await BD.put(novos); BANCO.itens.push(...novos.map(metaDe)); }
+  if (novos.length || atual.length || teste.size) await BD.setMeta(BANCO.itens);
   return novos.length;
 }
-
 /** Histórico de uma questão: { ok, dia (última vez), n, ac, er, h: [[dia, 1|0, letra]] } (os registros antigos só tinham ok/dia/n). */
 function histDe(id) {
   const h = S.qh[id]; if (!h) return null;
@@ -204,6 +215,8 @@ function mapaSessao(s) {
   return `<nav class="q-mapa" aria-label="Questões da lista">${ini ? '<span>…</span>' : ''}${Array.from({ length: fim - ini }, (_, k) => bt(ini + k)).join('')}${fim < n ? '<span>…</span>' : ''}</nav>`;
 }
 
+/** Texto-base da questão anterior: em imagem (modo objetivo) ou em texto. */
+const prevHtml = r => r.modo === 'objetivo' ? recorteObj(r, false) : `<div class="enunciado q-prev">${mdLite(r.enunciado)}${(r.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`;
 function qQuestao() {
   const s = ui.qs, q = s.itens[s.i], resp = q.resp != null, ultima = s.i + 1 >= s.itens.length;
   if (ui.qPrevImg && ui.qPrevImg.id !== q.prev) ui.qPrevImg = null;
@@ -215,8 +228,8 @@ function qQuestao() {
   return `${mapaSessao(s)}<section class="cartao questao"><div class="entre"><span class="linha" style="gap:6px"><span class="tag" style="${cor(q.materia)}">${esc(q.materia)}</span>${q.assunto ? `<span class="selo">${esc(q.assunto)}</span>` : ''}</span><span class="fraco">${esc(q.fonte)}${q.num ? ' · nº ' + esc(q.num) : ''}</span></div>
     ${histHtml(q.id)}
     ${q.fig ? '<p class="fraco" style="margin:0;font-size:13px">⚠ Pode depender de um texto ou figura de outra questão. Se não der para resolver, vá para a próxima.</p>' : ''}
-    ${q.modo === 'objetivo' ? `${q.prev ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ver'} o texto/figura da questão anterior (às vezes o texto-base está nela)</button>${ui.qPrevImg ? recorteObj(ui.qPrevImg, false) : ''}` : ''}
-      ${recorteObj(q, false)}` : `<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>${q.img ? `<a class="link" href="${esc(q.img)}" target="_blank" rel="noopener" style="align-self:flex-start;font-size:13px">ver a imagem original da prova</a>` : ''}`}
+    ${q.modo === 'objetivo' ? `${q.prev ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ver'} o texto/figura da questão anterior (às vezes o texto-base está nela)</button>${ui.qPrevImg ? prevHtml(ui.qPrevImg) : ''}` : ''}
+      ${recorteObj(q, false)}` : `${q.prev && q.dep ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ler'} o texto da questão anterior (o texto-base desta questão está nela)</button>${ui.qPrevImg ? prevHtml(ui.qPrevImg) : ''}` : ''}<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>${q.img ? `<a class="link" href="${esc(q.img)}" target="_blank" rel="noopener" style="align-self:flex-start;font-size:13px">ver a imagem original da prova</a>` : ''}`}
     <div class="alts ${q.modo === 'objetivo' ? 'so-letras' : ''}">${q.alts.map(a => { const sel = q.resp === a.l, certa = resp && a.l === q.gab, errada = resp && sel && a.l !== q.gab;
       return `<button class="alt ${sel ? 'sel' : ''} ${certa ? 'certa' : ''} ${errada ? 'errada' : ''}" data-acao="qResp" data-v="${a.l}" ${resp ? 'disabled' : ''}><b>${a.l}</b><span>${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</span></button>`; }).join('')}</div>
     ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>
@@ -271,7 +284,7 @@ function normalizarImportada(q, i) {
     const n = Math.max(2, Math.min(5, +q.nalts || 5));
     return { id: q.id, banca: String(q.banca), tipo: 'real', ano: +q.ano || 0, area: q.area || AREA_DA_MATERIA[q.materia] || '', materia: q.materia || '', assunto: q.assunto || '', dif: '', fig: 0,
       enunciado: String(q.enunciado || ''), imagens: [], alts: 'ABCDE'.slice(0, n).split('').map(l => ({ l, t: '', img: '' })), gab: q.gab, coment: '', fonte: 'Objetivo',
-      modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte, prev: q.prev || '', num: q.num || '', fase: q.fase || '' };
+      modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte, prev: q.prev || '', num: q.num || '', fase: q.fase || '', v: +q.v || 0 };
   }
   if (!q || !(q.enunciado || q.pergunta) || !Array.isArray(q.alts || q.alternativas)) return null;
   const bruto = q.alts || q.alternativas;
@@ -279,7 +292,8 @@ function normalizarImportada(q, i) {
   const gab = String(q.gab || q.gabarito || '').toUpperCase().trim();
   if (alts.length < 2 || !/^[A-E]$/.test(gab)) return null;
   return { id: q.id || `imp-${Date.now().toString(36)}-${i}`, banca: String(q.banca || 'Importada'), tipo: 'real', ano: +q.ano || 0, area: q.area || '', materia: q.materia || '', assunto: q.assunto || '', dif: q.dif || q.dificuldade || '', fig: q.fig ? 1 : 0,
-    enunciado: String(q.enunciado || q.pergunta), imagens: (q.imagens || []).filter(u => /^(https:|data:image\/)/.test(u)), alts, gab, coment: String(q.coment || q.comentario || ''), fonte: q.fonte || '' };
+    enunciado: String(q.enunciado || q.pergunta), imagens: (q.imagens || []).filter(u => /^(https:|data:image\/)/.test(u)), alts, gab, coment: String(q.coment || q.comentario || ''), fonte: q.fonte || '',
+    img: /^https:/.test(q.img || '') ? q.img : '', num: q.num || '', fase: q.fase || '', prev: q.prev || '', dep: q.dep ? 1 : 0, v: +q.v || 0 };
 }
 
 Object.assign(ACOES, {
@@ -295,7 +309,7 @@ Object.assign(ACOES, {
   qPrev: async () => {
     if (ui.qPrevImg) { ui.qPrevImg = null; render(); return; }
     const q = ui.qs.itens[ui.qs.i], r = q.prev && await BD.get(q.prev);
-    ui.qPrevImg = r && r.img ? r : null; if (!ui.qPrevImg) ui.iaMsg = 'A questão anterior não está no banco.'; render();
+    ui.qPrevImg = r || null; if (!ui.qPrevImg) ui.iaMsg = 'A questão anterior não está no banco.'; render();
   },
   qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', banca: '', ano: '', st: 'todas', tag: '', res: false }; ui.qPag = 0; render(); },
   qGerar: async () => {
@@ -307,7 +321,7 @@ Object.assign(ACOES, {
     const recs = (await Promise.all(ids.map(id => BD.get(id)))).filter(Boolean);
     const itens = recs.map(q => ({ id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
       enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: q.res_ia || '', duvidas: q.duvidas || [],
-      modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', assunto: q.assunto || '', num: q.num || '' }));
+      modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, assunto: q.assunto || '', num: q.num || '' }));
     if (itens.length) iniciarSessao(itens);
   },
   qIaBanco: async () => {
@@ -355,7 +369,7 @@ document.addEventListener('change', e => {
   if (el.dataset.qf) { const k = el.dataset.qf; ui.qf[k] = k === 'n' ? Math.max(1, Math.min(9999, +el.value || 10)) : el.value; if (k === 'mat') ui.qf.assunto = ''; ui.qPag = 0; render(); }
   if (el.dataset.qfMarca) { ui.qf[el.dataset.qfMarca] = el.checked; ui.qPag = 0; render(); }
   if (el.dataset.acaoArquivo === 'bancoImportar' && el.files?.length) {
-    const arquivos = [...el.files]; BANCO.msg = 'Importando…'; render();
+    const arquivos = [...el.files]; BANCO.msg = 'Importando…'; BANCO.repetidas = 0; BANCO.atualizadas = 0; render();
     (async () => {
       let total = 0, ignoradas = 0;
       for (const arq of arquivos) {
@@ -368,7 +382,7 @@ document.addEventListener('change', e => {
           total += await adicionarQuestoes(ok);
         } catch (err) { BANCO.msg = `Não consegui ler ${arq.name}: ${err.message}`; render(); }
       }
-      BANCO.msg = `${total.toLocaleString('pt-BR')} questões novas no banco${BANCO.repetidas ? ` · ${BANCO.repetidas.toLocaleString('pt-BR')} repetidas ignoradas` : ''}${ignoradas ? ` (${ignoradas} ignoradas por formato)` : ''}.`; render();
+      BANCO.msg = `${total.toLocaleString('pt-BR')} questões novas no banco${BANCO.atualizadas ? ` · ${BANCO.atualizadas.toLocaleString('pt-BR')} atualizadas (agora em texto)` : ''}${BANCO.repetidas ? ` · ${BANCO.repetidas.toLocaleString('pt-BR')} repetidas ignoradas` : ''}${ignoradas ? ` (${ignoradas} ignoradas por formato)` : ''}.`; render();
     })();
   }
 });
