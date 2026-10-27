@@ -9,6 +9,9 @@ const migrarRed = r => {
   return r;
 };
 const notaRed = r => r.nota ?? (r.correcoes.length ? r.correcoes[r.correcoes.length - 1].nota : null);
+const stepperHtml = (id, v, min, max) => `<div class="stepper"><button type="button" class="qb" data-acao="step" data-id="${id}" data-d="-1" aria-label="menos">−</button><input type="number" id="${id}" min="${min}" max="${max}" value="${v}" inputmode="numeric"><button type="button" class="qb" data-acao="step" data-id="${id}" data-d="1" aria-label="mais">+</button></div>`;
+Object.assign(ACOES, { step: el => { const i = document.getElementById(el.dataset.id); if (!i) return; const n = Math.max(+i.min, Math.min(+i.max, (+i.value || 0) + +el.dataset.d)); i.value = n; if (i.id === 'cg-n') ui.cgN = n; if (i.id === 'qia-n') ui.qNIa = n; i.dispatchEvent(new Event('input', { bubbles: true })); const b = document.querySelector('[data-acao="cgGerar"]'); if (b && i.id === 'cg-n') b.textContent = 'Gerar ' + n; } });
+document.addEventListener('input', e => { if (e.target.id === 'cg-n') { ui.cgN = Math.max(1, Math.min(100, Math.round(+e.target.value) || 1)); const b = document.querySelector('[data-acao="cgGerar"]'); if (b) b.textContent = 'Gerar ' + ui.cgN; } if (e.target.id === 'qia-n') ui.qNIa = Math.max(1, Math.min(60, Math.round(+e.target.value) || 1)); });
 ui.redVer = null; ui.cgMat = 'Biologia'; ui.cgPedido = ''; ui.cgN = 10; ui.cgLista = null; ui.cartaoModo = 'mao';
 
 function iaCardHtml(r) {
@@ -162,8 +165,8 @@ function vCartoes() {
     return `<section class="cartao"><h2>Novo cartão</h2>
       <div class="alterna" role="group"><button data-acao="cartaoModo" data-v="mao" aria-pressed="${!dig}">Escrever à mão</button><button data-acao="cartaoModo" data-v="digitar" aria-pressed="${dig}">Digitar</button></div>
       <label class="campo">Matéria<select id="c-mat">${Object.keys(MATERIAS).map(m => `<option>${m}</option>`).join('')}</select></label>
-      <span class="rotulo">frente (a pergunta)</span>${dig ? '<textarea id="c-ft" style="min-height:110px"></textarea>' : quadroHtml('novo-f', 240, 'pontos')}
-      <span class="rotulo">verso (a resposta)</span>${dig ? '<textarea id="c-vt" style="min-height:140px"></textarea>' : quadroHtml('novo-v', 300, 'pontos')}
+      <div class="lado pergunta"><span class="lado-rotulo">Pergunta (frente)</span>${dig ? '<textarea id="c-ft" style="min-height:110px"></textarea>' : quadroHtml('novo-f', 240, 'pontos')}</div>
+      <div class="lado resposta"><span class="lado-rotulo">Resposta (verso)</span>${dig ? '<textarea id="c-vt" style="min-height:140px"></textarea>' : quadroHtml('novo-v', 300, 'pontos')}</div>
       <div class="linha"><button class="botao grande" data-acao="salvarCartao">Salvar cartão</button><button class="botao contorno" data-acao="cancelarCartao">Cancelar</button></div></section>`;
   }
   if (s) {
@@ -184,9 +187,9 @@ function vCartoes() {
     <section class="cartao"><h2>Gerar cartões com a IA</h2><p class="fraco" style="margin:0">Diga o que você quer, com as características que preferir.</p>
       <div class="linha"><label class="campo" style="flex:1 1 180px">Matéria<select data-ui="cgMat">${Object.keys(MATERIAS).map(m => `<option ${ui.cgMat === m ? 'selected' : ''}>${m}</option>`).join('')}</select></label></div>
       <textarea id="cg-pedido" data-ui="cgPedido" placeholder="Ex.: 10 cartões sobre o ciclo de Krebs, com pergunta curta e resposta objetiva. Pode incluir um macete para decorar.">${esc(ui.cgPedido)}</textarea>
-      <div class="linha"><label class="fraco" for="cg-n">Quantos cartões:</label><input type="number" id="cg-n" min="1" max="50" value="${ui.cgN}" style="width:90px" data-cg-n>
-        ${[5, 10, 20, 30].map(n => `<button class="chip" data-acao="cgN" data-v="${n}" aria-pressed="${ui.cgN === n}">${n}</button>`).join('')}
-        <button class="botao" data-acao="cgGerar">Gerar</button></div>
+      <div class="linha"><span class="fraco">Quantos cartões:</span>${stepperHtml('cg-n', ui.cgN, 1, 100)}
+        ${[10, 20, 30, 50].map(n => `<button class="chip" data-acao="cgN" data-v="${n}" aria-pressed="${ui.cgN === n}">${n}</button>`).join('')}
+        <button class="botao" data-acao="cgGerar">Gerar ${ui.cgN}</button></div>
       ${g ? `<div class="coluna" style="gap:8px"><span class="rotulo">revise antes de adicionar</span>${g.map((x, i) => `<label class="cg-item"><input type="checkbox" data-acao="cgMarca" data-i="${i}" ${x.sel ? 'checked' : ''}><span><b>${esc(x.frente)}</b><br><span class="fraco">${esc(x.verso)}</span></span></label>`).join('')}
         <div class="linha"><button class="botao grande" data-acao="cgAdd">Adicionar ${g.filter(x => x.sel).length} ${g.filter(x => x.sel).length === 1 ? 'cartão' : 'cartões'}</button><button class="botao contorno" data-acao="cgDescartar">Descartar</button></div></div>` : ''}</section>
     ${tot ? `<section class="cartao"><h2>Por matéria</h2>${[...new Set(S.cartoes.map(c => c.materia))].map(m => `<div class="entre prova"><span>${tag(m)}</span><span class="fraco">${S.cartoes.filter(c => c.materia === m).length} cartões</span></div>`).join('')}</section>` : ''}`;
@@ -213,14 +216,23 @@ Object.assign(ACOES, {
   cgDescartar: () => { ui.cgLista = null; render(); },
   cgGerar: async () => {
     const pedido = ($('#cg-pedido')?.value ?? ui.cgPedido).trim(); ui.cgPedido = pedido;
-    const nIn = Math.round(+$('#cg-n')?.value); if (nIn >= 1) ui.cgN = Math.min(50, nIn);
+    const nIn = Math.round(+$('#cg-n')?.value); if (nIn >= 1) ui.cgN = Math.min(100, nIn);
     if (!pedido) { ui.iaMsg = 'Descreva os cartões que você quer.'; render(); return; }
-    ui.carregando = 'Criando os cartões…'; ui.iaMsg = ''; render();
+    ui.iaMsg = ''; const lista = []; let erro = '';
     try {
-      const r = await chamarIa(`Crie até ${ui.cgN} cartões de estudo (flashcards) de ${ui.cgMat} para uma estudante de Medicina em preparação para vestibular (Fuvest, Vunesp, ENEM). Pedido dela: "${pedido}". Cada cartão: "frente" é uma pergunta curta e específica; "verso" é a resposta objetiva (no máximo 3 linhas), com um macete se ajudar. Sem repetir cartões. Responda SÓ com JSON: {"cartoes":[{"frente":"...","verso":"..."}]}`, 5000, [], 'texto');
-      ui.cgLista = (r.cartoes || []).filter(c => c.frente && c.verso).slice(0, 25).map(c => ({ frente: String(c.frente), verso: String(c.verso), sel: true }));
-      if (!ui.cgLista.length) { ui.cgLista = null; throw new Error('a IA não devolveu cartões'); }
-    } catch (e) { ui.iaMsg = `Não consegui gerar agora (${e.message}).`; }
+      // pede em lotes de 12 até chegar na quantidade escolhida (qualquer número, sem limite fixo de 5)
+      for (let tentativa = 0; lista.length < ui.cgN && tentativa < 12; tentativa++) {
+        const falta = Math.min(12, ui.cgN - lista.length);
+        ui.carregando = `Criando os cartões… ${lista.length} de ${ui.cgN}`; render();
+        const r = await chamarIa(`Crie exatamente ${falta} cartões de estudo (flashcards) de ${ui.cgMat} para uma estudante de Medicina em preparação para vestibular (Fuvest, Vunesp, ENEM). Pedido dela: "${pedido}". Cada cartão: "frente" é uma pergunta curta e específica; "verso" é a resposta objetiva (no máximo 3 linhas), com um macete se ajudar. ${lista.length ? 'NÃO repita estas perguntas já criadas: ' + lista.slice(-40).map(c => c.frente).join(' | ') + '. ' : ''}Responda SÓ com JSON: {"cartoes":[{"frente":"...","verso":"..."}]}`, 5000, [], 'texto');
+        const novos = (r.cartoes || []).filter(c => c.frente && c.verso && !lista.some(x => x.frente === String(c.frente)));
+        if (!novos.length) break;
+        lista.push(...novos.map(c => ({ frente: String(c.frente), verso: String(c.verso), sel: true })));
+      }
+    } catch (e) { erro = e.message; }
+    ui.cgLista = lista.slice(0, ui.cgN).length ? lista.slice(0, ui.cgN) : null;
+    if (!ui.cgLista) ui.iaMsg = `Não consegui gerar agora (${erro || 'a IA não devolveu cartões'}).`;
+    else if (erro || lista.length < ui.cgN) ui.iaMsg = `Gerei ${ui.cgLista.length} de ${ui.cgN} (${erro || 'a IA parou de trazer novos'}). Dá para gerar mais depois.`;
     ui.carregando = ''; render();
   },
   cgAdd: () => {

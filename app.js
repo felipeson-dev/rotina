@@ -49,7 +49,7 @@ const icone = n => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
 const VAZIO = {
   perfil: { nome: 'Uany Rebeca', vestibular: 'ENEM e, logo depois, Medicina em SP: USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo e FMABC', dataProva: '', fortes: '', fracas: '', horarios: '',
     jeito: 'Primeiro foco total no ENEM. Cerca de 2 dias depois do ENEM, começar a estudar para as provas de Medicina em SP (USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC).' },
-  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, timer: null, provas: [], semeado: false, v: 2,
+  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, foco: [], focoAnalise: {}, timer: null, provas: [], semeado: false, v: 2,
 };
 
 const provasFuturas = () => (S.provas || []).filter(p => okData(p.data) && p.data >= hoje()).sort((a, b) => a.data < b.data ? -1 : 1);
@@ -70,7 +70,7 @@ function carregar() {
   s = Object.assign(JSON.parse(JSON.stringify(VAZIO)), s || {});
   s.perfil = Object.assign({}, VAZIO.perfil, s.perfil);
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
-  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {};
+  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.foco ||= []; s.focoAnalise ||= {};
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
   return s;
 }
@@ -356,7 +356,7 @@ async function pedirIa(pedido, rotulo = 'Pensando…', falaDela = null) {
 
 // ---------- telas ----------
 function menuHtml() {
-  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['pendencias', 'Pendências'], ['questoes', 'Questões'], ['caderno', 'Caderno']];
+  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['pendencias', 'Pendências'], ['foco', 'Foco'], ['questoes', 'Questões'], ['caderno', 'Caderno']];
   return `<div class="marca">rotina</div>` +
     itens.map(([v, t]) => `<button data-acao="ir" data-v="${v}" ${ui.view === v ? 'aria-current="page"' : ''}>${icone(v)}<span>${t}</span></button>`).join('') +
     `<div class="espaco"></div><button data-acao="ir" data-v="ajustes" ${ui.view === 'ajustes' ? 'aria-current="page"' : ''}>${icone('ajustes')}<span>Ajustes</span></button>`;

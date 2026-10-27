@@ -165,24 +165,38 @@ def ceia():
 
 # ---------- 65 mil questões (todas as matérias): exige conta gratuita no Hugging Face ----------
 def grande():
+    """Baixa o arquivo parquet inteiro (56 MB, rápido) e converte. Precisa do pyarrow (pip install --target C:\\rotina-banco\\libs pyarrow)."""
+    sys.path.insert(0, os.path.join(SAIDA, 'libs'))
+    import pyarrow.parquet as pq
+    cache = os.path.join(SAIDA, 'cache'); os.makedirs(cache, exist_ok=True)
+    arq = os.path.join(cache, 'v65k.parquet')
+    if not os.path.exists(arq) or os.path.getsize(arq) < 56_000_000:
+        print('  baixando o parquet de 56 MB…', flush=True)
+        req = urllib.request.Request('https://huggingface.co/datasets/Fazzioni/Vestibular_65k_sem_imagem/resolve/main/data/train-00000-of-00001.parquet',
+                                     headers={'Authorization': 'Bearer ' + TOKEN, 'User-Agent': 'rotina-banco'})
+        with urllib.request.urlopen(req, timeout=600) as r, open(arq, 'wb') as f:
+            while True:
+                b = r.read(1 << 20)
+                if not b:
+                    break
+                f.write(b)
     out = []
-    for r in linhas('Fazzioni/Vestibular_65k_sem_imagem', 'default', 'train'):
+    for r in pq.read_table(arq).to_pylist():
         if r.get('image'):
             continue
-        alts = r['alternativas']
+        alts = r['alternativas'] or {}
         letras = [l for l in 'ABCDE' if alts.get(l)]
         titulo = r.get('titulo') or ''
-        banca = canon(titulo)
         try:
             tags = ' · '.join(ast.literal_eval(r.get('tags') or '[]'))
         except Exception:
             tags = ''
         m = materia_de(r.get('disciplina'))
-        q = monta(f"v65k-{r['id']}", banca, ano_de(titulo), m, r['pergunta'], [alts[l] for l in letras], r['resposta'], assunto=tags, dif=r.get('dificuldade', ''), fonte='Fazzioni/Vestibular_65k')
+        q = monta(f"v65k-{r['id']}", canon(titulo), ano_de(titulo), m, r['pergunta'], [alts[l] for l in letras], r['resposta'], assunto=tags, dif=r.get('dificuldade', ''), fonte='Fazzioni/Vestibular_65k')
         if q:
             out.append(q)
-    salvar('vestibulares-65k.json', out)
-
+    for k in range(0, len(out), 12000):    # arquivos de ~15 MB: mais leves para o iPad
+        salvar(f'vestibulares-65k-parte{k // 12000 + 1}.json', out[k:k + 12000])
 if __name__ == '__main__':
     etapas = [unicamp, bluex, enem2024, ceia] + ([grande] if TOKEN else [])
     if '--so' in sys.argv:  # ex.: --so bluex,unicamp

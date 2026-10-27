@@ -39,7 +39,9 @@ const BD = {
   async meta() { const db = await this.abrir(); return new Promise(ok => { const q = db.transaction('m').objectStore('m').get('lista'); q.onsuccess = () => ok(q.result || []); q.onerror = () => ok([]); }); },
   async setMeta(l) { const db = await this.abrir(); return new Promise(ok => { const t = db.transaction('m', 'readwrite'); t.objectStore('m').put(l, 'lista'); t.oncomplete = ok; t.onerror = ok; }); },
 };
-const metaDe = q => ({ id: q.id, b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: (q.assunto || '').toLowerCase().slice(0, 140), d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0 });
+/** Chave do conteúdo (começo do enunciado + gabarito): o mesmo texto vindo de duas fontes não entra duas vezes. */
+function chaveQ(q) { const t = String(q.enunciado || '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '').slice(0, 120) + (q.gab || ''); let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length; }
+const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: (q.assunto || '').toLowerCase().slice(0, 140), d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0 });
 
 async function carregarBanco() {
   if (BANCO.pronto || BANCO.carregando) return;
@@ -60,8 +62,8 @@ async function carregarBanco() {
 
 /** Acrescenta questões ao banco (sem repetir ids) e devolve quantas entraram. */
 async function adicionarQuestoes(lista) {
-  const ja = new Set(BANCO.itens.map(m => m.id)), novos = [];
-  for (const q of lista) if (q && q.id && !ja.has(q.id)) { ja.add(q.id); novos.push(q); }
+  const ja = new Set(BANCO.itens.map(m => m.id)), ks = new Set(BANCO.itens.map(m => m.k).filter(Boolean)), novos = [];
+  for (const q of lista) { if (!q || !q.id || ja.has(q.id)) continue; const k = chaveQ(q); if (ks.has(k)) { BANCO.repetidas = (BANCO.repetidas || 0) + 1; continue; } ja.add(q.id); ks.add(k); novos.push(q); }
   if (!novos.length) return 0;
   await BD.put(novos); BANCO.itens.push(...novos.map(metaDe)); await BD.setMeta(BANCO.itens);
   return novos.length;
@@ -129,7 +131,7 @@ function qMontar() {
       <div class="linha"><label class="campo" style="flex:1 1 170px">Banca<select data-ui="qBanca">${BANCAS.map(b => `<option ${ui.qBanca === b ? 'selected' : ''}>${b}</option>`).join('')}</select></label>
         <label class="campo" style="flex:1 1 170px">Matéria<select data-ui="qMat">${Object.keys(MIN_Q).map(m => `<option ${ui.qMat === m ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
         <label class="campo" style="flex:1 1 130px">Dificuldade<select data-ui="qDif">${['fácil', 'média', 'difícil'].map(d => `<option ${ui.qDif === d ? 'selected' : ''}>${d}</option>`).join('')}</select></label>
-        <label class="campo" style="flex:0 1 90px">Quantas<input type="number" min="1" max="15" data-ui="qNIa" value="${ui.qNIa || 5}"></label></div>
+        <div class="campo" style="flex:0 1 190px">Quantas questões<div class="linha">${stepperHtml('qia-n', ui.qNIa || 10, 1, 60)}</div></div></div>
       <label class="campo">Assunto<input type="text" data-ui="qTema" id="q-tema" value="${esc(ui.qTema)}" placeholder="Ex.: genética, leis de Mendel"></label>
       <div class="linha"><button class="botao" data-acao="qIaBanco">Gerar e guardar no banco</button></div></section>
     ${metaQTabela()}`;
@@ -230,11 +232,21 @@ Object.assign(ACOES, {
     if (itens.length) iniciarSessao(itens);
   },
   qIaBanco: async () => {
-    ui.qTema = ($('#q-tema')?.value ?? ui.qTema).trim(); const n = Math.max(1, Math.min(15, +ui.qNIa || 5));
-    ui.carregando = 'A IA está escrevendo as questões…'; ui.iaMsg = ''; render();
+    ui.qTema = ($('#q-tema')?.value ?? ui.qTema).trim(); const n = Math.max(1, Math.min(60, Math.round(+$('#qia-n')?.value || +ui.qNIa || 10))); ui.qNIa = n;
+    ui.iaMsg = '';
     try {
-      const novas = (await listaIa(ui.qBanca, ui.qMat, ui.qTema, n, ui.qDif)).map((q, i) => ({ ...q, id: `ia-${Date.now().toString(36)}-${i}`, banca: ui.qBanca, tipo: 'ia', ano: new Date().getFullYear(), area: AREA_DA_MATERIA[ui.qMat] || '', materia: ui.qMat, assunto: ui.qTema }));
-      if (!novas.length) throw new Error('não veio nenhuma questão');
+      // pede em lotes de 6 até chegar na quantidade escolhida
+      const novas = []; let erro = '';
+      for (let t = 0; novas.length < n && t < 14; t++) {
+        ui.carregando = `A IA está escrevendo as questões… ${novas.length} de ${n}`; render();
+        try {
+          const lote = await listaIa(ui.qBanca, ui.qMat, ui.qTema + (novas.length ? ` (varie o subtópico; não repita: ${novas.slice(-12).map(q => q.enunciado.slice(0, 60)).join(' | ')})` : ''), Math.min(6, n - novas.length), ui.qDif);
+          if (!lote.length) break;
+          novas.push(...lote.map((q, i) => ({ ...q, id: `ia-${Date.now().toString(36)}-${novas.length + i}`, banca: ui.qBanca, tipo: 'ia', ano: new Date().getFullYear(), area: AREA_DA_MATERIA[ui.qMat] || '', materia: ui.qMat, assunto: ui.qTema })));
+        } catch (e) { erro = e.message; break; }
+      }
+      if (!novas.length) throw new Error(erro || 'não veio nenhuma questão');
+      if (novas.length < n) ui.iaMsg = `Vieram ${novas.length} de ${n} (${erro || 'a IA parou'}).`;
       await adicionarQuestoes(novas); ui.carregando = '';
       ui.iaMsg = `${novas.length} questões guardadas no banco.`; iniciarSessao(novas.map(q => ({ id: q.id, fonte: `IA · estilo ${q.banca}`, materia: q.materia, enunciado: q.enunciado, imagens: [], alts: q.alts, gab: q.gab, coment: q.coment, res_ia: '', duvidas: [] })), { assuntoId: ui.qTema ? ui.qAssuntoId : null });
     } catch (e) { ui.carregando = ''; ui.iaMsg = `Não consegui gerar agora (${e.message}).`; render(); }
@@ -275,7 +287,7 @@ document.addEventListener('change', e => {
           total += await adicionarQuestoes(ok);
         } catch (err) { BANCO.msg = `Não consegui ler ${arq.name}: ${err.message}`; render(); }
       }
-      BANCO.msg = `${total.toLocaleString('pt-BR')} questões novas no banco${ignoradas ? ` (${ignoradas} ignoradas por formato)` : ''}.`; render();
+      BANCO.msg = `${total.toLocaleString('pt-BR')} questões novas no banco${BANCO.repetidas ? ` · ${BANCO.repetidas.toLocaleString('pt-BR')} repetidas ignoradas` : ''}${ignoradas ? ` (${ignoradas} ignoradas por formato)` : ''}.`; render();
     })();
   }
 });
