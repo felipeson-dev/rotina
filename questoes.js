@@ -62,7 +62,7 @@ function iniciarSessao(itens, extra = {}) {
 
 // ---------- telas ----------
 function vQuestoes() {
-  const cab = (t = 'Questões') => `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">questões</span><h1>${t}</h1></div>
+  const cab = (t = 'Questões') => `<header class="entre"><div class="coluna" style="gap:4px">${ui.qs && !ui.qs.fim ? '<button class="link voltar" data-acao="qSair">‹ Voltar à lista</button>' : ''}<span class="rotulo">questões</span><h1>${t}</h1></div>
     ${ui.qs ? '' : `<div class="alterna" role="group">${[['listas', 'Montar lista'], ['erros', `Erros (${S.erros.length})`]].map(([v, t]) => `<button data-acao="qAba" data-v="${v}" aria-pressed="${ui.qAba === v}">${t}</button>`).join('')}</div>`}</header>${avisoIa()}`;
   if (ui.qs) return cab(ui.qs.fim ? 'Resultado' : `Questão ${ui.qs.i + 1} de ${ui.qs.itens.length}`) + (ui.qs.fim ? qResultado() : qQuestao());
   if (ui.qAba === 'erros') return cab() + qErros();
@@ -186,7 +186,8 @@ Object.assign(ACOES, {
   qPular: () => { const s = ui.qs; fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; ui.qRasc = false; DB.del('d:qtmp'); } else finalizarSessao(); render(); },
   qProx: () => { const s = ui.qs; if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); ui.qRasc = false; DB.del('d:qtmp'); window.scrollTo(0, 0); } else finalizarSessao(); render(); },
   qRasc: () => { ui.qRasc = !ui.qRasc; render(); },
-  qSair: () => { if (ui.qs.itens.some(q => q.resp != null)) finalizarSessao(); else ui.qs = null; render(); },
+  qSair: () => { navSairSessao(); render(); window.scrollTo(0, 0); },
+  qAnt: () => { const s = ui.qs; if (s.i > 0) { if (s.itens[s.i].resp == null) fecharItem(s); s.i--; s.tq = Date.now(); ui.qRasc = false; DB.del('d:qtmp'); window.scrollTo(0, 0); } render(); },
   qNova: () => { ui.qs = null; ui.qAba = 'listas'; render(); },
   qApagarErro: el => { S.erros = S.erros.filter(e => e.id !== el.dataset.id); salvar(); render(); },
   qForaSalvar: () => {

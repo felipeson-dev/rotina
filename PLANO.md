@@ -116,3 +116,7 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - ferramentas/transcrever.py: IA (Gemini, visao) le a imagem do Objetivo -> enunciado limpo (LaTeX), alternativas, resolucao em texto, assunto, figuras recortadas (caixa da IA + folga + corte pelas linhas de texto do OCR). Chaves so em GEMINI_KEYS (ambiente).
 - Teste: C:\rotina-banco\para-o-ipad\00-TESTE-questoes-em-texto.json.gz (46 questoes). Processamento total SO depois da aprovacao dele.
 - mdLite: tabelas markdown e italico.
+
+## v17 (27/10) - Desempenho e navegacao
+- desempenho.js: aba Desempenho (periodo 7/30/tudo, barras por dia, por materia, assuntos fracos com Treinar, plano, redacao, erros).
+- nav.js: historico do navegador (Voltar sai da questao para a lista, fecha janela, volta de aba), F5 guarda aba/filtros/lista/questao em andamento (localStorage rotina.nav + IndexedDB d:qs). Botoes Voltar a lista e Anterior na questao.

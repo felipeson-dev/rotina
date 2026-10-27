@@ -356,7 +356,7 @@ async function pedirIa(pedido, rotulo = 'Pensando…', falaDela = null) {
 
 // ---------- telas ----------
 function menuHtml() {
-  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['pendencias', 'Pendências'], ['questoes', 'Questões'], ['caderno', 'Caderno']];
+  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['pendencias', 'Pendências'], ['questoes', 'Questões'], ['desempenho', 'Desempenho'], ['caderno', 'Caderno']];
   return `<div class="marca">rotina</div>` +
     itens.map(([v, t]) => `<button data-acao="ir" data-v="${v}" ${ui.view === v ? 'aria-current="page"' : ''}>${icone(v)}<span>${t}</span></button>`).join('') +
     `<div class="espaco"></div><button data-acao="ir" data-v="ajustes" ${ui.view === 'ajustes' ? 'aria-current="page"' : ''}>${icone('ajustes')}<span>Ajustes</span></button>`;
@@ -976,7 +976,13 @@ document.addEventListener('change', e => {
 document.addEventListener('keydown', e => {
   if (e.target.id === 'ia-texto' && e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); ACOES.enviarIa(); }
 });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { rolar(); render(); } });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  rolar();
+  const a = document.activeElement, y = window.scrollY;
+  if (a && /^(TEXTAREA|INPUT)$/.test(a.tagName) && a.value) return;   // está digitando: não refaz a tela por cima
+  render(); window.scrollTo(0, y);
+});
 
 // ---------- início ----------
 if (VIEWS[location.hash.slice(1)]) ui.view = location.hash.slice(1);
