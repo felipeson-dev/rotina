@@ -126,3 +126,9 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Historico por questao S.qh {ok,dia,n,ac,er,h[[dia,1|0,letra]]}, gravado na hora da resposta; filtro Situacao (nao fiz, ja fiz, errei/acertei na ultima, ja errei alguma vez).
 - Questao: mapa numerado, Anterior/Proxima sempre, IA retratil, resolucao com mdLite (italico/negrito).
 - transcrever.py: falhas eram RECITATION (o Gemini nao copia enunciado publicado na internet; ~4%). Essas ficam no modo imagem (nao se perdem). Motivos em <saida>.falhas.json.
+
+## v19 (27/10) - transcricao completa em andamento
+- C:\rotina-banco\rodar-tudo.ps1 (GEMINI_KEYS no ambiente, nunca no arquivo): transcrever.py (8 threads; espera a cota sozinho; retoma) nos grupos 6+7, depois 8+9 quando oficiais.py terminar, segunda passada, empacotar.py.
+- Saida: C:\rotina-banco\transcrito.json (+ .falhas.json com motivos). Pacotes: para-o-ipad\6..9 (mesmo id da versao imagem, v=2: o app troca sem duplicar e mantem historico).
+- Falhas ~4%: recitation (Gemini nao copia enunciado publicado), gabarito divergente, alternativas em figura -> ficam no modo imagem.
+- Log: C:\rotina-banco\log-transcrever.txt. Se o PC desligar: rodar de novo rodar-tudo.ps1 com GEMINI_KEYS.
