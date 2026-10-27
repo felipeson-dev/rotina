@@ -22,6 +22,7 @@ MODELOS = ['gemini-3.5-flash-lite', 'gemini-3.6-flash']     # o leve primeiro; o
 TRAVA = threading.Lock()
 ESGOTADA = {}      # (modelo, chave) -> até quando evitar
 FALHAS = {}        # id -> {'m': motivo, 'def': falha definitiva?, 'n': tentativas}
+AVISADA = set()
 PASTA_DA_BANCA = {v: k for k, v in o.NOME.items()}           # 'Santa Casa' -> 'santacasa' (pasta do cache)
 DEFINITIVAS = ('recitation', 'gabarito', 'incompleta', 'alternativas', 'sem imagem')
 
@@ -78,9 +79,14 @@ def chama(png_b64, prompt):
             try: corpo_erro = e.read().decode('utf-8', 'replace')
             except Exception: pass
             if e.code == 429:
-                dia = 'PerDay' in corpo_erro or 'per day' in corpo_erro.lower()
+                # cota grátis (visto em 27/10): 500 pedidos/dia e 15/minuto por chave no modelo leve; 20/dia no outro
+                try: ids = [v.get('quotaId', '') for d in json.loads(corpo_erro)['error'].get('details', []) for v in d.get('violations', [])]
+                except Exception: ids = []
+                dia = any('PerDay' in i for i in ids)
+                if dia and (m, k) not in AVISADA:
+                    AVISADA.add((m, k)); print(f'{time.strftime("%d/%m %H:%M")}  cota do dia acabou: {m}, chave {CHAVES.index(k) + 1} (volta à meia-noite do Pacífico, ~4h/5h de Brasília)', flush=True)
                 with TRAVA:
-                    ESGOTADA[(m, k)] = time.time() + (1800 if dia else 65)
+                    ESGOTADA[(m, k)] = time.time() + (1800 if dia else 62)
                 continue                             # cota: não conta como tentativa
             erros.append(f'{m}: HTTP {e.code}'); tentativas += 1
             with TRAVA:
