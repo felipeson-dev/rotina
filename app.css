@@ -518,3 +518,31 @@ input[type="search"]:focus { border-color: var(--acento); }
 .des-ass .chip { min-height: 34px; padding: 4px 12px; flex: none; color: var(--tinta); font-weight: 700; }
 .des-dicas { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
 @media (max-width: 560px) { .des-ass { flex-wrap: wrap; } }.link.voltar { align-self: flex-start; padding: 0; min-height: 32px; font-weight: 700; }
+
+/* ---------- escolher questões (caixas) ---------- */
+.filtros { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px 12px; }
+.filtro { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 700; color: var(--fraco); min-width: 0; }
+.filtro select, .filtro input { width: 100%; min-height: 46px; border-radius: 14px; border: 1.5px solid var(--linha); background: var(--painel); color: var(--texto); padding: 0 12px; font: inherit; font-size: 15px; font-weight: 600; }
+.filtro select:disabled { opacity: .55; }
+.filtro.ativo select { border-color: var(--acento); background: var(--painel2); }
+.filtro.busca input { font-weight: 500; }
+.marcas { gap: 8px 18px; }
+.marca-q { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--fraco); cursor: pointer; }
+.marca-q input { width: 20px; height: 20px; accent-color: var(--acento); }
+.acao-q { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px; padding: 14px; border-radius: 18px; background: var(--painel2); }
+.acao-q > .coluna { margin-right: auto; }
+.n-achadas { font-size: 28px; line-height: 1.1; }
+.filtro.quantas { width: 110px; }
+.lq-hist { display: flex; gap: 6px; flex: none; font-size: 13px; }
+.h-ok { color: #2E8B57; } .h-er { color: #C2483D; }
+/* ---------- tela da questão ---------- */
+.q-mapa { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.q-mapa button { min-width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--linha); background: var(--painel); color: var(--texto); font-weight: 700; font-size: 14px; padding: 0 6px; }
+.q-mapa button.h-ok { background: #DDF3E4; border-color: #9FD4B0; color: #1E6B35; }
+.q-mapa button.h-er { background: #FBE1DE; border-color: #EBA9A1; color: #9C2D22; }
+.q-mapa button.atual { outline: 2.5px solid var(--acento); outline-offset: 1px; }
+.q-mapa span { color: var(--fraco); }
+.q-nav { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.q-nav > :last-child { margin-left: auto; }
+.q-hist { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; font-weight: 600; }
+.resolucao { margin-top: 6px; line-height: 1.6; }body.em-questao #rascunho-botao { display: none; }   /* a questão já tem o próprio botão de rascunho */

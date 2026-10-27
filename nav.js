@@ -69,7 +69,7 @@ function navRolar(y) { for (const t of [0, 120, 500]) setTimeout(() => window.sc
 { const a0 = abrirModal; abrirModal = function () { a0.apply(this, arguments); navSync(); }; }
 { const d0 = desenharChat; desenharChat = function () { d0.apply(this, arguments); navSync(); }; }
 { const f0 = fecharModal; fecharModal = function () { f0.apply(this, arguments); navSync(); }; }
-{ const r0 = render; render = function () { r0.apply(this, arguments); navSync(); navAgendar(); }; }
+{ const r0 = render; render = function () { r0.apply(this, arguments); document.body.classList.toggle('em-questao', ui.view === 'questoes' && !!ui.qs && !ui.qs.fim); navSync(); navAgendar(); }; }
 
 // ---------- reabrir no mesmo lugar ----------
 (async () => {

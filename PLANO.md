@@ -120,3 +120,9 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 ## v17 (27/10) - Desempenho e navegacao
 - desempenho.js: aba Desempenho (periodo 7/30/tudo, barras por dia, por materia, assuntos fracos com Treinar, plano, redacao, erros).
 - nav.js: historico do navegador (Voltar sai da questao para a lista, fecha janela, volta de aba), F5 guarda aba/filtros/lista/questao em andamento (localStorage rotina.nav + IndexedDB d:qs). Botoes Voltar a lista e Anterior na questao.
+
+## v18 (27/10) - escolher questoes com caixas, historico, Anterior/Proxima
+- Escolher questoes: caixas (Materia, Assunto, Situacao, Banca, Ano, Ordem, Quantas) com contagem; busca no texto de todas as questoes (ficha leve ganhou x e p; META_V=2 refaz as fichas).
+- Historico por questao S.qh {ok,dia,n,ac,er,h[[dia,1|0,letra]]}, gravado na hora da resposta; filtro Situacao (nao fiz, ja fiz, errei/acertei na ultima, ja errei alguma vez).
+- Questao: mapa numerado, Anterior/Proxima sempre, IA retratil, resolucao com mdLite (italico/negrito).
+- transcrever.py: falhas eram RECITATION (o Gemini nao copia enunciado publicado na internet; ~4%). Essas ficam no modo imagem (nao se perdem). Motivos em <saida>.falhas.json.

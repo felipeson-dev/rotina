@@ -19,6 +19,7 @@ CHAVES = [k for k in os.environ.get('GEMINI_KEYS', '').split(',') if k]
 MODELOS = ['gemini-3.5-flash-lite', 'gemini-3.6-flash']
 TRAVA = threading.Lock()
 ESGOTADA = {}      # (modelo, chave) -> até quando evitar
+FALHAS = {}        # id -> motivo (vai para <saida>.falhas.json)
 
 def caminho(q):
     banca = {'Fuvest': 'fuvest', 'UNESP': 'unesp', 'Unicamp': 'unicamp'}.get(q['banca'], q['banca'].lower())
@@ -36,26 +37,41 @@ PROMPT = ('Esta imagem é uma questão de vestibular (parte de cima) seguida da 
           '7) "materia" e "assunto": o assunto EXATO copiado da lista da matéria, escolhido lendo a questão e a resolução:\n' + cl.TEXTO_TAX +
           '\nFormato: {"materia":"","assunto":"","enunciado":"","alternativas":[""],"gabarito":"A","resolucao":"","figuras":[{"box_2d":[0,0,0,0],"legenda":""}],"depende_de_outro_texto":false}')
 
-def chama(png_b64):
-    corpo = json.dumps({'contents': [{'role': 'user', 'parts': [{'text': PROMPT}, {'inlineData': {'mimeType': 'image/png', 'data': png_b64}}]}],
-                        'generationConfig': {'responseMimeType': 'application/json', 'temperature': 0, 'maxOutputTokens': 6000}}).encode()
-    for volta in range(6):
-        opcoes = [(m, k) for m in MODELOS for k in CHAVES if ESGOTADA.get((m, k), 0) < time.time()]
+def chama(png_b64, prompt=PROMPT, modelos=MODELOS, voltas=4):
+    """Devolve (json, erro). Erro 'RECITATION' = o Gemini se recusou a copiar um texto que existe na internet: não adianta repetir igual."""
+    corpo = json.dumps({'contents': [{'role': 'user', 'parts': [{'text': prompt}, {'inlineData': {'mimeType': 'image/png', 'data': png_b64}}]}],
+                        'generationConfig': {'responseMimeType': 'application/json', 'temperature': 0, 'maxOutputTokens': 8000}}).encode()
+    erros = []
+    for volta in range(voltas):
+        opcoes = [(m, k) for m in modelos for k in CHAVES if ESGOTADA.get((m, k), 0) < time.time()]
         if not opcoes:
             time.sleep(60); continue
         m, k = random.choice(opcoes[:max(1, len(CHAVES))])
         try:
             req = urllib.request.Request(f'https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent', data=corpo, headers={'Content-Type': 'application/json', 'x-goog-api-key': k})
             j = json.loads(urllib.request.urlopen(req, timeout=150).read())
-            txt = ''.join(p.get('text', '') for p in j['candidates'][0]['content']['parts'])
-            return json.loads(txt)
+            c = j['candidates'][0]
+            if c.get('finishReason') == 'RECITATION':
+                return None, 'RECITATION'
+            txt = ''.join(p.get('text', '') for p in c.get('content', {}).get('parts', []))
+            try:
+                return json.loads(txt), ''
+            except Exception:
+                erros.append(f'{m}: resposta não é JSON (fim={c.get("finishReason")}, {len(txt)} letras)')
         except urllib.error.HTTPError as e:
+            erros.append(f'{m}: HTTP {e.code}')
             with TRAVA:
                 ESGOTADA[(m, k)] = time.time() + (900 if e.code == 429 else 20)
-        except Exception:
+        except Exception as e:
+            erros.append(f'{m}: {e!r}'[:200])
             time.sleep(3 + volta * 4)
-    return None
+    return None, ' | '.join(erros)
 
+def ler(png_b64):
+    """RECITATION = o Gemini não copia textos já publicados na internet (é o enunciado que dispara; testado em 28/10).
+    Não adianta insistir: a questão fica no modo imagem (recorte do site) em vez de se perder."""
+    x, erro = chama(png_b64)
+    return x, False, ('o Gemini não copia este enunciado (já publicado na internet): fica como imagem' if erro == 'RECITATION' else erro)
 def caixa(b):
     while isinstance(b, list) and len(b) == 1 and isinstance(b[0], list):
         b = b[0]
@@ -82,14 +98,16 @@ def ocr_da(arq):
 def processa(q):
     arq = caminho(q)
     if not os.path.exists(arq):
-        return None
+        FALHAS[q['id']] = 'imagem não está no cache'; return None
     im = Image.open(arq).convert('RGB'); b = io.BytesIO(); im.save(b, 'PNG')
-    x = chama(base64.b64encode(b.getvalue()).decode())
-    if not x or not isinstance(x.get('alternativas'), list) or len(x['alternativas']) < 2 or not x.get('enunciado'):
-        return None
+    x, reescrita, erro = ler(base64.b64encode(b.getvalue()).decode())
+    if not x:
+        FALHAS[q['id']] = 'IA: ' + erro; return None
+    if not isinstance(x.get('alternativas'), list) or len(x['alternativas']) < 2 or not x.get('enunciado'):
+        FALHAS[q['id']] = f'resposta incompleta: {len(x.get("alternativas") or [])} alternativas, enunciado {len(str(x.get("enunciado") or ""))} letras'; return None
     gab = str(x.get('gabarito') or '').strip().upper()[:1]
     if gab and gab != q['gab']:       # a leitura da IA tem que bater com o gabarito oficial do site
-        return None
+        FALHAS[q['id']] = f'gabarito: IA leu {gab}, oficial {q["gab"]}'; return None
     W, H = im.size; figuras = []
     linhas = [l for l in (ocr_da(arq).get('linhas') or []) if len(l.get('t', '')) >= 22]    # linhas de texto corrido (não rótulos de figura)
     for f in x.get('figuras') or []:
@@ -114,7 +132,7 @@ def processa(q):
     return {'id': 'tx-' + q['id'], 'banca': q['banca'], 'ano': q['ano'], 'num': q['num'], 'fase': q.get('fase', ''), 'materia': mat, 'assunto': ass,
             'enunciado': x['enunciado'].strip(), 'alts': [{'l': 'ABCDE'[i], 't': t} for i, t in enumerate(alts)], 'gab': q['gab'],
             'coment': str(x.get('resolucao') or '').strip(), 'imagens': figuras, 'fig': 1 if x.get('depende_de_outro_texto') else 0,
-            'img': q['img'], 'tipo': 'real', 'fonte': 'Objetivo (lido por IA)'}
+            'img': q['img'], 'tipo': 'real', 'fonte': 'Objetivo (lido por IA)' + (' · resolução reescrita pela IA' if reescrita else '')}
 
 def principal():
     ent, sai = sys.argv[1], sys.argv[2]
@@ -130,13 +148,19 @@ def principal():
     print(f'{len(q)} questões a processar', flush=True)
     ok = falha = 0
     with ThreadPoolExecutor(4) as ex:
-        for r in ex.map(processa, q):
-            if r: out.append(r); ok += 1
-            else: falha += 1
+        for orig, r in zip(q, ex.map(processa, q)):
+            if r:
+                out = [x for x in out if x['id'] != orig['id']]      # tinha ficado como imagem numa rodada anterior: troca pela de texto
+                out.append(r); ok += 1
+            else:
+                falha += 1
+                if orig.get('modo') == 'objetivo' and not any(x['id'] == orig['id'] for x in out):
+                    out.append(orig)                                  # não perde a questão: fica no modo imagem (recorte do site), como antes
             if (ok + falha) % 20 == 0:
                 print(f'  {ok + falha}/{len(q)} (ok {ok}, falhou {falha})', flush=True)
                 json.dump(out, open(sai, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     json.dump(out, open(sai, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    json.dump(FALHAS, open(sai + '.falhas.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(f'PRONTO: {ok} ok, {falha} falharam, arquivo {sai}', flush=True)
 
 if __name__ == '__main__':

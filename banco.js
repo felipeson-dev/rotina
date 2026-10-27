@@ -4,9 +4,9 @@
    Fontes: ENEM (baixado da API aberta enem.dev), questões geradas pela IA e arquivos JSON importados (ferramentas/montar_banco.py gera os arquivos).
    Questão: { id, banca, ano, area, materia, assunto, dif, fig, enunciado, imagens[], alts:[{l,t,img}], gab, coment, res_ia, duvidas }. */
 
-S.qh ||= {}; // histórico por questão: { id: { ok, dia, n } }
+S.qh ||= {}; // histórico por questão: { id: { ok, dia, n, ac, er, h: [[dia, 1|0, letra]] } }
 const BANCO = { itens: [], pronto: false, carregando: false, msg: '', baixando: false };
-ui.qf = { assunto: '', bancas: [], buscaBanca: '', preset: '', a0: '', a1: '', area: '', mat: '', st: 'todas', dif: '', tag: '', semFig: true, n: 10, ordem: 'sorteio' };
+ui.qf = { assunto: '', mat: '', banca: '', ano: '', st: 'todas', tag: '', semFig: true, res: false, n: 10, ordem: 'sorteio' };
 
 const AREAS_Q = [['', 'Todas'], ['ciencias-natureza', 'Natureza'], ['matematica', 'Matemática'], ['ciencias-humanas', 'Humanas'], ['linguagens', 'Linguagens']];
 const AREA_DA_MATERIA = { 'Biologia': 'ciencias-natureza', 'Química': 'ciencias-natureza', 'Física': 'ciencias-natureza', 'Matemática': 'matematica', 'História': 'ciencias-humanas', 'Geografia': 'ciencias-humanas', 'Filosofia': 'ciencias-humanas', 'Sociologia': 'ciencias-humanas', 'Português': 'linguagens', 'Literatura': 'linguagens', 'Inglês': 'linguagens' };
@@ -37,6 +37,7 @@ const BD = {
   },
   async get(id) { const db = await this.abrir(); return new Promise(ok => { const q = db.transaction('q').objectStore('q').get(id); q.onsuccess = () => ok(q.result || null); q.onerror = () => ok(null); }); },
   async meta() { const db = await this.abrir(); return new Promise(ok => { const q = db.transaction('m').objectStore('m').get('lista'); q.onsuccess = () => ok(q.result || []); q.onerror = () => ok([]); }); },
+  async cada(fn) { const db = await this.abrir(); return new Promise(ok => { const r = db.transaction('q').objectStore('q').openCursor(); r.onsuccess = () => { const c = r.result; if (!c) return ok(); fn(c.value); c.continue(); }; r.onerror = () => ok(); }); },
   async setMeta(l) { const db = await this.abrir(); return new Promise(ok => { const t = db.transaction('m', 'readwrite'); t.objectStore('m').put(l, 'lista'); t.oncomplete = ok; t.onerror = ok; }); },
 };
 /** Chave do conteúdo (começo do enunciado + gabarito): o mesmo texto vindo de duas fontes não entra duas vezes. */
@@ -52,13 +53,20 @@ function tokensBusca(q) {
   if (/\b(1|primeiro)\s*grau\b/.test(t)) { t = t.replace(/\b(1|primeiro)\s*grau\b/g, ' '); extra.push('afim'); }
   return [...t.split(/\s+/).filter(w => w && !PARADAS.has(w)), ...extra];
 }
-const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(q.assunto).slice(0, 140), as: q.assunto || '', x: q.modo === 'objetivo' ? normBusca(q.enunciado).slice(0, 600) : '', n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0 });
+/** Começo do enunciado para a lista (sem fórmulas nem marcações). */
+const previa = s => String(s || '').replace(/\$\$?[^$]*\$\$?/g, ' [fórmula] ').replace(/[*_#|>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 130);
+const META_V = 2;   // muda quando a ficha leve ganha campos: refaz as fichas a partir das questões guardadas
+const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(q.assunto).slice(0, 140), as: q.assunto || '', x: normBusca(q.enunciado).slice(0, 400), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0 });
 
 async function carregarBanco() {
   if (BANCO.pronto || BANCO.carregando) return;
   BANCO.carregando = true;
   try {
     BANCO.itens = await BD.meta();
+    if (BANCO.itens.length && (await DB.get('banco:metav')) !== META_V) {
+      const novas = []; await BD.cada(q => novas.push(metaDe(q))); BANCO.itens = novas; await BD.setMeta(novas);
+    }
+    DB.set('banco:metav', META_V);
     // traz o que existia no formato antigo (versão anterior do app)
     const velhos = (await Promise.all(['enem', 'ia', 'import'].map(k => DB.get('banco:' + k)))).flatMap(p => Array.isArray(p) ? p : []);
     if (velhos.length) {
@@ -84,73 +92,93 @@ async function adicionarQuestoes(lista) {
   return novos.length;
 }
 
-function filtrarBanco() {
-  const f = ui.qf, pre = f.preset && PRESETS_BANCA[f.preset] ? PRESETS_BANCA[f.preset][1] : null, toks = tokensBusca(f.tag);
+/** Histórico de uma questão: { ok, dia (última vez), n, ac, er, h: [[dia, 1|0, letra]] } (os registros antigos só tinham ok/dia/n). */
+function histDe(id) {
+  const h = S.qh[id]; if (!h) return null;
+  return { ...h, ac: h.ac ?? (h.ok ? 1 : 0), er: h.er ?? (h.ok ? 0 : 1), h: h.h || [[h.dia, h.ok ? 1 : 0]] };
+}
+const SITUACOES = [['todas', 'Todas'], ['novas', 'Ainda não fiz'], ['feitas', 'Já fiz'], ['erradas', 'Errei na última vez'], ['acertadas', 'Acertei na última vez'], ['jaerrei', 'Já errei alguma vez']];
+function situacaoOk(st, id) {
+  if (!st || st === 'todas') return true;
+  const h = S.qh[id];
+  if (st === 'novas') return !h;
+  if (!h) return false;
+  return st === 'feitas' || (st === 'erradas' && !h.ok) || (st === 'acertadas' && h.ok) || (st === 'jaerrei' && (!h.ok || (h.er ?? 0) > 0));
+}
+
+function filtrarBanco(troca = {}) {
+  const f = { ...ui.qf, ...troca }, toks = tokensBusca(f.tag);
+  const bs = f.banca || '', pre = bs.startsWith('p:') ? PRESETS_BANCA[bs.slice(2)]?.[1] : null, b1 = bs.startsWith('b:') ? bs.slice(2) : '';
+  const an = f.ano || '', desde = an.startsWith('d:') ? +an.slice(2) : 0, so = an.startsWith('a:') ? +an.slice(2) : 0;
   return BANCO.itens.filter(q => {
-    if (f.bancas.length ? !f.bancas.includes(q.b) : (pre && !pre.test(q.b))) return false;
-    if (f.a0 && q.a && q.a < +f.a0) return false;
-    if (f.a1 && q.a && q.a > +f.a1) return false;
-    if (f.area && areaDeQ(q) !== f.area) return false;
+    if (b1 && q.b !== b1) return false;
+    if (pre && !pre.test(q.b)) return false;
+    if (desde && !(q.a >= desde)) return false;
+    if (so && q.a !== so) return false;
     if (f.mat && q.m !== f.mat) return false;
-    if (f.dif && q.d !== f.dif) return false;
+    if (f.assunto && q.as !== f.assunto) return false;
     if (f.semFig && q.f) return false;
     if (f.res && !q.r) return false;
-    if (f.assunto && q.as !== f.assunto) return false;
     if (toks.length) { const alvo = q.s + ' ' + (q.x || '') + ' ' + normBusca(q.b) + ' ' + normBusca(q.m); if (!toks.every(w => alvo.includes(w))) return false; }
-    const h = S.qh[q.id];
-    if (f.st === 'novas' && h) return false;
-    if (f.st === 'erradas' && !(h && !h.ok)) return false;
-    if (f.st === 'acertadas' && !(h && h.ok)) return false;
-    return true;
+    return situacaoOk(f.st, q.id);
   });
 }
 
-// ---------- tela de montar lista ----------
+// ---------- tela de escolher questões: caixas de seleção, tudo num lugar só ----------
 function contar(lista, campo) { const c = {}; for (const q of lista) { const k = q[campo]; if (k) c[k] = (c[k] || 0) + 1; } return c; }
+const opcao = (v, t, atual) => `<option value="${esc(v)}" ${String(atual ?? '') === String(v) ? 'selected' : ''}>${esc(t)}</option>`;
+const milhar = n => n.toLocaleString('pt-BR');
 
 function qMontar() {
   if (!BANCO.pronto) { carregarBanco(); return '<section class="cartao"><p class="fraco" style="margin:0">Abrindo o banco de questões…</p></section>'; }
-  const f = ui.qf, todos = BANCO.itens, achadas = filtrarBanco();
-  const porBanca = contar(todos, 'b'), porMat = contar(todos, 'm');
-  const anos = [...new Set(todos.map(q => q.a).filter(Boolean))].sort(), mats = Object.keys(porMat).sort();
-  const dificuldades = [...new Set(todos.map(q => q.d).filter(Boolean))];
-  const buscaB = f.buscaBanca.trim().toLowerCase();
-  const bancasLista = Object.entries(porBanca).filter(([k]) => !buscaB || k.toLowerCase().includes(buscaB)).sort((a, b) => b[1] - a[1]).slice(0, 36);
-  const sel = (id, v, opts) => `<select data-qf="${id}">${opts.map(([val, t]) => `<option value="${val}" ${String(v) === String(val) ? 'selected' : ''}>${t}</option>`).join('')}</select>`;
-  const contaPreset = k => todos.filter(q => PRESETS_BANCA[k][1].test(q.b)).length;
-  const feitas = Object.keys(S.qh).length;
-  return `<section class="cartao"><div class="entre"><h2>Banco de questões</h2><span class="fraco">${todos.length.toLocaleString('pt-BR')} no banco · ${feitas} já respondidas</span></div>
-    ${todos.length ? '' : '<p style="margin:0">O banco está vazio. Baixe o ENEM, importe os arquivos de questões (veja "Como importar") ou gere com a IA.</p>'}
-    ${todos.length ? detalhe('bancoinfo', 'O que há no banco', `<div class="linha">${Object.entries(porMat).sort((a, b) => b[1] - a[1]).map(([m, n]) => `<span class="tag" style="${cor(m)}">${esc(m)} · ${n.toLocaleString('pt-BR')}</span>`).join('')}</div>`) : ''}
-    ${BANCO.msg ? `<p style="margin:0">${esc(BANCO.msg)}</p>` : ''}
-    <div class="linha"><button class="botao claro" data-acao="bancoEnem" ${BANCO.baixando ? 'disabled' : ''}>${BANCO.baixando ? 'Baixando…' : todos.some(q => q.b === 'ENEM') ? 'Atualizar ENEM' : 'Baixar o ENEM (2009–2023)'}</button>
-      <label class="botao claro" style="display:inline-flex;align-items:center">Importar arquivos<input type="file" accept="application/json,.json,.gz,application/gzip" multiple data-acao-arquivo="bancoImportar" hidden></label>
-      <button class="link" data-acao="bancoAjuda">Como importar?</button></div></section>
-    <section class="cartao"><h2>Escolha as questões</h2>
-      ${todos.length ? `<div class="coluna" style="gap:8px"><span class="rotulo">matéria</span><div class="linha"><button class="chip" data-acao="qfMat" data-v="" aria-pressed="${!f.mat}">Todas <small>${todos.length.toLocaleString('pt-BR')}</small></button>${Object.entries(porMat).sort((a, b) => b[1] - a[1]).map(([m, n]) => `<button class="chip" data-acao="qfMat" data-v="${esc(m)}" aria-pressed="${f.mat === m}">${esc(m)} <small>${n.toLocaleString('pt-BR')}</small></button>`).join('')}</div></div>
-      ${f.mat ? `<div class="coluna" style="gap:8px"><span class="rotulo">assunto de ${esc(f.mat)}</span><div class="linha assuntos-q"><button class="chip" data-acao="qfAssunto" data-v="" aria-pressed="${!f.assunto}">Todos os assuntos</button>${assuntosDe(f.mat, todos).map(([a, n]) => `<button class="chip" data-acao="qfAssunto" data-v="${esc(a)}" aria-pressed="${f.assunto === a}">${esc(a)} <small>${n}</small></button>`).join('')}</div></div>` : ''}
-      <label class="campo">Procurar no texto das questões<input type="search" data-qf="tag" value="${esc(f.tag)}" placeholder="Ex.: função quadrática, vértice da parábola, Segundo Reinado"></label>
-      <div class="linha"><span class="fraco">Quantas:</span>${[10, 20, 30, 50].map(n => `<button class="chip" data-acao="qN" data-v="${n}" aria-pressed="${f.n === n}">${n}</button>`).join('')}<button class="chip" data-acao="qN" data-v="9999" aria-pressed="${f.n >= 9999}">todas</button><input type="number" min="1" max="500" data-qf="n" value="${[10, 20, 30, 50].includes(f.n) || f.n >= 9999 ? '' : f.n}" placeholder="outra" style="width:84px"></div>
-      ${detalhe('filtros', 'Mais filtros (banca, ano, área, quais)', `<div class="coluna" style="gap:8px"><span class="rotulo">grupos de bancas</span><div class="linha">${Object.entries(PRESETS_BANCA).map(([k, [t]]) => `<button class="chip" data-acao="qfPreset" data-v="${k}" aria-pressed="${f.preset === k}">${t} · ${contaPreset(k).toLocaleString('pt-BR')}</button>`).join('')}</div></div>
-      <div class="coluna" style="gap:8px"><span class="rotulo">banca específica ${f.bancas.length ? `(${f.bancas.length} escolhida${f.bancas.length > 1 ? 's' : ''})` : ''}</span>
-        <input type="search" data-qf="buscaBanca" value="${esc(f.buscaBanca)}" placeholder="Procurar banca: Fuvest, Unicamp, Medicina…">
-        <div class="linha">${f.bancas.map(b => `<button class="chip" data-acao="qfBanca" data-v="${esc(b)}" aria-pressed="true">${esc(b)} ✕</button>`).join('')}${bancasLista.filter(([k]) => !f.bancas.includes(k)).map(([k, n]) => `<button class="chip" data-acao="qfBanca" data-v="${esc(k)}" aria-pressed="false">${esc(k)} <small>${n}</small></button>`).join('')}</div></div>
-      <div class="linha"><label class="campo" style="flex:1 1 120px">Ano, de${sel('a0', f.a0, [['', 'qualquer'], ...anos.map(a => [a, a])])}</label><label class="campo" style="flex:1 1 120px">até${sel('a1', f.a1, [['', 'qualquer'], ...anos.map(a => [a, a])])}</label>
-        ${dificuldades.length ? `<label class="campo" style="flex:1 1 130px">Dificuldade${sel('dif', f.dif, [['', 'qualquer'], ...dificuldades.map(d => [d, d])])}</label>` : ''}</div>
-      <div class="coluna" style="gap:8px"><span class="rotulo">quais</span><div class="linha">${[['todas', 'Todas'], ['novas', 'Ainda não feitas'], ['erradas', 'As que errei'], ['acertadas', 'As que acertei']].map(([v, t]) => `<button class="chip" data-acao="qfSt" data-v="${v}" aria-pressed="${f.st === v}">${t}</button>`).join('')}
-        <button class="chip" data-acao="qfFig" aria-pressed="${f.semFig}">Sem figura faltando</button><button class="chip" data-acao="qfRes" aria-pressed="${!!f.res}">Só com resolução comentada</button></div></div>
-      <div class="linha"><div class="alterna" role="group"><button data-acao="qfOrdem" data-v="sorteio" aria-pressed="${f.ordem === 'sorteio'}">Sorteio</button><button data-acao="qfOrdem" data-v="ordem" aria-pressed="${f.ordem === 'ordem'}">Mais novas primeiro</button></div><button class="link" data-acao="qfLimpar">Limpar filtros</button></div>`)}
-      <div class="entre contagem"><strong>${achadas.length.toLocaleString('pt-BR')} ${achadas.length === 1 ? 'questão' : 'questões'}${f.mat ? ' de ' + esc(f.mat) : ''}${f.assunto ? ' · ' + esc(f.assunto) : ''}</strong>
-        <div class="linha"><button class="botao grande" data-acao="qGerar" ${achadas.length ? '' : 'disabled'}>Resolver${achadas.length ? ` (${Math.min(f.n, achadas.length)})` : ''}</button><button class="botao claro" data-acao="qVerLista" ${achadas.length ? '' : 'disabled'}>Ver a lista</button>${S.erros.length ? `<button class="botao claro" data-acao="qRefazerErros">Refazer meus erros (${S.erros.length})</button>` : ''}</div></div>
-      ${ui.qLista ? listaQuestoes(achadas) : ''}` : ''}</section>
-    <section class="cartao"><details class="det-q" data-k="iaq" ${ui.ab.iaq ? 'open' : ''}><summary>Completar o banco com questões feitas pela IA</summary><div class="det-corpo"><p class="fraco" style="margin:0">A IA escreve questões inéditas no estilo da banca e elas ficam guardadas no banco. Podem ter erros: confira.</p>
+  const f = ui.qf, todos = BANCO.itens;
+  if (!todos.length) return `<section class="cartao"><h2>Escolher questões</h2><p style="margin:0">O banco está vazio. Importe os arquivos de questões ou baixe o ENEM logo abaixo.</p></section><!--meta-->${cartaoBanco(true)}`;
+  const achadas = filtrarBanco();
+  // cada caixa mostra quantas questões há em cada opção, já considerando as outras caixas
+  const semMat = filtrarBanco({ mat: '', assunto: '' }), semSt = filtrarBanco({ st: 'todas' }), semBanca = filtrarBanco({ banca: '' }), semAno = filtrarBanco({ ano: '' });
+  const porMat = contar(semMat, 'm'), porBanca = contar(semBanca, 'b'), porAno = contar(semAno, 'a');
+  const anos = Object.keys(porAno).map(Number).filter(Boolean).sort((a, b) => b - a);
+  const caixa = (rot, id, html, ativo, extra = '') => `<label class="filtro ${ativo ? 'ativo' : ''}"><span>${rot}</span><select data-qf="${id}" ${extra}>${html}</select></label>`;
+  const nSt = v => semSt.filter(q => situacaoOk(v, q.id)).length;
+  const nAno = d => semAno.filter(q => q.a >= d).length;
+  const algum = f.mat || f.banca || f.ano || (f.st && f.st !== 'todas') || f.tag || f.res;
+  return `<section class="cartao escolher"><div class="entre"><h2>Escolher questões</h2>${algum ? '<button class="link" data-acao="qfLimpar">Limpar filtros</button>' : ''}</div>
+    <div class="filtros">
+      ${caixa('Matéria', 'mat', opcao('', `Todas as matérias (${milhar(semMat.length)})`, f.mat) + Object.entries(porMat).sort((a, b) => a[0].localeCompare(b[0])).map(([m, n]) => opcao(m, `${m} (${milhar(n)})`, f.mat)).join(''), f.mat)}
+      ${caixa('Assunto', 'assunto', f.mat ? opcao('', 'Todos os assuntos', f.assunto) + assuntosDe(f.mat, semMat).map(([a, n]) => opcao(a, `${a} (${n})`, f.assunto)).join('') : opcao('', 'Escolha a matéria antes', ''), f.assunto, f.mat ? '' : 'disabled')}
+      ${caixa('Situação', 'st', SITUACOES.map(([v, t]) => opcao(v, `${t} (${milhar(nSt(v))})`, f.st || 'todas')).join(''), f.st && f.st !== 'todas')}
+      ${caixa('Banca', 'banca', opcao('', 'Todas as bancas', f.banca) + `<optgroup label="Grupos">${Object.entries(PRESETS_BANCA).map(([k, [t, re]]) => opcao('p:' + k, `${t} (${milhar(semBanca.filter(q => re.test(q.b)).length)})`, f.banca)).join('')}</optgroup>`
+        + `<optgroup label="Banca">${Object.entries(porBanca).sort((a, b) => b[1] - a[1]).map(([b, n]) => opcao('b:' + b, `${b} (${milhar(n)})`, f.banca)).join('')}</optgroup>`, f.banca)}
+      ${caixa('Ano', 'ano', opcao('', 'Qualquer ano', f.ano) + `<optgroup label="A partir de">${[2020, 2015, 2010].filter(d => anos.some(a => a >= d)).map(d => opcao('d:' + d, `${d} em diante (${milhar(nAno(d))})`, f.ano)).join('')}</optgroup>`
+        + `<optgroup label="Só um ano">${anos.map(a => opcao('a:' + a, `${a} (${porAno[a]})`, f.ano)).join('')}</optgroup>`, f.ano)}
+      ${caixa('Ordem', 'ordem', [['sorteio', 'Sorteadas'], ['novas', 'Mais recentes primeiro'], ['antigas', 'Mais antigas primeiro']].map(([v, t]) => opcao(v, t, f.ordem)).join(''), false)}
+    </div>
+    <label class="filtro busca"><span>Procurar no texto</span><input type="search" data-qf="tag" value="${esc(f.tag)}" placeholder="Ex.: função quadrática, Segundo Reinado, mitose"></label>
+    <div class="linha marcas"><label class="marca-q"><input type="checkbox" data-qf-marca="semFig" ${f.semFig ? 'checked' : ''}> Esconder as que dependem de figura que não veio</label>
+      <label class="marca-q"><input type="checkbox" data-qf-marca="res" ${f.res ? 'checked' : ''}> Só com resolução</label></div>
+    <div class="acao-q"><div class="coluna" style="gap:0"><strong class="n-achadas">${milhar(achadas.length)}</strong><span class="fraco">${achadas.length === 1 ? 'questão encontrada' : 'questões encontradas'}</span></div>
+      <label class="filtro quantas"><span>Quantas</span><select data-qf="n">${[5, 10, 15, 20, 30, 50].map(n => opcao(n, String(n), f.n)).join('')}${opcao(9999, 'Todas', f.n >= 9999 ? 9999 : f.n)}</select></label>
+      <button class="botao grande" data-acao="qGerar" ${achadas.length ? '' : 'disabled'}>Resolver${achadas.length ? ` ${Math.min(f.n, achadas.length)}` : ''}</button>
+      <button class="botao claro" data-acao="qVerLista" ${achadas.length ? '' : 'disabled'}>${ui.qLista ? 'Esconder a lista' : 'Ver a lista'}</button></div>
+    ${ui.qLista ? listaQuestoes(achadas) : ''}</section><!--meta-->${cartaoBanco(false)}`;
+}
+
+/** Importar, baixar o ENEM e gerar com a IA: fica fechado no fim da tela. */
+function cartaoBanco(aberto) {
+  const todos = BANCO.itens, porMat = contar(todos, 'm');
+  return `<section class="cartao">${detalhe('bancoinfo', `Banco de questões · ${milhar(todos.length)} questões · importar`, `
+      ${todos.length ? `<div class="linha">${Object.entries(porMat).sort((a, b) => b[1] - a[1]).map(([m, n]) => `<span class="tag" style="${cor(m)}">${esc(m)} · ${milhar(n)}</span>`).join('')}</div>` : ''}
+      ${BANCO.msg ? `<p style="margin:0">${esc(BANCO.msg)}</p>` : ''}
+      <div class="linha"><label class="botao claro" style="display:inline-flex;align-items:center">Importar arquivos<input type="file" accept="application/json,.json,.gz,application/gzip" multiple data-acao-arquivo="bancoImportar" hidden></label>
+        <button class="botao claro" data-acao="bancoEnem" ${BANCO.baixando ? 'disabled' : ''}>${BANCO.baixando ? 'Baixando…' : todos.some(q => q.b === 'ENEM') ? 'Atualizar ENEM' : 'Baixar o ENEM (2009–2023)'}</button>
+        <button class="link" data-acao="bancoAjuda">Como importar?</button></div>`).replace('<details ', aberto || BANCO.msg ? '<details open ' : '<details ')}
+    ${detalhe('iaq', 'Criar questões novas com a IA', `<p class="fraco" style="margin:0">A IA escreve questões inéditas no estilo da banca e elas ficam guardadas no banco. Podem ter erros: confira.</p>
       <div class="linha"><label class="campo" style="flex:1 1 170px">Banca<select data-ui="qBanca">${BANCAS.map(b => `<option ${ui.qBanca === b ? 'selected' : ''}>${b}</option>`).join('')}</select></label>
         <label class="campo" style="flex:1 1 170px">Matéria<select data-ui="qMat">${Object.keys(MIN_Q).map(m => `<option ${ui.qMat === m ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
         <label class="campo" style="flex:1 1 130px">Dificuldade<select data-ui="qDif">${['fácil', 'média', 'difícil'].map(d => `<option ${ui.qDif === d ? 'selected' : ''}>${d}</option>`).join('')}</select></label>
         <div class="campo" style="flex:0 1 190px">Quantas questões<div class="linha">${stepperHtml('qia-n', ui.qNIa || 10, 1, 60)}</div></div></div>
       <label class="campo">Assunto<input type="text" data-ui="qTema" id="q-tema" value="${esc(ui.qTema)}" placeholder="Ex.: genética, leis de Mendel"></label>
-      <div class="linha"><button class="botao" data-acao="qIaBanco">Gerar e guardar no banco</button></div></div></details></section>
-    ${metaQTabela()}`;
+      <div class="linha"><button class="botao" data-acao="qIaBanco">Gerar e guardar no banco</button></div>`)}</section>`;
 }
 
 function metaQTabela() {
@@ -161,25 +189,42 @@ function metaQTabela() {
 }
 
 // ---------- questão com resolução e dúvidas ----------
+/** Linha "Seu histórico": ✓ 12/10 · ✗ 20/10 (as últimas vezes que fez esta questão). */
+function histHtml(id) {
+  const h = id && histDe(id); if (!h) return '';
+  return `<div class="q-hist"><span class="fraco">Seu histórico nesta questão:</span>${h.h.slice(-6).map(([d, ok, l]) => `<span class="${ok ? 'h-ok' : 'h-er'}">${ok ? '✓' : '✗'} ${diaCurto(d)}${l ? ' (' + esc(l) + ')' : ''}</span>`).join('')}</div>`;
+}
+
+/** Números das questões da lista: verde = acertou, vermelho = errou, contorno = atual. Toque para ir direto. */
+function mapaSessao(s) {
+  const n = s.itens.length; if (n < 2) return '';
+  let ini = 0, fim = n;
+  if (n > 25) { ini = Math.max(0, Math.min(s.i - 12, n - 25)); fim = ini + 25; }
+  const bt = j => { const q = s.itens[j]; return `<button class="${q.resp == null ? '' : q.certo ? 'h-ok' : 'h-er'} ${j === s.i ? 'atual' : ''}" data-acao="qIr" data-i="${j}" aria-label="Questão ${j + 1}">${j + 1}</button>`; };
+  return `<nav class="q-mapa" aria-label="Questões da lista">${ini ? '<span>…</span>' : ''}${Array.from({ length: fim - ini }, (_, k) => bt(ini + k)).join('')}${fim < n ? '<span>…</span>' : ''}</nav>`;
+}
+
 function qQuestao() {
-  const s = ui.qs, q = s.itens[s.i], resp = q.resp != null;
+  const s = ui.qs, q = s.itens[s.i], resp = q.resp != null, ultima = s.i + 1 >= s.itens.length;
   if (ui.qPrevImg && ui.qPrevImg.id !== q.prev) ui.qPrevImg = null;
-  const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado" style="white-space:pre-wrap">${esc(q.res_ia)}</div></div>` : '';
-  const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia" style="white-space:pre-wrap">${esc(d.r)}</div>`).join('');
-  return `<section class="cartao questao"><div class="entre"><span class="linha" style="gap:6px"><span class="tag" style="${cor(q.materia)}">${esc(q.materia)}</span>${q.assunto ? `<span class="selo">${esc(q.assunto)}</span>` : ''}</span><span class="fraco">${esc(q.fonte)}${q.num ? ' · nº ' + esc(q.num) : ''}</span></div>
-    ${q.fig ? '<p class="fraco" style="margin:0;font-size:13px">⚠ Pode depender de uma figura que não está no banco. Se não der para resolver, pule.</p>' : ''}
+  const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado">${mdLite(q.res_ia)}</div></div>` : '';
+  const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia">${mdLite(d.r)}</div>`).join('');
+  const nav = `<div class="q-nav"><button class="botao contorno" data-acao="qAnt" ${s.i ? '' : 'disabled'}>‹ Anterior</button>
+      <button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar rascunho' : 'Rascunho'}</button>
+      <button class="botao ${resp ? 'grande' : 'claro'}" data-acao="qProx">${ultima ? 'Terminar' : 'Próxima ›'}</button></div>`;
+  return `${mapaSessao(s)}<section class="cartao questao"><div class="entre"><span class="linha" style="gap:6px"><span class="tag" style="${cor(q.materia)}">${esc(q.materia)}</span>${q.assunto ? `<span class="selo">${esc(q.assunto)}</span>` : ''}</span><span class="fraco">${esc(q.fonte)}${q.num ? ' · nº ' + esc(q.num) : ''}</span></div>
+    ${histHtml(q.id)}
+    ${q.fig ? '<p class="fraco" style="margin:0;font-size:13px">⚠ Pode depender de um texto ou figura de outra questão. Se não der para resolver, vá para a próxima.</p>' : ''}
     ${q.modo === 'objetivo' ? `${q.prev ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ver'} o texto/figura da questão anterior (às vezes o texto-base está nela)</button>${ui.qPrevImg ? recorteObj(ui.qPrevImg, false) : ''}` : ''}
-      ${recorteObj(q, false)}` : `<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>${q.img ? `<a class="link" href="${esc(q.img)}" target="_blank" rel="noopener" style="align-self:flex-start;font-size:13px">ver a imagem original da prova</a>` : '' }`}
+      ${recorteObj(q, false)}` : `<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>${q.img ? `<a class="link" href="${esc(q.img)}" target="_blank" rel="noopener" style="align-self:flex-start;font-size:13px">ver a imagem original da prova</a>` : ''}`}
     <div class="alts ${q.modo === 'objetivo' ? 'so-letras' : ''}">${q.alts.map(a => { const sel = q.resp === a.l, certa = resp && a.l === q.gab, errada = resp && sel && a.l !== q.gab;
       return `<button class="alt ${sel ? 'sel' : ''} ${certa ? 'certa' : ''} ${errada ? 'errada' : ''}" data-acao="qResp" data-v="${a.l}" ${resp ? 'disabled' : ''}><b>${a.l}</b><span>${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</span></button>`; }).join('')}</div>
-    ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<p style="margin:6px 0 0;white-space:pre-wrap">${esc(q.coment)}</p>` : ''}</div>
+    ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>
       ${q.modo === 'objetivo' ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
-    <div class="linha">${s.i > 0 ? '<button class="botao contorno" data-acao="qAnt">‹ Anterior</button>' : ''}<button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar o rascunho' : 'Rascunho à mão'}</button>
-      ${resp ? `<button class="botao grande" data-acao="qProx">${s.i + 1 < s.itens.length ? 'Próxima' : 'Ver o resultado'}</button>` : `<button class="botao claro" data-acao="qPular">Pular</button>`}
-      <button class="link" data-acao="qSair">Sair da lista</button></div>
+    ${nav}
     ${ui.qRasc ? quadroHtml('qtmp', 420, 'quadriculado') : ''}
-    ${resp ? `<div class="ajuda-ia"><div class="linha"><button class="botao claro" data-acao="resolIa" ${ui.carregando ? 'disabled' : ''}>${q.res_ia ? 'Resolver de novo com a IA' : 'Ver a resolução pela IA'}</button></div>${ia}${duv ? `<div class="msgs-duv">${duv}</div>` : ''}
-      <div class="linha" style="flex-wrap:nowrap;align-items:flex-end"><textarea id="duvida-txt" data-ui="duvidaTxt" rows="2" placeholder="Tire uma dúvida específica: por que a C está errada? Como eu faria sem calculadora?" style="min-height:56px">${esc(ui.duvidaTxt || '')}</textarea><button class="botao" data-acao="duvidaIa" ${ui.carregando ? 'disabled' : ''}>Perguntar</button></div></div>` : ''}</section>`;
+    ${resp ? detalhe('qia', `Perguntar à IA${q.res_ia || duv ? ' · já tem resposta aqui' : ''}`, `<div class="ajuda-ia"><div class="linha"><button class="botao claro" data-acao="resolIa" ${ui.carregando ? 'disabled' : ''}>${q.res_ia ? 'Resolver de novo com a IA' : 'Ver a resolução pela IA'}</button></div>${ia}${duv ? `<div class="msgs-duv">${duv}</div>` : ''}
+      <div class="linha" style="flex-wrap:nowrap;align-items:flex-end"><textarea id="duvida-txt" data-ui="duvidaTxt" rows="2" placeholder="Tire uma dúvida específica: por que a C está errada? Como eu faria sem calculadora?" style="min-height:56px">${esc(ui.duvidaTxt || '')}</textarea><button class="botao" data-acao="duvidaIa" ${ui.carregando ? 'disabled' : ''}>Perguntar</button></div></div>`) : ''}</section>`;
 }
 
 /** Mostra só a parte da imagem do Objetivo que interessa: o enunciado (de cima até o corte) ou a resolução (do corte para baixo). */
@@ -247,23 +292,15 @@ Object.assign(ACOES, {
    "alts": ["texto da A", "texto da B", "texto da C", "texto da D", "texto da E"],
    "gab": "C", "comentario": "resolução, se houver" }]</pre>
     <p class="fraco">Questões repetidas (mesmo id) não duplicam. Quanto maior o arquivo, mais demora: 15 mil questões levam cerca de 1 minuto.</p>`),
-  qfBanca: el => { const f = ui.qf.bancas, v = el.dataset.v; ui.qf.bancas = f.includes(v) ? f.filter(x => x !== v) : [...f, v]; render(); },
-  qfPreset: el => { ui.qf.preset = ui.qf.preset === el.dataset.v ? '' : el.dataset.v; render(); },
-  qfArea: el => { ui.qf.area = el.dataset.v; render(); },
-  qfSt: el => { ui.qf.st = el.dataset.v; render(); },
-  qfFig: () => { ui.qf.semFig = !ui.qf.semFig; render(); },
-  qfRes: () => { ui.qf.res = !ui.qf.res; render(); },
   qPrev: async () => {
     if (ui.qPrevImg) { ui.qPrevImg = null; render(); return; }
     const q = ui.qs.itens[ui.qs.i], r = q.prev && await BD.get(q.prev);
     ui.qPrevImg = r && r.img ? r : null; if (!ui.qPrevImg) ui.iaMsg = 'A questão anterior não está no banco.'; render();
   },
-  qfOrdem: el => { ui.qf.ordem = el.dataset.v; render(); },
-  qfLimpar: () => { ui.qf = { ...ui.qf, bancas: [], buscaBanca: '', preset: '', a0: '', a1: '', area: '', mat: '', assunto: '', st: 'todas', dif: '', tag: '' }; render(); },
-  qN: el => { ui.qf.n = +el.dataset.v; render(); },
+  qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', banca: '', ano: '', st: 'todas', tag: '', res: false }; ui.qPag = 0; render(); },
   qGerar: async () => {
     let l = filtrarBanco();
-    l = ui.qf.ordem === 'ordem' ? l.slice().sort((a, b) => (a.a || 0) - (b.a || 0)) : l.slice().sort(() => Math.random() - 0.5);
+    l = ui.qf.ordem === 'sorteio' || !ui.qf.ordem ? l.slice().sort(() => Math.random() - 0.5) : ordenarLista(l);
     await ACOES.qIniciarIds(l.slice(0, Math.max(1, ui.qf.n)).map(m => m.id));
   },
   qIniciarIds: async ids => {
@@ -315,7 +352,8 @@ Object.assign(ACOES, {
 
 document.addEventListener('change', e => {
   const el = e.target;
-  if (el.dataset.qf) { const k = el.dataset.qf; ui.qf[k] = k === 'n' ? Math.max(1, Math.min(200, +el.value || 10)) : el.value; render(); }
+  if (el.dataset.qf) { const k = el.dataset.qf; ui.qf[k] = k === 'n' ? Math.max(1, Math.min(9999, +el.value || 10)) : el.value; if (k === 'mat') ui.qf.assunto = ''; ui.qPag = 0; render(); }
+  if (el.dataset.qfMarca) { ui.qf[el.dataset.qfMarca] = el.checked; ui.qPag = 0; render(); }
   if (el.dataset.acaoArquivo === 'bancoImportar' && el.files?.length) {
     const arquivos = [...el.files]; BANCO.msg = 'Importando…'; render();
     (async () => {
@@ -342,20 +380,21 @@ function assuntosDe(mat, itens) {
   const ordem = (typeof CONTEUDO !== 'undefined' && CONTEUDO[mat]) || [];
   return [...ordem.filter(a => c[a]).map(a => [a, c[a]]), ...Object.entries(c).filter(([a]) => !ordem.includes(a)).sort((x, y) => y[1] - x[1])];
 }
-const ordenarLista = l => l.slice().sort((a, b) => (b.a || 0) - (a.a || 0) || String(a.b).localeCompare(String(b.b)) || (+a.n || 0) - (+b.n || 0));
+const ordenarLista = l => { const s = ui.qf.ordem === 'antigas' ? -1 : 1; return l.slice().sort((a, b) => s * ((b.a || 0) - (a.a || 0)) || String(a.b).localeCompare(String(b.b)) || (+a.n || 0) - (+b.n || 0)); };
 function listaQuestoes(achadas) {
   const l = ordenarLista(achadas), pg = ui.qPag || 0, por = 20, ini = pg * por, fatia = l.slice(ini, ini + por);
   return `<div class="lista-q"><div class="entre"><span class="rotulo">lista · ${ini + 1} a ${Math.min(l.length, ini + por)} de ${l.length.toLocaleString('pt-BR')}</span>
     <div class="linha"><button class="botao contorno" data-acao="qPag" data-v="-1" ${pg ? '' : 'disabled'}>‹</button><button class="botao contorno" data-acao="qPag" data-v="1" ${ini + por < l.length ? '' : 'disabled'}>›</button></div></div>
-    ${fatia.map((q, i) => { const h = S.qh[q.id];
-      return `<button class="linha-q" data-acao="qComecarDe" data-i="${ini + i}"><span class="st ${h ? (h.ok ? 'ok' : 'x') : ''}" title="${h ? (h.ok ? 'você acertou' : 'você errou') : 'ainda não feita'}"></span>
+    ${fatia.map((q, i) => { const h = histDe(q.id);
+      return `<button class="linha-q" data-acao="qComecarDe" data-i="${ini + i}"><span class="st ${h ? (h.ok ? 'ok' : 'x') : ''}" title="${h ? (h.ok ? 'acertou na última vez' : 'errou na última vez') : 'ainda não feita'}"></span>
         <span class="lq-corpo"><strong>${esc(q.b)} ${q.a || ''}${q.n ? ' · nº ' + esc(q.n) : ''}</strong><small class="fraco">${esc(q.m || '')}${q.as ? ' · ' + esc(q.as) : ''}</small>
-        ${q.x ? `<small class="lq-texto">${esc(q.x.slice(0, 140))}…</small>` : ''}</span></button>`; }).join('')}</div>`;
-}
-Object.assign(ACOES, {
+        ${q.p ? `<small class="lq-texto">${esc(q.p)}…</small>` : ''}</span>
+        ${h ? `<span class="lq-hist">${h.ac ? `<b class="h-ok">✓ ${h.ac}</b>` : ''}${h.er ? `<b class="h-er">✗ ${h.er}</b>` : ''}</span>` : ''}</button>`; }).join('')}</div>`;
+}Object.assign(ACOES, {
   qfMat: el => { ui.qf.mat = el.dataset.v; ui.qf.assunto = ''; ui.qPag = 0; render(); },
   qfAssunto: el => { ui.qf.assunto = el.dataset.v; ui.qPag = 0; render(); },
   qVerLista: () => { ui.qLista = !ui.qLista; ui.qPag = 0; render(); },
+  qIr: el => { const s = ui.qs, j = +el.dataset.i; if (j === s.i) return; if (s.itens[s.i].resp == null) fecharItem(s); s.i = j; s.tq = Date.now(); ui.qRasc = false; DB.del('d:qtmp'); render(); },
   qPag: el => { ui.qPag = Math.max(0, (ui.qPag || 0) + +el.dataset.v); render(); },
   qComecarDe: async el => {
     const l = ordenarLista(filtrarBanco()), i = +el.dataset.i, ids = l.slice(i, i + Math.min(ui.qf.n, 50)).map(m => m.id);

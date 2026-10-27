@@ -118,7 +118,7 @@ function qErros() {
     <div class="linha"><button class="botao" data-acao="qRefazerErros">Refazer ${venc.length || S.erros.length} erros</button></div>
     ${S.erros.slice().reverse().map(e => `<div class="erro-item" style="${cor(e.materia)}"><div class="entre"><span class="tag" style="${cor(e.materia)}">${esc(e.materia)}</span><span class="fraco" style="font-size:13px">${esc(e.fonte)} · ${diaCurto(e.dia)}${e.vezes ? ` · refeita ${e.vezes}x` : ''}</span></div>
       <details><summary class="link">${esc((e.enunciado || '').replace(/\s+/g, ' ').slice(0, 110))}…</summary><div class="enunciado">${mdLite(e.enunciado)}</div>
-        <p class="fraco" style="margin:6px 0 0">Você marcou <b>${e.resp}</b>; a certa é <b>${e.gab}</b>${e.alts?.find(a => a.l === e.gab) ? `: ${esc(e.alts.find(a => a.l === e.gab).t)}` : ''}.${e.coment ? ' ' + esc(e.coment) : ''}</p>
+        <p class="fraco" style="margin:6px 0 0">Você marcou <b>${e.resp}</b>; a certa é <b>${e.gab}</b>${e.alts?.find(a => a.l === e.gab) ? `: ${esc(e.alts.find(a => a.l === e.gab).t)}` : ''}.</p>${e.coment ? `<div class="resolucao">${mdLite(e.coment)}</div>` : ''}
         <div class="linha"><button class="link" data-acao="qApagarErro" data-id="${e.id}">Apagar</button></div></details></div>`).join('')}</section>`;
 }
 
@@ -140,6 +140,14 @@ function aprenderTempo(materia, seg, n) {
   const t = (S.tq[materia] ||= { n: 0, seg: MIN_Q[materia] * 60 }), por = seg / n, w = 8 + Math.min(t.n, 40);
   t.seg = (t.seg * w + por * n) / (w + n); t.n += n;
 }
+/** Guarda na hora cada resposta no histórico da questão (para filtrar "errei", "acertei", "já errei alguma vez"). */
+function registrarHist(q) {
+  if (!q.id) return;
+  const h = (typeof histDe === 'function' && histDe(q.id)) || { n: 0, ac: 0, er: 0, h: [] };
+  h.n = (h.n || 0) + 1; if (q.certo) h.ac++; else h.er++;
+  h.h = [...h.h, [hoje(), q.certo ? 1 : 0, q.resp]].slice(-12); h.ok = !!q.certo; h.dia = hoje();
+  S.qh[q.id] = h; salvar();
+}
 function fecharItem(s) { const q = s.itens[s.i]; q.seg += Math.round((Date.now() - s.tq) / 1000); s.tq = Date.now(); }
 function finalizarSessao() {
   const s = ui.qs; s.fim = true; ui.qRasc = false;
@@ -147,7 +155,6 @@ function finalizarSessao() {
   const porMat = {};
   for (const q of feitas) {
     const m = (porMat[q.materia] ||= { f: 0, a: 0, seg: 0 }); m.f++; m.a += q.certo ? 1 : 0; m.seg += q.seg;
-    if (q.id) S.qh[q.id] = { ok: !!q.certo, dia: hoje(), n: (S.qh[q.id]?.n || 0) + 1 }; // histórico por questão, para filtrar "ainda não feitas" e "as que errei"
   }
   for (const [m, v] of Object.entries(porMat)) { const d = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); d.f += v.f; d.a += v.a; d.t = (d.t || 0) + Math.round(v.seg); aprenderTempo(m, v.seg, v.f); }
   for (const q of feitas) {
@@ -181,10 +188,10 @@ Object.assign(ACOES, {
   },
   qResp: el => {
     const s = ui.qs, q = s.itens[s.i]; if (q.resp != null) return;
-    fecharItem(s); q.resp = el.dataset.v; q.certo = q.resp === q.gab; render();
+    fecharItem(s); q.resp = el.dataset.v; q.certo = q.resp === q.gab; registrarHist(q); render();
   },
   qPular: () => { const s = ui.qs; fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; ui.qRasc = false; DB.del('d:qtmp'); } else finalizarSessao(); render(); },
-  qProx: () => { const s = ui.qs; if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); ui.qRasc = false; DB.del('d:qtmp'); window.scrollTo(0, 0); } else finalizarSessao(); render(); },
+  qProx: () => { const s = ui.qs; if (s.itens[s.i].resp == null) fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); ui.qRasc = false; DB.del('d:qtmp'); window.scrollTo(0, 0); } else finalizarSessao(); render(); },
   qRasc: () => { ui.qRasc = !ui.qRasc; render(); },
   qSair: () => { navSairSessao(); render(); window.scrollTo(0, 0); },
   qAnt: () => { const s = ui.qs; if (s.i > 0) { if (s.itens[s.i].resp == null) fecharItem(s); s.i--; s.tq = Date.now(); ui.qRasc = false; DB.del('d:qtmp'); window.scrollTo(0, 0); } render(); },

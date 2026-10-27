@@ -119,7 +119,7 @@ function registrarFora(m, f, ac, min) {
   if (min > 0) { d.t = (d.t || 0) + min * 60; aprenderTempo(m, min * 60, f); }
 }
 
-{ const qm0 = qMontar; qMontar = function () { return painelQuestoes() + qm0(); }; }
+{ const qm0 = qMontar; qMontar = function () { const h = qm0(), i = h.indexOf('<!--meta-->'); return i < 0 ? painelQuestoes() + h : h.slice(0, i) + painelQuestoes() + h.slice(i); }; } // a escolha das questões vem primeiro; a meta logo abaixo
 document.addEventListener('toggle', e => { const k = e.target?.dataset?.k; if (k) ui.ab[k] = e.target.open; }, true);
 Object.assign(ACOES, {
   mqPer: el => { ui.mqPer = el.dataset.v; ui.ab.ritmo = true; render(); },
