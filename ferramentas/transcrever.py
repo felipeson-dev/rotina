@@ -7,7 +7,7 @@ Saída: saida.json (só as que deram certo, id "tx-<id original>") e saida.json.
 As que falham de vez (ex.: o Gemini não copia texto já publicado) ficam no modo imagem na hora de empacotar (empacotar.py).
 """
 import base64, io, json, os, random, re, sys, threading, time, urllib.request
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 sys.path.insert(0, r'C:\rotina-banco\libs')
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -23,6 +23,7 @@ TRAVA = threading.Lock()
 ESGOTADA = {}      # (modelo, chave) -> até quando evitar
 FALHAS = {}        # id -> {'m': motivo, 'def': falha definitiva?, 'n': tentativas}
 AVISADA = set()
+AVISO_ESPERA = 0
 PASTA_DA_BANCA = {v: k for k, v in o.NOME.items()}           # 'Santa Casa' -> 'santacasa' (pasta do cache)
 DEFINITIVAS = ('recitation', 'gabarito', 'incompleta', 'alternativas', 'sem imagem')
 
@@ -49,8 +50,11 @@ def prompt_de(mat):
 
 def esperar_cota():
     """Ninguém disponível: dorme até a primeira chave/modelo voltar (cota por minuto ~1 min; cota do dia: testa de novo a cada 30 min)."""
+    global AVISO_ESPERA
     with TRAVA:
         prox = min((ESGOTADA.get((m, k), 0) for m in MODELOS for k in CHAVES), default=0)
+        if time.time() - AVISO_ESPERA > 600:
+            AVISO_ESPERA = time.time(); print(f'{time.strftime("%d/%m %H:%M")}  esperando a cota voltar (próxima chave livre em {max(0, prox - time.time()) / 60:.0f} min)', flush=True)
     time.sleep(max(5, min(1800, prox - time.time())))
 
 def chama(png_b64, prompt):
@@ -82,9 +86,9 @@ def chama(png_b64, prompt):
                 # cota grátis (visto em 27/10): 500 pedidos/dia e 15/minuto por chave no modelo leve; 20/dia no outro
                 try: ids = [v.get('quotaId', '') for d in json.loads(corpo_erro)['error'].get('details', []) for v in d.get('violations', [])]
                 except Exception: ids = []
-                dia = any('PerDay' in i for i in ids)
-                if dia and (m, k) not in AVISADA:
-                    AVISADA.add((m, k)); print(f'{time.strftime("%d/%m %H:%M")}  cota do dia acabou: {m}, chave {CHAVES.index(k) + 1} (volta à meia-noite do Pacífico, ~4h/5h de Brasília)', flush=True)
+                dia = any('PerDay' in i for i in ids) or (not ids and 'per day' in corpo_erro.lower())
+                if (m, k, dia) not in AVISADA:
+                    AVISADA.add((m, k, dia)); print(f'{time.strftime("%d/%m %H:%M")}  cota {"do dia" if dia else "por minuto"}: {m}, chave {CHAVES.index(k) + 1}{" (volta à meia-noite do Pacífico, ~4h/5h de Brasília)" if dia else ""} {ids[:1]}', flush=True)
                 with TRAVA:
                     ESGOTADA[(m, k)] = time.time() + (1800 if dia else 62)
                 continue                             # cota: não conta como tentativa
@@ -203,10 +207,12 @@ def principal():
             json.dump(FALHAS, open(sai + '.falhas.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
 
     with ThreadPoolExecutor(int(os.environ.get('THREADS', 4))) as ex:
-        for r in ex.map(processa, q):
+        # na ordem em que terminam (uma questão demorada não segura o registro nem o salvamento das outras)
+        for fut in as_completed([ex.submit(processa, x) for x in q]):
+            r = fut.result()
             if r: out.append(r); ok += 1
             else: falha += 1
-            if (ok + falha) % 100 == 0:
+            if (ok + falha) % 50 == 0:
                 gravar()
             if (ok + falha) % 25 == 0:
                 ritmo = (ok + falha) / max(1, time.time() - t0) * 3600
