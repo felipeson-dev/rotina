@@ -396,19 +396,42 @@ const blocoDe = a => ({ id: uid(), assuntoId: a.id, titulo: a.titulo, materia: a
 const filaPlano = () => S.assuntos.filter(a => !a.feito)
   .sort((x, y) => semDe(x) < semDe(y) ? -1 : semDe(x) > semDe(y) ? 1 : x.mes < y.mes ? -1 : x.mes > y.mes ? 1 : (x.ord || 0) - (y.ord || 0));
 
-/** Enche o dia com assuntos até caber o tempo livre (menos 20% para distrações). */
-function montarHoje(cap) {
+// Mistura do dia: 1 matéria pesada (exatas) e 1 leve, alternando; no máximo 1 redação e 1 simulado por dia; evita repetir a matéria.
+// É preferência, não regra: a urgência da fila (atrasados primeiro) continua mandando, se só sobrar uma matéria vai ela,
+// e quando ela pede matérias no contexto do dia ("hoje só matemática") o dia fica só nelas.
+const PESADAS = ['Matemática', 'Física', 'Química'];
+const tipoDe = a => a.materia === 'Redação' ? 'redacao' : /^Simulado/.test(a.titulo || '') ? 'simulado' : PESADAS.includes(a.materia) ? 'pesada' : 'leve';
+function escolherProximo(fila, blocos, misturar = true) {
+  const tipos = blocos.map(tipoDe), mats = blocos.map(b => b.materia), ult = tipos[tipos.length - 1];
+  let melhor = null, nota = -Infinity;
+  fila.slice(0, 15).forEach((a, i) => {
+    const t = tipoDe(a); let n = -i;                                   // quem está mais na frente da fila (mais urgente) ganha
+    if ((t === 'redacao' || t === 'simulado') && tipos.includes(t)) n -= 50;
+    if (misturar) {
+      if (mats.includes(a.materia)) n -= 6;
+      if ((t === 'pesada' || t === 'leve') && t === ult) n -= 4;
+      if ((t === 'pesada' || t === 'leve') && !tipos.includes(t)) n += 3;
+    }
+    if (n > nota) { nota = n; melhor = a; }
+  });
+  return melhor;
+}
+
+/** Enche o dia com assuntos até caber o tempo livre (menos 20% para distrações). `so`: matérias que ela pediu para hoje. */
+function montarHoje(cap, so = []) {
   const d = diaHoje();
   d.cap = cap > 0 ? cap : d.cap || 0;
   const mantidos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.passos.some(p => p.ok); });
   let usado = soma(mantidos, b => b.min || 0);
+  let fila = filaPlano().filter(a => !mantidos.some(b => b.assuntoId === a.id));
+  const pedidas = fila.filter(a => so.includes(a.materia));
+  if (pedidas.length) fila = pedidas;
   const novos = [];
-  for (const a of filaPlano()) {
-    if (usado >= d.cap) break;
-    if (mantidos.some(b => b.assuntoId === a.id)) continue;
-    const m = minDe(a);
-    if (usado + m > d.cap * 1.15 && (novos.length || mantidos.length)) continue;
-    novos.push(blocoDe(a)); usado += m;
+  while (usado < d.cap) {
+    const cabe = fila.filter(a => usado + minDe(a) <= d.cap * 1.15 || !(novos.length || mantidos.length));
+    const a = escolherProximo(cabe, [...mantidos, ...novos], !pedidas.length);
+    if (!a) break;
+    novos.push(blocoDe(a)); usado += minDe(a); fila = fila.filter(x => x !== a);
   }
   d.blocos = [...mantidos, ...novos];
 }
@@ -867,10 +890,10 @@ const ACOES = {
     if (!d.horas) { ui.iaMsg = 'Escolha quantas horas livres você tem hoje.'; render(); return; }
     d.contexto = contextoAtual() || 'dia normal';
     montarHoje(); ui.planejar = false; salvar(); render();
-    if (temChave() && d.blocos.length) pedirIa(`Ajuste e detalhe meu dia. Contexto de hoje: ${d.contexto}. Tenho ${d.horas}h livres (uso ${fmtMin(d.cap)} com a folga de 20%). Devolva blocos_hoje com os assuntos de blocos_de_hoje (mantenha assuntoId e min; só tire ou troque algum se o contexto pedir) e, para cada um, de 3 a 5 passos concretos e específicos do assunto, o primeiro bem fácil. Se eu pedi algo no contexto (ex.: mais de uma matéria), troque os assuntos por outros da lista com o mesmo total de minutos.`, 'Detalhando seus passos…');
+    if (temChave() && d.blocos.length) pedirIa(`Ajuste e detalhe meu dia. Contexto de hoje: ${d.contexto}. Tenho ${d.horas}h livres (uso ${fmtMin(d.cap)} com a folga de 20%). Devolva blocos_hoje com os assuntos de blocos_de_hoje (mantenha assuntoId e min; só tire ou troque algum se o contexto pedir) e, para cada um, de 3 a 5 passos concretos e específicos do assunto, o primeiro bem fácil. Se eu pedi algo no contexto (ex.: só uma matéria, ou mais de uma), troque os assuntos por outros da lista com o mesmo total de minutos. Sem pedido meu, mantenha a mistura que já vem: 1 matéria pesada (Matemática, Física, Química) e 1 leve alternadas, e no máximo 1 redação.`, 'Detalhando seus passos…');
   },
   maisUm: () => {
-    const d = diaHoje(), a = filaPlano().find(x => !d.blocos.some(b => b.assuntoId === x.id));
+    const d = diaHoje(), a = escolherProximo(filaPlano().filter(x => !d.blocos.some(b => b.assuntoId === x.id)), d.blocos);
     if (!a) { ui.iaMsg = 'Não há mais assuntos na fila.'; render(); return; }
     d.blocos.push(blocoDe(a)); d.cap = (d.cap || 0) + minDe(a); salvar(); render();
   },

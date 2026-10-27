@@ -44,7 +44,7 @@ async function planejarDia(texto, horas) {
   d.suposicoes = []; ui.carregando = 'Montando o seu dia…'; ui.iaMsg = ''; render();
   const { chat: _c, ...resto } = S; const antes = JSON.stringify(resto);
   try {
-    let estudoMin = 0, fator = 1, resposta = '', ag = [];
+    let estudoMin = 0, fator = 1, resposta = '', ag = [], so = [];
     const basal = (S.perfil.horarios || '').trim();
     if (!texto.trim() && horas > 0) {
       estudoMin = Math.round(horas * 60); ag = [{ inicio: '', fim: '', titulo: `${horas}h livres para estudar`, tipo: 'estudo', min: estudoMin }];
@@ -57,11 +57,13 @@ Rotina base dela: ${basal || '(não informada)'}.
 ${ontem ? `Ontem: contexto "${ontem.contexto || 'sem registro'}"; estudou ${fmtMin(S.estudo[somaDias(hoje(), -1)] || 0)}.` : 'Ontem: sem registro.'} Hoje há ${atras} assuntos atrasados.${window.pendHojeTexto?.() ? ` Pendências e compromissos de hoje já anotados por ela (inclua na agenda): ${window.pendHojeTexto()}.` : ''}
 Hoje ela disse: "${texto.trim() || '(nada: use a rotina base)'}"${horas > 0 ? `. Ela também informou ${horas}h livres para estudar` : ''}.
 Monte a agenda do restante do dia (a partir de agora, até a hora de dormir) com TODOS os blocos: aula ou trabalho, refeições, exercício, compromissos, pausas, lazer e as janelas de estudo (tipo "estudo") nos espaços livres. COMO COMBINAR: parta da rotina base e aplique por cima o que ela contou hoje. Tudo que ela NÃO mencionou hoje vem da rotina base. O que ela mencionou hoje SUBSTITUI o item equivalente da rotina base (ex.: se hoje ela janta das 17h às 19h, esqueça o jantar padrão da rotina; se hoje tem aula em outro horário, ignore o horário padrão). Se nem hoje nem a rotina base dizem algo essencial (hora de dormir, almoço, jantar, café), assuma um horário típico e liste em "suposicoes". O que ela contou sobre ontem ou o cansaço entra no "fator". Ela é uma estudante de vestibular que quer render: use para estudo todo espaço livre razoável do dia (manhã, tarde e noite), deixando refeições, descanso e lazer curtos e realistas. Janelas de estudo de pelo menos 40 min, e quebre janelas longas com pausas curtas.
-Responda SÓ com JSON: {"resposta":"2 frases curtas e gentis resumindo o dia","fator":1,"motivo":"curto","agenda":[{"inicio":"HH:MM","fim":"HH:MM","titulo":"...","tipo":"estudo|refeicao|exercicio|compromisso|trabalho|pausa|lazer|outro"}],"suposicoes":["o que você assumiu por falta de informação, curto"],"atualizar_rotina":""}
+Responda SÓ com JSON: {"resposta":"2 frases curtas e gentis resumindo o dia","fator":1,"motivo":"curto","agenda":[{"inicio":"HH:MM","fim":"HH:MM","titulo":"...","tipo":"estudo|refeicao|exercicio|compromisso|trabalho|pausa|lazer|outro"}],"suposicoes":["o que você assumiu por falta de informação, curto"],"atualizar_rotina":"","materias_hoje":[]}
+"materias_hoje": só se ela pediu matérias específicas para estudar hoje (ex.: "hoje quero só matemática", "vou focar em química e física"), a lista com os nomes exatos entre ${[...Object.keys(MIN_Q), 'Redação'].join(', ')}; senão [].
 "fator" vai de 0.5 a 1 (1 = energia normal; menos se ela disse que está cansada, dormiu mal, doente etc.). "atualizar_rotina" só se ela disse que algo mudou de vez (ex.: "agora acordo às 6h"): devolva a rotina base inteira já atualizada, senão deixe vazio.`, 3000);
       ag = tratarAgenda(r.agenda, agoraMin);
       d.suposicoes = (Array.isArray(r.suposicoes) ? r.suposicoes : []).map(x => String(x).slice(0, 120)).slice(0, 4);
       fator = Math.min(1, Math.max(0.5, +r.fator || 1)); resposta = String(r.resposta || '').trim();
+      so = (Array.isArray(r.materias_hoje) ? r.materias_hoje : []).map(String);
       if (r.motivo && fator < 1) resposta += ` (${String(r.motivo).trim()})`;
       if (r.atualizar_rotina && String(r.atualizar_rotina).trim().length > 10) { S.perfil.horarios = String(r.atualizar_rotina).trim().slice(0, 1500); resposta += ' Atualizei a sua rotina base.'; }
       estudoMin = soma(ag.filter(x => x.tipo === 'estudo'), x => hm(x.fim) - hm(x.inicio));
@@ -70,7 +72,7 @@ Responda SÓ com JSON: {"resposta":"2 frases curtas e gentis resumindo o dia","f
     if (!estudoMin) throw new Error('não achei tempo livre para estudar. Conte mais sobre o seu dia ou informe as horas');
     d.agenda = ag; d.fator = fator; d.horas = Math.round(estudoMin / 6) / 10;
     d.contexto = [texto.trim(), horas > 0 ? `${horas}h livres` : ''].filter(Boolean).join(' · ') || 'rotina base';
-    montarHoje(Math.round(estudoMin * 0.8 * fator)); sugerirHorarios(d);
+    montarHoje(Math.round(estudoMin * 0.8 * fator), so); sugerirHorarios(d);
     ui.desfazer = antes; ui.iaMsg = resposta || 'Dia montado.';
     ui.diaTexto = ''; ui.diaHoras = '';
     salvar();
