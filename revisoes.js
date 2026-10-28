@@ -7,12 +7,12 @@ const diasRev = () => S.perfil.diasRev || [3, 6];   // dias de revisão (0 = dom
 const INTERVALOS_REV = [7, 30, 60];     // dias até a 1ª, 2ª e as próximas voltas
 
 /** Quantas questões oficiais desse assunto há no banco (o quanto ele cai nas provas). */
-function cobranca(a) { return BANCO.pronto ? BANCO.itens.filter(q => q.m === a.materia && q.as === a.titulo).length : 0; }
+function cobranca(a) { return BANCO.pronto ? BANCO.itens.filter(q => q.m === a.materia && q.as === tagDe(a)).length : 0; }
 
 /** Acerto dela nas questões do banco desse assunto (última tentativa de cada uma) ou nas que ela registrou. */
 function acertoDe(a) {
   let f = 0, ok = 0;
-  if (BANCO.pronto) for (const q of BANCO.itens) if (q.m === a.materia && q.as === a.titulo && S.qh[q.id]) { f++; if (S.qh[q.id].ok) ok++; }
+  if (BANCO.pronto) for (const q of BANCO.itens) if (q.m === a.materia && q.as === tagDe(a) && S.qh[q.id]) { f++; if (S.qh[q.id].ok) ok++; }
   if (a.questoes?.feitas) { f += a.questoes.feitas; ok += a.questoes.acertos; }
   return f >= 3 ? Math.round(ok / f * 100) : null;
 }
@@ -35,9 +35,10 @@ function revisaoFeita(a, pct = null) {
 
 // estudou o assunto: a 1ª volta fica para daqui a 1 semana
 { const s0 = setFeito; setFeito = function (a, ok, sinc) { const antes = a && !!a.feito; s0.apply(this, arguments); if (!a || antes === ok) return;
-  if (ok && ehConteudo(a)) { a.rev = { n: 0, hist: [] }; agendarRev(a); } else if (!ok) delete a.rev; }; }
+  // tópico dividido em partes: a revisão começa quando a última parte é feita
+  if (ok && ehConteudo(a) && (!a.parte || a.parte[0] === a.parte[1])) { a.rev = { n: 0, hist: [] }; agendarRev(a); } else if (!ok) delete a.rev; }; }
 
-const estudados = () => S.assuntos.filter(a => a.feito && ehConteudo(a));
+const estudados = () => S.assuntos.filter(a => a.feito && ehConteudo(a) && (!a.parte || a.parte[0] === a.parte[1]));   // tópico em partes conta uma vez (a última)
 const vencidas = (dia = hoje()) => estudados().filter(a => a.rev?.prox && a.rev.prox <= dia).sort((x, y) => x.rev.prox < y.rev.prox ? -1 : 1);
 
 /** Os assuntos já estudados que mais precisam de questões agora: vencidos, marcados como fracos, com acerto baixo, mais cobrados, há mais tempo sem ver. */
@@ -57,7 +58,11 @@ const blocoRev = (titulo, lista, min, vaga) => ({ id: uid(), assuntoId: null, ti
 /* Revisão com tempo FIXO, pré-programado: uma vaga curta todo dia e uma vaga maior nos dias de revisão (Ajustes).
    O tamanho das vagas nunca cresce: se houver mais revisões vencidas do que cabe, as menos urgentes esperam a próxima vaga.
    O app escolhe os assuntos (24–48 h depois para exatas, vencidos, fracos, mais cobrados) e ela pode trocar. */
-const cfgRev = () => ({ diario: 20, maior: 150, ...(S.perfil.revCfg || {}) });
+// a partir de março (fase de aprofundamento) as vagas crescem um pouco, se ela não mudou nada em Ajustes
+function cfgRev() { const tarde = hoje() >= '2027-03-01'; return { diario: tarde ? 30 : 20, maior: tarde ? 180 : 150, ...(S.perfil.revCfg || {}) }; }
+/** Assunto do banco de questões que corresponde ao tópico (o cronograma usa tópicos mais finos que o banco). */
+const tagDe = a => a.tag || a.titulo;
+const nomeDe = a => a.nome || a.titulo;
 const PESADAS_REV = ['Matemática', 'Física', 'Química'];
 /** Exatas estudadas há 1 ou 2 dias, ainda sem a revisão rápida de fixação. */
 const fixacao = () => estudados().filter(a => PESADAS_REV.includes(a.materia) && a.rev && !a.rev.fix && a.feitoEm && a.feitoEm < hoje() && a.feitoEm >= somaDias(hoje(), -2));
@@ -72,12 +77,12 @@ const fixacao = () => estudados().filter(a => PESADAS_REV.includes(a.materia) &&
     // vaga do dia (curta): primeiro a fixação das exatas, depois as vencidas mais urgentes; ~10 min por assunto
     if (c.diario > 0 && !ja.some(b => b.vaga === 'dia')) {
       const n = Math.max(1, Math.floor(c.diario / 10)), l = [...fixacao(), ...vencidas()].filter((a, i, v) => v.indexOf(a) === i && !usados.includes(a.id)).slice(0, n);
-      novos.push(blocoRev(l.length ? `Revisão do dia: ${l.map(a => a.titulo).join(' · ')}` : 'Revisão do dia (escolha os assuntos)', l, c.diario, 'dia'));
+      if (l.length) novos.push(blocoRev(`Revisão do dia: ${l.map(nomeDe).join(' · ')}`, l, c.diario, 'dia'));
     }
     // vaga maior, nos dias de revisão: questões de assuntos já estudados; ~30 min por assunto
     if (c.maior > 0 && diasRev().includes(deIso(hoje()).getDay()) && !ja.some(b => b.vaga === 'semana')) {
       const fora = [...usados, ...novos.flatMap(b => b.revisao)], l = escolherRevisao(Math.max(1, Math.floor(c.maior / 30)), fora);
-      novos.push(blocoRev('Revisão da semana: questões de assuntos já estudados', l, c.maior, 'semana'));
+      if (l.length) novos.push(blocoRev('Revisão da semana: questões de assuntos já estudados', l, c.maior, 'semana'));
     }
   }
   const usado = soma(novos, b => b.min);
@@ -96,7 +101,7 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 5) {
   if (!BANCO.pronto) await carregarBanco();
   const prio = q => S.qh[q.id] ? (S.qh[q.id].ok ? 2 : 0) : 1, ids = [];
   for (const a of lista) {
-    const l = BANCO.itens.filter(q => q.m === a.materia && q.as === a.titulo && !q.f).sort((x, y) => prio(x) - prio(y) || Math.random() - 0.5);
+    const l = BANCO.itens.filter(q => q.m === a.materia && q.as === tagDe(a) && !q.f).sort((x, y) => prio(x) - prio(y) || Math.random() - 0.5);
     ids.push(...l.slice(0, porAssunto).map(q => q.id));
   }
   if (!ids.length) {
@@ -115,7 +120,7 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 5) {
   const feitas = s.itens.filter(q => q.resp != null);
   for (const id of s.revisaoIds || []) {
     const a = achar(id); if (!a) continue;
-    const l = feitas.filter(q => q.materia === a.materia && q.assunto === a.titulo);
+    const l = feitas.filter(q => q.materia === a.materia && q.assunto === tagDe(a));
     revisaoFeita(a, l.length >= 2 ? Math.round(l.filter(q => q.certo).length / l.length * 100) : null);
   }
   const ids = [...(s.revisaoIds || []), ...(s.assuntoId ? [s.assuntoId] : [])];
@@ -139,14 +144,14 @@ Object.assign(ACOES, {
     const ordem = escolherRevisao(999), max = Math.max(1, Math.floor(b.min / (b.vaga === 'dia' ? 10 : 30)));
     abrirModal(`<div class="entre"><h2>Escolher os assuntos</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
       <p class="fraco" style="margin:0">Até ${max} ${max === 1 ? 'assunto cabe' : 'assuntos cabem'} nesta revisão (${fmtMin(b.min)}). Os primeiros da lista são os que o app acha mais importantes agora.</p>
-      ${ordem.length ? `<div class="rev-escolha">${ordem.map(a => `<label class="marca-q"><input type="checkbox" data-rev-esc="${a.id}" ${b.revisao.includes(a.id) ? 'checked' : ''}> <span><span class="tag" style="${cor(a.materia)}">${esc(a.materia)}</span> ${esc(a.titulo)}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}${a.rev?.prox && a.rev.prox <= hoje() ? ' · vencida' : ''}</span></label>`).join('')}</div>`
+      ${ordem.length ? `<div class="rev-escolha">${ordem.map(a => `<label class="marca-q"><input type="checkbox" data-rev-esc="${a.id}" ${b.revisao.includes(a.id) ? 'checked' : ''}> <span><span class="tag" style="${cor(a.materia)}">${esc(a.materia)}</span> ${esc(nomeDe(a))}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}${a.rev?.prox && a.rev.prox <= hoje() ? ' · vencida' : ''}</span></label>`).join('')}</div>`
         : '<p style="margin:0">Ainda não há assuntos estudados. Quando você marcar assuntos como feitos, eles aparecem aqui.</p>'}
       <div class="linha"><button class="botao" data-acao="revEscolhidos" data-b="${b.id}" data-max="${max}">Usar estes</button></div>`);
   },
   revEscolhidos: el => {
     const b = diaHoje().blocos.find(x => x.id === el.dataset.b); if (!b) return;
     const ids = [...document.querySelectorAll('[data-rev-esc]:checked')].map(x => x.dataset.revEsc).slice(0, +el.dataset.max);
-    const l = ids.map(achar).filter(Boolean), novo = blocoRev(b.vaga === 'dia' ? `Revisão do dia: ${l.map(a => a.titulo).join(' · ') || 'sem assuntos'}` : b.titulo, l, b.min, b.vaga);
+    const l = ids.map(achar).filter(Boolean), novo = blocoRev(b.vaga === 'dia' ? `Revisão do dia: ${l.map(nomeDe).join(' · ') || 'sem assuntos'}` : b.titulo, l, b.min, b.vaga);
     Object.assign(b, { revisao: novo.revisao, titulo: novo.titulo, materia: novo.materia, passos: novo.passos, escolhidos: true });
     salvar(); fecharModal(); render();
   },
@@ -157,7 +162,7 @@ Object.assign(ACOES, {
   let h = b0.apply(this, arguments);
   if (b.tipo === 'revisao') {
     const l = (b.revisao || []).map(achar).filter(Boolean);
-    return h.replace('</article>', `<div class="rev-lista">${l.map(a => `<span class="tag" style="${cor(a.materia)}">${esc(a.titulo)}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}</span>`).join('')}</div>
+    return h.replace('</article>', `<div class="rev-lista">${l.map(a => `<span class="tag" style="${cor(a.materia)}">${esc(nomeDe(a))}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}</span>`).join('')}</div>
       <div class="linha acoes-bloco">${l.length ? `<button class="botao claro" data-acao="qDaRevisao" data-b="${b.id}">Fazer as questões no app</button>` : ''}<button class="link" data-acao="revEscolher" data-b="${b.id}">${b.escolhidos ? 'Trocar os assuntos' : 'Escolher eu mesma'}</button></div></article>`);
   }
   const a = b.assuntoId && achar(b.assuntoId);
