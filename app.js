@@ -357,11 +357,28 @@ async function pedirIa(pedido, rotulo = 'Pensando…', falaDela = null) {
 }
 
 // ---------- telas ----------
+// Menu enxuto (7 itens): Hoje e Plano juntam várias telas, que aparecem como abas no topo da tela.
+const GRUPOS_MENU = [
+  ['hoje', 'Hoje', [['hoje', 'Assuntos de hoje'], ['meudia', 'Agenda do dia']]],
+  ['plano', 'Plano', [['semana', 'Semana'], ['mes', 'Mês'], ['ano', 'Ano'], ['planejar', 'Planejamento']]],
+  ['questoes', 'Questões', [['questoes', '']]],
+  ['caderno', 'Caderno', [['caderno', '']]],
+  ['desempenho', 'Desempenho', [['desempenho', '']]],
+  ['pendencias', 'Pendências', [['pendencias', '']]],
+];
+const grupoDe = v => GRUPOS_MENU.find(g => g[2].some(([x]) => x === v));
 function menuHtml() {
-  const itens = [['ano', 'Ano'], ['mes', 'Mês'], ['semana', 'Semana'], ['hoje', 'Hoje'], ['meudia', 'Meu dia'], ['planejar', 'Planejamento'], ['pendencias', 'Pendências'], ['questoes', 'Questões'], ['desempenho', 'Desempenho'], ['caderno', 'Caderno']];
+  ui.ultGrupo ||= {};
+  const g = grupoDe(ui.view); if (g) ui.ultGrupo[g[0]] = ui.view;
   return `<div class="marca">rotina</div>` +
-    itens.map(([v, t]) => `<button data-acao="ir" data-v="${v}" ${ui.view === v ? 'aria-current="page"' : ''}>${icone(v)}<span>${t}</span></button>`).join('') +
+    GRUPOS_MENU.map(([id, t, vs]) => { const ativo = vs.some(([x]) => x === ui.view), alvo = ativo ? ui.view : ui.ultGrupo[id] || vs[0][0];
+      return `<button data-acao="ir" data-v="${alvo}" ${ativo ? 'aria-current="page"' : ''}>${icone(id === 'plano' ? 'mes' : id)}<span>${t}</span></button>`; }).join('') +
     `<div class="espaco"></div><button data-acao="ir" data-v="ajustes" ${ui.view === 'ajustes' ? 'aria-current="page"' : ''}>${icone('ajustes')}<span>Ajustes</span></button>`;
+}
+/** Abas no topo das telas que dividem um item do menu (Hoje: assuntos | agenda; Plano: semana | mês | ano | planejamento). */
+function subnavHtml() {
+  const g = grupoDe(ui.view); if (!g || g[2].length < 2) return '';
+  return `<nav class="subnav" aria-label="${g[1]}">${g[2].map(([v, t]) => `<button data-acao="ir" data-v="${v}" ${ui.view === v ? 'aria-current="page"' : ''}>${t}</button>`).join('')}</nav>`;
 }
 
 function avisoIa() {
@@ -748,7 +765,7 @@ function render() {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#FCF4F6';
   $('#menu').innerHTML = menuHtml();
-  $('#tela').innerHTML = VIEWS[ui.view]() + (ui.carregando ? `<div class="carregando" role="status">${esc(ui.carregando)}</div>` : '');
+  $('#tela').innerHTML = subnavHtml() + VIEWS[ui.view]() + (ui.carregando ? `<div class="carregando" role="status">${esc(ui.carregando)}</div>` : '');
   renderTimer();
 }
 

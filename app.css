@@ -547,7 +547,7 @@ input[type="search"]:focus { border-color: var(--acento); }
 .q-nav { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .q-nav > :last-child { margin-left: auto; }
 .q-hist { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; font-weight: 600; }
-.resolucao { margin-top: 6px; line-height: 1.6; }body.em-questao #rascunho-botao { display: none; }   /* a questão já tem o próprio botão de rascunho */
+.resolucao { margin-top: 6px; line-height: 1.6; }body.em-questao #rascunho-botao, body.em-questao #ia-botao { display: none; }   /* a questão já tem rascunho e 'Perguntar à IA' próprios; os flutuantes cobriam o 'Próxima' */
 
 /* agenda flexível do dia */
 .ag.passou { opacity: .5; }
@@ -567,3 +567,32 @@ input[type="search"]:focus { border-color: var(--acento); }
 .pl-item.feito span { color: var(--fraco); text-decoration: line-through; }
 .pl-item .link { font-size: 12px; padding: 0; min-height: 24px; }
 .pl-prev { border: 2px solid var(--acento); }
+/* riscar alternativas e riscar em cima da questão */
+.alt-linha { display: flex; gap: 6px; align-items: stretch; }
+.alt-linha > .alt { flex: 1; min-width: 0; }
+.alt-linha .risca { flex: none; width: 40px; border: 0; border-radius: 14px; background: var(--painel2); color: var(--fraco); font-size: 15px; }
+.alt-linha.riscada .alt { opacity: .45; text-decoration: line-through; }
+.alts.so-letras .alt-linha { flex: 0 1 84px; flex-direction: column; }
+.alts.so-letras .alt-linha .risca { width: auto; height: 30px; }
+.q-riscavel { position: relative; }
+.quadro.sobre { position: absolute; inset: 0; z-index: 2; }
+.quadro.sobre .quadro-barra { display: none; }
+.fundo-transparente .quadro-area { background: transparent !important; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--acento) 45%, transparent); }
+.q-mapa button.resp { background: var(--suave); border-color: var(--acento); color: var(--tinta); }
+/* revisões e simulados */
+.rev-lista { display: flex; flex-wrap: wrap; gap: 6px; }
+.sim-form { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 16px; background: var(--painel2); }
+.sim-mats { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.sim-mat { display: grid; grid-template-columns: 1fr 72px 72px; gap: 6px; align-items: center; font-size: 14px; }
+.sim-mat span { display: flex; gap: 6px; align-items: center; }
+.sim-mat input { min-height: 38px; }
+.sim-lista { display: flex; flex-direction: column; gap: 10px; }
+.sim-item { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: 16px; background: var(--painel2); }
+.sim-barra { position: sticky; top: 8px; z-index: 4; }/* abas no topo das telas de Hoje e de Plano */
+.subnav { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 14px; }
+.subnav button { border: 0; border-radius: 999px; padding: 8px 16px; min-height: 40px; background: var(--painel2); color: var(--texto); font-weight: 600; }
+.subnav button[aria-current="page"] { background: var(--tinta); color: var(--sobre-acento); }.pl-modo, .pl-mud { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 16px; background: var(--painel2); }
+.pl-modo .marca-q { align-items: flex-start; color: var(--texto); }
+.pl-modo .marca-q input { margin-top: 2px; flex: none; }
+.aviso-forte { color: #9C2D22 !important; font-weight: 700; }
+.pl-mud-lista { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }

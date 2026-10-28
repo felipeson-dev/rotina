@@ -58,17 +58,18 @@ async function listaIa(banca, materia, tema, n, dif) {
 function iniciarSessao(itens, extra = {}) {
   ui.qs = { itens: itens.map(q => ({ ...q, resp: null, seg: 0, certo: null })), i: 0, t0: Date.now(), ver: false, fim: false, ...extra };
   // rascunho à mão: um por questão da lista (qtmp0, qtmp1…); os da lista anterior são apagados ao começar outra
-  for (let i = 0; i < Math.max(60, ui.qsN || 0); i++) DB.del('d:qtmp' + i);
+  for (let i = 0; i < Math.max(60, ui.qsN || 0); i++) { DB.del('d:qtmp' + i); DB.del('d:qrisc' + i); }
   DB.del('d:qtmp'); ui.qsN = ui.qs.itens.length; ui.qs.tq = Date.now(); render();
 }
 
 // ---------- telas ----------
 function vQuestoes() {
   const cab = (t = 'Questões') => `<header class="entre"><div class="coluna" style="gap:4px">${ui.qs && !ui.qs.fim ? '<button class="link voltar" data-acao="qSair">‹ Voltar à lista</button>' : ''}<span class="rotulo">questões</span><h1>${t}</h1></div>
-    ${ui.qs ? '' : `<div class="alterna" role="group">${[['listas', 'Montar lista'], ['erros', `Erros (${S.erros.length})`]].map(([v, t]) => `<button data-acao="qAba" data-v="${v}" aria-pressed="${ui.qAba === v}">${t}</button>`).join('')}</div>`}</header>${avisoIa()}`;
+    ${ui.qs ? '' : `<div class="alterna" role="group">${[['listas', 'Montar lista'], ['erros', `Erros (${S.erros.length})`], ['simulados', 'Simulados']].map(([v, t]) => `<button data-acao="qAba" data-v="${v}" aria-pressed="${ui.qAba === v}">${t}</button>`).join('')}</div>`}</header>${avisoIa()}`;
   if (ui.qs) return cab(ui.qs.fim ? 'Resultado' : `Questão ${ui.qs.i + 1} de ${ui.qs.itens.length}`) + (ui.qs.fim ? qResultado() : qQuestao());
   if (ui.qAba === 'erros') return cab() + qErros();
   if (ui.qAba === 'fora') return cab() + qFora();
+  if (ui.qAba === 'simulados' && typeof vSimulados === 'function') return cab() + vSimulados();
   return cab() + qMontar();
 }
 

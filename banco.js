@@ -218,21 +218,27 @@ function mapaSessao(s) {
 /** Texto-base da questão anterior: em imagem (modo objetivo) ou em texto. */
 const prevHtml = r => `<div class="coluna" style="gap:6px"><span class="rotulo">questão ${esc(r.num || '')} (anterior)</span>${r.modo === 'objetivo' ? recorteObj(r, false) : `<div class="enunciado q-prev">${mdLite(r.enunciado)}${(r.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`}
   ${r.prev ? '<button class="link" data-acao="qPrevMais" style="align-self:flex-start">‹ O texto não está aqui? Ver a questão antes desta</button>' : ''}</div>`;
+/** Enunciado com a camada para riscar por cima com a caneta (o dedo continua rolando a página). */
+const riscavel = html => `<div class="q-riscavel">${html}${ui.qRiscar ? `<div class="quadro-vaga sobre" data-chave="qrisc${ui.qs.i}" data-altura="0" data-fundo="transparente"></div>` : ''}</div>`;
 function qQuestao() {
+  if (ui.qs.simulado && typeof qQuestaoSimulado === 'function') return qQuestaoSimulado();
   const s = ui.qs, q = s.itens[s.i], resp = q.resp != null, ultima = s.i + 1 >= s.itens.length;
   if (ui.qPrevImg && ui.qPrevDe !== q.id) ui.qPrevImg = null;
   const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado">${mdLite(q.res_ia)}</div></div>` : '';
   const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia">${mdLite(d.r)}</div>`).join('');
   const nav = `<div class="q-nav"><button class="botao contorno" data-acao="qAnt" ${s.i ? '' : 'disabled'}>‹ Anterior</button>
       <button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar rascunho' : 'Rascunho'}</button>
+      <button class="botao contorno" data-acao="qRiscar" aria-pressed="${!!ui.qRiscar}">${ui.qRiscar ? 'Parar de riscar' : 'Riscar na questão'}</button>
       <button class="botao ${resp ? 'grande' : 'claro'}" data-acao="qProx">${ultima ? 'Terminar' : 'Próxima ›'}</button></div>`;
   return `${mapaSessao(s)}<section class="cartao questao"><div class="entre"><span class="linha" style="gap:6px"><span class="tag" style="${cor(q.materia)}">${esc(q.materia)}</span>${q.assunto ? `<span class="selo">${esc(q.assunto)}</span>` : ''}</span><span class="fraco">${esc(q.fonte)}${q.num ? ' · nº ' + esc(q.num) : ''}</span></div>
     ${histHtml(q.id)}
     ${q.fig ? '<p class="fraco" style="margin:0;font-size:13px">⚠ Pode depender de um texto ou figura de outra questão. Se não der para resolver, vá para a próxima.</p>' : ''}
     ${q.modo === 'objetivo' ? `${q.prev ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ver'} o texto/figura da questão anterior (às vezes o texto-base está nela)</button>${ui.qPrevImg ? prevHtml(ui.qPrevImg) : ''}` : ''}
-      ${recorteObj(q, false)}` : `${q.prev && q.dep ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ler'} o texto da questão anterior (o texto-base desta questão está nela)</button>${ui.qPrevImg ? prevHtml(ui.qPrevImg) : ''}` : ''}<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>${q.img ? `<a class="link" href="${esc(q.img)}" target="_blank" rel="noopener" style="align-self:flex-start;font-size:13px">ver a imagem original da prova</a>` : ''}`}
+      ${riscavel(recorteObj(q, false))}` : `${q.prev && q.dep ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ler'} o texto da questão anterior (o texto-base desta questão está nela)</button>${ui.qPrevImg ? prevHtml(ui.qPrevImg) : ''}` : ''}${riscavel(`<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`)}${q.img ? `<a class="link" href="${esc(q.img)}" target="_blank" rel="noopener" style="align-self:flex-start;font-size:13px">ver a imagem original da prova</a>` : ''}`}
     <div class="alts ${q.modo === 'objetivo' ? 'so-letras' : ''}">${q.alts.map(a => { const sel = q.resp === a.l, certa = resp && a.l === q.gab, errada = resp && sel && a.l !== q.gab;
-      return `<button class="alt ${sel ? 'sel' : ''} ${certa ? 'certa' : ''} ${errada ? 'errada' : ''}" data-acao="qResp" data-v="${a.l}" ${resp ? 'disabled' : ''}><b>${a.l}</b><span>${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</span></button>`; }).join('')}</div>
+      const risc = !resp && (q.risc || []).includes(a.l);   // alternativa descartada por ela enquanto pensa
+      return `<div class="alt-linha ${risc ? 'riscada' : ''}"><button class="alt ${sel ? 'sel' : ''} ${certa ? 'certa' : ''} ${errada ? 'errada' : ''}" data-acao="qResp" data-v="${a.l}" ${resp ? 'disabled' : ''}><b>${a.l}</b><span>${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</span></button>
+        ${resp ? '' : `<button class="risca" data-acao="qRiscarAlt" data-v="${a.l}" aria-label="${risc ? 'Desriscar' : 'Riscar'} a ${a.l}" title="${risc ? 'Desriscar' : 'Riscar (descartar)'}">${risc ? '↺' : '✕'}</button>`}</div>`; }).join('')}</div>
     ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>
       ${q.modo === 'objetivo' ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
     ${nav}
@@ -414,6 +420,8 @@ function listaQuestoes(achadas) {
   qfMat: el => { ui.qf.mat = el.dataset.v; ui.qf.assunto = ''; ui.qPag = 0; render(); },
   qfAssunto: el => { ui.qf.assunto = el.dataset.v; ui.qPag = 0; render(); },
   qVerLista: () => { ui.qLista = !ui.qLista; ui.qPag = 0; render(); },
+  qRiscarAlt: el => { const q = ui.qs.itens[ui.qs.i], v = el.dataset.v; q.risc = (q.risc || []).includes(v) ? q.risc.filter(x => x !== v) : [...(q.risc || []), v]; render(); },
+  qRiscar: () => { ui.qRiscar = !ui.qRiscar; render(); },
   qIr: el => { const s = ui.qs, j = +el.dataset.i; if (j === s.i) return; if (s.itens[s.i].resp == null) fecharItem(s); s.i = j; s.tq = Date.now(); render(); },
   qPag: el => { ui.qPag = Math.max(0, (ui.qPag || 0) + +el.dataset.v); render(); },
   qComecarDe: async el => {

@@ -45,6 +45,9 @@ function distSeg(px, py, ax, ay, bx, by) {
 class Quadro {
   constructor(el) {
     this.el = el; this.chave = el.dataset.chave; this.altura = +el.dataset.altura || 600; this.fundo = el.dataset.fundo || 'liso';
+    // "sobre": camada transparente por cima do enunciado (riscar na questão); a altura acompanha a do enunciado
+    this.sobre = el.classList.contains('sobre');
+    if (this.sobre) this.altura = el.parentElement.offsetHeight || 300;
     this.W0 = 0; this.tr = []; this.refaz = []; this.atual = null; this.mudou = false;
     el.classList.add('quadro', 'fundo-' + this.fundo);
     el.innerHTML = `<div class="quadro-barra"></div><div class="quadro-area" style="height:${this.altura}px"><canvas class="q-fixo"></canvas><canvas class="q-vivo"></canvas></div>`;
@@ -59,6 +62,9 @@ class Quadro {
     this.vivo.addEventListener('contextmenu', e => e.preventDefault());
     el.addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (b) this.comando(b.dataset.q, b.dataset.v); });
     if ('ResizeObserver' in window) new ResizeObserver(() => { if (this.area.clientWidth !== this.largura) { this.ajustar(); this.redesenhar(); } }).observe(this.area);
+    if (this.sobre && 'ResizeObserver' in window) new ResizeObserver(() => {
+      const h = el.parentElement.offsetHeight; if (h && h !== this.altura) { this.altura = h; this.area.style.height = h + 'px'; this.ajustar(); this.redesenhar(); }
+    }).observe(el.parentElement);
     this.pronto = DB.get('d:' + this.chave).then(d => { if (d) { this.W0 = d.w; this.tr = d.s || []; } this.redesenhar(); });
   }
   ajustar() {

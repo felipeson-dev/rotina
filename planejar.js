@@ -35,8 +35,24 @@ Responda SÓ com JSON: {"resposta":"1 ou 2 frases curtas","inicio":"AAAA-MM-DD",
   ui.carregando = ''; render();
 }
 
+// ---------- proteções: o plano principal nunca se perde por engano ----------
+/** Cópia do plano (assuntos, períodos, meses, fases, provas) no aparelho: uma por dia e uma antes de cada mudança grande; guarda as 20 últimas. */
+async function copiarPlano(rotulo) {
+  const nome = rotulo || hoje();
+  await DB.set('d:bkp:' + nome, JSON.stringify({ assuntos: S.assuntos, periodos: S.periodos, meses: S.meses, fases: S.fases, provas: S.provas || [] }));
+  S.bkps = [...(S.bkps || []).filter(x => x !== nome), nome].slice(-20);
+  for (const velho of (S.bkpsTodos || []).filter(x => !S.bkps.includes(x))) DB.del('d:bkp:' + velho);
+  S.bkpsTodos = [...S.bkps]; salvar();
+}
+if (!(S.bkps || []).includes(hoje())) copiarPlano();
+const impactoPeriodo = p => S.assuntos.filter(a => !a.feito && !a.periodo && semDe(a) >= segunda(p.ini) && semDe(a) <= p.fim).length;
+const diasPeriodo = p => Math.round((deIso(p.fim) - deIso(p.ini)) / 864e5) + 1;
+
 function aplicarPeriodo() {
   const p = ui.plPrev; if (!p) return;
+  const pausar = ui.plModo === 'pausar';
+  if (pausar && diasPeriodo(p) > 21 && !$('#pl-conf')?.checked) { ui.iaMsg = `Esse plano pausa o cronograma por ${diasPeriodo(p)} dias. Marque "Entendi" para aplicar, ou escolha "Encaixar".`; render(); return; }
+  copiarPlano(`${hoje()} ${agoraHm()} · antes do plano`);
   const { chat: _c, ...resto } = S; const antes = JSON.stringify(resto);
   // o que já estava planejado nesses mesmos dias e ainda não foi feito dá lugar ao plano novo
   const sobre = S.periodos.filter(x => x.ini <= p.fim && p.ini <= x.fim).map(x => x.id);
@@ -44,10 +60,10 @@ function aplicarPeriodo() {
   S.periodos = S.periodos.filter(x => !sobre.includes(x.id) || S.assuntos.some(a => a.periodo === x.id));
   const id = uid();
   for (const it of p.itens) S.assuntos.push({ id: uid(), mes: mesDe(it.dia), materia: it.materia, titulo: it.titulo, semana: segunda(it.dia), dia: it.dia, min: it.min, ord: 0.5, feito: false, periodo: id });
-  S.periodos.push({ id, ini: p.ini, fim: p.fim, so: true, texto: p.texto.slice(0, 300) });
-  ui.plPrev = null; ui.plTexto = '';
+  S.periodos.push({ id, ini: p.ini, fim: p.fim, so: pausar, texto: p.texto.slice(0, 300) });
+  ui.plPrev = null; ui.plTexto = ''; ui.plModo = 'encaixar';
   if (p.ini <= hoje() && hoje() <= p.fim && S.dias[hoje()]?.cap) { montarHoje(); if (typeof sugerirHorarios === 'function') sugerirHorarios(S.dias[hoje()]); }
-  ui.desfazer = antes; ui.iaMsg = `Plano aplicado: ${p.itens.length} blocos de ${diaCurto(p.ini)} a ${diaCurto(p.fim)}. Nesses dias, o seu "Hoje" segue este plano.`;
+  ui.desfazer = antes; ui.iaMsg = `Plano aplicado: ${p.itens.length} blocos de ${diaCurto(p.ini)} a ${diaCurto(p.fim)}. ${pausar ? 'Nesses dias, o seu "Hoje" segue só este plano.' : 'Eles entram primeiro em cada dia, e o tempo que sobrar segue o cronograma.'} Se precisar, dá para voltar o plano em Ajustes.`;
   salvar(); render();
 }
 
@@ -64,6 +80,10 @@ function vPlanejar() {
   return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">organizar os próximos dias</span><h1>Planejamento</h1></div></header>${avisoIa()}
     ${p ? `<section class="cartao pl-prev"><div class="entre"><h2>Prévia do plano</h2><span class="fraco">${diaCurto(p.ini)} a ${diaCurto(p.fim)} · ${p.itens.length} blocos · ${fmtMin(soma(p.itens, x => x.min))}</span></div>
         ${p.resposta ? `<p style="margin:0">${esc(p.resposta)}</p>` : ''}${diasHtml(p.itens, false)}
+        <div class="pl-modo"><span class="rotulo">e o cronograma principal nesses dias?</span>
+          <label class="marca-q"><input type="radio" name="plmodo" data-pl-modo="encaixar" ${ui.plModo !== 'pausar' ? 'checked' : ''}> <span><b>Encaixar junto</b> (recomendado): estes blocos entram primeiro em cada dia, e o tempo que sobrar continua o cronograma.</span></label>
+          <label class="marca-q"><input type="radio" name="plmodo" data-pl-modo="pausar" ${ui.plModo === 'pausar' ? 'checked' : ''}> <span><b>Pausar o cronograma</b> nesses ${diasPeriodo(p)} dias: só este plano. ${impactoPeriodo(p)} ${impactoPeriodo(p) === 1 ? 'assunto previsto para essas semanas fica' : 'assuntos previstos para essas semanas ficam'} para depois.</span></label>
+          ${ui.plModo === 'pausar' && diasPeriodo(p) > 21 ? `<label class="marca-q aviso-forte"><input type="checkbox" id="pl-conf"> <span>Entendi: o cronograma fica parado por ${diasPeriodo(p)} dias.</span></label>` : ''}</div>
         <label class="campo">Quer mudar algo?<textarea data-ui="plAjuste" rows="2" placeholder="Ex.: sábado só de manhã; mais matemática; tira inglês">${esc(ui.plAjuste)}</textarea></label>
         <div class="linha"><button class="botao grande" data-acao="plAplicar">Usar este plano</button><button class="botao claro" data-acao="plAjustar">Pedir ajuste</button><button class="link" data-acao="plDescartar">Descartar</button></div></section>` : ''}
     <section class="cartao"><h2>Planejar um período</h2>
@@ -72,12 +92,43 @@ function vPlanejar() {
       <div class="linha"><button class="botao grande" data-acao="plPlanejar">Organizar com a IA</button></div></section>
     <section class="cartao"><h2>Mudar o cronograma</h2>
       <p class="fraco" style="margin:0">Para mexer no que já está planejado: viagem, faltas, adiantar ou atrasar assuntos, trocar a ordem.</p>
-      <textarea data-ui="plMudar" rows="3" placeholder="Ex.: semana que vem vou viajar de quinta a domingo; quero adiantar genética; não consegui estudar ontem.">${esc(ui.plMudar)}</textarea>
-      <div class="linha"><button class="botao" data-acao="plMudar">Pedir à IA</button></div></section>
+      ${ui.plMud ? `<div class="pl-mud"><span class="rotulo">a IA sugere estas mudanças</span>${ui.plMud.resposta ? `<p style="margin:0">${esc(ui.plMud.resposta)}</p>` : ''}
+        ${ui.plMud.linhas.length ? `<ul class="pl-mud-lista">${ui.plMud.linhas.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : '<p class="fraco" style="margin:0">Nenhuma mudança no plano.</p>'}
+        <div class="linha">${ui.plMud.linhas.length ? '<button class="botao" data-acao="plMudAplicar">Aplicar</button>' : ''}<button class="link" data-acao="plMudDescartar">Descartar</button></div></div>`
+      : `<textarea data-ui="plMudar" rows="3" placeholder="Ex.: semana que vem vou viajar de quinta a domingo; quero adiantar genética; não consegui estudar ontem.">${esc(ui.plMudar)}</textarea>
+      <div class="linha"><button class="botao" data-acao="plMudar">Pedir à IA</button></div>`}</section>
     ${periodos.length ? `<section class="cartao"><h2>Períodos planejados</h2>${periodos.map(x => { const l = S.assuntos.filter(a => a.periodo === x.id), f = l.filter(a => a.feito).length;
       return detalhe('per-' + x.id, `${diaCurto(x.ini)} a ${diaCurto(x.fim)} · ${f} de ${l.length} feitos`, `${x.texto ? `<p class="fraco" style="margin:0">"${esc(x.texto)}"</p>` : ''}${diasHtml(l, true)}
         <div class="linha"><button class="link" data-acao="plApagar" data-id="${x.id}">Apagar este período</button></div>`); }).join('')}</section>` : ''}`;
 }
+
+/** O que cada ação da IA faria, em português, para ela conferir antes de aplicar. */
+function descreverAcao(a) {
+  const x = a?.id && achar(a.id), nome = x ? `"${x.titulo}"` : '';
+  switch (a?.tipo) {
+    case 'marcar_semana': return x && okData(a.dia) ? `${nome} → semana de ${semanaCurta(segunda(a.dia))}` : '';
+    case 'marcar_dia': return x && okData(a.dia) ? `${nome} → dia ${diaCurto(a.dia)}` : '';
+    case 'mover_mes': return x && okMes(a.mes) ? `${nome} → ${nomeMes(a.mes)}` : '';
+    case 'novo_assunto': return a.titulo ? `+ novo: ${a.materia || ''} · ${a.titulo}${okData(a.dia) ? ` (${diaCurto(a.dia)})` : okMes(a.mes) ? ` (${nomeMes(a.mes)})` : ''}` : '';
+    case 'feito': return x ? `${nome} marcado como ${a.feito === false ? 'não feito' : 'feito'}` : '';
+    case 'remover_assunto': return x ? `✕ apagar ${nome}` : '';
+    case 'blocos_hoje': return 'trocar os assuntos de hoje';
+    case 'foco_mes': return okMes(a.mes) ? `foco de ${nomeMes(a.mes)}: ${a.foco}` : '';
+    case 'fases': return 'refazer as fases do ano';
+    case 'prova': return a.nome ? `prova ${a.nome}: ${okData(a.data) ? diaCurto(a.data) : ''}` : '';
+    case 'lembrar': return `lembrar: ${a.texto}`;
+  }
+  return '';
+}
+
+// Ajustes: voltar o plano para uma cópia
+{ const v0 = VIEWS.ajustes; VIEWS.ajustes = function () {
+  const l = (S.bkps || []).slice().reverse();
+  return v0() + `<section class="cartao"><h2>Cópias do plano</h2><p class="fraco" style="margin:0">O app guarda uma cópia do plano por dia e antes de cada mudança grande. Se algo der errado, volte para uma delas.</p>
+    ${l.length ? `<div class="coluna" style="gap:6px">${l.map(n => `<div class="entre"><span>${esc(n.replace(/^(\d{4})-(\d\d)-(\d\d)/, '$3/$2/$1'))}</span><button class="link" data-acao="bkpVoltar" data-v="${esc(n)}">Voltar para esta</button></div>`).join('')}</div>` : '<p class="fraco" style="margin:0">Ainda não há cópias.</p>'}</section>`;
+}; }
+
+document.addEventListener('change', e => { const v = e.target.dataset?.plModo; if (v) { ui.plModo = v; render(); } });
 
 Object.assign(VIEWS, { planejar: vPlanejar });
 Object.assign(ACOES, {
@@ -85,7 +136,33 @@ Object.assign(ACOES, {
   plAjustar: () => { const t = ($('[data-ui="plAjuste"]')?.value ?? ui.plAjuste).trim(); if (!t) { ui.iaMsg = 'Escreva o que quer mudar na prévia.'; render(); return; } planejarPeriodo(ui.plPrev.texto, t); },
   plAplicar: () => aplicarPeriodo(),
   plDescartar: () => { ui.plPrev = null; render(); },
-  plMudar: () => { const t = ($('[data-ui="plMudar"]')?.value ?? ui.plMudar).trim(); if (!t) return; ui.plMudar = ''; pedirIa(t, 'Mudando o cronograma…', t); },
+  // mudar o cronograma: primeiro mostra o que a IA quer mudar; só aplica quando ela confirma
+  plMudar: async () => {
+    const t = ($('[data-ui="plMudar"]')?.value ?? ui.plMudar).trim(); if (!t) return;
+    if (!temChaveIa()) { ui.iaMsg = 'Falta a chave da IA (Ajustes).'; render(); return; }
+    ui.plMudar = t; ui.carregando = 'A IA está pensando nas mudanças…'; render();
+    try {
+      const r = await chamarIa(`${ACOES_IA}\n\nSituação atual (JSON):\n${JSON.stringify(contextoIa())}\n\nPedido dela: ${t}`);
+      const acoes = Array.isArray(r.acoes) ? r.acoes : [];
+      ui.plMud = { texto: t, resposta: String(r.resposta || '').trim(), acoes, linhas: acoes.map(descreverAcao).filter(Boolean) };
+    } catch (e) { ui.iaMsg = `Não consegui falar com a IA agora (${e.message}).`; }
+    ui.carregando = ''; render();
+  },
+  plMudAplicar: async () => {
+    const m = ui.plMud; if (!m) return;
+    await copiarPlano(`${hoje()} ${agoraHm()} · antes de mudar`);
+    const { chat: _c, ...resto } = S; const antes = JSON.stringify(resto);
+    const n = aplicar(m.acoes); ui.desfazer = n ? antes : null; ui.plMud = null; ui.plMudar = '';
+    ui.iaMsg = n ? `Pronto: ${n} ${n === 1 ? 'mudança' : 'mudanças'} no plano. Dá para desfazer aqui ou voltar o plano em Ajustes.` : 'Nada mudou.'; salvar(); render();
+  },
+  plMudDescartar: () => { ui.plMud = null; render(); },
+  bkpVoltar: async el => {
+    const nome = el.dataset.v; if (!confirm(`Voltar o plano para a cópia "${nome}"? O que você marcou como feito depois disso volta a ficar pendente.`)) return;
+    const raw = await DB.get('d:bkp:' + nome); if (!raw) { ui.iaMsg = 'Essa cópia não está mais no aparelho.'; render(); return; }
+    const { chat: _c, ...resto } = S; ui.desfazer = JSON.stringify(resto);
+    await copiarPlano(`${hoje()} ${agoraHm()} · antes de voltar`);
+    Object.assign(S, JSON.parse(raw)); ui.iaMsg = `Plano voltou para "${nome}".`; salvar(); render();
+  },
   plTirar: el => { S.assuntos = S.assuntos.filter(a => a.id !== el.dataset.id); salvar(); render(); },
   plApagar: el => {
     const { chat: _c, ...resto } = S; ui.desfazer = JSON.stringify(resto);
