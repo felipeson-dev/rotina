@@ -26,8 +26,8 @@ async function syncPush() {
     const r = await fetch(c.id ? `${GH}/${c.id}` : GH, { method: c.id ? 'PATCH' : 'POST', headers: { Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github+json' },
       body: JSON.stringify(c.id ? { files } : { description: 'Rotina (dados do app)', public: false, files }) });
     if (!r.ok) throw new Error('GitHub ' + r.status);
-    const j = await r.json(); gravarSync({ ...c, id: j.id, ult: t, erro: '' });
-  } catch (e) { gravarSync({ ...lerSync(), erro: e.message }); }
+    const j = await r.json(); gravarSync({ ...c, id: j.id, ult: t, erro: '', quando: Date.now() });
+  } catch (e) { gravarSync({ ...lerSync(), erro: /load failed|failed to fetch|network/i.test(e.message) ? 'sem conexão com o GitHub' : e.message }); }
 }
 
 async function syncPull(mostrar) {
@@ -37,11 +37,12 @@ async function syncPull(mostrar) {
     if (!r.ok) throw new Error('GitHub ' + r.status);
     const f = (await r.json()).files['rotina.json']; if (!f) return;
     const txt = f.truncated ? await (await fetch(f.raw_url)).text() : f.content, rem = JSON.parse(txt);
+    gravarSync({ ...lerSync(), erro: '', quando: Date.now() });
     if (rem.t > (S._t || 0) && rem.t !== c.ult) {           // o outro aparelho gravou depois: traz
       syncAplicando = true; S = carregarDe(rem.S); salvar(); syncAplicando = false;
-      gravarSync({ ...lerSync(), ult: rem.t, erro: '' }); if (mostrar !== false) { ui.iaMsg = 'Dados trazidos do outro aparelho.'; render(); }
+      gravarSync({ ...lerSync(), ult: rem.t, erro: '', quando: Date.now() }); if (mostrar !== false) { ui.iaMsg = 'Dados trazidos do outro aparelho.'; render(); }
     }
-  } catch (e) { gravarSync({ ...lerSync(), erro: e.message }); }
+  } catch (e) { gravarSync({ ...lerSync(), erro: /load failed|failed to fetch|network/i.test(e.message) ? 'sem conexão com o GitHub' : e.message }); }
 }
 // mesma normalização do carregar() do app, a partir de um objeto
 function carregarDe(obj) { try { localStorage.setItem(CHAVE, JSON.stringify(obj)); } catch { } return carregar(); }
@@ -65,7 +66,7 @@ Object.assign(ACOES, {
   const c = lerSync();
   return v0() + `<section class="cartao"><h2>Sincronizar aparelhos e widget</h2>
     <p class="fraco" style="margin:0">Usa um arquivo secreto no GitHub. No 1º aparelho: cole o token e deixe o código em branco (o app cria). Nos outros: cole o mesmo token e o código. Desenhos à mão e o banco de questões não sincronizam.</p>
-    ${c.token ? `<p style="margin:0">Ligada · código: <b>${esc(c.id || '(criando…)')}</b>${c.erro ? ` · <span style="color:#C2483D">erro: ${esc(c.erro)}</span>` : ''}</p>
+    ${c.token ? `<p style="margin:0"><b style="color:${c.erro ? '#C2483D' : '#2E8B57'}">${c.erro ? '✗ Não sincronizado: ' + esc(c.erro) : c.quando ? '✓ Sincronizado' : '… ainda não sincronizou'}</b>${c.quando ? ` · última vez às ${new Date(c.quando).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} de ${diaCurto(iso(new Date(c.quando)))}` : ''}</p><p style="margin:0">Código (use este nos outros aparelhos e no widget): <b style="user-select:all">${esc(c.id || '(ainda não criado)')}</b></p>
       <div class="linha"><button class="botao" data-acao="syncAgora">Sincronizar agora</button><button class="link" data-acao="syncDesligar">Desligar neste aparelho</button></div>`
     : `<label class="campo">Token do GitHub (só permissão de gist)<input type="password" id="sync-token" autocomplete="off"></label>
       <label class="campo">Código (deixe em branco no 1º aparelho)<input type="text" id="sync-id" autocomplete="off"></label>
