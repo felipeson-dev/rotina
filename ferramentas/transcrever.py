@@ -18,7 +18,9 @@ _ns = {'__file__': os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cla
 cl = types.SimpleNamespace(TAX=_ns['TAX'], TEXTO_TAX=_ns['TEXTO_TAX'])
 
 CHAVES = [k for k in os.environ.get('GEMINI_KEYS', '').split(',') if k]
-MODELOS = ['gemini-3.5-flash-lite', 'gemini-3.6-flash']     # o leve primeiro; o outro só quando a cota do leve acaba
+MODELOS = ['gemini-3.5-flash-lite']     # só o leve: o flash (20/dia) fica para a IA do app dela, que usa as mesmas chaves
+LIMITE_DIA = int(os.environ.get('LIMITE_DIA', 430))   # de 500/dia por chave, deixa uns 70 para o app dela
+USO_ARQ = r'C:\rotina-banco\uso-gemini.json'          # pedidos por dia e por chave (só o número da chave, nunca a chave)
 TRAVA = threading.Lock()
 ESGOTADA = {}      # (modelo, chave) -> até quando evitar
 FALHAS = {}        # id -> {'m': motivo, 'def': falha definitiva?, 'n': tentativas}
@@ -48,6 +50,31 @@ def prompt_de(mat):
             + lista +
             '\nFormato: {"materia":"","assunto":"","enunciado":"","alternativas":[""],"gabarito":"A","resolucao":"","figuras":[{"box_2d":[0,0,0,0],"legenda":""}],"depende_de_outro_texto":false}')
 
+def dia_pacifico():
+    return time.strftime('%Y-%m-%d', time.gmtime(time.time() - 8 * 3600))   # a cota zera à meia-noite do Pacífico
+
+def proxima_virada():
+    t = time.time() - 8 * 3600
+    return t - t % 86400 + 86400 + 8 * 3600 + 120
+
+USO = {}
+def carregar_uso():
+    global USO
+    try: USO = json.load(open(USO_ARQ, encoding='utf-8'))
+    except Exception: USO = {}
+
+def gastar(k):
+    # conta o pedido; devolve False se a chave já usou a parte dela hoje
+    with TRAVA:
+        chave = f'{dia_pacifico()}|{CHAVES.index(k) + 1}'
+        if USO.get(chave, 0) >= LIMITE_DIA:
+            for m in MODELOS: ESGOTADA[(m, k)] = proxima_virada()
+            return False
+        USO[chave] = USO.get(chave, 0) + 1
+        try: json.dump(USO, open(USO_ARQ, 'w', encoding='utf-8'))
+        except Exception: pass
+        return True
+
 def esperar_cota():
     """Ninguém disponível: dorme até a primeira chave/modelo voltar (cota por minuto ~1 min; cota do dia: testa de novo a cada 30 min)."""
     global AVISO_ESPERA
@@ -67,6 +94,8 @@ def chama(png_b64, prompt):
         if not opcoes:
             esperar_cota(); continue                 # cota acabou: espera, sem gastar tentativa
         m = opcoes[0][0]; k = random.choice([k for mm, k in opcoes if mm == m])
+        if not gastar(k):
+            continue
         try:
             req = urllib.request.Request(f'https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent', data=corpo, headers={'Content-Type': 'application/json', 'x-goog-api-key': k})
             j = json.loads(urllib.request.urlopen(req, timeout=180).read())
@@ -197,6 +226,7 @@ def principal():
         for x in q: por.setdefault(x.get('materia') or '?', []).append(x)
         q = [y for m, l in por.items() for y in random.sample(l, min(4, len(l)))]
     q = [x for x in q if 'tx-' + x['id'] not in feitas and not FALHAS.get(x['id'], {}).get('def')][:maxn]
+    carregar_uso()
     print(f'{time.strftime("%d/%m %H:%M")} {len(q)} questões a processar ({len(out)} já prontas)', flush=True)
     ok = falha = 0; t0 = time.time()
 
