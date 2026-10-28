@@ -2,6 +2,8 @@
 // Usa o que o app já guarda: S.qlog (por dia e matéria), S.qh (última vez de cada questão), S.assuntos, S.erros e S.redacoes.
 ICONES.desempenho = '<path d="M4 20V10M10 20V4M16 20v-7"/><path d="M2 20h20"/>';
 ui.dsPer = 'mes';
+// nota da IA ou, se não tiver, a última correção que ela anotou (professor, cursinho)
+const notaRedDe = e => e.nota ?? (e.correcoes?.length ? e.correcoes[e.correcoes.length - 1].nota : null);
 const DS_PERIODOS = [['semana', '7 dias'], ['mes', '30 dias'], ['tudo', 'Tudo']];
 
 const dsCorAc = p => p == null ? 'var(--fraco)' : p >= 70 ? '#2E8B57' : p >= 50 ? '#C98A12' : '#C2483D';
@@ -79,7 +81,7 @@ function dsPlano() {
 }
 
 function dsRedacao() {
-  const l = S.redacoes.filter(e => e.nota != null).slice(-10);
+  const l = S.redacoes.map(e => ({ ...e, nota: notaRedDe(e) })).filter(e => e.nota != null).slice(-10);
   if (!l.length) return '<p class="fraco" style="margin:0">Quando uma redação for corrigida, a nota aparece aqui.</p>';
   const notas = l.map(e => e.nota), media = Math.round(soma(notas, n => n) / notas.length), ult = notas.slice(-3), ant = notas.slice(0, -3);
   const tend = ant.length ? Math.round(soma(ult, n => n) / ult.length - soma(ant, n => n) / ant.length) : null;
@@ -106,7 +108,7 @@ function vDesempenho() {
   const dias = dsDias(ui.dsPer), r = resumoPeriodo(dias), ac = acerto(r.f, r.a, r.s), seq = dsSequencia();
   const cab = `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">como estou indo</span><h1>Desempenho</h1></div>
     <div class="alterna" role="group">${DS_PERIODOS.map(([v, t]) => `<button data-acao="dsPer" data-v="${v}" aria-pressed="${ui.dsPer === v}">${t}</button>`).join('')}</div></header>${avisoIa()}`;
-  if (!Object.keys(S.qlog).length && !S.redacoes.some(e => e.nota != null))
+  if (!Object.keys(S.qlog).length && !S.redacoes.some(e => notaRedDe(e) != null))
     return cab + `<section class="cartao"><h2>Ainda não tem dados</h2><p class="fraco" style="margin:0">Assim que você resolver questões ou tiver uma redação corrigida, os gráficos aparecem aqui.</p><div class="linha"><button class="botao" data-acao="ir" data-v="questoes">Ir para as questões</button></div></section>`;
   const venc = S.erros.filter(e => e.rev <= hoje()).length;
   return cab + `<section class="cartao"><div class="resumo-dia">

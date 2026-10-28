@@ -9,7 +9,7 @@ SAIDA = r'C:\rotina-banco'
 TRANSCRITO = sys.argv[1] if len(sys.argv) > 1 else os.path.join(SAIDA, 'transcrito.json')
 GRUPOS = [  # mesmos grupos de oficiais.py
     ('6-oficiais-Fuvest-Unicamp-UNESP', ['fuvest', 'unicamp', 'unesp']),
-    ('7-oficiais-Medicina-SP', ['unifesp', 'santacasa', 'alberteinstein', 'famema', 'fmj', 'saocamilo', 'siriolibanes', 'unisa']),
+    ('7-oficiais-Medicina-SP', ['unifesp', 'santacasa', 'alberteinstein', 'famerp', 'fmabc', 'famema', 'fmj', 'saocamilo', 'siriolibanes', 'unisa']),
     ('8-oficiais-outras-SP-e-exatas', ['pucsp', 'fgvsp', 'ita', 'fatec', 'ufscar', 'ufabc', 'insper', 'mackenzie']),
     ('9-oficiais-ENEM-com-resolucao', ['enem']),
 ]

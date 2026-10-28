@@ -216,10 +216,11 @@ function mapaSessao(s) {
 }
 
 /** Texto-base da questão anterior: em imagem (modo objetivo) ou em texto. */
-const prevHtml = r => r.modo === 'objetivo' ? recorteObj(r, false) : `<div class="enunciado q-prev">${mdLite(r.enunciado)}${(r.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`;
+const prevHtml = r => `<div class="coluna" style="gap:6px"><span class="rotulo">questão ${esc(r.num || '')} (anterior)</span>${r.modo === 'objetivo' ? recorteObj(r, false) : `<div class="enunciado q-prev">${mdLite(r.enunciado)}${(r.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`}
+  ${r.prev ? '<button class="link" data-acao="qPrevMais" style="align-self:flex-start">‹ O texto não está aqui? Ver a questão antes desta</button>' : ''}</div>`;
 function qQuestao() {
   const s = ui.qs, q = s.itens[s.i], resp = q.resp != null, ultima = s.i + 1 >= s.itens.length;
-  if (ui.qPrevImg && ui.qPrevImg.id !== q.prev) ui.qPrevImg = null;
+  if (ui.qPrevImg && ui.qPrevDe !== q.id) ui.qPrevImg = null;
   const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado">${mdLite(q.res_ia)}</div></div>` : '';
   const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia">${mdLite(d.r)}</div>`).join('');
   const nav = `<div class="q-nav"><button class="botao contorno" data-acao="qAnt" ${s.i ? '' : 'disabled'}>‹ Anterior</button>
@@ -235,7 +236,7 @@ function qQuestao() {
     ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>
       ${q.modo === 'objetivo' ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
     ${nav}
-    ${ui.qRasc ? quadroHtml('qtmp', 420, 'quadriculado') : ''}
+    ${ui.qRasc ? quadroHtml('qtmp' + s.i, 420, 'quadriculado') : ''}
     ${resp ? detalhe('qia', `Perguntar à IA${q.res_ia || duv ? ' · já tem resposta aqui' : ''}`, `<div class="ajuda-ia"><div class="linha"><button class="botao claro" data-acao="resolIa" ${ui.carregando ? 'disabled' : ''}>${q.res_ia ? 'Resolver de novo com a IA' : 'Ver a resolução pela IA'}</button></div>${ia}${duv ? `<div class="msgs-duv">${duv}</div>` : ''}
       <div class="linha" style="flex-wrap:nowrap;align-items:flex-end"><textarea id="duvida-txt" data-ui="duvidaTxt" rows="2" placeholder="Tire uma dúvida específica: por que a C está errada? Como eu faria sem calculadora?" style="min-height:56px">${esc(ui.duvidaTxt || '')}</textarea><button class="botao" data-acao="duvidaIa" ${ui.carregando ? 'disabled' : ''}>Perguntar</button></div></div>`) : ''}</section>`;
 }
@@ -309,7 +310,12 @@ Object.assign(ACOES, {
   qPrev: async () => {
     if (ui.qPrevImg) { ui.qPrevImg = null; render(); return; }
     const q = ui.qs.itens[ui.qs.i], r = q.prev && await BD.get(q.prev);
-    ui.qPrevImg = r || null; if (!ui.qPrevImg) ui.iaMsg = 'A questão anterior não está no banco.'; render();
+    ui.qPrevImg = r || null; ui.qPrevDe = q.id; if (!ui.qPrevImg) ui.iaMsg = 'A questão anterior não está no banco.'; render();
+  },
+  // o texto-base de um grupo (ex.: questões 06 a 09) fica na primeira: dá para ir subindo
+  qPrevMais: async () => {
+    const r = ui.qPrevImg?.prev && await BD.get(ui.qPrevImg.prev);
+    if (r) ui.qPrevImg = r; else ui.iaMsg = 'Não há questão antes desta no banco.'; render();
   },
   qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', banca: '', ano: '', st: 'todas', tag: '', res: false }; ui.qPag = 0; render(); },
   qGerar: async () => {
@@ -408,7 +414,7 @@ function listaQuestoes(achadas) {
   qfMat: el => { ui.qf.mat = el.dataset.v; ui.qf.assunto = ''; ui.qPag = 0; render(); },
   qfAssunto: el => { ui.qf.assunto = el.dataset.v; ui.qPag = 0; render(); },
   qVerLista: () => { ui.qLista = !ui.qLista; ui.qPag = 0; render(); },
-  qIr: el => { const s = ui.qs, j = +el.dataset.i; if (j === s.i) return; if (s.itens[s.i].resp == null) fecharItem(s); s.i = j; s.tq = Date.now(); ui.qRasc = false; DB.del('d:qtmp'); render(); },
+  qIr: el => { const s = ui.qs, j = +el.dataset.i; if (j === s.i) return; if (s.itens[s.i].resp == null) fecharItem(s); s.i = j; s.tq = Date.now(); render(); },
   qPag: el => { ui.qPag = Math.max(0, (ui.qPag || 0) + +el.dataset.v); render(); },
   qComecarDe: async el => {
     const l = ordenarLista(filtrarBanco()), i = +el.dataset.i, ids = l.slice(i, i + Math.min(ui.qf.n, 50)).map(m => m.id);

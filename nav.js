@@ -30,6 +30,9 @@ function navSync() {
   // só mudou "saiu da lista de questões" ou "fechou a janela": volta uma entrada em vez de empilhar outra
   const igual = c.v === n.v && c.a === n.a;
   if (igual && ((c.q && !n.q && c.m === n.m) || (c.m && !n.m && c.q === n.q))) { if (!NAV.voltando) { NAV.voltando = true; history.back(); } return; }
+  // fechou a janela E mudou de tela na mesma ação (ex.: "Fazer hoje" na janela do assunto): a entrada da janela vira a da tela nova,
+  // em vez de voltar (o history.back() chega depois, assíncrono, e desfaria a troca de tela)
+  if (c.m && !n.m) { history.replaceState({ k }, '', navUrl()); NAV.y = 0; return; }
   history.replaceState({ ...cur, y: NAV.y }, '', location.href);
   // começou uma lista vindo de outra tela (ex.: "Treinar" no Desempenho): deixa a tela de questões como entrada intermediária, para o Voltar cair nela
   if (n.q && !c.q && !c.m && !n.m && !igual) history.pushState({ k: JSON.stringify({ ...n, q: false }) }, '', navUrl());
@@ -68,8 +71,14 @@ function navRolar(y) { for (const t of [0, 120, 500]) setTimeout(() => window.sc
 // janelas entram no histórico: Voltar fecha a janela
 { const a0 = abrirModal; abrirModal = function () { a0.apply(this, arguments); navSync(); }; }
 { const d0 = desenharChat; desenharChat = function () { d0.apply(this, arguments); navSync(); }; }
-{ const f0 = fecharModal; fecharModal = function () { f0.apply(this, arguments); navSync(); }; }
-{ const r0 = render; render = function () { r0.apply(this, arguments); document.body.classList.toggle('em-questao', ui.view === 'questoes' && !!ui.qs && !ui.qs.fim); navSync(); navAgendar(); }; }
+// depois da ação inteira (microtarefa): numa ação que fecha a janela e troca de tela, o histórico vê só o resultado final
+{ const f0 = fecharModal; fecharModal = function () { f0.apply(this, arguments); queueMicrotask(navSync); }; }
+{ const r0 = render; render = function () {
+  r0.apply(this, arguments); document.body.classList.toggle('em-questao', ui.view === 'questoes' && !!ui.qs && !ui.qs.fim); navSync(); navAgendar();
+  // em tela estreita o menu rola de lado: a aba atual fica à vista
+  const b = innerWidth <= 760 && document.querySelector('#menu [aria-current="page"]');
+  if (b) b.parentElement.scrollLeft = b.offsetLeft - (b.parentElement.clientWidth - b.offsetWidth) / 2;
+}; }
 
 // ---------- reabrir no mesmo lugar ----------
 (async () => {

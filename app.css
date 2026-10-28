@@ -71,10 +71,12 @@ main { padding: calc(30px + env(safe-area-inset-top, 0px)) clamp(16px, 4vw, 44px
   .app, [data-tema="noite"] .app, [data-tema="cores"] .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
   .menu, [data-tema="noite"] .menu, [data-tema="cores"] .menu {
     position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: auto; margin: 0; z-index: 20; flex-direction: row; flex-wrap: nowrap;
-    justify-content: space-around; align-items: center; padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
-    background: var(--painel); border: 0; border-top: 1px solid var(--linha); border-radius: 0; }
+    justify-content: flex-start; align-items: center; padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: var(--painel); border: 0; border-top: 1px solid var(--linha); border-radius: 0;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }   /* 11 abas não cabem em tela estreita (iPad dividido): o menu rola de lado */
+  .menu::-webkit-scrollbar { display: none; }
   .marca, .menu .espaco { display: none; }
-  .menu button, [data-tema="noite"] .menu button, [data-tema="cores"] .menu button { flex-direction: column; gap: 2px; font-size: 11px; padding: 6px 4px; width: auto; height: auto; border-radius: 12px; }
+  .menu button, [data-tema="noite"] .menu button, [data-tema="cores"] .menu button { flex: none; min-width: 64px; flex-direction: column; gap: 2px; font-size: 11px; padding: 6px 4px; width: auto; height: auto; border-radius: 12px; }
   .menu button span, [data-tema="noite"] .menu span { display: block; }
   [data-tema="cores"] .menu button svg { display: block; }
   main, [data-tema="cores"] main { padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 150px; }

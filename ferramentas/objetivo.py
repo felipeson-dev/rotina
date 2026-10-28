@@ -32,11 +32,29 @@ def get(url, binario=False, tentativas=5):
             time.sleep(3 + i * 4)
 
 def materia_do_titulo(t):
+    # cabeçalho com duas matérias ("Português e Inglês", "História e Geografia"): fica em branco e a IA decide pela questão
     t = t.lower()
-    for k, v in MATERIAS.items():
-        if k in t:
-            return v
-    return ''
+    achadas = {v for k, v in MATERIAS.items() if k in t}
+    return achadas.pop() if len(achadas) == 1 else ''
+
+def ids_unicos(lista):
+    """Provas de 2 dias ou blocos na mesma página numeram as questões de 01 de novo: o 2º "01" ganha o nome da pasta da imagem
+    (ex.: obj-unesp2021_1fase-2dia-01). O primeiro mantém o id antigo, para não perder o que já foi lido. Refaz o "prev" (questão
+    anterior da mesma prova), que com ids repetidos apontava para a questão errada."""
+    vistos, ant, fase_ant = set(), None, object()
+    for r in lista:
+        if r['id'] in vistos:
+            pasta = re.sub(r'\W', '', r['img'].rstrip('/').split('/')[-2]) or 'b'
+            base = r['id'].rsplit('-', 1)
+            novo, n = f'{base[0]}-{pasta}-{base[1]}', 2
+            while novo in vistos:
+                novo, n = f'{base[0]}-{pasta}{n}-{base[1]}', n + 1
+            r['id'] = novo
+        vistos.add(r['id'])
+        if r.get('fase') != fase_ant:
+            ant, fase_ant = None, r.get('fase')
+        r['prev'] = ant; ant = r['id']
+    return lista
 
 def entradas(banca, pagina):
     """Lista (questao, alternativa, url, materia_do_cabecalho) de uma prova, sem repetir imagens."""
@@ -82,13 +100,15 @@ def ocr(pasta):
 ALT = re.compile(r'^\(?([a-eA-E])\)\s*')
 def cortar(info):
     """Acha a altura onde termina o enunciado. Devolve (corte, n_alternativas, texto) ou None."""
-    ls = [l for l in info.get('linhas') or [] if l.get('t')]
+    # o OCR devolve as linhas por bloco/coluna: em ordem de altura, "Resolução" fica depois das alternativas em colunas
+    ls = sorted((l for l in info.get('linhas') or [] if l.get('t')), key=lambda l: (l['y'], l.get('x', 0)))
     if len(ls) < 3:
         return None
     ys = [l['y'] for l in ls]
-    i_res = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resol\s*u', l['t'], re.I)), None)
     i_resp = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resposta', l['t'])), len(ls))
     alts = [i for i, l in enumerate(ls[:i_resp]) if ALT.match(l['t'])]
+    # "Resolução" que vale é a que vem depois das alternativas (o enunciado pode ter "Resolução do CONAMA")
+    i_res = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resol\s*u', l['t'], re.I) and l['y'] >= 120 and (not alts or i > alts[-1])), None)
     letras = sorted({ALT.match(ls[i]['t']).group(1).lower() for i in alts})
     if i_res is not None and i_res > 0:
         corte = ls[i_res]['y'] - 6
@@ -103,7 +123,7 @@ def cortar(info):
         if fim is None:
             return None
         corte = (ys[fim - 1] + ls[fim - 1]['h'] + ys[fim]) // 2
-    if corte < 40:
+    if corte < 120:
         return None
     texto = '\n'.join(l['t'] for l in ls[:fim])
     texto = re.sub(r'^\s*\d+\s*\n', '', texto)
@@ -139,7 +159,16 @@ def processar(banca, fase=None, desde=0):
                         'nalts': n, 'img': url, 'w': info['w'], 'h': info['h'], 'corte': corte, 'enunciado': texto, 'tipo': 'real', 'modo': 'objetivo', 'fonte': 'Objetivo', 'prev': anterior})
             anterior = out[-1]['id']   # o texto-base de um grupo de questões costuma estar na primeira do grupo
         print(f'  {pg}: {len(lista)} questões, total {len(out)}, falhas {falhas}', flush=True)
-    json.dump(out, open(os.path.join(SAIDA, f'objetivo-{banca}{SUF}.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    ids_unicos(out)
+    # refazer uma banca não perde o assunto já classificado (a chave é a imagem, que é única)
+    arq = os.path.join(SAIDA, f'objetivo-{banca}{SUF}.json')
+    if os.path.exists(arq):
+        velho = {r['img']: r for r in json.load(open(arq, encoding='utf-8'))}
+        for r in out:
+            v = velho.get(r['img'])
+            if v and v.get('assunto') and (not r['materia'] or v.get('materia') == r['materia']):
+                r['assunto'] = v['assunto']; r['materia'] = v.get('materia') or r['materia']
+    json.dump(out, open(arq, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     print(f'>> {banca}: {len(out)} questões (falhas de recorte: {falhas})', flush=True)
 
 if __name__ == '__main__':

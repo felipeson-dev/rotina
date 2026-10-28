@@ -422,15 +422,21 @@ function escolherProximo(fila, blocos, misturar = true) {
 /** Período planejado na aba Planejamento que vale hoje (ex.: revisão para o ENEM): nele, o dia usa só o que ela planejou. */
 const periodoDeHoje = () => (S.periodos || []).find(p => p.so && p.ini <= hoje() && hoje() <= p.fim);
 
+/** O que pode entrar no dia de hoje: tira o que tem dia marcado para depois e, num período planejado, o que é de fora dele.
+   O que foi marcado para hoje (ou atrasou) vem antes de tudo. Usada ao montar o dia, no "mais um" e no reabastecer. */
+function filaParaHoje(blocos = []) {
+  const h = hoje(), per = periodoDeHoje();
+  const fila = filaPlano().filter(a => !blocos.some(b => b.assuntoId === a.id) && !(a.dia && a.dia > h) && (!per || a.periodo === per.id));
+  return [...fila.filter(a => a.dia && a.dia <= h), ...fila.filter(a => !(a.dia && a.dia <= h))];
+}
+
 /** Enche o dia com assuntos até caber o tempo livre (menos 20% para distrações). `so`: matérias que ela pediu para hoje. */
 function montarHoje(cap, so = []) {
-  const d = diaHoje(), h = hoje(), per = periodoDeHoje();
+  const d = diaHoje();
   d.cap = cap > 0 ? cap : d.cap || 0;
   const mantidos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.passos.some(p => p.ok); });
   let usado = soma(mantidos, b => b.min || 0);
-  // o que tem dia marcado só entra no seu dia (ou depois, se atrasou); o que foi marcado para hoje vem antes de tudo
-  let fila = filaPlano().filter(a => !mantidos.some(b => b.assuntoId === a.id) && !(a.dia && a.dia > h) && (!per || a.periodo === per.id));
-  fila = [...fila.filter(a => a.dia && a.dia <= h), ...fila.filter(a => !(a.dia && a.dia <= h))];
+  let fila = filaParaHoje(mantidos);
   const pedidas = fila.filter(a => so.includes(a.materia));
   if (pedidas.length) fila = pedidas;
   const novos = [];
@@ -903,7 +909,7 @@ const ACOES = {
     if (temChave() && d.blocos.length) pedirIa(`Ajuste e detalhe meu dia. Contexto de hoje: ${d.contexto}. Tenho ${d.horas}h livres (uso ${fmtMin(d.cap)} com a folga de 20%). Devolva blocos_hoje com os assuntos de blocos_de_hoje (mantenha assuntoId e min; só tire ou troque algum se o contexto pedir) e, para cada um, de 3 a 5 passos concretos e específicos do assunto, o primeiro bem fácil. Se eu pedi algo no contexto (ex.: só uma matéria, ou mais de uma), troque os assuntos por outros da lista com o mesmo total de minutos. Sem pedido meu, mantenha a mistura que já vem: 1 matéria pesada (Matemática, Física, Química) e 1 leve alternadas, e no máximo 1 redação.`, 'Detalhando seus passos…');
   },
   maisUm: () => {
-    const d = diaHoje(), a = escolherProximo(filaPlano().filter(x => !d.blocos.some(b => b.assuntoId === x.id)), d.blocos);
+    const d = diaHoje(), a = escolherProximo(filaParaHoje(d.blocos), d.blocos);
     if (!a) { ui.iaMsg = 'Não há mais assuntos na fila.'; render(); return; }
     d.blocos.push(blocoDe(a)); d.cap = (d.cap || 0) + minDe(a); salvar(); render();
   },

@@ -57,7 +57,9 @@ async function listaIa(banca, materia, tema, n, dif) {
 
 function iniciarSessao(itens, extra = {}) {
   ui.qs = { itens: itens.map(q => ({ ...q, resp: null, seg: 0, certo: null })), i: 0, t0: Date.now(), ver: false, fim: false, ...extra };
-  ui.qs.tq = Date.now(); DB.del('d:qtmp'); render();
+  // rascunho à mão: um por questão da lista (qtmp0, qtmp1…); os da lista anterior são apagados ao começar outra
+  for (let i = 0; i < Math.max(60, ui.qsN || 0); i++) DB.del('d:qtmp' + i);
+  DB.del('d:qtmp'); ui.qsN = ui.qs.itens.length; ui.qs.tq = Date.now(); render();
 }
 
 // ---------- telas ----------
@@ -98,7 +100,7 @@ function qQuestao() {
     <div class="linha"><button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar o rascunho' : 'Rascunho à mão'}</button>
       ${resp ? `<button class="botao grande" data-acao="qProx">${s.i + 1 < s.itens.length ? 'Próxima' : 'Ver o resultado'}</button>` : `<button class="botao claro" data-acao="qPular">Pular</button>`}
       <button class="link" data-acao="qSair">Sair da lista</button></div>
-    ${ui.qRasc ? quadroHtml('qtmp', 420, 'quadriculado') : ''}</section>`;
+    ${ui.qRasc ? quadroHtml('qtmp' + s.i, 420, 'quadriculado') : ''}</section>`;
 }
 
 function qResultado() {
@@ -117,7 +119,7 @@ function qErros() {
   return `<section class="cartao"><div class="entre"><h2>Caderno de erros</h2><span class="fraco">${S.erros.length} questões · ${venc.length} para rever hoje</span></div>
     <div class="linha"><button class="botao" data-acao="qRefazerErros">Refazer ${venc.length || S.erros.length} erros</button></div>
     ${S.erros.slice().reverse().map(e => `<div class="erro-item" style="${cor(e.materia)}"><div class="entre"><span class="tag" style="${cor(e.materia)}">${esc(e.materia)}</span><span class="fraco" style="font-size:13px">${esc(e.fonte)} · ${diaCurto(e.dia)}${e.vezes ? ` · refeita ${e.vezes}x` : ''}</span></div>
-      <details><summary class="link">${esc((e.enunciado || '').replace(/\s+/g, ' ').slice(0, 110))}…</summary><div class="enunciado">${mdLite(e.enunciado)}</div>
+      <details><summary class="link">${esc((e.enunciado || '').replace(/\s+/g, ' ').slice(0, 110))}…</summary>${e.modo === 'objetivo' && e.img && typeof recorteObj === 'function' ? recorteObj(e, false) : `<div class="enunciado">${mdLite(e.enunciado)}</div>`}
         <p class="fraco" style="margin:6px 0 0">Você marcou <b>${e.resp}</b>; a certa é <b>${e.gab}</b>${e.alts?.find(a => a.l === e.gab) ? `: ${esc(e.alts.find(a => a.l === e.gab).t)}` : ''}.</p>${e.coment ? `<div class="resolucao">${mdLite(e.coment)}</div>` : ''}
         <div class="linha"><button class="link" data-acao="qApagarErro" data-id="${e.id}">Apagar</button></div></details></div>`).join('')}</section>`;
 }
@@ -159,7 +161,7 @@ function finalizarSessao() {
   for (const [m, v] of Object.entries(porMat)) { const d = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); d.f += v.f; d.a += v.a; d.t = (d.t || 0) + Math.round(v.seg); aprenderTempo(m, v.seg, v.f); }
   for (const q of feitas) {
     const ja = S.erros.find(e => e.enunciado === q.enunciado);
-    if (!q.certo) { if (ja) { ja.vezes = (ja.vezes || 0) + 1; ja.resp = q.resp; ja.rev = somaDias(hoje(), 3); } else S.erros.push({ id: uid(), dia: hoje(), rev: somaDias(hoje(), 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment, qid: q.id || '', imagens: (q.imagens || []).filter(u => /^https:/.test(u)), modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '' }); }
+    if (!q.certo) { if (ja) { ja.vezes = (ja.vezes || 0) + 1; ja.resp = q.resp; ja.rev = somaDias(hoje(), 3); } else S.erros.push({ id: uid(), dia: hoje(), rev: somaDias(hoje(), 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment, qid: q.id || '', imagens: (q.imagens || []).filter(u => /^https:/.test(u)), modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0 }); }
     else if (ja && s.revisao) S.erros = S.erros.filter(e => e !== ja); // acertou de novo um erro antigo: sai do caderno
   }
   const a = s.assuntoId && achar(s.assuntoId);
@@ -182,19 +184,24 @@ Object.assign(ACOES, {
       ui.carregando = ''; iniciarSessao(itens, { assuntoId: ui.qFonte === 'ia' && ui.qTema ? ui.qAssuntoId : null });
     } catch (e) { ui.carregando = ''; ui.iaMsg = `Não consegui montar a lista (${e.message}). Tente de novo.`; render(); }
   },
-  qRefazerErros: () => {
+  qRefazerErros: async () => {
     const venc = S.erros.filter(e => e.rev <= hoje()), base = (venc.length ? venc : S.erros).slice(0, 15);
-    iniciarSessao(base.map(e => ({ fonte: e.fonte + ' · erro anterior', materia: e.materia, enunciado: e.enunciado, imagens: e.imagens || [], alts: e.alts, gab: e.gab, coment: e.coment, id: e.qid || undefined, modo: e.modo || '', img: e.img || '', w: e.w, h: e.h, corte: e.corte, prev: e.prev || '' })), { revisao: true });
+    // a questão completa vem do banco (figuras recortadas, texto-base, e a versão em texto se ela chegou depois); o erro guardado é só o reserva
+    const recs = await Promise.all(base.map(e => e.qid && typeof BD !== 'undefined' ? BD.get(e.qid) : null));
+    iniciarSessao(base.map((e, i) => { const r = recs[i] || {};
+      return { fonte: e.fonte + ' · erro anterior', materia: r.materia || e.materia, assunto: r.assunto || '', enunciado: r.enunciado || e.enunciado, imagens: r.imagens || e.imagens || [], alts: r.alts || e.alts, gab: r.gab || e.gab,
+        coment: r.coment ?? e.coment, id: e.qid || undefined, modo: r.id ? r.modo || '' : e.modo || '', img: r.img || e.img || '', w: r.w ?? e.w, h: r.h ?? e.h, corte: r.corte ?? e.corte,
+        prev: r.prev ?? e.prev ?? '', dep: r.dep ?? e.dep ?? 0, num: r.num || '', res_ia: r.res_ia || '', duvidas: r.duvidas || [] }; }), { revisao: true });
   },
   qResp: el => {
     const s = ui.qs, q = s.itens[s.i]; if (q.resp != null) return;
     fecharItem(s); q.resp = el.dataset.v; q.certo = q.resp === q.gab; registrarHist(q); render();
   },
-  qPular: () => { const s = ui.qs; fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; ui.qRasc = false; DB.del('d:qtmp'); } else finalizarSessao(); render(); },
-  qProx: () => { const s = ui.qs; if (s.itens[s.i].resp == null) fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); ui.qRasc = false; DB.del('d:qtmp'); window.scrollTo(0, 0); } else finalizarSessao(); render(); },
+  qPular: () => { const s = ui.qs; fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; } else finalizarSessao(); render(); },
+  qProx: () => { const s = ui.qs; if (s.itens[s.i].resp == null) fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); window.scrollTo(0, 0); } else finalizarSessao(); render(); },
   qRasc: () => { ui.qRasc = !ui.qRasc; render(); },
   qSair: () => { navSairSessao(); render(); window.scrollTo(0, 0); },
-  qAnt: () => { const s = ui.qs; if (s.i > 0) { if (s.itens[s.i].resp == null) fecharItem(s); s.i--; s.tq = Date.now(); ui.qRasc = false; DB.del('d:qtmp'); window.scrollTo(0, 0); } render(); },
+  qAnt: () => { const s = ui.qs; if (s.i > 0) { if (s.itens[s.i].resp == null) fecharItem(s); s.i--; s.tq = Date.now(); window.scrollTo(0, 0); } render(); },
   qNova: () => { ui.qs = null; ui.qAba = 'listas'; render(); },
   qApagarErro: el => { S.erros = S.erros.filter(e => e.id !== el.dataset.id); salvar(); render(); },
   qForaSalvar: () => {

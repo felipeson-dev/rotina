@@ -46,11 +46,12 @@ function reabastecer() {
   if (!d || !d.cap || !d.t0) return 0;
   const gasto = (Date.now() - d.t0) / 60000, resta = d.cap - gasto;
   let pend = soma(d.blocos.filter(b => !achar(b.assuntoId)?.feito && !b.passos.every(p => p.ok)), b => b.min || 0), n = 0;
-  for (const a of filaPlano()) {
-    if (pend >= resta - 20) break;
-    if (d.blocos.some(b => b.assuntoId === a.id)) continue;
-    if (pend + minDe(a) > resta + 30) continue;
-    d.blocos.push(blocoDe(a)); pend += minDe(a); n++;
+  // mesma regra do dia: respeita o período planejado e não puxa o que tem dia marcado para depois
+  let fila = filaParaHoje(d.blocos);
+  while (pend < resta - 20) {
+    const a = escolherProximo(fila.filter(x => pend + minDe(x) <= resta + 30), d.blocos);
+    if (!a) break;
+    d.blocos.push(blocoDe(a)); pend += minDe(a); n++; fila = fila.filter(x => x !== a);
   }
   return n;
 }
@@ -87,7 +88,7 @@ Assuntos: ${JSON.stringify(lote)}`, 6000);
         if (d >= 1 && d <= 5) a.dens = Math.round(d);
         a.calibrado = true; n++;
       }
-      salvar(); render();
+      salvar(); if (todos || telaQuieta()) render();
     }
   } catch (e) { ui.calibroErro = e.message; }
   ui.calibrando = false;
@@ -232,5 +233,7 @@ Object.assign(ACOES, {
 });
 
 // calibra em silêncio os assuntos das próximas 4 semanas
-setTimeout(async () => { const n = await calibrarTempos(false); if (n) { ui.iaMsg = `Calibrei o tempo de ${n} assuntos das próximas semanas com a IA (densidade e questões).`; ui.desfazer = null; render(); } }, 2500);
+/** Calibração em segundo plano só redesenha nas telas do plano e se ela não estiver digitando ou com uma caixa de seleção aberta. */
+function telaQuieta() { return !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName || '') && ['hoje', 'semana', 'mes', 'ano'].includes(ui.view); }
+setTimeout(async () => { const n = await calibrarTempos(false); if (n) { ui.iaMsg = `Calibrei o tempo de ${n} assuntos das próximas semanas com a IA (densidade e questões).`; ui.desfazer = null; if (telaQuieta()) render(); } }, 2500);
 render();

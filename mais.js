@@ -178,7 +178,10 @@ Object.assign(ACOES, {
   pendApagar: el => { S.pend = S.pend.filter(x => x.id !== el.dataset.id); salvar(); fecharModal(); render(); },
   pendFeito: el => {
     const p = S.pend.find(x => x.id === el.dataset.id); if (!p) return;
-    if (el.checked && p.repete && p.dia) { p.dia = p.repete === 'diaria' ? somaDias(p.dia, 1) : p.repete === 'semanal' ? somaDias(p.dia, 7) : iso(new Date(deIso(p.dia).setMonth(deIso(p.dia).getMonth() + 1))); p.avisado = ''; ui.iaMsg = `Feita! Próxima: ${rotuloDia(p.dia)}.`; }
+    if (el.checked && p.repete && p.dia) {
+      // mensal: o mesmo dia do mês; dia 31 vira o último dia dos meses curtos (e volta a 31 quando o mês tem)
+      const mensal = () => { const d = deIso(p.dia), base = p.diaMes ||= d.getDate(), ult = new Date(d.getFullYear(), d.getMonth() + 2, 0).getDate(); return iso(new Date(d.getFullYear(), d.getMonth() + 1, Math.min(base, ult))); };
+      p.dia = p.repete === 'diaria' ? somaDias(p.dia, 1) : p.repete === 'semanal' ? somaDias(p.dia, 7) : mensal(); p.avisado = ''; ui.iaMsg = `Feita! Próxima: ${rotuloDia(p.dia)}.`; }
     else { p.feito = el.checked; p.feitoEm = el.checked ? hoje() : null; }
     salvar(); render();
   },

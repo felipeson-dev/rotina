@@ -26,7 +26,7 @@ def pergunta(lote):
     itens = '\n'.join(f'{i}: ' + (f'[matéria: {m}] ' if m else '') + re.sub(r'\s+', ' ', t)[:450] for i, m, t in lote)
     prompt = ('Classifique cada questão de vestibular (texto lido por OCR, pode ter erros) pela MATÉRIA e pelo ASSUNTO. '
               'O assunto deve ser EXATAMENTE um dos itens da lista da matéria (copie igual). Se nenhum servir, use "Outro". '
-              f'Se a matéria vier indicada, use-a.\n\nMatérias e assuntos:\n{TEXTO_TAX}\n\n'
+              f'A matéria indicada vem do caderno da prova e pode estar errada quando o caderno junta matérias (ex.: Português e Literatura, História e Geografia): corrija pela questão.\n\nMatérias e assuntos:\n{TEXTO_TAX}\n\n'
               'Responda SÓ com JSON: {"r":[{"i":0,"m":"Matemática","a":"Funções do 2º grau"}]}\n\nQuestões:\n' + itens)
     corpo = json.dumps({'contents': [{'role': 'user', 'parts': [{'text': prompt}]}], 'generationConfig': {'responseMimeType': 'application/json', 'temperature': 0, 'maxOutputTokens': 5000}}).encode()
     for modelo in MODELOS:
@@ -64,7 +64,8 @@ for arq in sys.argv[1:]:
             for j, (i, _, _) in enumerate(lote):
                 if j in r:
                     m, a = r[j]
-                    if not d[i].get('materia'):
+                    # a IA pode corrigir a matéria do caderno quando o assunto que ela achou é mesmo dessa outra matéria
+                    if not d[i].get('materia') or (a and d[i]['materia'] != m):
                         d[i]['materia'] = m
                     if d[i]['materia'] == m:
                         d[i]['assunto'] = a or 'Outro'

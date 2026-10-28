@@ -63,17 +63,21 @@ def carregar_uso():
     try: USO = json.load(open(USO_ARQ, encoding='utf-8'))
     except Exception: USO = {}
 
-def gastar(k):
-    # conta o pedido; devolve False se a chave já usou a parte dela hoje
+def pode(k):
+    # a chave ainda tem a parte dela hoje? (se não, só volta na virada do dia)
     with TRAVA:
-        chave = f'{dia_pacifico()}|{CHAVES.index(k) + 1}'
-        if USO.get(chave, 0) >= LIMITE_DIA:
+        if USO.get(f'{dia_pacifico()}|{CHAVES.index(k) + 1}', 0) >= LIMITE_DIA:
             for m in MODELOS: ESGOTADA[(m, k)] = proxima_virada()
             return False
-        USO[chave] = USO.get(chave, 0) + 1
+        return True
+
+def contar(k, n=1, esgotou=False):
+    # só conta pedido que o Google aceitou (429 por minuto não gasta a cota do dia); "esgotou" = o Google disse que acabou o dia
+    with TRAVA:
+        chave = f'{dia_pacifico()}|{CHAVES.index(k) + 1}'
+        USO[chave] = LIMITE_DIA if esgotou else USO.get(chave, 0) + n
         try: json.dump(USO, open(USO_ARQ, 'w', encoding='utf-8'))
         except Exception: pass
-        return True
 
 def esperar_cota():
     """Ninguém disponível: dorme até a primeira chave/modelo voltar (cota por minuto ~1 min; cota do dia: testa de novo a cada 30 min)."""
@@ -94,11 +98,12 @@ def chama(png_b64, prompt):
         if not opcoes:
             esperar_cota(); continue                 # cota acabou: espera, sem gastar tentativa
         m = opcoes[0][0]; k = random.choice([k for mm, k in opcoes if mm == m])
-        if not gastar(k):
+        if not pode(k):
             continue
         try:
             req = urllib.request.Request(f'https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent', data=corpo, headers={'Content-Type': 'application/json', 'x-goog-api-key': k})
             j = json.loads(urllib.request.urlopen(req, timeout=180).read())
+            contar(k)
             c = (j.get('candidates') or [{}])[0]
             if c.get('finishReason') == 'RECITATION':
                 return None, 'RECITATION'
@@ -118,9 +123,12 @@ def chama(png_b64, prompt):
                 dia = any('PerDay' in i for i in ids) or (not ids and 'per day' in corpo_erro.lower())
                 if (m, k, dia) not in AVISADA:
                     AVISADA.add((m, k, dia)); print(f'{time.strftime("%d/%m %H:%M")}  cota {"do dia" if dia else "por minuto"}: {m}, chave {CHAVES.index(k) + 1}{" (volta à meia-noite do Pacífico, ~4h/5h de Brasília)" if dia else ""} {ids[:1]}', flush=True)
+                if dia:
+                    contar(k, esgotou=True)
                 with TRAVA:
-                    ESGOTADA[(m, k)] = time.time() + (1800 if dia else 62)
+                    ESGOTADA[(m, k)] = proxima_virada() if dia else time.time() + 62
                 continue                             # cota: não conta como tentativa
+            contar(k)
             erros.append(f'{m}: HTTP {e.code}'); tentativas += 1
             with TRAVA:
                 ESGOTADA[(m, k)] = time.time() + 20
