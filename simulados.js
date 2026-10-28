@@ -9,7 +9,7 @@ const pctDe = (a, t) => t ? Math.round(a / t * 100) : 0;
 
 function provasNoBanco() {
   const g = {};
-  for (const q of BANCO.itens) if (q.t === 'real' && q.a && q.b) { const k = q.b + '|' + q.a; (g[k] ||= { b: q.b, a: q.a, ids: [] }).ids.push(q.id); }
+  for (const q of BANCO.itens) if (q.t === 'real' && !q.ds && q.a && q.b) { const k = q.b + '|' + q.a; (g[k] ||= { b: q.b, a: q.a, ids: [] }).ids.push(q.id); }
   return Object.values(g).filter(x => x.ids.length >= 10);
 }
 

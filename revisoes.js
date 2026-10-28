@@ -51,32 +51,45 @@ function escolherRevisao(n, fora = []) {
   }).sort((x, y) => y.nota - x.nota).slice(0, n).map(x => x.a);
 }
 
-const blocoRev = (titulo, lista, min) => ({ id: uid(), assuntoId: null, tipo: 'revisao', revisao: lista.map(a => a.id), titulo, materia: lista.length === 1 ? lista[0].materia : 'Revisão', min,
-  passos: [...(lista.some(a => a.rev?.teoria) ? [{ t: 'Reler o resumo dos que foram mal da última vez (15 min)', ok: false }] : []), { t: `Fazer as questões (${lista.length * 5} a ${lista.length * 6}): no app ou no livro`, ok: false }, { t: 'Olhar os erros e anotar o que esqueceu', ok: false }] });
+const blocoRev = (titulo, lista, min, vaga) => ({ id: uid(), assuntoId: null, tipo: 'revisao', vaga, revisao: lista.map(a => a.id), titulo, materia: lista.length === 1 ? lista[0].materia : 'Revisão', min,
+  passos: [...(lista.some(a => a.rev?.teoria) ? [{ t: 'Reler o resumo dos que foram mal da última vez (15 min)', ok: false }] : []), { t: `Fazer as questões (${lista.length * (vaga === 'dia' ? 3 : 5)} a ${lista.length * (vaga === 'dia' ? 4 : 6)}): no app ou no livro`, ok: false }, { t: 'Olhar os erros e anotar o que esqueceu', ok: false }] });
 
-// o dia ganha as revisões: as vencidas (todo dia, curtinhas) e, nos dias de revisão, um bloco maior de questões de assuntos já estudados
+/* Revisão com tempo FIXO, pré-programado: uma vaga curta todo dia e uma vaga maior nos dias de revisão (Ajustes).
+   O tamanho das vagas nunca cresce: se houver mais revisões vencidas do que cabe, as menos urgentes esperam a próxima vaga.
+   O app escolhe os assuntos (24–48 h depois para exatas, vencidos, fracos, mais cobrados) e ela pode trocar. */
+const cfgRev = () => ({ diario: 20, maior: 150, ...(S.perfil.revCfg || {}) });
+const PESADAS_REV = ['Matemática', 'Física', 'Química'];
+/** Exatas estudadas há 1 ou 2 dias, ainda sem a revisão rápida de fixação. */
+const fixacao = () => estudados().filter(a => PESADAS_REV.includes(a.materia) && a.rev && !a.rev.fix && a.feitoEm && a.feitoEm < hoje() && a.feitoEm >= somaDias(hoje(), -2));
+
 { const m0 = montarHoje; montarHoje = function (cap, so = []) {
-  const d = diaHoje(), per = periodoDeHoje();
-  d.blocos = d.blocos.filter(b => b.tipo !== 'revisao' || b.passos.some(p => p.ok));      // refaz as revisões que ela ainda não começou
-  const ja = d.blocos.filter(b => b.tipo === 'revisao').flatMap(b => b.revisao);
+  const d = diaHoje(), per = periodoDeHoje(), c = cfgRev();
+  d.blocos = d.blocos.filter(b => b.tipo !== 'revisao' || b.passos.some(p => p.ok) || b.escolhidos);   // refaz as vagas que ela não começou nem escolheu
+  const ja = d.blocos.filter(b => b.tipo === 'revisao'), usados = ja.flatMap(b => b.revisao);
   const capOk = cap > 0 ? cap : d.cap || 0;
   const novos = [];
   if (!(so || []).length && !per?.so && capOk >= 90) {
-    const venc = vencidas().filter(a => !ja.includes(a.id)).slice(0, 3);
-    if (venc.length) novos.push(blocoRev(`Revisão rápida: ${venc.map(a => a.titulo).join(' · ')}`, venc, Math.min(60, 20 * venc.length)));
-    if (diasRev().includes(deIso(hoje()).getDay()) && !ja.length) {
-      const min = Math.max(45, Math.round(capOk * 0.3 / 15) * 15), lista = escolherRevisao(Math.max(2, Math.min(6, Math.round(min / 30))), venc.map(a => a.id));
-      if (lista.length) novos.push(blocoRev('Questões de assuntos já estudados', lista, min));
+    // vaga do dia (curta): primeiro a fixação das exatas, depois as vencidas mais urgentes; ~10 min por assunto
+    if (c.diario > 0 && !ja.some(b => b.vaga === 'dia')) {
+      const n = Math.max(1, Math.floor(c.diario / 10)), l = [...fixacao(), ...vencidas()].filter((a, i, v) => v.indexOf(a) === i && !usados.includes(a.id)).slice(0, n);
+      novos.push(blocoRev(l.length ? `Revisão do dia: ${l.map(a => a.titulo).join(' · ')}` : 'Revisão do dia (escolha os assuntos)', l, c.diario, 'dia'));
+    }
+    // vaga maior, nos dias de revisão: questões de assuntos já estudados; ~30 min por assunto
+    if (c.maior > 0 && diasRev().includes(deIso(hoje()).getDay()) && !ja.some(b => b.vaga === 'semana')) {
+      const fora = [...usados, ...novos.flatMap(b => b.revisao)], l = escolherRevisao(Math.max(1, Math.floor(c.maior / 30)), fora);
+      novos.push(blocoRev('Revisão da semana: questões de assuntos já estudados', l, c.maior, 'semana'));
     }
   }
   const usado = soma(novos, b => b.min);
   m0.call(this, Math.max(1, capOk - usado), so);
   d.cap = capOk; d.blocos.push(...novos);
 }; }
-
 // marcou todos os passos de um bloco de revisão: a volta conta como feita (sem acerto, se ela fez fora do app)
 { const p0 = ACOES.passo; ACOES.passo = el => { p0(el); const b = diaHoje().blocos.find(x => x.id === el.dataset.b);
   if (b?.tipo === 'revisao' && !b.contou && b.passos.every(p => p.ok)) { b.contou = true; b.revisao.map(achar).filter(Boolean).forEach(a => revisaoFeita(a)); salvar(); } }; }
+
+/** A volta de 24–48 h das exatas não muda o calendário das outras voltas (7 dias, 1 mês): só marca que a fixação foi feita. */
+{ const r0 = revisaoFeita; revisaoFeita = function (a, pct) { if (a?.rev && !a.rev.fix && PESADAS_REV.includes(a.materia) && a.feitoEm >= somaDias(hoje(), -2) && a.rev.n === 0) { a.rev.fix = hoje(); if (pct != null && pct < 60) a.rev.prox = somaDias(hoje(), 4); return; } return r0.apply(this, arguments); }; }
 
 /** Abre uma lista com questões do banco desses assuntos: primeiro as que ela errou ou ainda não fez. */
 async function questoesDosAssuntos(lista, extra = {}, porAssunto = 5) {
@@ -119,6 +132,24 @@ Object.assign(ACOES, {
   qDaRevisao: async el => { const b = diaHoje().blocos.find(x => x.id === el.dataset.b); const l = (b?.revisao || []).map(achar).filter(Boolean); if (l.length) await questoesDosAssuntos(l, { revisaoIds: l.map(a => a.id) }); },
   fraco: el => { const a = achar(el.dataset.id); if (!a) return; a.fraco = !a.fraco; salvar(); ui.iaMsg = a.fraco ? `Anotado: "${a.titulo}" entra nas próximas revisões.` : 'Tirei a marca de fraco.'; fecharModal(); render(); },
   diaRev: el => { const v = +el.dataset.v, l = diasRev(); S.perfil.diasRev = l.includes(v) ? l.filter(x => x !== v) : [...l, v].sort(); salvar(); render(); },
+  revCfg: el => { S.perfil.revCfg = { ...cfgRev(), [el.dataset.k]: +el.dataset.v }; salvar(); render(); },
+  // ela escolhe os assuntos de uma vaga de revisão (a vaga continua com o mesmo tempo)
+  revEscolher: el => {
+    const b = diaHoje().blocos.find(x => x.id === el.dataset.b); if (!b) return;
+    const ordem = escolherRevisao(999), max = Math.max(1, Math.floor(b.min / (b.vaga === 'dia' ? 10 : 30)));
+    abrirModal(`<div class="entre"><h2>Escolher os assuntos</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
+      <p class="fraco" style="margin:0">Até ${max} ${max === 1 ? 'assunto cabe' : 'assuntos cabem'} nesta revisão (${fmtMin(b.min)}). Os primeiros da lista são os que o app acha mais importantes agora.</p>
+      ${ordem.length ? `<div class="rev-escolha">${ordem.map(a => `<label class="marca-q"><input type="checkbox" data-rev-esc="${a.id}" ${b.revisao.includes(a.id) ? 'checked' : ''}> <span><span class="tag" style="${cor(a.materia)}">${esc(a.materia)}</span> ${esc(a.titulo)}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}${a.rev?.prox && a.rev.prox <= hoje() ? ' · vencida' : ''}</span></label>`).join('')}</div>`
+        : '<p style="margin:0">Ainda não há assuntos estudados. Quando você marcar assuntos como feitos, eles aparecem aqui.</p>'}
+      <div class="linha"><button class="botao" data-acao="revEscolhidos" data-b="${b.id}" data-max="${max}">Usar estes</button></div>`);
+  },
+  revEscolhidos: el => {
+    const b = diaHoje().blocos.find(x => x.id === el.dataset.b); if (!b) return;
+    const ids = [...document.querySelectorAll('[data-rev-esc]:checked')].map(x => x.dataset.revEsc).slice(0, +el.dataset.max);
+    const l = ids.map(achar).filter(Boolean), novo = blocoRev(b.vaga === 'dia' ? `Revisão do dia: ${l.map(a => a.titulo).join(' · ') || 'sem assuntos'}` : b.titulo, l, b.min, b.vaga);
+    Object.assign(b, { revisao: novo.revisao, titulo: novo.titulo, materia: novo.materia, passos: novo.passos, escolhidos: true });
+    salvar(); fecharModal(); render();
+  },
 });
 
 // botões nos blocos de hoje e na janela do assunto
@@ -127,7 +158,7 @@ Object.assign(ACOES, {
   if (b.tipo === 'revisao') {
     const l = (b.revisao || []).map(achar).filter(Boolean);
     return h.replace('</article>', `<div class="rev-lista">${l.map(a => `<span class="tag" style="${cor(a.materia)}">${esc(a.titulo)}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}</span>`).join('')}</div>
-      <div class="linha acoes-bloco"><button class="botao claro" data-acao="qDaRevisao" data-b="${b.id}">Fazer as questões no app</button></div></article>`);
+      <div class="linha acoes-bloco">${l.length ? `<button class="botao claro" data-acao="qDaRevisao" data-b="${b.id}">Fazer as questões no app</button>` : ''}<button class="link" data-acao="revEscolher" data-b="${b.id}">${b.escolhidos ? 'Trocar os assuntos' : 'Escolher eu mesma'}</button></div></article>`);
   }
   const a = b.assuntoId && achar(b.assuntoId);
   return a && ehConteudo(a) ? h.replace('<div class="linha acoes-bloco">', `<div class="linha acoes-bloco"><button class="link" data-acao="qDoAssunto" data-id="${a.id}">Fazer questões no app</button>`) : h;
@@ -141,10 +172,14 @@ Object.assign(ACOES, {
   linha?.insertAdjacentHTML('afterbegin', `<button class="botao" data-acao="qDoAssunto" data-id="${a.id}">Fazer questões no app</button><button class="botao contorno" data-acao="fraco" data-id="${a.id}">${a.fraco ? 'Não estou mais fraca nisso' : 'Estou fraca nisso'}</button>`);
 }; }
 
-// Ajustes: escolher os dias de revisão
+// Ajustes: as vagas de revisão (tempo fixo) e os dias da revisão maior
 { const v0 = VIEWS.ajustes; VIEWS.ajustes = function () {
-  const nomes = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
-  return v0() + `<section class="cartao"><h2>Revisões</h2><p class="fraco" style="margin:0">O assunto estudado volta sozinho: em 1 semana, depois em 1 mês, e se adapta ao seu acerto. Nos dias marcados, parte do estudo vira questões de assuntos que você já estudou.</p>
-    <div class="linha">${nomes.map((n, i) => `<button class="chip" data-acao="diaRev" data-v="${i}" aria-pressed="${diasRev().includes(i)}">${n}</button>`).join('')}</div>
-    <p class="fraco" style="margin:0;font-size:14px">${estudados().length} assuntos já estudados · ${vencidas().length} revisões vencidas hoje · ${estudados().filter(a => a.fraco).length} marcados como fracos</p></section>`;
+  const nomes = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'], c = cfgRev();
+  const op = (k, vs) => vs.map(v => `<button class="chip" data-acao="revCfg" data-k="${k}" data-v="${v}" aria-pressed="${c[k] === v}">${v ? fmtMin(v) : 'nenhuma'}</button>`).join('');
+  return v0() + `<section class="cartao"><h2>Revisões</h2>
+    <p class="fraco" style="margin:0">As revisões têm hora marcada e tempo fixo: o resto do dia nunca é engolido por elas. O assunto estudado volta em 1 semana, depois em 1 mês (e se adapta ao seu acerto); exatas ganham também uma revisão rápida 1 a 2 dias depois. Se acumular mais do que cabe, as menos urgentes esperam a próxima vaga.</p>
+    <span class="rotulo">revisão do dia (todo dia)</span><div class="linha">${op('diario', [0, 15, 20, 30, 45])}</div>
+    <span class="rotulo">revisão maior</span><div class="linha">${op('maior', [0, 60, 90, 120, 150, 180])}</div>
+    <span class="rotulo">dias da revisão maior</span><div class="linha">${nomes.map((n, i) => `<button class="chip" data-acao="diaRev" data-v="${i}" aria-pressed="${diasRev().includes(i)}">${n}</button>`).join('')}</div>
+    <p class="fraco" style="margin:0;font-size:14px">Por semana: ${fmtMin(c.diario * 6 + c.maior * diasRev().length)} de revisão · ${estudados().length} assuntos já estudados · ${vencidas().length} vencidas hoje · ${estudados().filter(a => a.fraco).length} marcados como fracos</p></section>`;
 }; }

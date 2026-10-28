@@ -56,8 +56,8 @@ def ids_unicos(lista):
         r['prev'] = ant; ant = r['id']
     return lista
 
-def entradas(banca, pagina):
-    """Lista (questao, alternativa, url, materia_do_cabecalho) de uma prova, sem repetir imagens."""
+def entradas(banca, pagina, disc=False):
+    """Lista (questao, alternativa, url, materia_do_cabecalho) de uma prova, sem repetir imagens. disc=True: só as discursivas (sem letra)."""
     html = get(BASE + f'{banca}/{pagina}.aspx')
     m = html and re.search(r'data-prova="(\d+)"', html)
     if not m:
@@ -69,7 +69,7 @@ def entradas(banca, pagina):
             cab = H.unescape(re.sub('<[^>]+>', '', x.group(1))).strip()
             continue
         alt, q, url = x.group(2).strip().upper(), x.group(3).strip(), x.group(4).strip().replace('http://', 'https://')
-        if alt not in ('A', 'B', 'C', 'D', 'E') or url in vistas:
+        if (alt in ('A', 'B', 'C', 'D', 'E')) == disc or url in vistas:
             continue
         vistas.add(url)
         out.append((q, alt, url, materia_do_titulo(cab)))
@@ -88,8 +88,13 @@ def baixar(lista, pasta):
     with ThreadPoolExecutor(6) as ex:
         return list(ex.map(um, lista))
 
-def ocr(pasta):
+def ocr(pasta, nomes=()):
     saida = os.path.join(pasta, '_ocr.json')
+    # imagem nova numa pasta já lida (ex.: as discursivas baixadas depois): lê a pasta de novo
+    if os.path.exists(saida) and nomes:
+        try: ja = json.load(open(saida, encoding='utf-8-sig'))
+        except Exception: ja = {}
+        if any(n not in ja for n in nomes): os.remove(saida)
     if not os.path.exists(saida):
         subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', OCR, pasta, saida], check=False, capture_output=True)
     try:
@@ -98,7 +103,7 @@ def ocr(pasta):
         return {}
 
 ALT = re.compile(r'^\(?([a-eA-E])\)\s*')
-def cortar(info):
+def cortar(info, disc=False):
     """Acha a altura onde termina o enunciado. Devolve (corte, n_alternativas, texto) ou None."""
     # o OCR devolve as linhas por bloco/coluna: em ordem de altura, "Resolução" fica depois das alternativas em colunas
     ls = sorted((l for l in info.get('linhas') or [] if l.get('t')), key=lambda l: (l['y'], l.get('x', 0)))
@@ -108,8 +113,11 @@ def cortar(info):
     i_resp = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resposta', l['t'])), len(ls))
     alts = [i for i, l in enumerate(ls[:i_resp]) if ALT.match(l['t'])]
     # "Resolução" que vale é a que vem depois das alternativas (o enunciado pode ter "Resolução do CONAMA")
-    i_res = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resol\s*u', l['t'], re.I) and l['y'] >= 120 and (not alts or i > alts[-1])), None)
+    # nas discursivas, os itens a) b) também aparecem na resposta, depois da "Resolução": vale a primeira abaixo do topo
+    i_res = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resol\s*u', l['t'], re.I) and l['y'] >= 120 and (disc or not alts or i > alts[-1])), None)
     letras = sorted({ALT.match(ls[i]['t']).group(1).lower() for i in alts})
+    if disc and i_res is None:
+        return None
     if i_res is not None and i_res > 0:
         corte = ls[i_res]['y'] - 6
         fim = i_res
@@ -130,7 +138,8 @@ def cortar(info):
     n = len(letras) if letras and letras[0] == 'a' and len(letras) >= 4 else 0
     return corte, n, texto
 
-def processar(banca, fase=None, desde=0):
+def processar(banca, fase=None, desde=0, disc=False):
+    """disc=True: questões discursivas (a resolução do Objetivo vem na mesma imagem, depois de "Resolução"). Saída: objetivo-disc-<banca>.json"""
     paginas = json.load(open(os.path.join(SAIDA, 'cache', 'objetivo_paginas.json'))).get(banca, [])
     out, falhas = [], 0
     for pg in paginas:
@@ -139,29 +148,29 @@ def processar(banca, fase=None, desde=0):
             continue
         if os.environ.get('SO_CACHE') and not os.path.exists(os.path.join(CACHE, banca, pg, '_ocr.json')):
             continue   # modo amostra: só o que já está baixado e lido
-        lista = entradas(banca, pg)
+        lista = entradas(banca, pg, disc)
         if not lista:
             continue
         pasta = os.path.join(CACHE, banca, pg)
         arqs = baixar(lista, pasta)
-        o = ocr(pasta)
+        o = ocr(pasta, [os.path.basename(a) for a in arqs])
         padrao = 4 if banca == 'unicamp' else 5
         anterior = None
         for (q, alt, url, mat), arq in zip(lista, arqs):
             info = o.get(os.path.basename(arq))
-            c = info and cortar(info)
+            c = info and cortar(info, disc)
             if not c:
                 falhas += 1
                 continue
             corte, n, texto = c
-            n = max(n if n > padrao else padrao, 'ABCDE'.index(alt) + 1)   # o OCR às vezes perde uma alternativa
-            out.append({'id': f'obj-{pg}-{q}', 'banca': NOME.get(banca, banca), 'ano': ano, 'fase': pg.replace(banca, ''), 'num': q, 'materia': mat, 'gab': alt,
-                        'nalts': n, 'img': url, 'w': info['w'], 'h': info['h'], 'corte': corte, 'enunciado': texto, 'tipo': 'real', 'modo': 'objetivo', 'fonte': 'Objetivo', 'prev': anterior})
+            n = 0 if disc else max(n if n > padrao else padrao, 'ABCDE'.index(alt) + 1)   # o OCR às vezes perde uma alternativa
+            out.append({'id': f'{"disc" if disc else "obj"}-{pg}-{q}', 'banca': NOME.get(banca, banca), 'ano': ano, 'fase': pg.replace(banca, ''), 'num': q, 'materia': mat, 'gab': '' if disc else alt,
+                        'nalts': n, 'img': url, 'w': info['w'], 'h': info['h'], 'corte': corte, 'enunciado': texto, 'tipo': 'disc' if disc else 'real', 'modo': 'objetivo', 'fonte': 'Objetivo', 'prev': anterior})
             anterior = out[-1]['id']   # o texto-base de um grupo de questões costuma estar na primeira do grupo
         print(f'  {pg}: {len(lista)} questões, total {len(out)}, falhas {falhas}', flush=True)
     ids_unicos(out)
     # refazer uma banca não perde o assunto já classificado (a chave é a imagem, que é única)
-    arq = os.path.join(SAIDA, f'objetivo-{banca}{SUF}.json')
+    arq = os.path.join(SAIDA, f'objetivo-{"disc-" if disc else ""}{banca}{SUF}.json')
     if os.path.exists(arq):
         velho = {r['img']: r for r in json.load(open(arq, encoding='utf-8'))}
         for r in out:

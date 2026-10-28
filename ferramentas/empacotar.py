@@ -14,6 +14,11 @@ GRUPOS = [  # mesmos grupos de oficiais.py
     ('9-oficiais-ENEM-com-resolucao', ['enem']),
 ]
 
+GRUPOS_DISC = [
+    ('D1-discursivas-Fuvest-Unicamp-UNESP', ['fuvest', 'unicamp', 'unesp']),
+    ('D2-discursivas-Medicina-SP', ['unifesp', 'santacasa', 'alberteinstein', 'famerp', 'fmabc', 'famema', 'fmj', 'saocamilo', 'siriolibanes']),
+]
+
 def principal():
     tx = {x['id'][3:]: x for x in json.load(open(TRANSCRITO, encoding='utf-8'))} if os.path.exists(TRANSCRITO) else {}
     total_t = total_i = 0
@@ -54,6 +59,20 @@ def principal():
         total_t += n_txt; total_i += len(saida) - n_txt
         print(f'{nome}: {len(saida)} questões · {n_txt} em texto · {len(saida) - n_txt} em imagem · {os.path.getsize(p) / 1e6:.1f} MB', flush=True)
     print(f'{time.strftime("%d/%m %H:%M")} total: {total_t} em texto, {total_i} em imagem', flush=True)
+    # discursivas (imagem do enunciado + resolução do Objetivo como padrão de resposta)
+    for nome, bancas in GRUPOS_DISC:
+        lista = []
+        for b in bancas:
+            a = os.path.join(SAIDA, f'objetivo-disc-{b}.json')
+            if os.path.exists(a) and os.path.getsize(a) > 10:
+                lista += json.load(open(a, encoding='utf-8'))
+        if not lista:
+            continue
+        p = os.path.join(SAIDA, 'para-o-ipad', nome + '.json.gz')
+        with gzip.open(p + '.tmp', 'wt', encoding='utf-8', compresslevel=9) as f:
+            json.dump(lista, f, ensure_ascii=False, separators=(',', ':'))
+        os.replace(p + '.tmp', p)
+        print(f'{nome}: {len(lista)} discursivas · {os.path.getsize(p) / 1e6:.1f} MB', flush=True)
 
 if __name__ == '__main__':
     principal()

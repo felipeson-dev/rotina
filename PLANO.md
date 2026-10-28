@@ -152,3 +152,7 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Meu dia: planejar amanha (agenda inteira; assuntos entram no dia) e 'Por na Agenda do iPad' (.ics com alarme).
 - Menu com 7 itens; Hoje (Assuntos | Agenda) e Plano (Semana | Mes | Ano | Planejamento) com abas no topo.
 - Planejamento: encaixar (padrao) x pausar o cronograma, confirmacao para pausa > 21 dias, copia diaria do plano e antes de mudancas (Ajustes > Copias do plano), 'Mudar o cronograma' com previa antes de aplicar.
+
+## v24 (27/10) - revisoes com vaga fixa e discursivas
+- Revisoes: vagas pre-programadas de tempo fixo (Ajustes): 'Revisao do dia' (padrao 20 min, todo dia) e 'Revisao da semana' (padrao 150 min, qua e sab). O tamanho nunca cresce: o excedente espera a proxima vaga. Assuntos escolhidos pelo app (fixacao 24-48 h das exatas, vencidas de 7/30 dias, fracas, mais cobradas) ou por ela ('Escolher eu mesma').
+- Discursivas: objetivo.py --disc (entradas sem letra; corte na primeira 'Resolucao'); ferramentas/baixar_discursivas.py (2015+, bancas dela) -> objetivo-disc-<banca>.json; empacotar.py gera D1/D2. App (discursivas.js): caixa Tipo (objetivas/discursivas), resposta com a caneta (quadro guardado por questao), padrao de resposta do Objetivo, autoavaliacao (acertei/em parte/errei) e correcao pela IA lendo a letra.

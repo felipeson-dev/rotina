@@ -121,7 +121,7 @@ function qErros() {
     <div class="linha"><button class="botao" data-acao="qRefazerErros">Refazer ${venc.length || S.erros.length} erros</button></div>
     ${S.erros.slice().reverse().map(e => `<div class="erro-item" style="${cor(e.materia)}"><div class="entre"><span class="tag" style="${cor(e.materia)}">${esc(e.materia)}</span><span class="fraco" style="font-size:13px">${esc(e.fonte)} · ${diaCurto(e.dia)}${e.vezes ? ` · refeita ${e.vezes}x` : ''}</span></div>
       <details><summary class="link">${esc((e.enunciado || '').replace(/\s+/g, ' ').slice(0, 110))}…</summary>${e.modo === 'objetivo' && e.img && typeof recorteObj === 'function' ? recorteObj(e, false) : `<div class="enunciado">${mdLite(e.enunciado)}</div>`}
-        <p class="fraco" style="margin:6px 0 0">Você marcou <b>${e.resp}</b>; a certa é <b>${e.gab}</b>${e.alts?.find(a => a.l === e.gab) ? `: ${esc(e.alts.find(a => a.l === e.gab).t)}` : ''}.</p>${e.coment ? `<div class="resolucao">${mdLite(e.coment)}</div>` : ''}
+        <p class="fraco" style="margin:6px 0 0">${e.tipo === 'disc' ? `Discursiva: você se avaliou como <b>${e.resp === 'P' ? 'acertei em parte' : 'errei'}</b>.` : `Você marcou <b>${e.resp}</b>; a certa é <b>${e.gab}</b>${e.alts?.find(a => a.l === e.gab) ? `: ${esc(e.alts.find(a => a.l === e.gab).t)}` : ''}.`}</p>${e.coment ? `<div class="resolucao">${mdLite(e.coment)}</div>` : ''}
         <div class="linha"><button class="link" data-acao="qApagarErro" data-id="${e.id}">Apagar</button></div></details></div>`).join('')}</section>`;
 }
 
@@ -192,7 +192,7 @@ Object.assign(ACOES, {
     iniciarSessao(base.map((e, i) => { const r = recs[i] || {};
       return { fonte: e.fonte + ' · erro anterior', materia: r.materia || e.materia, assunto: r.assunto || '', enunciado: r.enunciado || e.enunciado, imagens: r.imagens || e.imagens || [], alts: r.alts || e.alts, gab: r.gab || e.gab,
         coment: r.coment ?? e.coment, id: e.qid || undefined, modo: r.id ? r.modo || '' : e.modo || '', img: r.img || e.img || '', w: r.w ?? e.w, h: r.h ?? e.h, corte: r.corte ?? e.corte,
-        prev: r.prev ?? e.prev ?? '', dep: r.dep ?? e.dep ?? 0, num: r.num || '', res_ia: r.res_ia || '', duvidas: r.duvidas || [] }; }), { revisao: true });
+        prev: r.prev ?? e.prev ?? '', dep: r.dep ?? e.dep ?? 0, num: r.num || '', res_ia: r.res_ia || '', duvidas: r.duvidas || [], tipo: r.tipo || e.tipo || '', discIa: r.discIa || null }; }), { revisao: true });
   },
   qResp: el => {
     const s = ui.qs, q = s.itens[s.i]; if (q.resp != null) return;

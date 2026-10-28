@@ -596,3 +596,9 @@ input[type="search"]:focus { border-color: var(--acento); }
 .pl-modo .marca-q input { margin-top: 2px; flex: none; }
 .aviso-forte { color: #9C2D22 !important; font-weight: 700; }
 .pl-mud-lista { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.rev-escolha { display: flex; flex-direction: column; gap: 8px; max-height: 55vh; overflow-y: auto; }
+.rev-escolha .marca-q { color: var(--texto); align-items: flex-start; }
+
+.q-mapa button.h-meio { background: #FFF1D6; border-color: #E8C27A; color: #8A5A00; }
+.disc-av.C[aria-pressed="true"] { background: #2E8B57; color: #fff; } .disc-av.P[aria-pressed="true"] { background: #C98A12; color: #fff; } .disc-av.E[aria-pressed="true"] { background: #C2483D; color: #fff; }
+.q-hist .h-meio { color: #A66F00; }

@@ -57,7 +57,7 @@ function tokensBusca(q) {
 /** Começo do enunciado para a lista (sem fórmulas nem marcações). */
 const previa = s => String(s || '').replace(/\$\$?[^$]*\$\$?/g, ' [fórmula] ').replace(/[*_#|>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 130);
 const META_V = 2;   // muda quando a ficha leve ganha campos: refaz as fichas a partir das questões guardadas
-const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(q.assunto).slice(0, 140), as: q.assunto || '', x: normBusca(q.enunciado).slice(0, 400), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0, v: +q.v || 0 });
+const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(q.assunto).slice(0, 140), as: q.assunto || '', x: normBusca(q.enunciado).slice(0, 400), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0 });
 
 async function carregarBanco() {
   if (BANCO.pronto || BANCO.carregando) return;
@@ -203,7 +203,7 @@ function metaQTabela() {
 /** Linha "Seu histórico": ✓ 12/10 · ✗ 20/10 (as últimas vezes que fez esta questão). */
 function histHtml(id) {
   const h = id && histDe(id); if (!h) return '';
-  return `<div class="q-hist"><span class="fraco">Seu histórico nesta questão:</span>${h.h.slice(-6).map(([d, ok, l]) => `<span class="${ok ? 'h-ok' : 'h-er'}">${ok ? '✓' : '✗'} ${diaCurto(d)}${l ? ' (' + esc(l) + ')' : ''}</span>`).join('')}</div>`;
+  return `<div class="q-hist"><span class="fraco">Seu histórico nesta questão:</span>${h.h.slice(-6).map(([d, ok, l]) => `<span class="${ok ? 'h-ok' : l === 'P' ? 'h-meio' : 'h-er'}">${ok ? '✓' : l === 'P' ? '◐' : '✗'} ${diaCurto(d)}${l ? ' (' + esc(l) + ')' : ''}</span>`).join('')}</div>`;
 }
 
 /** Números das questões da lista: verde = acertou, vermelho = errou, contorno = atual. Toque para ir direto. */
@@ -211,7 +211,7 @@ function mapaSessao(s) {
   const n = s.itens.length; if (n < 2) return '';
   let ini = 0, fim = n;
   if (n > 25) { ini = Math.max(0, Math.min(s.i - 12, n - 25)); fim = ini + 25; }
-  const bt = j => { const q = s.itens[j]; return `<button class="${q.resp == null ? '' : q.certo ? 'h-ok' : 'h-er'} ${j === s.i ? 'atual' : ''}" data-acao="qIr" data-i="${j}" aria-label="Questão ${j + 1}">${j + 1}</button>`; };
+  const bt = j => { const q = s.itens[j]; return `<button class="${q.resp == null ? '' : q.certo ? 'h-ok' : q.resp === 'P' ? 'h-meio' : 'h-er'} ${j === s.i ? 'atual' : ''}" data-acao="qIr" data-i="${j}" aria-label="Questão ${j + 1}">${j + 1}</button>`; };
   return `<nav class="q-mapa" aria-label="Questões da lista">${ini ? '<span>…</span>' : ''}${Array.from({ length: fim - ini }, (_, k) => bt(ini + k)).join('')}${fim < n ? '<span>…</span>' : ''}</nav>`;
 }
 
@@ -333,7 +333,7 @@ Object.assign(ACOES, {
     const recs = (await Promise.all(ids.map(id => BD.get(id)))).filter(Boolean);
     const itens = recs.map(q => ({ id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
       enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: q.res_ia || '', duvidas: q.duvidas || [],
-      modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, assunto: q.assunto || '', num: q.num || '' }));
+      modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, assunto: q.assunto || '', num: q.num || '', tipo: q.tipo || '', discIa: q.discIa || null }));
     if (itens.length) iniciarSessao(itens);
   },
   qIaBanco: async () => {
