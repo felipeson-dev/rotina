@@ -150,38 +150,36 @@ function anoCaminho() {
       <aside class="cartao painel-sem" id="caminho-info">${infoSemana(agora)}</aside></div></section>`;
 }
 
-/** Mapa do mês: uma coluna por semana (anel, barras por área, minutos), filtro por matéria e detalhe da semana tocada. */
+/** Raio-X do mês: progresso por matéria (no mês e acumulado no ano), questões feitas e calendário de constância diária do mês. */
 function mesMapa(m) {
-  const ws = []; for (let w = segunda(m + '-01'); w <= somaDias(somaMes(m, 1) + '-01', -1) && ws.length < 6; w = somaDias(w, 7)) if (mesDe(somaDias(w, 3)) === m) ws.push(w);
-  const sel = ws.includes(ui.mesSem) ? ui.mesSem : (ws.includes(semAtual()) ? semAtual() : ws[0]);
-  const filtro = a => !ui.anoMat || a.materia === ui.anoMat;
-  const ars = ['mat', 'nat', 'hum', 'lin'], maxN = 12;
-  const C = 2 * Math.PI * 17, ring = pct => `<svg viewBox="0 0 44 44" width="56" height="56" aria-hidden="true"><circle cx="22" cy="22" r="17" fill="none" stroke="var(--linha)" stroke-width="5"/>
-    <circle cx="22" cy="22" r="17" fill="none" stroke="var(--rosa)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C * pct).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 22 22)"/></svg>`;
-  const cols = ws.map((w, i) => {
-    const l = S.assuntos.filter(a => a.semana === w && filtro(a)), f = l.filter(a => a.feito).length, min = soma(l, minDe), fz = soma(l.filter(a => a.feito), minDe);
-    return `<button class="col-mes ${w === semAtual() ? 'atual' : ''} ${w === sel ? 'sel' : ''}" data-acao="mesSem" data-v="${w}" style="--fc: var(--rosa)">
-      <span class="faixa"></span><span class="fn">semana ${i + 1}</span><strong>${deIso(w).getDate()}/${pad(deIso(w).getMonth() + 1)}</strong><small>a ${deIso(somaDias(w, 6)).getDate()}/${pad(deIso(somaDias(w, 6)).getMonth() + 1)}</small>
-      <div class="ringbox">${ring(min ? fz / min : 0)}<b>${min ? Math.round(fz / min * 100) : 0}%</b></div>
-      <div class="mini">${ars.map(ar => { const x = l.filter(a => area(a.materia) === ar), fx = x.filter(a => a.feito).length;
-        return `<i style="--c:var(--${ar});height:${Math.max(x.length ? 8 : 2, Math.min(100, x.length / maxN * 100))}%" title="${AREAS[ar]}: ${fx} de ${x.length}"><u style="height:${x.length ? Math.round(fx / x.length * 100) : 0}%"></u></i>`; }).join('')}</div>
-      <span class="n">${f} de ${l.length} · ${fmtMin(min)}</span></button>`;
-  }).join('');
+  const diasNoMes = new Date(+m.slice(0, 4), +m.slice(5, 7), 0).getDate();
+  const dias = Array.from({ length: diasNoMes }, (_, i) => `${m}-${pad(i + 1)}`);
+  const h = hoje(), maxEst = Math.max(180, ...dias.map(d => S.estudo[d] || 0));
+  const provas = (S.provas || []).filter(p => okData(p.data) && mesDe(p.data) === m);
+  const qPorMat = {};
+  for (const d of dias) for (const [mt, v] of Object.entries(S.qlog?.[d] || {})) {
+    const x = (qPorMat[mt] ||= { f: 0, a: 0 }); x.f += v.f || 0; x.a += v.a || 0;
+  }
   const mats = [...new Set(S.assuntos.map(a => a.materia))];
   const porMat = mats.map(mt => {
     const ano = S.assuntos.filter(a => a.materia === mt), fa = ano.filter(a => a.feito).length;
     const mes = ano.filter(a => a.mes === m), fm = mes.filter(a => a.feito).length, pc = (f, n) => n ? Math.round(f / n * 100) : 0;
+    const qm = qPorMat[mt];
     return `<button class="mat-linha ${ui.anoMat === mt ? 'sel' : ''}" style="${cor(mt)}" data-acao="anoMat" data-v="${esc(mt)}">
-      <span><i class="ponto"></i>${esc(mt)}</span><small><b>${nomeMes(m).slice(0, 3)}:</b> ${fm}/${mes.length} · <b>ano:</b> ${fa}/${ano.length}</small>
-      <div class="barras2"><div class="barra"><i style="width:${pc(fm, mes.length)}%;background:var(--c)"></i></div><div class="barra fina"><i style="width:${pc(fa, ano.length)}%;background:var(--c);opacity:.45"></i></div></div></button>`; }).join('');
-  const det = S.assuntos.filter(a => a.semana === sel && filtro(a)), porMateria = [...new Set(det.map(a => a.materia))];
-  return `<section class="cartao"><div class="entre"><h2>Mapa de ${nomeMes(m)}</h2><span class="fraco" style="font-size:14px">Toque numa semana para ver os assuntos. Toque numa matéria para filtrar.</span></div>
-    <div class="mapa-rolagem"><div class="mapa">${cols}</div></div></section>
-    <div class="grade2"><section class="cartao"><div class="entre"><h2>Semana de ${deIso(sel).getDate()}/${pad(deIso(sel).getMonth() + 1)}${ui.anoMat ? ` · ${esc(ui.anoMat)}` : ''}</h2>
-        <button class="botao claro" data-acao="irSemana" data-v="${sel}">Abrir a semana</button></div>
-      ${porMateria.length ? porMateria.map(mt => `<div class="coluna" style="gap:6px"><span class="rotulo" style="${cor(mt)}"><i class="ponto"></i> ${esc(mt)}</span>
-        <div class="itens">${det.filter(a => a.materia === mt).map(a => `<button class="item ${a.feito ? 'feito' : ''}" style="${cor(a.materia)}" data-acao="assunto" data-id="${a.id}"><i class="ponto"></i><span>${esc(a.titulo)}</span></button>`).join('')}</div></div>`).join('') : '<p class="fraco" style="margin:0">Nada nesta semana.</p>'}</section>
-      <section class="cartao"><div class="entre"><h2>Por matéria</h2>${ui.anoMat ? '<button class="link" data-acao="anoMat" data-v="">Limpar filtro</button>' : ''}</div>${porMat}</section></div>`;
+      <span><i class="ponto"></i>${esc(mt)}</span><small><b>${nomeMes(m).slice(0, 3)}:</b> ${fm}/${mes.length}${qm?.f ? ` · ${qm.f} q (${Math.round(qm.a / qm.f * 100)}%)` : ''} · <b>ano:</b> ${fa}/${ano.length}</small>
+      <div class="barras2"><div class="barra"><i style="width:${pc(fm, mes.length)}%;background:var(--c)"></i></div><div class="barra fina"><i style="width:${pc(fa, ano.length)}%;background:var(--c);opacity:.45"></i></div></div></button>`;
+  }).join('');
+  const totEstMes = soma(dias, d => S.estudo[d] || 0), diasComEst = dias.filter(d => (S.estudo[d] || 0) > 0).length;
+  return `<section class="cartao"><div class="entre" style="flex-wrap:wrap;gap:8px"><h2>Constância em ${nomeMes(m)}</h2>
+      <span class="fraco" style="font-size:14px">${diasComEst} ${diasComEst === 1 ? 'dia estudado' : 'dias estudados'} · ${fmtMin(totEstMes)} acumuladas no mês</span></div>
+    ${provas.length ? `<div class="linha">${provas.map(p => `<span class="bandeira">🎯 ${esc(p.nome)} · ${diaCurto(p.data)}</span>`).join('')}</div>` : ''}
+    <div class="dias-estudo" style="grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:6px">${dias.map(d => {
+      const min = S.estudo[d] || 0;
+      return `<div class="de ${d === h ? 'hoje' : ''}" title="${diaCurto(d)}: ${min ? fmtMin(min) : 'sem registro'}"><div class="coluna-barra"><i style="height:${Math.round(min / maxEst * 100)}%"></i></div><span>${d.slice(8)}</span><small>${min ? fmtMin(min) : '·'}</small></div>`;
+    }).join('')}</div></section>
+    <section class="cartao"><div class="entre"><h2>Equilíbrio por matéria (mês vs. ano)</h2>${ui.anoMat ? '<button class="link" data-acao="anoMat" data-v="">Mostrar todas</button>' : ''}</div>
+      <p class="fraco" style="margin:0;font-size:13px">Barra forte = avanço neste mês; barra clara = avanço no cronograma anual inteiro.</p>
+      ${porMat}</section>`;
 }
 
 document.addEventListener('pointerover', e => {

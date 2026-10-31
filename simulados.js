@@ -34,7 +34,7 @@ function vSimulados() {
   return `<section class="cartao"><div class="entre"><h2>Fazer uma prova antiga no app</h2></div>
       <p class="fraco" style="margin:0">A prova inteira, na ordem, com cronômetro. O gabarito só aparece quando você entregar; depois dá para revisar questão por questão.</p>
       ${provas.length ? `<div class="filtros"><label class="filtro"><span>Prova</span><select data-ui-sim="simBanca">${opcao('', 'Escolha', ui.simBanca)}${bancas.map(b => opcao(b, b, ui.simBanca)).join('')}</select></label>
-        <label class="filtro"><span>Ano</span><select data-ui-sim="simAno" ${ui.simBanca ? '' : 'disabled'}>${opcao('', ui.simBanca ? 'Escolha' : 'Escolha a prova antes', ui.simAno)}${anos.map(a => opcao(a, a, ui.simAno)).join('')}</select></label></div>
+        <label class="filtro"><span>Ano</span><select data-ui-sim="simAno" ${ui.simBanca ? '' : 'disabled'}>${opcao('', ui.simBanca ? 'Escolha' : 'Escolha a prova antes', ui.simAno)}${anos.map(a => opcao(a, `${a}${window.questaoIgnorada?.({ b: ui.simBanca, a }) ? ' (🔒 guardada p/ simulado)' : ''}`, ui.simAno)).join('')}</select></label></div>
         <div class="linha"><button class="botao grande" data-acao="simComecar" ${escolhida ? '' : 'disabled'}>${escolhida ? `Começar (${escolhida.ids.length} questões)` : 'Começar'}</button></div>`
         : '<p class="fraco" style="margin:0">Importe as provas oficiais em Questões para fazer uma prova inteira aqui.</p>'}</section>
     <section class="cartao"><div class="entre"><h2>Meus simulados e provas</h2>${ui.simForm ? '' : '<button class="botao claro" data-acao="simForm">+ Registrar um feito fora do app</button>'}</div>

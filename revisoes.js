@@ -7,7 +7,7 @@ const diasRev = () => S.perfil.diasRev || [3, 6];   // dias de revisão (0 = dom
 const INTERVALOS_REV = [7, 30, 60];     // dias até a 1ª, 2ª e as próximas voltas
 
 /** Quantas questões oficiais desse assunto há no banco (o quanto ele cai nas provas). */
-function cobranca(a) { return BANCO.pronto ? BANCO.itens.filter(q => q.m === a.materia && q.as === tagDe(a)).length : 0; }
+function cobranca(a) { return BANCO.pronto ? BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.as === tagDe(a)).length : 0; }
 
 /** Acerto dela nas questões do banco desse assunto (última tentativa de cada uma) ou nas que ela registrou. */
 function acertoDe(a) {
@@ -61,8 +61,29 @@ const blocoRev = (titulo, lista, min, vaga) => ({ id: uid(), assuntoId: null, ti
 // a partir de março (fase de aprofundamento) as vagas crescem um pouco, se ela não mudou nada em Ajustes
 function cfgRev() { const tarde = hoje() >= '2027-03-01'; return { diario: tarde ? 30 : 20, maior: tarde ? 180 : 150, ...(S.perfil.revCfg || {}) }; }
 /** Assunto do banco de questões que corresponde ao tópico (o cronograma usa tópicos mais finos que o banco). */
-const tagDe = a => a.tag || a.titulo;
+const tagDe = a => {
+  if (!a) return '';
+  if (a.tag) return a.tag;
+  const n = a.nome || a.titulo || '';
+  if (/^interpreta[cç][aã]o de texto/i.test(n) && a.materia === 'Português') return 'Interpretação de texto e tipologia';
+  if (/^ingl[eê]s:\s*um texto/i.test(n) || a.materia === 'Inglês') return 'Interpretação de textos em inglês';
+  if (/^obra da fuvest/i.test(n)) return 'Leituras obrigatórias da Fuvest';
+  return a.titulo;
+};
 const nomeDe = a => a.nome || a.titulo;
+function subRegexDe(a) {
+  const tag = tagDe(a), nome = nomeDe(a), subs = window.SUBTOPICOS?.[tag];
+  if (!subs || !nome || nome === tag) return null;
+  const toks = normBusca(nome).split(/\s+/).filter(w => w.length >= 4 && !PARADAS.has(w));
+  if (!toks.length) return null;
+  let melhor = null, max = 0;
+  for (const [sn, re] of subs) {
+    const st = normBusca(sn);
+    const pts = toks.filter(w => st.includes(w)).length;
+    if (pts > max) { max = pts; melhor = re; }
+  }
+  return max > 0 ? melhor : null;
+}
 const PESADAS_REV = ['Matemática', 'Física', 'Química'];
 /** Exatas estudadas há 1 ou 2 dias, ainda sem a revisão rápida de fixação. */
 const fixacao = () => estudados().filter(a => PESADAS_REV.includes(a.materia) && a.rev && !a.rev.fix && a.feitoEm && a.feitoEm < hoje() && a.feitoEm >= somaDias(hoje(), -2));
@@ -109,11 +130,25 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
   const bancaBoa = q => /fuvest|unicamp|unesp|vunesp|unifesp|santa casa|einstein|fmabc|famerp|famema|sao camilo|enem/i.test(q.b || '') ? 0 : 1;
   const ids = [];
   for (const a of lista) {
-    let candidatas = BANCO.itens.filter(q => q.m === a.materia && q.as === tagDe(a) && !q.ds && !q.f);
-    if (!candidatas.length) candidatas = BANCO.itens.filter(q => q.m === a.materia && q.as === tagDe(a) && !q.ds);
+    const ehDisc = /^discursivas/i.test(nomeDe(a));
+    if (ehDisc) {
+      let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.ds);
+      const ineditas = candidatas.filter(q => !S.qh[q.id]);
+      const fonte = ineditas.length >= 3 ? ineditas : candidatas;
+      fonte.sort((x, y) => prio(x) - prio(y) || bancaBoa(x) - bancaBoa(y) || Math.random() - 0.5);
+      ids.push(...fonte.slice(0, 3).map(q => q.id));
+      continue;
+    }
+    const subRe = subRegexDe(a);
+    let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds && !q.f);
+    if (!candidatas.length) candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds);
     const ineditas = candidatas.filter(q => !S.qh[q.id]);
     const fonte = ineditas.length >= porAssunto ? ineditas : candidatas;
-    fonte.sort((x, y) => prio(x) - prio(y) || bancaBoa(x) - bancaBoa(y) || Math.random() - 0.5);
+    fonte.sort((x, y) => {
+      const sx = subRe ? (subRe.test((x.x || '') + ' ' + (x.s || '')) ? 0 : 1) : 0;
+      const sy = subRe ? (subRe.test((y.x || '') + ' ' + (y.s || '')) ? 0 : 1) : 0;
+      return sx - sy || prio(x) - prio(y) || bancaBoa(x) - bancaBoa(y) || Math.random() - 0.5;
+    });
     ids.push(...fonte.slice(0, porAssunto).map(q => q.id));
   }
   if (!ids.length) {

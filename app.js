@@ -76,7 +76,7 @@ function carregar() {
   s = Object.assign(JSON.parse(JSON.stringify(VAZIO)), s || {});
   s.perfil = Object.assign({}, VAZIO.perfil, s.perfil);
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
-  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
+  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.qIgnorar ||= []; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
   if (s.resetTesteV !== 1) { s.resetTesteV = 1; zerarDadosTeste(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
   return s;
@@ -684,30 +684,56 @@ function vSemana() {
 
 function vMes() {
   const m = ui.mes, lista = S.assuntos.filter(a => a.mes === m);
-  const feitos = lista.filter(a => a.feito).length;
+  const feitos = lista.filter(a => a.feito).length, faltam = lista.length - feitos;
   const pct = lista.length ? Math.round(feitos / lista.length * 100) : 0;
-  const fase = faseAtual(m);
-  const grupos = Object.keys(AREAS).map(ar => [ar, lista.filter(a => area(a.materia) === ar)]).filter(([, l]) => l.length);
-  const opcoes = Object.keys(MATERIAS).map(x => `<option>${x}</option>`).join('');
-  return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">${fase ? esc(fase.nome) : 'mês'}</span>
+  const minTot = soma(lista, minDe), minFz = soma(lista.filter(a => a.feito), minDe);
+  let qMesF = 0, qMesA = 0;
+  for (const [d, mats] of Object.entries(S.qlog || {})) if (d.startsWith(m)) for (const v of Object.values(mats || {})) { qMesF += v.f || 0; qMesA += v.a || 0; }
+  const fase = faseAtual(m), flt = ui.mesFiltro || 'todos';
+  const filtraItem = a => flt === 'pendentes' ? !a.feito : flt === 'feitos' ? !!a.feito : true;
+  const ordemMat = Object.keys(MATERIAS);
+  const matsMes = [...new Set(lista.map(a => a.materia))].sort((x, y) => (ordemMat.indexOf(x) < 0 ? 99 : ordemMat.indexOf(x)) - (ordemMat.indexOf(y) < 0 ? 99 : ordemMat.indexOf(y)));
+  const opcoes = ordemMat.map(x => `<option>${x}</option>`).join('');
+  return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">${fase ? esc(fase.nome) : 'mês'} · visão por matéria</span>
       <h1>${nomeMes(m)} ${m.slice(0, 4)}</h1></div>
     <div class="linha"><div class="alterna" role="group" aria-label="Modo de ver o mês">
-        <button data-acao="mesModo" data-v="lista" aria-pressed="${ui.mesModo !== 'mapa'}">Lista</button><button data-acao="mesModo" data-v="mapa" aria-pressed="${ui.mesModo === 'mapa'}">Mapa</button></div>
+        <button data-acao="mesModo" data-v="lista" aria-pressed="${ui.mesModo !== 'mapa'}">Por matéria</button><button data-acao="mesModo" data-v="mapa" aria-pressed="${ui.mesModo === 'mapa'}">Raio-X</button></div>
       <button class="botao contorno" data-acao="mes" data-v="-1" aria-label="Mês anterior">‹</button>
       <button class="botao contorno" data-acao="mes" data-v="1" aria-label="Próximo mês">›</button></div></header>
     ${avisoIa()}
     ${ui.mesModo === 'mapa' ? mesMapa(m) : ''}
     <section class="cartao" ${ui.mesModo === 'mapa' ? 'hidden' : ''}>
       ${S.meses[m]?.foco ? `<p class="mao" style="margin:0">${esc(S.meses[m].foco)}</p>` : ''}
-      <div class="entre"><strong>${feitos} de ${lista.length} assuntos</strong><span class="fraco">${pct}%</span></div>
-      <div class="barra"><i style="width:${pct}%"></i></div>
-      <p class="fraco" style="margin:0">Aqui ficam os assuntos do mês, sem dia fixo. A semana distribui; o que atrasar passa pra frente sem atrasar o mês.</p>
+      <div class="entre" style="flex-wrap:wrap;gap:8px">
+        <strong>${feitos} de ${lista.length} assuntos (${pct}%) · ${fmtMin(minFz)} de ${fmtMin(minTot)}</strong>
+        <span class="fraco">${qMesF ? `${qMesF} questões feitas no mês (${Math.round(qMesA / qMesF * 100)}% de acerto)` : 'Meta mensal por matéria'}</span>
+      </div>
+      <div class="barra grossa"><i style="width:${pct}%"></i></div>
+      <div class="entre" style="flex-wrap:wrap;gap:8px">
+        <div class="linha" style="gap:6px">
+          <button class="chip ${flt === 'todos' ? 'ativo' : ''}" aria-pressed="${flt === 'todos'}" data-acao="mesFiltro" data-v="todos">Todos (${lista.length})</button>
+          <button class="chip ${flt === 'pendentes' ? 'ativo' : ''}" aria-pressed="${flt === 'pendentes'}" data-acao="mesFiltro" data-v="pendentes">Faltam (${faltam})</button>
+          <button class="chip ${flt === 'feitos' ? 'ativo' : ''}" aria-pressed="${flt === 'feitos'}" data-acao="mesFiltro" data-v="feitos">Concluídos (${feitos})</button>
+        </div>
+        <span class="fraco" style="font-size:13px">Progresso consolidado por matéria (a divisão por semana fica na aba Semana).</span>
+      </div>
     </section>
-    ${ui.mesModo === 'mapa' ? '' : grupos.map(([ar, l]) => `<section class="cartao"><h2 class="linha" style="${`--c: var(--${ar})`}"><i class="ponto"></i>${AREAS[ar]}</h2><div class="lista">
-      ${l.map(a => `<div class="assunto ${a.feito ? 'feito' : ''}"><input type="checkbox" data-acao="feitoAssunto" data-id="${a.id}" ${a.feito ? 'checked' : ''} aria-label="Feito">
-        <button class="titulo" data-acao="assunto" data-id="${a.id}">${esc(a.titulo)} <span class="fraco" style="font-size:13px">· ${esc(a.materia)}</span></button>
-        <span class="quando">${a.feito ? '' : estadoDe(a) === 'atrasado' ? 'atrasado' : 'sem. ' + semanaCurta(semDe(a))}</span></div>`).join('')}
-    </div></section>`).join('')}
+    ${ui.mesModo === 'mapa' ? '' : matsMes.map(mt => {
+      const todosMat = lista.filter(a => a.materia === mt), feitosMat = todosMat.filter(a => a.feito).length;
+      const pctMat = todosMat.length ? Math.round(feitosMat / todosMat.length * 100) : 0;
+      const minRest = soma(todosMat.filter(a => !a.feito), minDe);
+      const visiveis = todosMat.filter(filtraItem);
+      if (!visiveis.length) return '';
+      return `<section class="cartao"><div class="entre" style="flex-wrap:wrap;gap:8px"><h2 class="linha" style="${cor(mt)};margin:0"><i class="ponto"></i>${esc(mt)}</h2>
+        <span class="fraco" style="font-size:14px"><b>${feitosMat}/${todosMat.length}</b> (${pctMat}%)${minRest ? ` · faltam ≈ ${fmtMin(minRest)}` : ' · ✓ matéria em dia'}</span></div>
+        <div class="barra" style="${cor(mt)}"><i style="width:${pctMat}%;background:var(--c)"></i></div>
+        <div class="lista">${visiveis.map(a => `<div class="assunto ${a.feito ? 'feito' : ''}">
+          <input type="checkbox" data-acao="feitoAssunto" data-id="${a.id}" ${a.feito ? 'checked' : ''} aria-label="Feito">
+          <button class="titulo" data-acao="assunto" data-id="${a.id}">${esc(a.titulo)}</button>
+          <span class="quando">${a.feito ? (a.feitoEm ? 'feito ' + diaCurto(a.feitoEm) : 'feito') : `${estadoDe(a) === 'atrasado' ? 'atrasado · ' : ''}≈ ${fmtMin(minDe(a))}${ehConteudo(a) ? ` · ${tempoDe(a).q} q` : ''}`}</span>
+          ${ehConteudo(a) ? `<button class="chip" data-acao="qDoAssunto" data-id="${a.id}" title="Resolver questões deste assunto no app">Questões</button>` : ''}
+        </div>`).join('')}</div></section>`;
+    }).join('')}
     <section class="cartao" ${ui.mesModo === 'mapa' ? 'hidden' : ''}><h2>Adicionar assunto</h2>
       <div class="linha" style="align-items:stretch"><select id="nova-materia" style="flex:0 1 200px">${opcoes}</select>
         <input id="novo-titulo" type="text" placeholder="Ex.: Funções do 2º grau" style="flex:1 1 240px">
@@ -891,7 +917,7 @@ function modalAssunto(a) {
     <div class="linha">${semanas.map((s, i) => `<button class="chip" aria-pressed="${semDe(a) === s}" data-acao="marcarSemana" data-id="${a.id}" data-v="${s}">${i === 0 ? 'Esta semana' : i === 1 ? 'Próxima' : semanaCurta(s)}</button>`).join('')}</div>
     ${ehConteudo(a) && !a.feito ? window.tempoEditorHtml?.(a) ?? '' : ''}
     <div class="linha"><button class="botao" data-acao="feitoAssunto" data-id="${a.id}">${a.feito ? 'Desmarcar feito' : 'Marcar como feito'}</button>
-      ${ehConteudo(a) ? `<button class="botao claro" data-acao="questoes" data-id="${a.id}">Questões</button>` : ''}<button class="botao claro" data-acao="caderno" data-id="${a.id}">Caderno à mão</button>
+      ${ehConteudo(a) ? `<button class="botao claro" data-acao="qDoAssunto" data-id="${a.id}">Fazer questões no app</button><button class="botao contorno" data-acao="questoes" data-id="${a.id}">Registrar feitas fora</button>` : ''}<button class="botao claro" data-acao="caderno" data-id="${a.id}">Caderno à mão</button>
       ${a.feito ? '' : `<button class="botao claro" data-acao="fazerHoje" data-id="${a.id}">Fazer hoje</button>`}
       <button class="botao contorno" data-acao="proxMes" data-id="${a.id}">Passar pro próximo mês</button>
       <button class="link" data-acao="removerAssunto" data-id="${a.id}">Apagar</button></div>`);
@@ -1199,6 +1225,7 @@ const ACOES = {
   proxMes: el => { const a = achar(el.dataset.id); if (a) { a.mes = somaMes(a.mes, 1); a.semana = null; salvar(); } fecharModal(); render(); },
   removerAssunto: el => { S.assuntos = S.assuntos.filter(a => a.id !== el.dataset.id); salvar(); fecharModal(); render(); },
   mes: el => { ui.mes = somaMes(ui.mes, +el.dataset.v); render(); },
+  mesFiltro: el => { ui.mesFiltro = el.dataset.v || 'todos'; render(); },
   abrirMes: el => { ui.mes = el.dataset.v; ui.view = 'mes'; window.scrollTo(0, 0); render(); },
   addAssunto: () => {
     const t = $('#novo-titulo').value.trim(); if (!t) return;

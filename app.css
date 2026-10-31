@@ -642,3 +642,6 @@ input[type="search"]:focus { border-color: var(--acento); }
 .flash-previa { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px; background: var(--painel); border: 2px solid var(--acento); }
 .flash-salvo { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 14px; background: var(--painel); border: 1px solid var(--linha); }
 .flash-face { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 16px; background: var(--painel2); min-height: 90px; }
+.q-ignorar { padding: 10px 12px; border-radius: 14px; background: var(--painel2); border: 1px dashed var(--borda); }
+.x-mini { border: 0; background: rgba(0,0,0,.12); color: inherit; border-radius: 999px; width: 18px; height: 18px; line-height: 16px; padding: 0; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.chip.ativo { background: var(--acento); color: var(--sobre-acento); border-color: var(--acento); }
