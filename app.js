@@ -49,7 +49,7 @@ const icone = n => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
 const VAZIO = {
   perfil: { nome: 'Uany Rebeca', vestibular: 'ENEM e, logo depois, Medicina em SP: USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo e FMABC', dataProva: '', fortes: '', fracas: '', horarios: '',
     jeito: 'Primeiro foco total no ENEM. Cerca de 2 dias depois do ENEM, começar a estudar para as provas de Medicina em SP (USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC).' },
-  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, listasAbertas: {}, qExtras: {}, foco: [], focoAnalise: {}, timer: null, provas: [], semeado: false, resetTesteV: 1, v: 2,
+  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, listasAbertas: {}, qExtras: {}, foco: [], focoAnalise: {}, timer: null, provas: [], semeado: false, resetTesteV: 2, v: 2,
 };
 
 const provasFuturas = () => (S.provas || []).filter(p => okData(p.data) && p.data >= hoje()).sort((a, b) => a.data < b.data ? -1 : 1);
@@ -67,7 +67,12 @@ function aplicarPlanoBase(inicio) {
 function zerarDadosTeste(s) {
   s.qh = {}; s.qlog = {}; s.erros = []; s.tq = {}; s.qmeta = {}; s.listasAbertas = {};
   s.feitos = {}; s.estudo = {}; s.dias = {}; s.timer = null; s.foco = [];
-  for (const a of s.assuntos || []) { a.feito = false; a.feitoEm = null; delete a.questoes; delete a.qdia; delete a.rev; delete a.revisao; }
+  s.periodos = [];
+  s.assuntos = (s.assuntos || []).filter(a => !a.periodo);
+  for (const a of s.assuntos || []) {
+    a.feito = false; a.feitoEm = null; delete a.questoes; delete a.qdia; delete a.rev; delete a.revisao;
+    if (window.limparNomeAssunto && a.tag) a.tag = window.limparNomeAssunto(a.tag);
+  }
 }
 
 function carregar() {
@@ -78,7 +83,7 @@ function carregar() {
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
   s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.qIgnorar ||= []; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
-  if (s.resetTesteV !== 1) { s.resetTesteV = 1; zerarDadosTeste(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
+  if (s.resetTesteV !== 2) { s.resetTesteV = 2; zerarDadosTeste(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
   return s;
 }
 function salvar() {
@@ -106,11 +111,28 @@ const ui = { view: 'hoje', mesModo: 'lista', qs: null, mes: mesDe(hoje()), seman
 // ---------- planejamento: o plano é uma fila; cada assunto tem uma semana prevista, mas pode ser feito antes (adiantado) ou depois (atrasado) ----------
 // Tempo de um assunto de conteúdo = teoria + questões × minutos por questão (Matemática custa mais que Biologia) + correção.
 // A IA calibra `teoria` e `q` por assunto (densidade); itens com `min` fixo (redação, simulado, revisão) não mudam.
-const MIN_Q = { 'Matemática': 4.5, 'Física': 4, 'Química': 3.2, 'Biologia': 2.2, 'História': 2, 'Geografia': 2, 'Português': 2.5, 'Literatura': 2.3, 'Inglês': 2, 'Filosofia': 2, 'Sociologia': 2 };
+const MIN_Q = { 'Matemática': 4.5, 'Física': 4.2, 'Química': 3.5, 'Biologia': 2.8, 'História': 2.6, 'Geografia': 2.7, 'Português': 2.8, 'Literatura': 2.6, 'Inglês': 2.5, 'Filosofia': 2.5, 'Sociologia': 2.5 };
 const Q_PADRAO = { 'Matemática': 25, 'Física': 20, 'Química': 20, 'Biologia': 25, 'História': 20, 'Geografia': 20, 'Português': 15, 'Literatura': 10, 'Inglês': 10, 'Filosofia': 10, 'Sociologia': 10 };
-const minPorQ = m => { if (S.minQ?.[m] > 0) return S.minQ[m]; const t = S.tq?.[m]; return t && t.n >= 8 ? Math.max(0.8, Math.min(12, t.seg / 60)) : MIN_Q[m] ?? 2.5; }; // aprende com o tempo real das listas de questões
-const tempoDe = a => ({ t: a.teoria ?? 60, q: a.q ?? Q_PADRAO[a.materia] ?? 15 });
-const minDe = a => { if (a.min) return a.min; const { t, q } = tempoDe(a); return Math.round(t + q * minPorQ(a.materia) * 1.25); };
+const minPorQ = m => { if (S.minQ?.[m] > 0) return S.minQ[m]; const t = S.tq?.[m]; return t && t.n >= 8 ? Math.max(0.8, Math.min(12, t.seg / 60)) : MIN_Q[m] ?? 2.8; }; // aprende com o tempo real das listas de questões
+const tempoDe = a => ({ t: Math.max(25, a.teoria ?? 60), q: Math.max(8, a.q ?? Q_PADRAO[a.materia] ?? 15) });
+const minDe = a => {
+  if (a.min) {
+    let m = a.min;
+    // Validação realista para blocos com questões (simulados, hábitos ENEM, blocos de prova):
+    const mq = String(a.titulo || '').match(/\b(\d{1,3})\s*quest[oõ]es/i);
+    const nq = mq ? +mq[1] : (a.habito === 'enem' ? 20 : (a.habito === 'simulado' ? 45 : 0));
+    if (nq >= 10 && (/^Simulado|bloco|prova/i.test(a.titulo || '') || a.habito === 'simulado' || a.habito === 'enem')) {
+      const pesada = ['Matemática', 'Física', 'Química'].includes(a.materia);
+      const minPorQuestao = (/corre[cç][aã]o|erros|^Simulado/i.test(a.titulo || '') || a.habito === 'enem') ? (pesada ? 4.5 : 4.0) : 3.2;
+      const pisoHabito = a.habito === 'enem' ? 75 : 0;
+      const minEstimado = Math.max(pisoHabito, Math.round(nq * minPorQuestao));
+      m = Math.max(m, minEstimado);
+    }
+    return m;
+  }
+  const { t, q } = tempoDe(a);
+  return Math.max(60, Math.round(t + q * minPorQ(a.materia) * 1.25));
+};
 const ehConteudo = a => !!a && !a.min;
 const semAtual = () => segunda(hoje());
 const semDe = a => a.semana || semAtual();
@@ -483,12 +505,20 @@ function escolherProximo(fila, blocos, misturar = true) {
 /** Período planejado na aba Planejamento que vale hoje (ex.: revisão para o ENEM): nele, o dia usa só o que ela planejou. */
 const periodoDeHoje = () => (S.periodos || []).find(p => p.so && p.ini <= hoje() && hoje() <= p.fim);
 
-/** O que pode entrar no dia de hoje: tira o que tem dia marcado para depois e, num período planejado, o que é de fora dele.
-   O que foi marcado para hoje (ou atrasou) vem antes de tudo. Usada ao montar o dia, no "mais um" e no reabastecer. */
+/** O que pode entrar no dia de hoje: tira o que tem dia marcado para depois e prioriza itens do período planejado (se houver).
+   Se o período esgotar ou não preencher todo o tempo, o cronograma normal completa o dia para não deixar blocos vazios. */
 function filaParaHoje(blocos = []) {
   const h = hoje(), per = periodoDeHoje();
-  const fila = filaPlano().filter(a => !blocos.some(b => b.assuntoId === a.id) && !(a.dia && a.dia > h) && (!per || a.periodo === per.id));
-  return [...fila.filter(a => a.dia && a.dia <= h), ...fila.filter(a => !(a.dia && a.dia <= h))];
+  const idsUsados = new Set(blocos.map(b => b.assuntoId).filter(Boolean));
+  const todos = filaPlano().filter(a => !idsUsados.has(a.id) && !(a.dia && a.dia > h));
+  if (per) {
+    const doPeriodo = todos.filter(a => a.periodo === per.id);
+    const outros = todos.filter(a => a.periodo !== per.id);
+    const pHoje = doPeriodo.filter(a => a.dia && a.dia <= h);
+    const pResto = doPeriodo.filter(a => !(a.dia && a.dia <= h));
+    return [...pHoje, ...pResto, ...outros];
+  }
+  return [...todos.filter(a => a.dia && a.dia <= h), ...todos.filter(a => !(a.dia && a.dia <= h))];
 }
 
 /** Enche o dia com assuntos até caber o tempo livre (menos 20% para distrações). `so`: matérias que ela pediu para hoje. */
@@ -502,7 +532,10 @@ function montarHoje(cap, so = []) {
   if (pedidas.length) fila = pedidas;
   const novos = [];
   while (usado < d.cap) {
-    const cabe = fila.filter(a => usado + minDe(a) <= d.cap * 1.15 || !(novos.length || mantidos.length));
+    let cabe = fila.filter(a => usado + minDe(a) <= d.cap * 1.15 || !(novos.length || mantidos.length));
+    if (!cabe.length && d.cap - usado >= 40 && fila.length) {
+      cabe = [fila.slice().sort((x, y) => minDe(x) - minDe(y))[0]];
+    }
     const a = escolherProximo(cabe, [...mantidos, ...novos], !pedidas.length);
     if (!a) break;
     novos.push(blocoDe(a)); usado += minDe(a); fila = fila.filter(x => x !== a);

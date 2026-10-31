@@ -18,14 +18,14 @@ Rotina base dela: ${S.perfil.horarios?.trim() || '(não informada)'}.
 Provas: ${JSON.stringify(provasFuturas().slice(0, 4))}.${window.pendHojeTexto?.() ? ` Compromissos de hoje: ${window.pendHojeTexto()}.` : ''}
 Distribua o que ela pediu pelos dias do período:
 - respeite as horas por dia que ela disser; se não disser, use a rotina base; sem nada, umas 4h nos dias úteis e menos no fim de semana. Dias de descanso que ela citar ficam vazios. Não planeje antes de hoje.
-- cada item é um bloco de estudo de 30 a 150 min, com título curto e específico do que fazer (ex.: "Ecologia: cadeias e ciclos, revisão + 15 questões do ENEM").
+- cada item é um bloco de estudo de 30 a 240 min, com título curto e específico do que fazer (ex.: "Ecologia: cadeias e ciclos, revisão + 15 questões do ENEM"). Para simulados ou blocos de prova com questões e correção, use duração realista (ex.: 45 questões + correção = 180 min; 90 questões + correção = 360 min; 20 questões ENEM = 75 a 90 min).
 - em cada dia, quando der, misture 1 matéria pesada (Matemática, Física, Química) e 1 leve, com as pesadas primeiro; evite a mesma matéria duas vezes no dia. Se ela pedir só uma matéria, siga o pedido.
 - se for revisão para uma prova: inclua questões de provas antigas, um simulado perto da prova e a véspera leve.
 - matérias válidas: ${Object.keys(MATERIAS).join(', ')}.
 Responda SÓ com JSON: {"resposta":"1 ou 2 frases curtas","inicio":"AAAA-MM-DD","fim":"AAAA-MM-DD","itens":[{"dia":"AAAA-MM-DD","materia":"","titulo":"","min":90}]}`, 8000);
     const ini = okData(r.inicio) && r.inicio >= h ? r.inicio : h;
     const itens = (Array.isArray(r.itens) ? r.itens : []).filter(x => okData(x.dia) && x.dia >= ini && x.titulo)
-      .map(x => ({ dia: x.dia, materia: MATERIAS[x.materia] ? x.materia : 'Outra', titulo: String(x.titulo).slice(0, 140), min: Math.max(15, Math.min(240, Math.round(+x.min || 60))) }))
+      .map(x => ({ dia: x.dia, materia: MATERIAS[x.materia] ? x.materia : 'Outra', titulo: String(x.titulo).slice(0, 140), min: Math.max(15, Math.min(360, Math.round(+x.min || 60))) }))
       .sort((a, b) => a.dia < b.dia ? -1 : a.dia > b.dia ? 1 : 0);
     if (!itens.length) throw new Error('não veio nenhum item; conte o período e os assuntos com mais detalhe');
     const fim = okData(r.fim) && r.fim >= itens[itens.length - 1].dia ? r.fim : itens[itens.length - 1].dia;

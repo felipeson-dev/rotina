@@ -78,8 +78,9 @@ function tokensBusca(q) {
 /** Começo do enunciado para a lista (sem fórmulas nem marcações). */
 const previa = s => String(s || '').replace(/\$\$?[^$]*\$\$?/g, ' [fórmula] ').replace(/[*_#|>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 130);
 const txtBusca = s => { const t = normBusca(s); return t.length <= 700 ? t : t.slice(0, 350) + ' ' + t.slice(-350); };
-const META_V = 3;   // muda quando a ficha leve ganha campos: refaz as fichas a partir das questões guardadas
-const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(q.assunto).slice(0, 140), as: q.assunto || '', x: txtBusca(q.enunciado), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0 });
+const META_V = 4;   // muda quando a ficha leve ganha campos: refaz as fichas a partir das questões guardadas
+const limAss = s => (typeof limparNomeAssunto === 'function' ? limparNomeAssunto(s) : s) || '';
+const metaDe = q => { const as = limAss(q.assunto); return { id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(as).slice(0, 140), as, x: txtBusca(q.enunciado), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0 }; };
 
 async function carregarBanco() {
   if (BANCO.pronto) return;
@@ -90,6 +91,8 @@ async function carregarBanco() {
       BANCO.itens = await BD.meta();
       if (BANCO.itens.length && (await DB.get('banco:metav')) !== META_V) {
         const novas = []; await BD.cada(q => novas.push(metaDe(q))); BANCO.itens = novas; await BD.setMeta(novas);
+      } else if (BANCO.itens.length) {
+        for (const m of BANCO.itens) if (m.as) { const lim = limAss(m.as); if (lim !== m.as) { m.as = lim; m.s = normBusca(lim).slice(0, 140); } }
       }
       DB.set('banco:metav', META_V);
       // traz o que existia no formato antigo (versão anterior do app)
@@ -427,7 +430,7 @@ function normalizarImportada(q, i) {
   // questões oficiais do Objetivo: a prova é a própria imagem (recortada até o enunciado); as alternativas são só as letras
   if (q && q.modo === 'objetivo' && /^https:/.test(q.img || '') && /^[A-E]$/.test(q.gab || '') && q.corte > 0) {
     const n = Math.max(2, Math.min(5, +q.nalts || 5));
-    return { id: q.id, banca: String(q.banca), tipo: 'real', ano: +q.ano || 0, area: q.area || AREA_DA_MATERIA[q.materia] || '', materia: q.materia || '', assunto: q.assunto || '', dif: '', fig: 0,
+    return { id: q.id, banca: String(q.banca), tipo: 'real', ano: +q.ano || 0, area: q.area || AREA_DA_MATERIA[q.materia] || '', materia: q.materia || '', assunto: limAss(q.assunto), dif: '', fig: 0,
       enunciado: String(q.enunciado || ''), imagens: [], alts: 'ABCDE'.slice(0, n).split('').map(l => ({ l, t: '', img: '' })), gab: q.gab, coment: '', fonte: 'Objetivo',
       modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte, prev: q.prev || '', num: q.num || '', fase: q.fase || '', v: +q.v || 0 };
   }
@@ -436,7 +439,7 @@ function normalizarImportada(q, i) {
   const alts = bruto.map((a, k) => typeof a === 'string' ? { l: 'ABCDE'[k], t: a, img: '' } : { l: a.l || a.letra || 'ABCDE'[k], t: a.t || a.texto || '', img: a.img || '' });
   const gab = String(q.gab || q.gabarito || '').toUpperCase().trim();
   if (alts.length < 2 || !/^[A-E]$/.test(gab)) return null;
-  return { id: q.id || `imp-${Date.now().toString(36)}-${i}`, banca: String(q.banca || 'Importada'), tipo: 'real', ano: +q.ano || 0, area: q.area || '', materia: q.materia || '', assunto: q.assunto || '', dif: q.dif || q.dificuldade || '', fig: q.fig ? 1 : 0,
+  return { id: q.id || `imp-${Date.now().toString(36)}-${i}`, banca: String(q.banca || 'Importada'), tipo: 'real', ano: +q.ano || 0, area: q.area || '', materia: q.materia || '', assunto: limAss(q.assunto), dif: q.dif || q.dificuldade || '', fig: q.fig ? 1 : 0,
     enunciado: String(q.enunciado || q.pergunta), imagens: (q.imagens || []).filter(u => /^(https:|data:image\/)/.test(u)), alts, gab, coment: String(q.coment || q.comentario || ''), fonte: q.fonte || '',
     img: /^https:/.test(q.img || '') ? q.img : '', num: q.num || '', fase: q.fase || '', prev: q.prev || '', dep: q.dep ? 1 : 0, v: +q.v || 0 };
 }
@@ -492,7 +495,7 @@ Object.assign(ACOES, {
       const ex = S.qExtras?.[q.id] || {};
       return { id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
         enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: ex.res_ia || q.res_ia || '', duvidas: ex.duvidas || q.duvidas || [], flashcards: ex.flashcards || q.flashcards || [],
-        modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, assunto: q.assunto || '', num: q.num || '', tipo: q.tipo || '', discIa: ex.discIa || q.discIa || null };
+        modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, assunto: limAss(q.assunto), num: q.num || '', tipo: q.tipo || '', discIa: ex.discIa || q.discIa || null };
     });
     if (itens.length) iniciarSessao(itens, extra);
   },
@@ -635,8 +638,8 @@ const SUBTOPICOS = {
     ['Porcentagem, acréscimos e descontos', /porcent|%|desconto|acrescimo|aumento|reduz|lucro|prejuizo|inflacao|imposto|promocao/],
     ['Juros simples e compostos / Matemática financeira', /juro|montante|capital|taxa|prestacao|financiamento|investimento|aplicacao|composto|parcela|emprestimo/],
   ],
-  'Funções: conceito e afim': [
-    ['Funções: conceito, domínio, imagem e gráficos', /dominio|contradominio|imagem|injetora|sobrejetora|bijetora|inversa|composta|f\s*\(|g\s*\(|grafico|tabela/],
+  'Conceito de função e função afim (1º grau)': [
+    ['Conceito de função, domínio, imagem e gráficos', /dominio|contradominio|imagem|injetora|sobrejetora|bijetora|inversa|composta|f\s*\(|g\s*\(|grafico|tabela/],
     ['Função afim (1º grau) e variação linear', /afim|1 grau|primeiro grau|linear|reta|coeficiente|custo fixo|tarifa|mensalidade|taxa fixa|crescente|decrescente/],
   ],
   'Função quadrática': [
@@ -681,7 +684,7 @@ const SUBTOPICOS = {
     ['Probabilidade condicional e eventos independentes', /sabendo que|dado que|condicional|independente|sucessiv|reposicao|certeza/],
     ['União de eventos, complementar e distribuição binomial', /pelo menos|no minimo|exatamente|uniao|ou outro|complementar|binomial|tentativa/],
   ],
-  'Estatística: média, mediana, desvio': [
+  'Estatística': [
     ['Média aritmética simples e ponderada', /media|ponderada|peso|nota|salario|idade|altura|pontuacao/],
     ['Mediana e moda', /mediana|moda|central|frequente|rol/],
     ['Desvio padrão, variância e análise de gráficos/tabelas', /desvio|variancia|dispersao|regular|homogene|grafico|tabela|histograma|setor/],
@@ -694,27 +697,27 @@ const SUBTOPICOS = {
     ['Resolução e problemas com sistemas lineares', /sistema|equacao|solucao|preco|comprou|pagou|ingresso|produto|x\s*\+|y\s*\+/],
     ['Discussão e classificação de sistemas (SPD, SPI, SI)', /possivel|indeterminado|impossivel|unica|infinita|nao admite|parametro|homogeneo/],
   ],
-  'Geometria plana: áreas e semelhança': [
-    ['Congruência e semelhança de triângulos; Tales', /semelhan|congruen|tale|paralela|proporc|sombra|bissetriz|baricentro|mediana|retangulo|hipotenusa|cateto|pitagora|triangulo/],
+  'Geometria plana': [
+    ['Ângulos, triângulos, congruência e semelhança (Tales)', /semelhan|congruen|tale|paralela|proporc|sombra|bissetriz|baricentro|mediana|retangulo|hipotenusa|cateto|pitagora|triangulo/],
     ['Polígonos e quadriláteros', /poligono|hexagono|pentagono|octogono|quadrilatero|trapezio|paralelogramo|losango|retangulo|quadrado|diagonal|angulo interno/],
     ['Circunferência e círculo', /circunferencia|circulo|raio|diametro|corda|tangente|arco|setor|coroa|comprimento|perimetro|pi\b|roda/],
     ['Áreas de figuras planas', /\barea\b|superficie|m\^2|cm\^2|m2|cm2|hachurad|sombread|colorid|destacad|terreno|regiao/],
   ],
-  'Geometria espacial: prismas e pirâmides': [
-    ['Geometria espacial: prismas, cubos e poliedros', /poliedro|euler|face|aresta|vertice|prisma|cubo|paralelepipedo|bloco|caixa|reservatorio|piscina/],
-    ['Geometria espacial: pirâmides, tetraedro e troncos', /piramide|tetraedro|octaedro|apotema|tronco/],
+  'Geometria espacial: poliedros, prismas e pirâmides': [
+    ['Poliedros, prismas, cubos e paralelepípedos', /poliedro|euler|face|aresta|vertice|prisma|cubo|paralelepipedo|bloco|caixa|reservatorio|piscina/],
+    ['Pirâmides, tetraedro e troncos de pirâmide', /piramide|tetraedro|octaedro|apotema|tronco/],
   ],
   'Geometria espacial: cilindro, cone e esfera': [
     ['Cilindro e sólidos de revolução', /cilindro|cilindric|lata|tambor|tubo|cano|copo|revolucao|tanque/],
     ['Cone e tronco de cone', /\bcone\b|conic|geratriz|tronco|funil|casquinha|chapeu/],
     ['Esfera, inscrição e circunscrição de sólidos', /esfera|esferic|semiesfera|hemisferio|calota|bola|globo|inscrit|circunscrit/],
   ],
-  'Geometria analítica: reta': [
-    ['Ponto, distância, ponto médio e área no plano cartesiano', /distancia|ponto medio|baricentro|colinear|alinhad|cartesiano|coordenada|abscissa|ordenada|vertice/],
+  'Geometria analítica: ponto e reta': [
+    ['Plano cartesiano, distância, ponto médio e alinhamento', /distancia|ponto medio|baricentro|colinear|alinhad|cartesiano|coordenada|abscissa|ordenada|vertice/],
     ['Equação da reta, coeficiente angular e posições relativas', /reta|coeficiente|declividade|paralela|perpendicular|concorrente|intersec|inclina/],
   ],
   'Geometria analítica: circunferência e cônicas': [
-    ['Geometria analítica: circunferência', /circunferencia|centro|raio|x\^2|y\^2|x²|y²|tangente|secante/],
+    ['Equação da circunferência e posições relativas', /circunferencia|centro|raio|x\^2|y\^2|x²|y²|tangente|secante/],
     ['Cônicas: elipse, hipérbole e parábola', /elipse|hiperbole|parabola|foco|diretriz|excentricidade|assintota|conica|orbita/],
   ],
   'Números complexos': [
@@ -726,10 +729,14 @@ const SUBTOPICOS = {
     ['Equações polinomiais, raízes e relações de Girard', /raiz|raize|girard|soma|produto|multiplicidade|fatorad|equacao/],
   ],
   // FÍSICA
-  'Cinemática: MU e MUV': [
+  'Cinemática escalar': [
     ['Grandezas, unidades, ordem de grandeza e velocidade média', /grandeza|unidade|notacao|ordem de grandeza|velocidade media|deslocamento|tempo|km\/h|m\/s|trecho|viagem/],
     ['Movimento uniforme (MU) e encontro de móveis', /movimento uniforme|velocidade constante|encontro|ultrapass|trem|ponte|tunel|posicao/],
     ['Movimento uniformemente variado (MUV), aceleração e gráficos', /aceleracao|variado|freia|frenagem|repouso|grafico|v\s*x\s*t|s\s*x\s*t|torricelli/],
+  ],
+  'Vetores e movimento em duas dimensões': [
+    ['Operações com vetores e decomposição ortogonal', /vetor|resultante|modulo|direcao|sentido|ortogonal|perpendicular|componente|cos|sen/],
+    ['Composição de movimentos (barco/correnteza) e cinemática vetorial', /barco|correnteza|rio|margem|travessia|aviao|vento|vetorial/],
   ],
   'Lançamentos e movimento circular': [
     ['Queda livre e lançamentos (vertical, horizontal e oblíquo)', /queda livre|lancamento|projetil|altura maxima|alcance|vertical|horizontal|obliquo|gravidade/],
@@ -759,7 +766,7 @@ const SUBTOPICOS = {
     ['Estática do ponto material e corpo extenso (torque/alavancas)', /estatica|equilibrio|torque|momento|alavanca|barra|gangorra|centro de massa|apoio|cabo/],
     ['Hidrostática: densidade, pressão, Stevin, Pascal e empuxo', /densidade|pressao|stevin|pascal|prensa|empuxo|arquimede|flutua|submerso|liquido|agua|fluido|manometro|barometro/],
   ],
-  'Termologia: calor e dilatação': [
+  'Termometria, dilatação e propagação de calor': [
     ['Termometria e escalas termométricas (Celsius, Fahrenheit, Kelvin)', /termometro|escala|celsius|fahrenheit|kelvin|temperatura|graduac/],
     ['Dilatação térmica e propagação de calor (condução, convecção, irradiação)', /dilatacao|comprimento|barra|lamina|bimetalica|volumetrica|conducao|conveccao|irradiacao|isolante|garrafa termica/],
   ],
@@ -776,11 +783,11 @@ const SUBTOPICOS = {
     ['Fenômenos ondulatórios (reflexão, refração, difração, interferência)', /reflexao|refracao|difracao|interferencia|polarizacao|ressonancia|estacionaria/],
     ['Acústica: som, cordas, tubos sonoros e efeito Doppler', /som|sonor|acustica|altura|intensidade|timbre|decibel|corda|tubo|doppler|eco|sonar|ultrassom/],
   ],
-  'Óptica geométrica: espelhos': [
+  'Óptica geométrica: reflexão e espelhos': [
     ['Princípios da óptica, sombra, câmara escura e espelho plano', /propagacao retilinea|sombra|penumbra|eclipse|camara escura|espelho plano|angulo de incidencia|reflexao/],
     ['Espelhos esféricos (côncavo e convexo) e equação de Gauss', /concavo|convexo|esferico|foco|distancia focal|centro de curvatura|real|virtual|direta|invertida|aumento/],
   ],
-  'Óptica geométrica: lentes e olho humano': [
+  'Óptica geométrica: refração, lentes e visão': [
     ['Refração da luz, lei de Snell, índice de refração e reflexão total', /refracao|snell|indice de refracao|angulo limite|reflexao total|fibra optica|dioptro|prisma|dispersao|arco-iris/],
     ['Lentes esféricas e óptica da visão (miopia, hipermetropia, instrumentos)', /lente|convergente|divergente|focal|vergencia|dioptria|olho|visao|miopia|hipermetropia|astigmatismo|presbiopia|retina|lupa|microscopio/],
   ],
@@ -829,7 +836,15 @@ const SUBTOPICOS = {
     ['Ligação iônica e compostos iônicos', /ionica|transferencia|cation|anion|reticulo|conduz|fundido/],
     ['Ligação covalente, metálica e regra do octeto', /covalente|metalica|compartilh|octeto|par de eletron|liga|formula/],
   ],
-  'Funções inorgânicas: ácidos, bases, sais e óxidos': [
+  'Geometria molecular e polaridade': [
+    ['Geometria molecular (linear, angular, trigonal, piramidal, tetraédrica)', /geometria|linear|angular|trigonal|piramidal|tetraedric|par.*eletron|arranjo/],
+    ['Polaridade das ligações e das moléculas (momento dipolar)', /polar|apolar|dipolo|eletronegatividade|momento dipolar|simetr/],
+  ],
+  'Forças intermoleculares e propriedades físicas': [
+    ['Interações intermoleculares (ligação de hidrogênio, dipolo-dipolo, London)', /hidrogenio|dipolo|induzido|van der waals|london|intermolecular/],
+    ['Ponto de ebulição, volatilidade, tensão superficial e solubilidade', /ebulicao|volatil|tensao superficial|soluvel|miscivel|viscosidade/],
+  ],
+  'Funções inorgânicas': [
     ['Ácidos e bases (Arrhenius, força, nomenclatura e neutralização)', /acido|base|hidroxido|arrheniu|ionizacao|dissociacao|neutralizacao|indicador|fenolftaleina|tornassol/],
     ['Sais e óxidos (classificação, nomenclatura e chuva ácida)', /\bsal\b|\bsais\b|oxido|carbonato|bicarbonato|sulfato|nitrato|cloreto|anfoter|chuva acida|cal\b/],
   ],
@@ -849,6 +864,10 @@ const SUBTOPICOS = {
     ['Solubilidade, curvas de solubilidade e saturação', /solubilidade|saturada|insaturada|supersaturada|precipitado|corpo de fundo|curva|coeficiente/],
     ['Concentração comum, molaridade, título, ppm, diluição e titulação', /concentracao|mol\/l|molar|g\/l|titulo|porcentagem|ppm|diluicao|mistura|titulacao|volume.*solucao/],
   ],
+  'Propriedades coligativas': [
+    ['Tonoscopia, ebulioscopia e crioscopia (pressão de vapor, ebulição e congelamento)', /tonoscopia|ebulioscopia|crioscopia|pressao de vapor|ebulicao|congelamento|fusao/],
+    ['Osmoscopia e pressão osmótica', /osmose|osmotica|membrana|semipermeavel/],
+  ],
   'Termoquímica': [
     ['Reações endotérmicas/exotérmicas, entalpia de reação e combustão', /endotermic|exotermic|entalpia|calor|combustao|formacao|kj|kcal|absorve|libera|\bdh\b|delta\s*h/],
     ['Lei de Hess e energia de ligação', /hess|etapa|intermediaria|energia de ligacao|quebra|ligac/],
@@ -861,11 +880,11 @@ const SUBTOPICOS = {
     ['Constante de equilíbrio (Kc e Kp) e grau de equilíbrio', /constante|kc|kp|equilibrio|concentracao|pressao parcial|reversivel/],
     ['Deslocamento de equilíbrio (Princípio de Le Chatelier)', /desloca|chatelier|aumenta|diminui|adicao|pressao|temperatura|catalisador|rendimento/],
   ],
-  'Equilíbrio iônico: pH e pOH': [
+  'Equilíbrio iônico': [
     ['Acidez, basicidade, cálculo de pH, pOH e Ka/Kb', /\bph\b|\bpoh\b|h\+|h3o\+|oh-|ionizacao|ka\b|kb\b|kw\b|log|concentracao.*ion/],
     ['Hidrólise salina, solução-tampão e produto de solubilidade (Kps)', /hidrolise|tampao|solubilidade|kps|precipita|bicarbonato|sangue/],
   ],
-  'Eletroquímica: pilhas': [
+  'Eletroquímica: pilhas e oxirredução': [
     ['Pilhas eletroquímicas (Daniell), ânodo, cátodo e ddp (ΔEº)', /pilha|daniell|anodo|catodo|potencial|ddp|forca eletromotriz|ponte salina/],
     ['Espontaneidade de reações redox, corrosão e metal de sacrifício', /reduz|oxida|eletron|espontane|corrosao|sacrificio|ferrugem|galvaniz/],
   ],
@@ -877,7 +896,7 @@ const SUBTOPICOS = {
     ['Emissões radioativas (alfa, beta, gama), fissão e fusão nuclear', /alfa|beta|gama|radioativ|decaimento|nucleo|fissao|fusao|nuclear|urani|cesio|particula/],
     ['Tempo de meia-vida e datação por carbono-14', /meia-vida|semidesintegracao|carbono|restar|reduz|tempo|atividade/],
   ],
-  'Química orgânica: hidrocarbonetos e nomenclatura': [
+  'Introdução à química orgânica e hidrocarbonetos': [
     ['Carbono, classificação de cadeias carbônicas e hibridização', /cadeia|aberta|fechada|aromatica|saturada|insaturada|homogenea|heterogenea|ramificada|carbono|sp2|sp3|sigma|pi\b/],
     ['Hidrocarbonetos, petróleo e nomenclatura IUPAC', /hidrocarboneto|alcano|alceno|alcino|benzeno|aromatico|petroleo|destilacao|octanagem|iupac|metano|etano|butano|propano/],
   ],
@@ -897,8 +916,16 @@ const SUBTOPICOS = {
     ['Esterificação, hidrólise, saponificação (sabão) e transesterificação (biodiesel)', /esterificacao|hidrolise|saponificacao|sabao|detergente|transesterificacao|biodiesel|ester/],
     ['Oxidação de álcoois e alcenos (ozonólise, energética) e redução', /oxidacao|ozonolise|permanganato|dicromato|alcool primario|alcool secundario|aldeido|cetona|reducao/],
   ],
+  'Polímeros, lipídios, carboidratos e proteínas': [
+    ['Polímeros sintéticos (adição, condensação, plásticos e reciclagem)', /polimero|monomero|polietileno|pvc|pet|nylon|kevlar|plastico|polimerizacao/],
+    ['Biomoléculas: carboidratos, lipídios, proteínas, sabões e detergentes', /carboidrato|glicose|amido|celulose|lipidio|triglicerideo|proteina|aminoacido|peptid|sabao|detergente/],
+  ],
+  'Química ambiental e energia': [
+    ['Poluição atmosférica (efeito estufa, chuva ácida, ozônio e inversão térmica)', /estufa|aquecimento|chuva acida|ozonio|inversao termica|co2|so2|nox|cfc/],
+    ['Combustíveis (fósseis, biocombustíveis, hidrogênio), água e resíduos', /combustivel|fossil|petroleo|carvao|etanol|biodiesel|biogas|hidrogenio|esgoto|tratamento|lixo|reciclagem/],
+  ],
   // BIOLOGIA
-  'Química da vida: água, sais, carboidratos, lipídios': [
+  'Bioquímica celular': [
     ['Água e sais minerais', /agua|sal mineral|sais minerai|ferro|calcio|iodo|sodio|potassio|hidratac|solvente|termorregulac/],
     ['Carboidratos, lipídios e vitaminas', /carboidrato|glicid|amido|glicogenio|celulose|glicose|lipidio|gordura|colesterol|fosfolipidio|vitamina|escorbuto|raquitismo/],
   ],
@@ -906,11 +933,11 @@ const SUBTOPICOS = {
     ['Estrutura e funções das proteínas; aminoácidos e desnaturação', /proteina|aminoacido|peptid|desnaturacao|temperatura|estrutura|colageno|hemoglobina/],
     ['Enzimas: ação catalítica, chave-fechadura, pH e temperatura ótima', /enzima|catalis|substrato|sitio ativo|chave-fechadura|velocidade|ph\b/],
   ],
-  'Ácidos nucleicos: DNA e RNA': [
+  'Ácidos nucleicos (DNA e RNA)': [
     ['Estrutura do DNA, nucleotídeos, pareamento de bases e replicação', /dna|nucleotideo|adenina|timina|citosina|guanina|dupla-helice|replicacao|semiconservativa|fita/],
     ['RNA (mensageiro, transportador, ribossômico) e transcrição', /rna|uracila|transcricao|mensageiro|transportador|ribossomico/],
   ],
-  'Citologia: membrana e transporte': [
+  'Membrana plasmática e transporte': [
     ['Membrana plasmática (mosaico fluido) e especializações', /membrana|fosfolipidio|bicamada|mosaico|glicocalix|microvilosidade|desmossomo|parede celular/],
     ['Transporte passivo (difusão, osmose) e transporte ativo (bomba Na+/K+)', /osmose|difusao|hipertonic|hipotonic|isotonic|plasmolise|turgid|transporte ativo|bomba de sodio|fagocitose|pinocitose/],
   ],
@@ -930,11 +957,19 @@ const SUBTOPICOS = {
     ['Núcleo, cromossomos, cariótipo e ciclo celular (intérfase)', /nucleo|cromatina|cromossomo|cariotipo|ploide|2n\b|interfase|fase s|dna|quantidade de dna/],
     ['Mitose, meiose, crossing-over e gametogênese', /mitose|meiose|profase|metafase|anafase|telofase|crossing|permutacao|homologo|cromatide|gamet/],
   ],
+  'Síntese de proteínas e código genético': [
+    ['Transcrição, processamento do RNAm (íntrons e éxons) e código genético', /transcricao|intron|exon|splicing|codon|codigo genetico|degenerado|universal|trinca/],
+    ['Tradução nos ribossomos, RNAt (anticódon) e mutações gênicas', /traducao|ribossomo|anticodon|polipeptid|aminoacido|mutacao/],
+  ],
+  'Embriologia e histologia animal': [
+    ['Embriologia: clivagem, blástula, gástrula, folhetos embrionários e anexos', /zigoto|morula|blastula|gastrula|neurula|ectoderma|mesoderma|endoderma|celoma|amnio|alantoide|placenta|anexo embrionario/],
+    ['Histologia: tecidos epitelial, conjuntivo (ósseo, sanguíneo, cartilaginoso), muscular e nervoso', /epitelial|epitelio|glandula|conjuntivo|colageno|adiposo|cartilag|osseo|osteoblasto|muscular|estriado|liso|nervoso|tecido/],
+  ],
   '1ª e 2ª leis de Mendel': [
     ['1ª lei de Mendel, monoibridismo e probabilidade em genética', /1.*lei|primeira lei|monoibrid|dominante|recessivo|heterozigot|homozigot|alelo|cruzamento|probabilidade|fenotipo|genotipo/],
     ['Heredogramas (genealogias) e 2ª lei de Mendel (segregação independente)', /heredograma|genealogia|casal|filho|afetad|normal|2.*lei|segunda lei|diibrid|independente|9:3:3:1/],
   ],
-  'Heranças: ligada ao sexo, alelos múltiplos, ABO e Rh': [
+  'Alelos múltiplos, sistema ABO/Rh e herança sexual': [
     ['Grupos sanguíneos (sistema ABO, fator Rh e eritroblastose fetal)', /\babo\b|sanguineo|sangue|aglutin|doador|receptor|\brh\b|eritroblastose|transfusao/],
     ['Herança ligada ao sexo (daltonismo, hemofilia) e alelos múltiplos', /sexo|cromossomo x|daltonismo|hemofilia|pelagem|coelho|codominancia/],
   ],
@@ -942,15 +977,15 @@ const SUBTOPICOS = {
     ['Ligação gênica (linkage) e interação gênica / epistasia / herança quantitativa', /ligacao|linkage|recombinacao|morgan|mapa|interacao|epistasia|poligenica|quantitativa/],
     ['Genética de populações (equilíbrio de Hardy-Weinberg)', /populac|hardy|weinberg|frequencia|p\^2|2pq|q\^2|equilibrio/],
   ],
-  'Biotecnologia: DNA recombinante, PCR, CRISPR': [
+  'Biotecnologia e engenharia genética': [
     ['DNA recombinante, transgênicos, clonagem e células-tronco', /transgenic|recombinante|restricao|plasmideo|bacteria|insulina|clonagem|celula-tronco/],
     ['PCR, eletroforese (teste de DNA/paternidade), edição gênica (CRISPR) e terapia gênica', /pcr|eletroforese|paternidade|banda|crispr|edicao|terapia genica|sequenciamento/],
   ],
-  'Evolução: Darwin, seleção natural e especiação': [
+  'Evolução biológica': [
     ['Teorias evolutivas (Lamarck, Darwin, Neodarwinismo) e seleção natural', /lamarck|darwin|selecao natural|mutacao|variabilidade|adaptacao|resistencia|antibiotico|inseticida|bacteria/],
     ['Especiação, isolamento reprodutivo, homologia/analogia e cladogramas', /especiacao|isolamento|alopatrica|simpatrica|homolog|analog|convergencia|irradiacao|filogen|cladograma|ancestral/],
   ],
-  'Ecologia: cadeias, ciclos e pirâmides': [
+  'Ecologia: fluxo de energia e ciclos': [
     ['Cadeias e teias alimentares, fluxo de energia, pirâmides e bioacumulação', /cadeia|teia|trofico|produtor|consumidor|decompositor|energia|biomassa|piramide|bioacumulacao|magnificacao/],
     ['Ciclos biogeoquímicos (nitrogênio, carbono, água, oxigênio)', /ciclo|nitrogenio|fixacao|nitrificacao|desnitrificacao|leguminosa|rizobio|carbono|efeito estufa|agua|oxigenio|fosforo/],
   ],
@@ -970,13 +1005,25 @@ const SUBTOPICOS = {
     ['Sistemática, taxonomia, cladística e reinos dos seres vivos', /taxonomia|especie|genero|familia|reino|dominio|cladograma|filogenet|cientifico|nomenclatura|lineu/],
     ['Vírus: estrutura, replicação e viroses (dengue, febre amarela, HIV, gripe)', /virus|viral|capsideo|bacteriofago|retrovirus|hiv|aids|dengue|aedes|febre amarela|zika|sarampo|raiva|gripe|vacina/],
   ],
+  'Botânica: briófitas e pteridófitas': [
+    ['Briófitas (musgos, avasculares, fase gametofítica dominante)', /briofita|musgo|avascular|rizoide|filoide|cauloide/],
+    ['Pteridófitas (samambaias, vasos condutores, esporófito dominante)', /pteridofita|samambaia|avenca|vascular|soro|protalo/],
+  ],
   'Botânica: gimnospermas e angiospermas': [
     ['Evolução vegetal, alternância de gerações e gimnospermas (semente/pólen)', /briofita|pteridofita|esporofito|gametofito|gimnosperma|pinheiro|conifera|semente|polen|tubo polinico/],
     ['Angiospermas: flor, fecundação dupla, fruto, semente e polinização', /angiosperma|flor|fruto|ovario|fecundacao|endosperma|polinizacao|dispersao|monocotiledonea|dicotiledonea/],
   ],
-  'Fisiologia vegetal: hormônios e tropismos': [
+  'Fisiologia vegetal': [
     ['Condução de seiva (xilema/floema), transpiração e estômatos', /seiva|xilema|floema|transpiracao|estomato|coesao|tensao|absorcao|raiz|anel de malpighi/],
     ['Hormônios vegetais (auxina, etileno), fototropismo e fotoperiodismo', /hormonio|fitormonio|auxina|etileno|amadurecimento|giberelina|citocinina|abscisico|tropismo|fototropismo|fotoperiod/],
+  ],
+  'Zoologia: invertebrados': [
+    ['Poríferos, cnidários, platelmintos, nematelmintos e anelídeos', /porifero|esponja|cnidario|agua-viva|coral|platelminto|planaria|nematelminto|anelideo|minhoca/],
+    ['Moluscos, artrópodes (insetos, aracnídeos, crustáceos, muda/metamorfose) e equinodermos', /molusco|artropode|exoesqueleto|quitina|muda|ecdise|metamorfose|inseto|aracnideo|crustaceo|equinodermo/],
+  ],
+  'Zoologia: cordados': [
+    ['Peixes (condrictes e osteíctes), anfíbios e transição para o ambiente terrestre', /peixe|branquia|bexiga natatoria|anfibio|girino|metamorfose|cutanea/],
+    ['Répteis, aves e mamíferos (endotermia, ectotermia, circulação e adaptação)', /reptil|ave|mamifero|endoterm|ectoterm|homeoterm|peciloterm|pena|pelo|placenta|ovo amniotico/],
   ],
   'Digestão e nutrição humana': [
     ['Órgãos do tubo digestório, glândulas anexas (fígado/bile, pâncreas) e absorção', /boca|esofago|estomago|intestino|figado|vesicula|bile|pancreas|absorcao|vilosidade|flora/],
@@ -998,12 +1045,12 @@ const SUBTOPICOS = {
     ['Glândulas endócrinas e hormônios (hipófise, tireoide, insulina/glucagon, suprarrenais)', /hipofise|tireoide|insulina|glucagon|glicemia|diabete|adrenalina|cortisol|hormonio|glandula|feedback/],
     ['Sistema reprodutor, ciclo menstrual (FSH, LH, estrógeno, progesterona) e métodos contraceptivos', /menstrual|ovulacao|fsh|\blh\b|estrogeno|progesterona|utero|endometrio|ovario|testiculo|testosterona|fecundacao|gravidez|placenta|contraceptiv|pilula/],
   ],
-  'Imunologia: vacinas e soros': [
+  'Imunologia': [
     ['Imunidade inata/adaptativa, antígenos, anticorpos e células de defesa', /antigeno|anticorpo|imunidade|linfocito|macrofago|leucocito|resposta imune|memoria/],
     ['Imunização ativa (vacinas) e passiva (soros e anticorpos maternos)', /vacina|soro|ativa|passiva|peconhent|ofidic|tetan|campanha/],
   ],
   // HISTÓRIA
-  'Antiguidade: Grécia e Roma': [
+  'Antiguidade Oriental e Clássica': [
     ['Pré-história e Antiguidade Oriental (Egito, Mesopotâmia, Hebreus, Persas)', /pre-historia|neolitico|paleolitico|egito|farao|mesopotamia|hamurabi|hebreu|fenicio|persa|rio nilo|tigre|eufrate/],
     ['Grécia Antiga (pólis, democracia ateniense, Esparta, cultura e helenismo)', /grecia|grego|atena|esparta|polis|democracia|cidadania|escrav|filosofia|helenis|olimpiada/],
     ['Roma Antiga (República, Império, direito, plebeus/patrícios e crise)', /roma|romano|patricio|plebeu|senado|republica|imperio|cesar|augusto|gladiador|cristianismo|barbaro/],
@@ -1053,7 +1100,7 @@ const SUBTOPICOS = {
     ['Biomas e domínios morfoclimáticos (Ab\'Sáber)', /dominio|morfoclimatico|ab.?saber|amazon|cerrado|caatinga|mares de morro|araucaria|pradaria|pantanal|mangue|vegetacao/],
     ['Questão ambiental, desmatamento e conferências/acordos internacionais', /desmatamento|queimada|sustentavel|conferencia|acordo de paris|kyoto|rio-92|poluicao|biodiversidade|conservacao|impacto/],
   ],
-  'População: demografia e migrações': [
+  'Demografia e migrações': [
     ['Transição demográfica, pirâmide etária, natalidade, envelhecimento e PEA', /populac|demograf|natalidade|mortalidade|fecundidade|piramide etaria|envelhecimento|expectativa de vida|pea\b|bonus demografico/],
     ['Migrações internas (êxodo rural, inter-regionais) e internacionais (refugiados)', /migrac|imigrante|emigrante|refugiad|exodo|fluxo|fronteira|xenofobia|deslocamento/],
   ],
@@ -1117,9 +1164,9 @@ const SUBTOPICOS = {
     ['Quinhentismo e Barroco (Gregório de Matos, Padre Antônio Vieira, cultismo e conceptismo)', /quinhentismo|pero vaz|caminha|jesuita|barroco|gregorio|vieira|sermao|cultismo|conceptismo|antitese|pecado/],
     ['Arcadismo / Neoclassicismo (Cláudio Manuel da Costa, Tomás Antônio Gonzaga, bucolismo)', /arcadismo|arcade|neoclassic|marilia|dirceu|gonzaga|claudio manuel|bucolis|pastor|carpe diem|fugere urbem|inutilia/],
   ],
-  'Romantismo: poesia e prosa': [
-    ['Romantismo: poesia (indianista, ultrarromântica / Mal do Século e condoreira)', /poesia|poema|verso|estrofe|goncalves dias|indianis|alvares de azevedo|ultrarromant|byron|castro alves|condoreir|navio negreiro|lirico/],
-    ['Romantismo: prosa (José de Alencar, Manuel Antônio de Almeida, romance urbano/indianista)', /romance|prosa|narrador|personagem|alencar|iracema|guarani|senhora|luciola|sargento de milicias|bernardo guimaraes|inocencia|taunay/],
+  'Romantismo': [
+    ['Poesia romântica (indianista, ultrarromântica / Mal do Século e condoreira)', /poesia|poema|verso|estrofe|goncalves dias|indianis|alvares de azevedo|ultrarromant|byron|castro alves|condoreir|navio negreiro|lirico/],
+    ['Prosa romântica (José de Alencar, Manuel Antônio de Almeida, romance urbano/indianista)', /romance|prosa|narrador|personagem|alencar|iracema|guarani|senhora|luciola|sargento de milicias|bernardo guimaraes|inocencia|taunay/],
   ],
   'Realismo e Naturalismo': [
     ['Realismo e Machado de Assis (Memórias Póstumas, Dom Casmurro, contos e análise psicológica)', /realismo|machado de assis|bras cubas|postuma|casmurro|capitu|bentinho|quincas borba|ironia|psicolog|burgues/],
@@ -1151,12 +1198,20 @@ const SUBTOPICOS = {
     ['Filosofia política: Maquiavel e contratualistas (Hobbes, Locke, Rousseau)', /maquiavel|principe|hobbes|leviata|estado de natureza|contrato social|rousseau|vontade geral|montesquieu|soberania|poder|politica/],
     ['Filosofia contemporânea: Marx, Nietzsche, Existencialismo, Foucault, Arendt e Frankfurt', /marx|nietzsche|schopenhauer|sartre|existencialis|heidegger|foucault|disciplina|biopoder|arendt|banalidade|adorno|horkheimer|frankfurt|habermas|rawls/],
   ],
+  'Clássicos: Durkheim, Marx e Weber': [
+    ['Émile Durkheim (fato social, solidariedade, coesão e anomia)', /durkheim|fato social|coesao|solidariedade|organica|mecanica|anomia|suicidio/],
+    ['Karl Marx (materialismo histórico, mais-valia, alienação e luta de classes)', /marx|mais-valia|burguesia|proletariado|luta de classe|alienacao|materialismo|capitalismo/],
+    ['Max Weber (ação social, tipos de dominação, burocracia e ética protestante)', /weber|acao social|dominacao|carismatica|tradicional|racional-legal|burocracia|protestante|desencantamento/],
+  ],
   'Cultura, desigualdade e cidadania': [
     ['Cultura, identidade, etnocentrismo, ideologia e indústria cultural', /cultura|etnocentrismo|relativismo|identidade|patrimonio|memoria|ideologia|industria cultural|consumo|midia/],
     ['Desigualdade social, estratificação, trabalho, gênero e questão racial', /desigualdade|classe|pobreza|renda|trabalho|precarizacao|genero|mulher|feminis|racismo|racial|negro|indigena|minorias/],
     ['Estado, democracia, cidadania, direitos humanos e movimentos sociais', /estado|democracia|cidadania|direito|movimento social|participacao|politica|violencia|urbana|instituicao/],
   ],
 };
+for (const [velho, novo] of Object.entries(window.MAPA_ASSUNTOS_LIMPOS || {})) {
+  if (SUBTOPICOS[novo] && !SUBTOPICOS[velho]) SUBTOPICOS[velho] = SUBTOPICOS[novo];
+}
 window.SUBTOPICOS = SUBTOPICOS;
 
 function bateSubtopico(q, assunto, sub) {

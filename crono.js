@@ -10,10 +10,15 @@ function aplicarCronograma() {
   const feitos = new Set(S.assuntos.filter(a => a.crono && a.feito).map(a => a.id));
   const novos = C.itens.map(x => {
     const a = { ...x, ord: x.ord ?? 0.5, feito: feitos.has(x.id) };
+    if (window.limparNomeAssunto && a.tag) a.tag = window.limparNomeAssunto(a.tag);
     if (x.min_ != null) {               // conteúdo: ~40% teoria e o resto em questões (o app recalcula pelo ritmo dela)
-      a.teoria = x.teoria; a.q = Math.max(3, Math.round((x.min_ - x.teoria) / ((MIN_Q[x.materia] || 2.5) * 1.25))); a.calibrado = true;
+      a.teoria = Math.max(25, x.teoria || 40);
+      const minAlvo = Math.max(60, x.min_ || 60);
+      a.q = Math.max(8, Math.round((minAlvo - a.teoria) / ((MIN_Q[x.materia] || 2.8) * 1.25)));
+      a.calibrado = true;
       delete a.min_;
     }
+    if (a.habito === 'enem') a.min = Math.max(75, a.min || 75);
     return a;
   });
   S.assuntos = [...S.assuntos.filter(a => a.periodo || (a.feito && !a.crono && a.feitoEm)), ...novos];
@@ -35,10 +40,26 @@ if (typeof CRONOGRAMA !== 'undefined' && S.cronoV !== CRONOGRAMA.v) {
   ui.iaMsg = `O cronograma novo está no app: ${n} itens de ${diaCurto(CRONOGRAMA.inicio)} a junho, mais revisões, simulados e hábitos. O plano antigo ficou guardado em Ajustes > Cópias do plano.`;
 }
 
-// o dia respeita o começo do cronograma (se houver itens anteriores planejados) e os dias de limpeza
+// Calibração e limpeza não-destrutiva de tópicos e pisos de tempo para dados já carregados
+if (Array.isArray(S?.assuntos)) {
+  for (const a of S.assuntos) {
+    if (window.limparNomeAssunto && a.tag) a.tag = window.limparNomeAssunto(a.tag);
+    if (ehConteudo(a)) {
+      if (a.teoria != null && a.teoria < 25) a.teoria = 25;
+      if (a.q != null && a.q < 8) a.q = 8;
+    }
+    if (a.habito === 'enem' && a.min && a.min < 75) a.min = 75;
+  }
+}
+
+// o dia respeita o começo do cronograma (prioriza itens avulsos anteriores, mas não esvazia o dia) e os dias de limpeza
 { const f0 = filaParaHoje; filaParaHoje = function () {
   let l = f0.apply(this, arguments);
-  if (S.cronoInicio && hoje() < S.cronoInicio && l.some(a => !a.crono)) l = l.filter(a => !a.crono);
+  if (S.cronoInicio && hoje() < S.cronoInicio && l.some(a => !a.crono)) {
+    const avulsos = l.filter(a => !a.crono);
+    const crono = l.filter(a => a.crono);
+    l = [...avulsos, ...crono];
+  }
   if ((S.diasLimpeza || []).includes(hoje())) l = l.filter(a => !ehConteudo(a) || estadoDe(a) === 'atrasado');
   return l;
 }; }

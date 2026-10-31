@@ -63,12 +63,15 @@ function cfgRev() { const tarde = hoje() >= '2027-03-01'; return { diario: tarde
 /** Assunto do banco de questões que corresponde ao tópico (o cronograma usa tópicos mais finos que o banco). */
 const tagDe = a => {
   if (!a) return '';
-  if (a.tag) return a.tag;
-  const n = a.nome || a.titulo || '';
-  if (/^interpreta[cç][aã]o de texto/i.test(n) && a.materia === 'Português') return 'Interpretação de texto e tipologia';
-  if (/^ingl[eê]s:\s*um texto/i.test(n) || a.materia === 'Inglês') return 'Interpretação de textos em inglês';
-  if (/^obra da fuvest/i.test(n)) return 'Leituras obrigatórias da Fuvest';
-  return a.titulo;
+  let t = a.tag;
+  if (!t) {
+    const n = a.nome || a.titulo || '';
+    if (/^interpreta[cç][aã]o de texto/i.test(n) && a.materia === 'Português') t = 'Interpretação de texto e tipologia';
+    else if (/^ingl[eê]s:\s*um texto/i.test(n) || a.materia === 'Inglês') t = 'Interpretação de textos em inglês';
+    else if (/^obra da fuvest/i.test(n)) t = 'Leituras obrigatórias da Fuvest';
+    else t = a.titulo;
+  }
+  return window.limparNomeAssunto ? window.limparNomeAssunto(t) : t;
 };
 const nomeDe = a => a.nome || a.titulo;
 function subRegexDe(a) {

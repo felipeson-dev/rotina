@@ -13,8 +13,8 @@ const hmStr = n => `${pad(Math.floor(Math.max(0, n) / 60) % 24)}:${pad(Math.max(
 /** Distribui os assuntos pelas janelas de estudo, só como sugestão de horário (ela pode fazer na ordem que quiser). */
 function sugerirHorarios(d) {
   if (!d?.blocos) return;
-  const jan = (d.agenda || []).filter(x => x.tipo === 'estudo' && hm(x.inicio) != null && hm(x.fim) != null).map(x => ({ ini: hm(x.inicio), fim: hm(x.fim) })).sort((a, b) => a.ini - b.ini);
-  d.blocos.forEach(b => { b.sug = null; });
+  const jan = (d.agenda || []).filter(x => x.tipo === 'estudo' && hm(x.inicio) != null && hm(x.fim) != null).map((x, idx) => ({ idx, ini: hm(x.inicio), fim: hm(x.fim), titulo: x.titulo })).sort((a, b) => a.ini - b.ini);
+  d.blocos.forEach(b => { b.sug = null; b.janelas = []; });
   if (!jan.length) return;
   let w = 0, t = jan[0].ini;
   for (const b of d.blocos) {
@@ -23,7 +23,13 @@ function sugerirHorarios(d) {
     if (w >= jan.length) break;
     b.sug = hmStr(t);
     let falta = Math.round((b.min || 30) / 0.8);
-    while (falta > 0 && w < jan.length) { const livre = jan[w].fim - t; if (falta <= livre) { t += falta; falta = 0; } else { falta -= livre; w++; t = jan[w]?.ini; } }
+    while (falta > 0 && w < jan.length) {
+      const livre = jan[w].fim - t;
+      const uso = Math.min(falta, livre);
+      b.janelas.push({ idx: jan[w].idx, ini: hmStr(t), fim: hmStr(t + uso), min: Math.round(uso * 0.8) });
+      if (falta <= livre) { t += falta; falta = 0; }
+      else { falta -= livre; w++; t = jan[w]?.ini; }
+    }
   }
 }
 window.sugerirHorarios = sugerirHorarios;
@@ -65,20 +71,21 @@ function garantirAgendaPadrao(d, data = hoje()) {
 window.garantirAgendaPadrao = garantirAgendaPadrao;
 
 /** Parser local para montar a agenda mesmo sem chave de IA ou se ela quiser resposta imediata ao digitar horários. */
-function parsearDiaLocal(texto, horas, agoraMin) {
+function parsearDiaLocal(texto, horas, agoraMin, ehHoje = true) {
   const ag = [], txt = String(texto || '');
-  const Partes = txt.split(/[.;\n]+|(?:\s+e\s+(?=[a-zà-ú]+\s+(?:às|as|das|de|\d)))/i);
+  const Partes = txt.split(/[,.;\n]+|(?:\s+e\s+(?=[a-zà-ú]+\s+(?:às|as|das|de|\d)))/i);
   const parseH = (h, m) => (+h < 24 && +(m || 0) < 60 ? +h * 60 + +(m || 0) : null);
   for (const p of Partes) {
     const s = p.trim(); if (!s) continue;
-    const mInt = /(?:das?|de)?\s*(\d{1,2})(?:h|:)?(\d{2})?\s*(?:às|as|a|até|-)\s*(\d{1,2})(?:h|:)?(\d{2})?/i.exec(s);
-    const mHora = /(?:às|as|a partir das?)?\s*(\d{1,2})(?:h|:)(\d{2})?/i.exec(s);
+    const mInt = /(?:das?|de)?\s*(\d{1,2})(?:h|:)?(\d{2})?\s*(?:às|as|a|até|[-–—])\s*(\d{1,2})(?:h|:)?(\d{2})?/i.exec(s);
+    const mHora = /(?:às|as|a partir das?|das?|de)?\s*(\d{1,2})(?:h|:)(\d{2})?/i.exec(s);
     let ini = null, fim = null;
     if (mInt) { ini = parseH(mInt[1], mInt[2]); fim = parseH(mInt[3], mInt[4]); }
     else if (mHora) { ini = parseH(mHora[1], mHora[2]); if (ini != null) fim = Math.min(1439, ini + (/estudo|estudar/i.test(s) ? 120 : 60)); }
     if (ini == null || fim == null || fim <= ini) continue;
-    let tipo = 'compromisso', tit = s.replace(/(?:das?|de)?\s*\d{1,2}(?:h|:)?\d{0,2}\s*(?:às|as|a|até|-)\s*\d{1,2}(?:h|:)?\d{0,2}/ig, '').replace(/(?:às|as)\s*\d{1,2}(?:h|:)?\d{0,2}/ig, '').replace(/^[\s,:-]+|[\s,:-]+$/g, '');
-    if (/treino|academia|corrida|pilates|natac|musculac|exerc|esporte|caminhada/i.test(s)) { tipo = 'exercicio'; tit = tit || 'Treino'; }
+    let tipo = 'compromisso', tit = s.replace(/(?:das?|de)?\s*\d{1,2}(?:h|:)?\d{0,2}\s*(?:às|as|a|até|[-–—])\s*\d{1,2}(?:h|:)?\d{0,2}/ig, '').replace(/(?:às|as|a partir das?|das?|de)?\s*\d{1,2}(?:h|:)?\d{0,2}/ig, '').replace(/^[\s,:-]+|[\s,:-]+$/g, '');
+    if (/dormir|sono|deitar/i.test(s)) { tipo = 'outro'; tit = 'Dormir'; }
+    else if (/treino|academia|corrida|pilates|natac|musculac|exerc|esporte|caminhada/i.test(s)) { tipo = 'exercicio'; tit = tit || 'Treino'; }
     else if (/estud/i.test(s)) { tipo = 'estudo'; tit = tit || 'Bloco de estudo'; }
     else if (/almoc|janta|cafe|lanche|refeic/i.test(s)) { tipo = 'refeicao'; tit = tit || 'Refeição'; }
     else if (/aula|cursinho|faculdade|trabalh|plantao/i.test(s)) { tipo = 'trabalho'; tit = tit || 'Aula / compromisso'; }
@@ -87,34 +94,88 @@ function parsearDiaLocal(texto, horas, agoraMin) {
     tit = tit ? tit[0].toUpperCase() + tit.slice(1) : TIPOS_DIA[tipo];
     ag.push({ inicio: hmStr(ini), fim: hmStr(fim), titulo: tit.slice(0, 80), tipo });
   }
-  if (!ag.some(x => x.tipo === 'estudo')) {
-    const minEst = Math.round((horas > 0 ? horas : 4) * 60);
-    const ocupados = ag.map(x => [hm(x.inicio), hm(x.fim)]).sort((a, b) => a[0] - b[0]);
-    let cur = Math.max(480, Math.ceil((agoraMin || 480) / 30) * 30), falta = minEst;
-    for (const [oi, ofim] of [...ocupados, [1380, 1440]]) {
-      if (falta <= 0) break;
-      if (oi - cur >= 45) {
-        const dur = Math.min(falta, oi - cur, 180);
-        ag.push({ inicio: hmStr(cur), fim: hmStr(cur + dur), titulo: 'Estudo (horário flexível)', tipo: 'estudo' });
-        falta -= dur;
-      }
-      cur = Math.max(cur, ofim);
-    }
-  }
-  return ag.sort((a, b) => hm(a.inicio) - hm(b.inicio));
+  return tratarAgenda(ag, agoraMin, texto, ehHoje, horas);
 }
 
-function tratarAgenda(lista, agoraMin) {
+/** Higieniza e completa a agenda:
+   1. Detecta horário de dormir para ser o encerramento do dia (remove bloco de 'dormir' como tarefa).
+   2. Remove falsos blocos de lazer ou descanso longo inventados se ela não pediu.
+   3. Preenche 100% de todo tempo vago até dormir com estudo (com pausas de 10 min se o bloco for longo). */
+function tratarAgenda(lista, agoraMin, textoUsuario = '', ehHoje = true, horasLivres = 0) {
   const ag = [];
+  const txt = String(textoUsuario || '');
+
+  // 1. Horário de dormir (fim do dia de estudo)
+  let fimDia = 23 * 60; // padrão 23:00
+  const mSono = /(?:dormir|sono|deitar)\s*(?:[àa]s|as|de|das)?\s*(\d{1,2})(?:h|:)?(\d{2})?/i.exec(txt);
+  if (mSono) {
+    const h = +mSono[1], m = +(mSono[2] || 0);
+    if (h < 24 && m < 60) fimDia = h * 60 + m;
+  }
+  for (const x of Array.isArray(lista) ? lista : []) {
+    if (/dormir|sono|deitar/i.test(x.titulo || '')) {
+      const f = hm(x.inicio) ?? hm(x.fim);
+      if (f != null && f >= 12 * 60) fimDia = f;
+    }
+  }
+
+  const pediuLazer = /lazer|descans|folga|filme|sair|namorad|livre/i.test(txt);
+
+  // 2. Extrai compromissos reais (refeição, treino, aula, compromissos ou pausas expressas)
+  const fixos = [];
   for (const x of Array.isArray(lista) ? lista : []) {
     let i = hm(x.inicio), f = hm(x.fim); if (i == null || f == null) continue;
-    if (f <= i) f = Math.min(24 * 60 - 1, f + 24 * 60 > 24 * 60 ? 24 * 60 - 1 : f + 24 * 60);
+    if (f <= i) f = Math.min(1439, f + 1440);
     const tipo = TIPOS_DIA[x.tipo] ? x.tipo : 'outro';
-    if (f <= agoraMin) continue; // já passou
-    if (tipo === 'estudo' && i < agoraMin) i = agoraMin; // não planeja estudo no passado
-    if (f - i < (tipo === 'estudo' ? 25 : 1)) continue;
-    ag.push({ inicio: hmStr(i), fim: hmStr(f), titulo: String(x.titulo || TIPOS_DIA[tipo]).slice(0, 80), tipo });
+    if (/dormir|sono|deitar/i.test(x.titulo || '')) continue;
+    if (ehHoje && f <= agoraMin) continue; // já passou
+    if (!pediuLazer && (tipo === 'lazer' || /tempo livre|descanso|prepara[cç][aã]o/i.test(x.titulo || ''))) {
+      // Ignora "lazer" ou "tempo livre" inventado pela IA quando o usuário não pediu; esse intervalo será estudo
+      continue;
+    }
+    if (tipo === 'estudo') continue; // os blocos de estudo serão reconstruídos nos intervalos
+    if (ehHoje && i < agoraMin) i = agoraMin;
+    if (f <= i) continue;
+    fixos.push({ inicio: hmStr(i), fim: hmStr(f), titulo: String(x.titulo || TIPOS_DIA[tipo]).slice(0, 80), tipo });
   }
+
+  fixos.sort((a, b) => hm(a.inicio) - hm(b.inicio));
+  if (fixos.length) {
+    const ultFim = hm(fixos[fixos.length - 1].fim);
+    if (ultFim != null && ultFim > fimDia) fimDia = Math.min(1439, ultFim + 30);
+  }
+
+  // 3. Preenche 100% de todos os intervalos vagos com estudo (e pausas curtas de 10 min se o bloco for longo)
+  let cur = ehHoje ? agoraMin : 480; // se hoje, começa em agoraMin; se amanhã, começa às 08:00
+  let blocoIdx = 1;
+
+  const inserirEstudo = (de, ate) => {
+    const gap = ate - de;
+    if (gap < 20) return;
+    if (gap <= 100) {
+      ag.push({ inicio: hmStr(de), fim: hmStr(ate), titulo: `Estudo - Bloco ${blocoIdx++}`, tipo: 'estudo' });
+    } else {
+      // Gap longo: divide com uma pausa rápida de 10 min
+      const m1 = Math.min(85, Math.max(45, Math.round((gap - 10) / 2)));
+      ag.push({ inicio: hmStr(de), fim: hmStr(de + m1), titulo: `Estudo - Bloco ${blocoIdx++}`, tipo: 'estudo' });
+      ag.push({ inicio: hmStr(de + m1), fim: hmStr(de + m1 + 10), titulo: 'Pausa rápida', tipo: 'pausa' });
+      ag.push({ inicio: hmStr(de + m1 + 10), fim: hmStr(ate), titulo: `Estudo - Bloco ${blocoIdx++}`, tipo: 'estudo' });
+    }
+  };
+
+  for (const c of fixos) {
+    const ci = hm(c.inicio), cf = hm(c.fim);
+    if (ci > cur) {
+      inserirEstudo(cur, ci);
+    }
+    ag.push(c);
+    cur = Math.max(cur, cf);
+  }
+
+  if (fimDia > cur) {
+    inserirEstudo(cur, fimDia);
+  }
+
   return ag.sort((a, b) => hm(a.inicio) - hm(b.inicio));
 }
 
@@ -132,10 +193,10 @@ async function planejarDia(texto, horas, alvo = hoje()) {
     const basal = (S.perfil.horarios || '').trim();
     if (!texto.trim() && horas > 0 && !basal) {
       estudoMin = Math.round(horas * 60);
-      ag = parsearDiaLocal('', horas, agoraMin);
+      ag = parsearDiaLocal('', horas, agoraMin, ehHoje);
       resposta = `${ehHoje ? 'Dia' : 'Amanhã'} montado com ${horas}h livres.`;
     } else if (!temChaveIa()) {
-      ag = parsearDiaLocal(texto.trim() || basal, horas, agoraMin);
+      ag = parsearDiaLocal(texto.trim() || basal, horas, agoraMin, ehHoje);
       estudoMin = soma(ag.filter(x => x.tipo === 'estudo'), x => hm(x.fim) - hm(x.inicio));
       resposta = `${ehHoje ? 'Dia' : 'Amanhã'} montado com os seus horários e compromissos.`;
     } else {
@@ -148,18 +209,23 @@ async function planejarDia(texto, horas, alvo = hoje()) {
 Rotina base dela: ${basal || '(não informada)'}.
 ${ref ? `${refNome}: contexto "${ref.contexto || 'sem registro'}"; estudou ${fmtMin(S.estudo[ehHoje ? somaDias(hoje(), -1) : hoje()] || 0)}.` : `${refNome}: sem registro.`} Há ${atras} assuntos atrasados.${pend ? ` Pendências e compromissos desse dia já anotados por ela (inclua na agenda): ${pend}.` : ''}
 Para esse dia ela disse: "${texto.trim() || '(nada: use a rotina base)'}"${horas > 0 ? `. Ela também informou ${horas}h livres para estudar` : ''}.
-Monte a agenda ${ehHoje ? 'do restante do dia (a partir de agora, até a hora de dormir)' : 'do dia inteiro (do acordar até a hora de dormir)'} com TODOS os blocos: aula ou trabalho, refeições, exercício, compromissos, pausas, lazer e as janelas de estudo (tipo "estudo") nos espaços livres. COMO COMBINAR: parta da rotina base e aplique por cima o que ela contou. Tudo que ela NÃO mencionou vem da rotina base. O que ela mencionou SUBSTITUI o item equivalente da rotina base (ex.: se ela janta das 17h às 19h, esqueça o jantar padrão; se a aula é em outro horário, ignore o horário padrão). Se nem ela nem a rotina base dizem algo essencial (hora de dormir, almoço, jantar, café), assuma um horário típico e liste em "suposicoes". Cansaço ou sono ruim entram no "fator". Ela é uma estudante de vestibular que quer render: use para estudo todo espaço livre razoável (manhã, tarde e noite), deixando refeições, descanso e lazer curtos e realistas. Janelas de estudo de pelo menos 40 min, e quebre janelas longas com pausas curtas.
+REGRA DE OURO: Ela é uma vestibulanda focada e quer render o máximo.
+1. TODO O TEMPO LIVRE entre compromissos fixos e até a hora de dormir DEVE ser usado para estudo (tipo "estudo").
+2. NUNCA invente blocos de "tempo livre", "lazer", "preparação" ou "descanso longo" por conta própria nos horários vagos. Se ela não pediu lazer ou descanso, aquele horário é ESTUDO.
+3. Se ela citar horário de dormir (ex.: "dormir às 23:30"), esse é o término do dia: NÃO crie uma tarefa de "dormir" na agenda. Se não citar, assuma 23:00 (ou logo após o último compromisso).
+4. Janelas de estudo contínuas maiores que 1h30 a 2h devem ter pausas curtas de 10 a 15 min (tipo "pausa").
+5. Respeite pontualmente os compromissos fixos que ela citou (aula, treino, médico, refeições).
 Responda SÓ com JSON: {"resposta":"2 frases curtas e gentis resumindo o dia","fator":1,"motivo":"curto","agenda":[{"inicio":"HH:MM","fim":"HH:MM","titulo":"...","tipo":"estudo|refeicao|exercicio|compromisso|trabalho|pausa|lazer|outro"}],"suposicoes":["o que você assumiu por falta de informação, curto"],"atualizar_rotina":"","materias_hoje":[]}
 "materias_hoje": só se ela pediu matérias específicas para estudar nesse dia (ex.: "quero só matemática", "vou focar em química e física"), a lista com os nomes exatos entre ${[...Object.keys(MIN_Q), 'Redação'].join(', ')}; senão [].
 "fator" vai de 0.5 a 1 (1 = energia normal; menos se ela disse que está cansada, dormiu mal, doente etc.). "atualizar_rotina" só se ela disse que algo mudou de vez (ex.: "agora acordo às 6h"): devolva a rotina base inteira já atualizada, senão deixe vazio.`, 3000);
-        ag = tratarAgenda(r.agenda, agoraMin);
+        ag = tratarAgenda(r.agenda, agoraMin, texto.trim() || basal, ehHoje);
         d.suposicoes = (Array.isArray(r.suposicoes) ? r.suposicoes : []).map(x => String(x).slice(0, 120)).slice(0, 4);
         fator = Math.min(1, Math.max(0.5, +r.fator || 1)); resposta = String(r.resposta || '').trim();
         so = (Array.isArray(r.materias_hoje) ? r.materias_hoje : []).map(String);
         if (r.motivo && fator < 1) resposta += ` (${String(r.motivo).trim()})`;
         if (r.atualizar_rotina && String(r.atualizar_rotina).trim().length > 10) { S.perfil.horarios = String(r.atualizar_rotina).trim().slice(0, 1500); resposta += ' Atualizei a sua rotina base.'; }
       } catch {
-        ag = parsearDiaLocal(texto.trim() || basal, horas, agoraMin);
+        ag = parsearDiaLocal(texto.trim() || basal, horas, agoraMin, ehHoje);
         resposta = `${ehHoje ? 'Dia' : 'Amanhã'} montado com os seus horários e compromissos.`;
       }
       estudoMin = soma(ag.filter(x => x.tipo === 'estudo'), x => hm(x.fim) - hm(x.inicio));
@@ -222,7 +288,7 @@ async function levarParaAgenda(data) {
 /** O dia inteiro numa linha do tempo flexível: dá para mudar horário, tirar, pôr, e empurrar o resto quando atrasar. */
 function agendaHtml(d, data = hoje()) {
   const ehHoje = data === hoje(), agora = ehHoje ? agoraMinutos() : -1, cap = d.cap || 0, jan = d.agenda.filter(x => x.tipo === 'estudo');
-  const dosBlocos = x => d.blocos.filter(b => b.sug && hm(b.sug) >= hm(x.inicio) && hm(b.sug) < hm(x.fim));
+  const dosBlocos = x => d.blocos.filter(b => (b.janelas?.length ? b.janelas.some(j => j.ini >= x.inicio && j.ini < x.fim || (hm(j.fim) > hm(x.inicio) && hm(j.ini) < hm(x.fim))) : (b.sug && hm(b.sug) >= hm(x.inicio) && hm(b.sug) < hm(x.fim))));
   const ed = i => ui.agEdit === `${data}|${i}`;
   const form = (x, i) => `<div class="ag-form"><div class="linha">
       <label class="campo" style="flex:0 1 120px">Começa<input type="time" id="ag-i" value="${esc(x.inicio || '')}"></label>
@@ -266,11 +332,17 @@ function programacaoHojeHtml(d) {
   const dosBlocos = (x, idxJan) => {
     if (!x.inicio) return d.blocos || [];
     const ini = hm(x.inicio), fim = hm(x.fim);
-    const encaixados = (d.blocos || []).filter(b => b.sug && hm(b.sug) >= ini && hm(b.sug) < fim);
+    const encaixados = (d.blocos || []).filter(b => {
+      if (b.janelas?.length) return b.janelas.some(j => j.idx === idxJan);
+      return b.sug && hm(b.sug) >= ini && hm(b.sug) < fim;
+    });
     // na última janela de estudo, mostra também assuntos pendentes que não couberam ou já concluídos
     if (idxJan === jan.length - 1) {
-      const jaMostrados = new Set((d.blocos || []).filter(b => b.sug && jan.some(j => hm(b.sug) >= hm(j.inicio) && hm(b.sug) < hm(j.fim))).map(b => b.id));
-      const extras = (d.blocos || []).filter(b => !jaMostrados.has(b.id));
+      const jaMostrados = new Set((d.blocos || []).filter(b => {
+        if (b.janelas?.length) return b.janelas.some(j => j.idx < idxJan);
+        return b.sug && jan.some(j => hm(b.sug) >= hm(j.inicio) && hm(b.sug) < hm(j.fim));
+      }).map(b => b.id));
+      const extras = (d.blocos || []).filter(b => !jaMostrados.has(b.id) && !encaixados.some(e => e.id === b.id));
       return [...encaixados, ...extras];
     }
     return encaixados;
@@ -311,17 +383,20 @@ function programacaoHojeHtml(d) {
         </div>
         <span class="fraco" style="font-size:13px">${TIPOS_DIA[x.tipo]}${ini != null && fim != null ? ` · ${fmtMin(fim - ini)}` : ''}</span>
         ${eAgora ? `<div class="barra fina"><i style="width:${pct}%"></i></div>` : ''}
-        ${x.tipo === 'estudo' && bs.length ? `<div class="ag-ass-lista">
-          <span class="fraco" style="font-size:12px">Sugestão para este turno (pode fazer em outra ordem):</span>
+        ${x.tipo === 'estudo' ? `<div class="ag-ass-lista">
+          ${bs.length ? `<span class="fraco" style="font-size:12px">Sugestão para este turno (pode fazer em outra ordem):</span>
           ${bs.map(b => {
             const conc = typeof blocoConcluido === 'function' ? blocoConcluido(b) : !!b.feito;
             const pos = d.blocos.indexOf(b);
+            const ehCont = b.janelas?.length && b.janelas[0].idx < jIdx;
+            const sugTurno = b.janelas?.find(j => j.idx === jIdx)?.ini || b.sug;
             return `<div class="ag-ass-item ${conc ? 'feito' : ''}" style="${cor(b.materia)}">
               <label class="linha" style="gap:6px;flex:1;min-width:160px;cursor:pointer">
                 <input type="checkbox" data-acao="blocoFeito" data-b="${b.id}" ${conc ? 'checked' : ''}>
-                ${b.sug && !conc ? `<span class="ag-sug">~${b.sug}</span>` : ''}
+                ${sugTurno && !conc ? `<span class="ag-sug">~${sugTurno}</span>` : ''}
                 ${b.materia ? `<span class="tag" style="${cor(b.materia)}">${esc(b.materia)}</span>` : ''}
                 <span class="ag-ass-tit">${esc(b.titulo)}</span>
+                ${ehCont ? '<span class="selo flexivel" style="font-size:11px">continuação</span>' : ''}
                 <small class="fraco">(${fmtMin(b.min || 30)})</small>
               </label>
               <div class="linha" style="gap:2px">
@@ -329,7 +404,7 @@ function programacaoHojeHtml(d) {
                 <button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="1" ${pos < 0 || pos >= d.blocos.length - 1 ? 'disabled' : ''} title="Descer na ordem">↓</button>
               </div>
             </div>`;
-          }).join('')}
+          }).join('')}` : `<span class="fraco" style="font-size:12px">Horário de estudo livre · complete pendências ou adiante matérias da semana abaixo.</span>`}
         </div>` : ''}
       </div></div>`;
   }).join('');
