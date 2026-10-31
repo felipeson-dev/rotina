@@ -18,15 +18,18 @@ const DB = {
 };
 
 // ---------- desenho ----------
-const CANETAS = ['#22252B', '#2F5BEA', '#D6336C', '#2B8A3E'];
-const MARCAS = ['#FFE066', '#FFA8C5', '#8CE99A'];
-const estadoQuadro = { ferr: 'caneta', cor: CANETAS[0], marca: MARCAS[0], dedo: false, penVisto: false };
+const CANETAS = ['#22252B', '#FFFFFF', '#2F5BEA', '#E03131', '#D6336C', '#2B8A3E', '#F08C00', '#7950F2'];
+const MARCAS = ['#FFE066', '#FFA8C5', '#8CE99A', '#74C0FC', '#E599F7'];
+const ESPESSURAS = [['1.6', '•', 'Fina'], ['2.8', '●', 'Média'], ['5', '⬤', 'Grossa']];
+const FUNDOS_Q = [['quadriculado', '#', 'Quadriculado'], ['linhas', '≡', 'Linhas'], ['pontos', '∷', 'Pontilhado'], ['liso', '□', 'Liso']];
+const estadoQuadro = { ferr: 'caneta', cor: CANETAS[0], marca: MARCAS[0], esp: 2.8, dedo: false, penVisto: false };
 
 function tracar(ctx, s, k) {
   const p = s.p; if (p.length < 6) { if (p.length >= 3) { ctx.beginPath(); ctx.arc(p[0] * k, p[1] * k, Math.max(1, (s.w * (0.4 + p[2])) / 2), 0, 7); ctx.fillStyle = s.c; ctx.fill(); } return; }
   ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = s.c;
-  if (s.t === 'm') { // marca-texto: um traço só, translúcido
-    ctx.globalAlpha = 0.38; ctx.lineWidth = s.w * k; ctx.beginPath(); ctx.moveTo(p[0] * k, p[1] * k);
+  if (s.t === 'm' || s.t === 'r') { // marca-texto ou reta
+    if (s.t === 'm') ctx.globalAlpha = 0.38;
+    ctx.lineWidth = s.w * k; ctx.beginPath(); ctx.moveTo(p[0] * k, p[1] * k);
     for (let i = 3; i < p.length; i += 3) ctx.lineTo(p[i] * k, p[i + 1] * k);
     ctx.stroke(); ctx.globalAlpha = 1; return;
   }
@@ -45,13 +48,22 @@ function distSeg(px, py, ax, ay, bx, by) {
 class Quadro {
   constructor(el) {
     this.el = el; this.chave = el.dataset.chave; this.altura = +el.dataset.altura || 600; this.fundo = el.dataset.fundo || 'liso';
-    // "sobre": camada transparente por cima do enunciado (riscar na questão); a altura acompanha a do enunciado
+    // "sobre": camada por cima do enunciado (riscar na questão) + espaço extra abaixo para fazer conta em questões curtas
     this.sobre = el.classList.contains('sobre');
-    if (this.sobre) this.altura = el.parentElement.offsetHeight || 300;
+    if (this.sobre) {
+      this.extra = ui.qRiscarExtra ?? 220;
+      el.parentElement.style.paddingBottom = this.extra + 'px';
+      // se o fundo do app for escuro e a caneta estiver no preto padrão, escolhe uma cor clara visível
+      if (estadoQuadro.cor === '#22252B' && S.cores?.fundo && parseInt(S.cores.fundo.slice(1, 3), 16) < 80) estadoQuadro.cor = '#FFE066';
+    }
     this.W0 = 0; this.tr = []; this.refaz = []; this.atual = null; this.mudou = false;
     el.classList.add('quadro', 'fundo-' + this.fundo);
     el.innerHTML = `<div class="quadro-barra"></div><div class="quadro-area" style="height:${this.altura}px"><canvas class="q-fixo"></canvas><canvas class="q-vivo"></canvas></div>`;
     this.barra = el.firstElementChild; this.area = this.barra.nextElementSibling;
+    if (this.sobre) {
+      this.altura = Math.max(260, (el.parentElement.offsetHeight || 300) - (this.barra.offsetHeight || 44));
+      this.area.style.height = this.altura + 'px';
+    }
     [this.fixo, this.vivo] = this.area.querySelectorAll('canvas');
     this.cf = this.fixo.getContext('2d'); this.cv = this.vivo.getContext('2d');
     this.ajustar(); this.desenharBarra();
@@ -61,11 +73,20 @@ class Quadro {
     this.vivo.addEventListener('pointercancel', e => this.soltar(e));
     this.vivo.addEventListener('contextmenu', e => e.preventDefault());
     el.addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (b) this.comando(b.dataset.q, b.dataset.v); });
-    if ('ResizeObserver' in window) new ResizeObserver(() => { if (this.area.clientWidth !== this.largura) { this.ajustar(); this.redesenhar(); } }).observe(this.area);
+    el.addEventListener('input', e => { if (e.target.dataset.qCorCustom) { estadoQuadro.ferr = 'caneta'; estadoQuadro.cor = e.target.value; document.querySelectorAll('.quadro').forEach(x => x._q?.desenharBarra()); } });
+    if ('ResizeObserver' in window) new ResizeObserver(() => { if (this.area.clientWidth && this.area.clientWidth !== this.largura) { this.ajustar(); this.redesenhar(); } }).observe(this.area);
     if (this.sobre && 'ResizeObserver' in window) new ResizeObserver(() => {
-      const h = el.parentElement.offsetHeight; if (h && h !== this.altura) { this.altura = h; this.area.style.height = h + 'px'; this.ajustar(); this.redesenhar(); }
+      const h = Math.max(240, el.parentElement.offsetHeight - (this.barra.offsetHeight || 44));
+      if (h && Math.abs(h - this.altura) > 4) { this.altura = h; this.area.style.height = h + 'px'; this.ajustar(); this.redesenhar(); }
     }).observe(el.parentElement);
-    this.pronto = DB.get('d:' + this.chave).then(d => { if (d) { this.W0 = d.w; this.tr = d.s || []; } this.redesenhar(); });
+    this.pronto = DB.get('d:' + this.chave).then(d => {
+      if (d) {
+        this.W0 = d.w; this.tr = d.s || [];
+        if (d.h && !this.sobre && d.h > this.altura) { this.altura = d.h; this.area.style.height = d.h + 'px'; this.ajustar(); }
+        if (d.extra != null && this.sobre) { this.extra = d.extra; el.parentElement.style.paddingBottom = this.extra + 'px'; }
+      }
+      this.redesenhar();
+    });
   }
   ajustar() {
     const w = this.area.clientWidth || 600, h = this.altura, d = Math.min(2, window.devicePixelRatio || 1);
@@ -78,18 +99,47 @@ class Quadro {
     for (const s of this.tr) tracar(c, s, this.k);
   }
   desenharBarra() {
-    const e = estadoQuadro;
-    const bt = (q, v, rot, on, cls = '') => `<button type="button" class="qb ${cls}" data-q="${q}" ${v !== undefined ? `data-v="${v}"` : ''} aria-pressed="${!!on}" title="${rot}">${rot}</button>`;
-    const cor = (q, cs, atual) => cs.map(c => `<button type="button" class="qcor" style="background:${c}" data-q="${q}" data-v="${c}" aria-pressed="${atual === c && ((q === 'cor' && e.ferr === 'caneta') || (q === 'marca' && e.ferr === 'marca'))}" aria-label="cor"></button>`).join('');
-    this.barra.innerHTML = `${bt('ferr', 'caneta', 'Caneta', e.ferr === 'caneta')}${cor('cor', CANETAS, e.cor)}
-      ${bt('ferr', 'marca', 'Marca-texto', e.ferr === 'marca')}${cor('marca', MARCAS, e.marca)}
-      ${bt('ferr', 'borracha', 'Borracha', e.ferr === 'borracha')}<span class="qsep"></span>
-      ${bt('desfazer', undefined, 'Desfazer')}${bt('refazer', undefined, 'Refazer')}${bt('limpar', undefined, 'Limpar')}
-      ${bt('dedo', undefined, e.dedo ? 'Dedo desenha: sim' : 'Dedo desenha: não', e.dedo)}`;
+    const e = estadoQuadro, emCaneta = e.ferr === 'caneta' || e.ferr === 'reta';
+    const bt = (q, v, rot, on, cls = '', tit = '') => `<button type="button" class="qb ${cls}" data-q="${q}" ${v !== undefined ? `data-v="${v}"` : ''} aria-pressed="${!!on}" title="${tit || rot}">${rot}</button>`;
+    const cor = (q, cs, atual) => cs.map(c => `<button type="button" class="qcor ${c === '#FFFFFF' ? 'qcor-branca' : ''}" style="background:${c}" data-q="${q}" data-v="${c}" aria-pressed="${atual.toLowerCase() === c.toLowerCase() && ((q === 'cor' && emCaneta) || (q === 'marca' && e.ferr === 'marca'))}" aria-label="cor ${c}"></button>`).join('');
+    const corCustom = `<label class="qcor qcor-custom" title="Escolher qualquer cor"><input type="color" data-q-cor-custom="1" value="${esc(e.cor)}"></label>`;
+    const esp = ESPESSURAS.map(([v, ic, tit]) => bt('esp', v, ic, String(e.esp) === v, 'qb-esp', `Traço: ${tit}`)).join('');
+    const fundos = this.sobre
+      ? bt('fundo', this.fundo === 'quadriculado' ? 'transparente' : 'quadriculado', 'Grade', this.fundo === 'quadriculado', '', 'Mostrar/ocultar grade quadriculada')
+      : FUNDOS_Q.map(([v, ic, tit]) => bt('fundo', v, ic, this.fundo === v, 'qb-esp', `Papel: ${tit}`)).join('');
+    this.barra.innerHTML = `${bt('ferr', 'caneta', '✒ Caneta', e.ferr === 'caneta')}${bt('ferr', 'reta', '📏 Reta', e.ferr === 'reta', '', 'Linha reta / sublinhar')}${cor('cor', CANETAS, e.cor)}${corCustom}<span class="qsep"></span>
+      ${bt('ferr', 'marca', '🖍 Marca', e.ferr === 'marca', '', 'Marca-texto')}${cor('marca', MARCAS, e.marca)}<span class="qsep"></span>
+      ${esp}<span class="qsep"></span>
+      ${bt('ferr', 'borracha', '🧽 Traço', e.ferr === 'borracha', '', 'Borracha: apaga o traço inteiro')}${bt('ferr', 'borracha_ponto', '⚪ Ponto', e.ferr === 'borracha_ponto', '', 'Borracha de precisão: apaga só onde passar')}<span class="qsep"></span>
+      ${fundos}<span class="qsep"></span>
+      ${bt('espacoMais', undefined, '+ Espaço', false, 'qb-destaque', 'Aumentar espaço para escrever e calcular')}${bt('espacoMenos', undefined, '− Espaço', false, '', 'Diminuir espaço')}
+      ${bt('desfazer', undefined, '↶', false, '', 'Desfazer')}${bt('refazer', undefined, '↷', false, '', 'Refazer')}${bt('limpar', undefined, 'Limpar')}
+      ${bt('dedo', undefined, e.dedo ? '👆 Dedo: sim' : '👆 Dedo: não', e.dedo, '', 'Permitir desenhar com o dedo')}`;
   }
   comando(q, v) {
     const e = estadoQuadro;
-    if (q === 'ferr') e.ferr = v; else if (q === 'cor') { e.ferr = 'caneta'; e.cor = v; } else if (q === 'marca') { e.ferr = 'marca'; e.marca = v; }
+    if (q === 'ferr') e.ferr = v;
+    else if (q === 'cor') { if (e.ferr !== 'reta') e.ferr = 'caneta'; e.cor = v; }
+    else if (q === 'marca') { e.ferr = 'marca'; e.marca = v; }
+    else if (q === 'esp') e.esp = +v || 2.8;
+    else if (q === 'fundo') {
+      this.el.classList.remove('fundo-' + this.fundo);
+      this.fundo = v;
+      this.el.classList.add('fundo-' + this.fundo);
+    }
+    else if (q === 'espacoMais' || q === 'espacoMenos') {
+      const delta = q === 'espacoMais' ? 240 : -200;
+      if (this.sobre) {
+        this.extra = Math.max(0, (this.extra || 0) + delta);
+        ui.qRiscarExtra = this.extra;
+        this.el.parentElement.style.paddingBottom = this.extra + 'px';
+        this.altura = Math.max(240, this.el.parentElement.offsetHeight - (this.barra.offsetHeight || 44));
+      } else {
+        this.altura = Math.max(220, this.altura + delta);
+      }
+      this.area.style.height = this.altura + 'px';
+      this.ajustar(); this.redesenhar(); this.salvar();
+    }
     else if (q === 'desfazer') { const s = this.tr.pop(); if (s) { this.refaz.push(s); this.redesenhar(); this.salvar(); } }
     else if (q === 'refazer') { const s = this.refaz.pop(); if (s) { this.tr.push(s); this.redesenhar(); this.salvar(); } }
     else if (q === 'limpar') { if (this.tr.length && confirm('Apagar tudo desta folha?')) { this.tr = []; this.refaz = []; this.redesenhar(); this.salvar(); } }
@@ -102,17 +152,23 @@ class Quadro {
     // dedo: só rola a página (a menos que "Dedo desenha" esteja ligado). Assim a palma não risca a folha.
     if (e.pointerType === 'touch' && !estadoQuadro.dedo) { this.rolando = { y: e.clientY, x: e.clientX }; this.vivo.setPointerCapture(e.pointerId); return; }
     e.preventDefault(); this.vivo.setPointerCapture(e.pointerId);
-    const borracha = estadoQuadro.ferr === 'borracha' || e.button === 5 || (e.buttons & 32);
-    if (borracha) { this.apagando = true; this.apagar(e); return; }
-    const m = estadoQuadro.ferr === 'marca';
-    this.atual = { t: m ? 'm' : 'p', c: m ? estadoQuadro.marca : estadoQuadro.cor, w: m ? 20 : 2.6, p: this.ponto(e) };
+    const borracha = estadoQuadro.ferr === 'borracha' || estadoQuadro.ferr === 'borracha_ponto' || e.button === 5 || (e.buttons & 32);
+    if (borracha) { this.apagando = estadoQuadro.ferr === 'borracha_ponto' ? 'ponto' : 'traco'; this.apagar(e); return; }
+    const m = estadoQuadro.ferr === 'marca', reta = estadoQuadro.ferr === 'reta';
+    const wBase = estadoQuadro.esp || 2.8;
+    this.atual = { t: m ? 'm' : reta ? 'r' : 'p', c: m ? estadoQuadro.marca : estadoQuadro.cor, w: m ? wBase * 7 : wBase, p: this.ponto(e) };
   }
   mover(e) {
     if (this.rolando) { const pai = this.el.closest('.janela') || window; pai.scrollBy(0, this.rolando.y - e.clientY); this.rolando.y = e.clientY; return; }
     if (this.apagando) { this.apagar(e); return; }
     if (!this.atual) return;
-    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
-    for (const x of (evs.length ? evs : [e])) this.atual.p.push(...this.ponto(x).map((v, i) => i < 2 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100));
+    if (this.atual.t === 'r') {
+      const pt = this.ponto(e).map((v, i) => i < 2 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100);
+      this.atual.p = [...this.atual.p.slice(0, 3), ...pt];
+    } else {
+      const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+      for (const x of (evs.length ? evs : [e])) this.atual.p.push(...this.ponto(x).map((v, i) => i < 2 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100));
+    }
     const c = this.cv; c.setTransform(this.d, 0, 0, this.d, 0, 0); c.clearRect(0, 0, this.largura, this.altura); tracar(c, this.atual, this.k);
   }
   soltar() {
@@ -124,12 +180,32 @@ class Quadro {
     this.redesenhar(); this.salvar();
   }
   apagar(e) {
-    const [x, y] = this.ponto(e), r = 14 / this.k; const antes = this.tr.length;
+    const [x, y] = this.ponto(e), r = (10 + (estadoQuadro.esp || 2.8) * 2) / this.k;
+    if (this.apagando === 'ponto') {
+      let mudou = false; const novos = [];
+      for (const s of this.tr) {
+        const p = s.p;
+        if (p.length < 6) { if (Math.hypot(p[0] - x, p[1] - y) > r) novos.push(s); else mudou = true; continue; }
+        let seg = [];
+        for (let i = 0; i < p.length; i += 3) {
+          if (Math.hypot(p[i] - x, p[i + 1] - y) <= r + s.w / 2) {
+            mudou = true;
+            if (seg.length >= 6) novos.push({ ...s, p: seg });
+            seg = [];
+          } else seg.push(p[i], p[i + 1], p[i + 2]);
+        }
+        if (seg.length === p.length) novos.push(s);
+        else if (seg.length >= 6) novos.push({ ...s, p: seg });
+      }
+      if (mudou) { this.tr = novos; this.redesenhar(); this.salvar(); }
+      return;
+    }
+    const antes = this.tr.length;
     this.tr = this.tr.filter(s => { const p = s.p; if (p.length < 6) return Math.hypot(p[0] - x, p[1] - y) > r;
       for (let i = 3; i < p.length; i += 3) if (distSeg(x, y, p[i - 3], p[i - 2], p[i], p[i + 1]) < r + s.w / 2) return false; return true; });
     if (this.tr.length !== antes) { this.redesenhar(); this.salvar(); }
   }
-  salvar() { this.mudou = true; clearTimeout(this._t); this._t = setTimeout(() => { DB.set('d:' + this.chave, { w: this.W0, s: this.tr }); registrarNota(this.chave, !this.tr.length); }, 500); }
+  salvar() { this.mudou = true; clearTimeout(this._t); this._t = setTimeout(() => { DB.set('d:' + this.chave, { w: this.W0, s: this.tr, h: this.altura, extra: this.extra }); registrarNota(this.chave, !this.tr.length); }, 500); }
   vazio() { return !this.tr.length; }
   /** Imagem jpeg (fundo branco) para mandar à IA ou mostrar. */
   imagem(max = 1400) { return imagemDe({ w: this.W0, s: this.tr }, this.altura / this.W0, max); }
@@ -246,29 +322,36 @@ function vRedacao() {
 const hojeIso = () => hoje();
 function cartoesVencidos() { return S.cartoes.filter(c => c.prox <= hojeIso()); }
 function vCartoes() {
-  const s = ui.cartao;
+  const s = ui.cartao, fmt = typeof mdLite === 'function' ? mdLite : esc;
   if (ui.novoCartao) return `<section class="cartao"><h2>Novo cartão</h2>
+    <div class="alterna" role="group"><button data-acao="cartaoModo" data-v="mao" aria-pressed="${ui.cartaoModo !== 'texto'}">Escrever à mão</button><button data-acao="cartaoModo" data-v="texto" aria-pressed="${ui.cartaoModo === 'texto'}">Digitar texto</button></div>
     <label class="campo">Matéria<select id="c-mat">${Object.keys(MATERIAS).map(m => `<option>${m}</option>`).join('')}</select></label>
-    <span class="rotulo">frente (a pergunta)</span>${quadroHtml('novo-f', 240, 'pontos')}
-    <span class="rotulo">verso (a resposta)</span>${quadroHtml('novo-v', 300, 'pontos')}
+    ${ui.cartaoModo === 'texto'
+      ? `<label class="campo">Frente (a pergunta)<textarea id="c-frente" rows="3" placeholder="Ex.: Qual a fórmula da função totiente de Euler?"></textarea></label>
+         <label class="campo">Verso (a resposta)<textarea id="c-verso" rows="4" placeholder="Ex.: Para n = p₁^a₁ · p₂^a₂…, φ(n) = n · (1 - 1/p₁)(1 - 1/p₂)…"></textarea></label>`
+      : `<span class="rotulo">frente (a pergunta)</span>${quadroHtml('novo-f', 240, 'pontos')}
+         <span class="rotulo">verso (a resposta)</span>${quadroHtml('novo-v', 300, 'pontos')}`}
     <div class="linha"><button class="botao grande" data-acao="salvarCartao">Salvar cartão</button><button class="botao contorno" data-acao="cancelarCartao">Cancelar</button></div></section>`;
   if (s) {
     const c = S.cartoes.find(x => x.id === s.fila[s.i]);
     if (!c) return `<section class="cartao"><h2>Revisão terminada</h2><p style="margin:0">Você revisou ${s.fila.length} ${s.fila.length === 1 ? 'cartão' : 'cartões'}. Volte amanhã.</p>
       <div class="linha"><button class="botao" data-acao="fimRevisao">Voltar</button></div></section>`;
-    return `<section class="cartao cartao-rev" style="${cor(c.materia)}"><div class="entre"><span class="rotulo">${s.i + 1} de ${s.fila.length}</span>${tag(c.materia)}</div>
-      <img class="desenho" data-desenho="${c.id}:f" data-prop="0.4" alt="frente">
-      ${s.virado ? `<hr><img class="desenho" data-desenho="${c.id}:v" data-prop="0.5" alt="verso">
+    const ehTxt = !!(c.frente || c.verso);
+    return `<section class="cartao cartao-rev" style="${cor(c.materia)}"><div class="entre"><span class="rotulo">${s.i + 1} de ${s.fila.length}</span><span class="linha" style="gap:6px">${tag(c.materia)}${c.assunto ? `<span class="selo">${esc(c.assunto)}</span>` : ''}${c.fonte ? `<span class="fraco" style="font-size:12px">${esc(c.fonte)}</span>` : ''}</span></div>
+      ${ehTxt ? `<div class="flash-face frente"><span class="rotulo">pergunta</span><div class="enunciado">${fmt(c.frente)}</div>${c.dica && !s.virado ? `<p class="fraco" style="margin:6px 0 0;font-size:13px">💡 Dica: ${esc(c.dica)}</p>` : ''}</div>` : `<img class="desenho" data-desenho="${c.id}:f" data-prop="0.4" alt="frente">`}
+      ${s.virado ? `<hr>${ehTxt ? `<div class="flash-face verso"><span class="rotulo">resposta</span><div class="enunciado">${fmt(c.verso)}</div></div>` : `<img class="desenho" data-desenho="${c.id}:v" data-prop="0.5" alt="verso">`}
         <div class="linha"><button class="botao contorno" data-acao="nota" data-v="0">Errei</button><button class="botao contorno" data-acao="nota" data-v="1">Difícil</button>
         <button class="botao" data-acao="nota" data-v="2">Bom</button><button class="botao destaque" data-acao="nota" data-v="3">Fácil</button></div>`
         : `<div class="linha"><button class="botao grande" data-acao="virar">Mostrar a resposta</button></div>`}</section>`;
   }
   const v = cartoesVencidos().length, tot = S.cartoes.length;
-  return `<section class="cartao"><div class="entre"><h2>Cartões à mão</h2><span class="fraco">${tot} ${tot === 1 ? 'cartão' : 'cartões'} · ${v} para hoje</span></div>
-    <p class="fraco" style="margin:0">Escreva a pergunta de um lado e a resposta do outro. Eu mostro de novo na hora certa: o que você erra volta logo, o que acerta volta cada vez mais espaçado.</p>
-    <div class="linha"><button class="botao grande" data-acao="revisar" ${v ? '' : 'disabled'}>${v ? `Revisar ${v}` : 'Nada para revisar hoje'}</button>
+  return `<section class="cartao"><div class="entre"><h2>Flashcards e cartões</h2><span class="fraco">${tot} ${tot === 1 ? 'cartão' : 'cartões'} · ${v} para hoje</span></div>
+    <p class="fraco" style="margin:0">Crie cartões à mão, digitados ou direto dentro das questões com a IA. O que você erra volta logo; o que acerta volta cada vez mais espaçado.</p>
+    <div class="linha"><button class="botao grande" data-acao="revisar" ${v ? '' : 'disabled'}>${v ? `Revisar ${v} de hoje` : 'Nada vencido hoje'}</button>
+      ${tot && !v ? `<button class="botao claro" data-acao="revisarTodos">Revisar todos (${tot})</button>` : ''}
       <button class="botao claro" data-acao="novoCartao">+ Novo cartão</button></div></section>
-    ${tot ? `<section class="cartao"><h2>Por matéria</h2>${[...new Set(S.cartoes.map(c => c.materia))].map(m => `<div class="entre prova"><span>${tag(m)}</span><span class="fraco">${S.cartoes.filter(c => c.materia === m).length} cartões</span></div>`).join('')}</section>` : ''}`;
+    ${tot ? `<section class="cartao"><h2>Por matéria</h2>${[...new Set(S.cartoes.map(c => c.materia))].map(m => `<div class="entre prova"><span>${tag(m)}</span><span class="fraco">${S.cartoes.filter(c => c.materia === m).length} cartões</span></div>`).join('')}
+      ${detalhe('vercartoes', `Ver meus cartões (${tot})`, `<div class="coluna" style="gap:8px">${S.cartoes.slice().reverse().map(c => `<div class="entre prova" style="align-items:flex-start"><div class="coluna" style="gap:2px"><span class="linha" style="gap:6px">${tag(c.materia)}${c.assunto ? `<span class="selo">${esc(c.assunto)}</span>` : ''}<span class="fraco" style="font-size:12px">próx.: ${diaCurto(c.prox)}</span></span>${c.frente ? `<strong>${esc(c.frente.slice(0, 120))}</strong><span class="fraco" style="font-size:13px">${esc((c.verso || '').slice(0, 140))}</span>` : '<span class="fraco">Cartão escrito à mão</span>'}</div><button class="x" data-acao="apagarCartao" data-id="${c.id}" title="Apagar cartão">×</button></div>`).join('')}</div>`)}</section>` : ''}`;
 }
 
 // ---------- IA com letra à mão ----------
@@ -326,17 +409,26 @@ Se a letra estiver difícil de ler, diga isso nos comentários. Responda SÓ com
     ui.carregando = ''; render();
   },
   novoCartao: () => { ui.novoCartao = true; render(); },
+  cartaoModo: el => { ui.cartaoModo = el.dataset.v; render(); },
   cancelarCartao: () => { ui.novoCartao = false; render(); },
   salvarCartao: async () => {
-    const f = quadroDe('novo-f'), v = quadroDe('novo-v');
-    if (!f || !v || f.vazio() || v.vazio()) { ui.iaMsg = 'Escreva a frente e o verso do cartão.'; render(); return; }
-    const id = uid();
-    await DB.set(`d:${id}:f`, { w: f.W0, s: f.tr }); await DB.set(`d:${id}:v`, { w: v.W0, s: v.tr });
-    await DB.del('d:novo-f'); await DB.del('d:novo-v');
-    S.cartoes.push({ id, materia: $('#c-mat')?.value || '', prox: hoje(), int: 0, fac: 2.3, n: 0 });
+    const id = uid(), materia = $('#c-mat')?.value || 'Biologia';
+    if (ui.cartaoModo === 'texto') {
+      const frente = ($('#c-frente')?.value || '').trim(), verso = ($('#c-verso')?.value || '').trim();
+      if (!frente || !verso) { ui.iaMsg = 'Escreva a frente e o verso do cartão.'; render(); return; }
+      S.cartoes.push({ id, tipo: 'texto', materia, frente, verso, prox: hoje(), int: 0, fac: 2.3, n: 0 });
+    } else {
+      const f = quadroDe('novo-f'), v = quadroDe('novo-v');
+      if (!f || !v || f.vazio() || v.vazio()) { ui.iaMsg = 'Escreva a frente e o verso do cartão.'; render(); return; }
+      await DB.set(`d:${id}:f`, { w: f.W0, s: f.tr }); await DB.set(`d:${id}:v`, { w: v.W0, s: v.tr });
+      await DB.del('d:novo-f'); await DB.del('d:novo-v');
+      S.cartoes.push({ id, materia, prox: hoje(), int: 0, fac: 2.3, n: 0 });
+    }
     salvar(); ui.novoCartao = false; ui.iaMsg = 'Cartão salvo.'; render();
   },
   revisar: () => { ui.cartao = { fila: cartoesVencidos().map(c => c.id).sort(() => Math.random() - 0.5), i: 0, virado: false }; render(); },
+  revisarTodos: () => { ui.cartao = { fila: S.cartoes.map(c => c.id).sort(() => Math.random() - 0.5), i: 0, virado: false }; render(); },
+  apagarCartao: el => { S.cartoes = S.cartoes.filter(c => c.id !== el.dataset.id); salvar(); render(); },
   virar: () => { ui.cartao.virado = true; render(); },
   nota: el => {
     const s = ui.cartao, c = S.cartoes.find(x => x.id === s.fila[s.i]), n = +el.dataset.v;

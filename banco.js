@@ -5,9 +5,10 @@
    Questão: { id, banca, ano, area, materia, assunto, dif, fig, enunciado, imagens[], alts:[{l,t,img}], gab, coment, res_ia, duvidas }. */
 
 S.qh ||= {}; // histórico por questão: { id: { ok, dia, n, ac, er, h: [[dia, 1|0, letra]] } }
-S.qExtras ||= {}; // resoluções e dúvidas geradas pela IA por questão (sincroniza entre aparelhos)
+S.qExtras ||= {}; // resoluções, dúvidas e flashcards gerados pela IA por questão (sincroniza entre aparelhos)
 const BANCO = { itens: [], pronto: false, carregando: false, msg: '', baixando: false };
 ui.qf = { assunto: '', mat: '', banca: '', ano: '', st: 'novas', tag: '', semFig: true, res: false, n: 15, ordem: 'sorteio' };
+ui.qIaModelo ||= 'argon';
 
 const AREAS_Q = [['', 'Todas'], ['ciencias-natureza', 'Natureza'], ['matematica', 'Matemática'], ['ciencias-humanas', 'Humanas'], ['linguagens', 'Linguagens']];
 const AREA_DA_MATERIA = { 'Biologia': 'ciencias-natureza', 'Química': 'ciencias-natureza', 'Física': 'ciencias-natureza', 'Matemática': 'matematica', 'História': 'ciencias-humanas', 'Geografia': 'ciencias-humanas', 'Filosofia': 'ciencias-humanas', 'Sociologia': 'ciencias-humanas', 'Português': 'linguagens', 'Literatura': 'linguagens', 'Inglês': 'linguagens' };
@@ -81,21 +82,51 @@ async function carregarBanco() {
       }
     } catch (e) { BANCO.msg = 'Não consegui abrir o banco: ' + e.message; }
     BANCO.pronto = true; BANCO.carregando = false; BANCO._prom = null; render();
+    sincronizarPacotesBanco(false);
   })();
   return BANCO._prom;
+}
+
+/** Atualiza automaticamente o banco de questões a partir da pasta pacotes/ do site quando há versão nova. */
+async function sincronizarPacotesBanco(forcar = false) {
+  if (BANCO.baixando) return;
+  try {
+    const rMan = await fetch('pacotes/manifesto.json', { cache: 'no-cache' });
+    if (!rMan.ok) return;
+    const man = await rMan.json();
+    const vAtual = await DB.get('banco:pacotesv') || 0;
+    const semAssunto = BANCO.itens.filter(q => !q.as).length;
+    if (!forcar && BANCO.itens.length >= 20000 && vAtual >= (man.v || 0) && semAssunto < 100) return;
+    BANCO.baixando = true; BANCO.repetidas = 0; BANCO.atualizadas = 0;
+    let total = 0;
+    for (const arq of man.arquivos || []) {
+      BANCO.msg = `Atualizando pacote ${arq.replace('.json.gz', '')}…`; render();
+      const r = await fetch('pacotes/' + arq);
+      if (!r.ok) continue;
+      const txt = await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).text();
+      const j = JSON.parse(txt), lista = Array.isArray(j) ? j : j.questoes || [];
+      const ok = lista.map(normalizarImportada).filter(Boolean);
+      total += await adicionarQuestoes(ok);
+    }
+    await DB.set('banco:pacotesv', man.v || Date.now());
+    BANCO.msg = total || BANCO.atualizadas ? `Banco sincronizado: ${BANCO.itens.length.toLocaleString('pt-BR')} questões prontas.` : '';
+  } catch (e) {
+    if (forcar) BANCO.msg = 'Não consegui atualizar os pacotes agora: ' + e.message;
+  }
+  BANCO.baixando = false; render();
 }
 
 /** Acrescenta questões ao banco (sem repetir ids) e devolve quantas entraram. */
 async function adicionarQuestoes(lista) {
   const pos = new Map(BANCO.itens.map((m, i) => [m.id, i])), atual = [];
-  // versão melhor de uma questão que já está no banco (a mesma questão agora em texto, "v" maior) ou que ganhou assunto: troca,
-  // guardando o que ela já fez nela (resolução da IA e dúvidas). O histórico de acertos continua, porque o id é o mesmo.
+  // versão melhor de uma questão que já está no banco (a mesma questão agora em texto, "v" maior) ou que ganhou/mudou assunto: troca,
+  // guardando o que ela já fez nela (resolução da IA, dúvidas e flashcards). O histórico de acertos continua, porque o id é o mesmo.
   for (const q of lista) {
     const i = q && pos.get(q.id); if (i == null) continue;
     const m = BANCO.itens[i];
-    if ((q.v || 0) > (m.v || 0) || (q.assunto && !m.as)) {
+    if ((q.v || 0) > (m.v || 0) || (q.assunto && q.assunto !== m.as) || (q.materia && q.materia !== m.m)) {
       const velho = await BD.get(q.id);
-      atual.push(velho ? { ...q, res_ia: velho.res_ia || q.res_ia || '', duvidas: velho.duvidas || q.duvidas || [] } : q); BANCO.itens[i] = metaDe(q);
+      atual.push(velho ? { ...q, res_ia: velho.res_ia || q.res_ia || '', duvidas: velho.duvidas || q.duvidas || [], flashcards: velho.flashcards || q.flashcards || [] } : q); BANCO.itens[i] = metaDe(q);
     }
   }
   // a versão de teste (id "tx-…") sai quando chega a definitiva, para não ficar repetida
@@ -183,8 +214,6 @@ function qMontar() {
       ${caixa('Ordem', 'ordem', [['sorteio', 'Sorteadas'], ['novas', 'Mais recentes primeiro'], ['antigas', 'Mais antigas primeiro']].map(([v, t]) => opcao(v, t, f.ordem)).join(''), false)}
     </div>
     <label class="filtro busca"><span>Procurar no texto</span><input type="search" data-qf="tag" value="${esc(f.tag)}" placeholder="Ex.: função quadrática, Segundo Reinado, mitose"></label>
-    <div class="linha marcas"><label class="marca-q"><input type="checkbox" data-qf-marca="semFig" ${f.semFig ? 'checked' : ''}> Esconder as que dependem de figura que não veio</label>
-      <label class="marca-q"><input type="checkbox" data-qf-marca="res" ${f.res ? 'checked' : ''}> Só com resolução</label></div>
     <div class="acao-q"><div class="coluna" style="gap:0"><strong class="n-achadas">${milhar(achadas.length)}</strong><span class="fraco">${achadas.length === 1 ? 'questão encontrada' : 'questões encontradas'}</span></div>
       <label class="filtro quantas"><span>Quantas</span><select data-qf="n">${[5, 10, 15, 20, 30, 50].map(n => opcao(n, String(n), f.n)).join('')}${opcao(9999, 'Todas', f.n >= 9999 ? 9999 : f.n)}</select></label>
       <button class="botao grande" data-acao="qGerar" ${achadas.length ? '' : 'disabled'}>Resolver${achadas.length ? ` ${Math.min(f.n, achadas.length)}` : ''}</button>
@@ -198,7 +227,8 @@ function cartaoBanco(aberto) {
   return `<section class="cartao">${detalhe('bancoinfo', `Banco de questões · ${milhar(todos.length)} questões · importar`, `
       ${todos.length ? `<div class="linha">${Object.entries(porMat).sort((a, b) => b[1] - a[1]).map(([m, n]) => `<span class="tag" style="${cor(m)}">${esc(m)} · ${milhar(n)}</span>`).join('')}</div>` : ''}
       ${BANCO.msg ? `<p style="margin:0">${esc(BANCO.msg)}</p>` : ''}
-      <div class="linha"><label class="botao claro" style="display:inline-flex;align-items:center">Importar arquivos<input type="file" accept="application/json,.json,.gz,application/gzip" multiple data-acao-arquivo="bancoImportar" hidden></label>
+      <div class="linha"><button class="botao claro" data-acao="bancoSincronizar" ${BANCO.baixando ? 'disabled' : ''}>${BANCO.baixando ? 'Sincronizando…' : 'Sincronizar banco oficial'}</button>
+        <label class="botao claro" style="display:inline-flex;align-items:center">Importar arquivos<input type="file" accept="application/json,.json,.gz,application/gzip" multiple data-acao-arquivo="bancoImportar" hidden></label>
         <button class="botao claro" data-acao="bancoEnem" ${BANCO.baixando ? 'disabled' : ''}>${BANCO.baixando ? 'Baixando…' : todos.some(q => q.b === 'ENEM') ? 'Atualizar ENEM' : 'Baixar o ENEM (2009–2023)'}</button>
         <button class="link" data-acao="bancoAjuda">Como importar?</button></div>`).replace('<details ', aberto || BANCO.msg ? '<details open ' : '<details ')}
     ${detalhe('iaq', 'Criar questões novas com a IA', `<p class="fraco" style="margin:0">A IA escreve questões inéditas no estilo da banca e elas ficam guardadas no banco. Podem ter erros: confira.</p>
@@ -238,12 +268,46 @@ const prevHtml = r => `<div class="coluna" style="gap:6px"><span class="rotulo">
   ${r.prev ? '<button class="link" data-acao="qPrevMais" style="align-self:flex-start">‹ O texto não está aqui? Ver a questão antes desta</button>' : ''}</div>`;
 /** Enunciado com a camada para riscar por cima com a caneta (o dedo continua rolando a página). */
 const riscavel = html => `<div class="q-riscavel">${html}${ui.qRiscar ? `<div class="quadro-vaga sobre" data-chave="qrisc${ui.qs.i}" data-altura="0" data-fundo="transparente"></div>` : ''}</div>`;
+function ajudaIaHtml(q, resp) {
+  const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado">${mdLite(q.res_ia)}</div></div>` : '';
+  const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia">${mdLite(d.r)}</div>`).join('');
+  const cards = (q.flashcards || []).map(c => `<div class="flash-salvo"><span class="rotulo">🗂 flashcard salvo em Cartões</span><strong>${mdLite(c.frente)}</strong><div class="fraco">${mdLite(c.verso)}</div></div>`).join('');
+  const mod = ui.qIaModelo || 'argon';
+  const selMod = `<div class="ia-modelo-bar"><span class="rotulo">modelo da IA:</span><div class="alterna" role="group">
+    ${[['argon', 'Argon'], ['flash', 'Flash'], ['flash-lite', 'Flash Lite']].map(([v, t]) => `<button type="button" data-acao="qIaModelo" data-v="${v}" aria-pressed="${mod === v}">${t}</button>`).join('')}
+  </div>${mod === 'argon' && typeof temArgon === 'function' && !temArgon() ? '<span class="fraco" style="font-size:12px">(sem chave Argon em Ajustes · usando Flash por enquanto)</span>' : ''}</div>`;
+  const prev = ui.qFlashPrev && ui.qFlashPrev.qid === q.id ? `<div class="flash-previa">
+    <div class="entre"><span class="rotulo">prévia do flashcard (${esc(ui.qFlashPrev.modelo || mod)}) — está bom assim ou quer alterar?</span><button class="x" data-acao="qFlashCancelar" title="Cancelar">×</button></div>
+    <label class="campo"><span>Frente (pergunta)</span><textarea id="flash-prev-frente" rows="2" data-ui-flash="frente">${esc(ui.qFlashPrev.frente)}</textarea></label>
+    <label class="campo"><span>Verso (resposta)</span><textarea id="flash-prev-verso" rows="3" data-ui-flash="verso">${esc(ui.qFlashPrev.verso)}</textarea></label>
+    ${ui.qFlashPrev.dica ? `<p class="fraco" style="margin:0;font-size:13px">💡 Dica: ${esc(ui.qFlashPrev.dica)}</p>` : ''}
+    <div class="linha" style="flex-wrap:nowrap;align-items:flex-end">
+      <input type="text" id="flash-ajuste-txt" placeholder="Quer mudar algo? Ex.: deixe mais curto, foque na fórmula, inclua exemplo…">
+      <button class="botao claro" data-acao="qFlashAlterar" ${ui.carregando ? 'disabled' : ''}>Pedir alteração (${mod === 'argon' ? 'Argon' : mod === 'flash' ? 'Flash' : 'Flash Lite'})</button>
+    </div>
+    <div class="linha">
+      <button class="botao grande destaque" data-acao="qFlashAprovar" ${ui.carregando ? 'disabled' : ''}>✓ Aprovar e criar flashcard (Flash Lite)</button>
+      <button class="botao contorno" data-acao="qFlashCancelar">Cancelar</button>
+    </div>
+  </div>` : '';
+  return detalhe('qia', `Perguntar à IA ou criar Flashcard${q.res_ia || duv || cards ? ' · já tem conteúdo aqui' : ''}`, `<div class="ajuda-ia">
+    ${selMod}
+    <div class="linha">
+      <button class="botao claro" data-acao="resolIa" ${ui.carregando ? 'disabled' : ''}>${q.res_ia ? 'Resolver de novo com a IA' : 'Ver a resolução pela IA'}</button>
+      <button class="botao claro" data-acao="qFlashPrevia" ${ui.carregando ? 'disabled' : ''}>🗂 Criar flashcard desta questão</button>
+    </div>
+    ${prev}${cards}${ia}${duv ? `<div class="msgs-duv">${duv}</div>` : ''}
+    <div class="linha" style="flex-wrap:wrap;align-items:flex-end">
+      <textarea id="duvida-txt" data-ui="duvidaTxt" rows="2" placeholder="Tire uma dúvida específica ou diga sobre o que quer criar um flashcard (ex.: por que a C está errada? / crie flashcard sobre a fórmula de Euler)" style="min-height:56px;flex:1 1 260px">${esc(ui.duvidaTxt || '')}</textarea>
+      <div class="linha"><button class="botao" data-acao="duvidaIa" ${ui.carregando ? 'disabled' : ''}>Perguntar</button>
+        <button class="botao contorno" data-acao="qFlashPrevia" ${ui.carregando ? 'disabled' : ''}>🗂 Virar flashcard</button></div>
+    </div></div>`);
+}
+
 function qQuestao() {
   if (ui.qs.simulado && typeof qQuestaoSimulado === 'function') return qQuestaoSimulado();
   const s = ui.qs, q = s.itens[s.i], resp = q.resp != null, ultima = s.i + 1 >= s.itens.length;
   if (ui.qPrevImg && ui.qPrevDe !== q.id) ui.qPrevImg = null;
-  const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado">${mdLite(q.res_ia)}</div></div>` : '';
-  const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia">${mdLite(d.r)}</div>`).join('');
   const nav = `<div class="q-nav"><button class="botao contorno" data-acao="qAnt" ${s.i ? '' : 'disabled'}>‹ Anterior</button>
       <button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar rascunho' : 'Rascunho'}</button>
       <button class="botao contorno" data-acao="qRiscar" aria-pressed="${!!ui.qRiscar}">${ui.qRiscar ? 'Parar de riscar' : 'Riscar na questão'}</button>
@@ -260,9 +324,8 @@ function qQuestao() {
     ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>
       ${q.modo === 'objetivo' ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
     ${nav}
-    ${ui.qRasc ? quadroHtml('qtmp' + s.i, 420, 'quadriculado') : ''}
-    ${resp ? detalhe('qia', `Perguntar à IA${q.res_ia || duv ? ' · já tem resposta aqui' : ''}`, `<div class="ajuda-ia"><div class="linha"><button class="botao claro" data-acao="resolIa" ${ui.carregando ? 'disabled' : ''}>${q.res_ia ? 'Resolver de novo com a IA' : 'Ver a resolução pela IA'}</button></div>${ia}${duv ? `<div class="msgs-duv">${duv}</div>` : ''}
-      <div class="linha" style="flex-wrap:nowrap;align-items:flex-end"><textarea id="duvida-txt" data-ui="duvidaTxt" rows="2" placeholder="Tire uma dúvida específica: por que a C está errada? Como eu faria sem calculadora?" style="min-height:56px">${esc(ui.duvidaTxt || '')}</textarea><button class="botao" data-acao="duvidaIa" ${ui.carregando ? 'disabled' : ''}>Perguntar</button></div></div>`) : ''}</section>`;
+    ${ui.qRasc ? quadroHtml('qtmp' + s.i, 520, 'quadriculado') : ''}
+    ${ajudaIaHtml(q, resp)}</section>`;
 }
 
 /** Mostra só a parte da imagem do Objetivo que interessa: o enunciado (de cima até o corte) ou a resolução (do corte para baixo). */
@@ -326,6 +389,7 @@ function normalizarImportada(q, i) {
 }
 
 Object.assign(ACOES, {
+  bancoSincronizar: () => sincronizarPacotesBanco(true),
   bancoEnem: () => baixarEnem(),
   bancoAjuda: () => abrirModal(`<div class="entre"><h2>Como importar questões</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
     <p>Toque em <b>Importar arquivos</b> e escolha um ou vários arquivos .json (dá para escolher todos de uma vez). Os arquivos prontos ficam na pasta <b>C:\\rotina-banco</b> do computador do Felipe: é só mandar para o iPad (AirDrop ou iCloud Drive) e escolher aqui.</p>
@@ -359,11 +423,57 @@ Object.assign(ACOES, {
     const itens = recs.map(q => {
       const ex = S.qExtras?.[q.id] || {};
       return { id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
-        enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: ex.res_ia || q.res_ia || '', duvidas: ex.duvidas || q.duvidas || [],
+        enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: ex.res_ia || q.res_ia || '', duvidas: ex.duvidas || q.duvidas || [], flashcards: ex.flashcards || q.flashcards || [],
         modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, assunto: q.assunto || '', num: q.num || '', tipo: q.tipo || '', discIa: ex.discIa || q.discIa || null };
     });
     if (itens.length) iniciarSessao(itens, extra);
   },
+  qIaModelo: el => { ui.qIaModelo = el.dataset.v || 'argon'; render(); },
+  qFlashPrevia: async () => {
+    const q = ui.qs.itens[ui.qs.i], pedido = ($('#duvida-txt')?.value || ui.duvidaTxt || '').trim();
+    const mod = ui.qIaModelo || 'argon';
+    ui.ab ||= {}; ui.ab.qia = true;
+    ui.carregando = `Criando prévia do flashcard com ${mod === 'argon' ? 'Argon' : mod === 'flash' ? 'Flash' : 'Flash Lite'}…`; render();
+    try {
+      const r = await chamarIa(`${textoQuestao(q)}\n${q.res_ia ? '\nResolução: ' + q.res_ia : ''}\n${pedido ? `\nPedido específico dela para o flashcard: ${pedido}` : '\nExtraia o conceito-chave, fórmula ou pegadinha mais importante desta questão para ela memorizar.'}\n\nCrie um rascunho de flashcard (frente = pergunta curta, direta e ativa; verso = resposta clara, enxuta e precisa, com fórmula em LaTeX se houver; dica = 1 linha opcional). Não copie a questão inteira; foque no conhecimento que resolve questões parecidas no vestibular de Medicina.\nResponda SÓ com JSON: {"frente":"...","verso":"...","dica":"..."}`, 1800, [], mod);
+      if (pedido) ui.duvidaTxt = '';
+      ui.qFlashPrev = { qid: q.id, frente: String(r.frente || '').trim(), verso: String(r.verso || '').trim(), dica: String(r.dica || '').trim(), modelo: mod };
+    } catch (e) { ui.iaMsg = `Não consegui criar a prévia do flashcard (${e.message}).`; }
+    ui.carregando = ''; render();
+  },
+  qFlashAlterar: async () => {
+    const q = ui.qs.itens[ui.qs.i], prev = ui.qFlashPrev; if (!prev) return;
+    const ajuste = ($('#flash-ajuste-txt')?.value || '').trim();
+    const fAtual = ($('#flash-prev-frente')?.value || prev.frente || '').trim();
+    const vAtual = ($('#flash-prev-verso')?.value || prev.verso || '').trim();
+    if (!ajuste) { ui.iaMsg = 'Digite o que quer mudar no flashcard ou edite o texto direto nas caixas.'; render(); return; }
+    const mod = ui.qIaModelo || 'argon';
+    ui.carregando = `Ajustando o flashcard com ${mod === 'argon' ? 'Argon' : mod === 'flash' ? 'Flash' : 'Flash Lite'}…`; render();
+    try {
+      const r = await chamarIa(`${textoQuestao(q)}\n\nRascunho atual do flashcard:\nFrente: ${fAtual}\nVerso: ${vAtual}\nDica: ${prev.dica || ''}\n\nAlteração pedida por ela: ${ajuste}\n\nReescreva o flashcard aplicando o que ela pediu. Responda SÓ com JSON: {"frente":"...","verso":"...","dica":"..."}`, 1800, [], mod);
+      ui.qFlashPrev = { qid: q.id, frente: String(r.frente || fAtual).trim(), verso: String(r.verso || vAtual).trim(), dica: String(r.dica ?? prev.dica ?? '').trim(), modelo: mod };
+    } catch (e) { ui.iaMsg = `Não consegui alterar agora (${e.message}).`; }
+    ui.carregando = ''; render();
+  },
+  qFlashAprovar: async () => {
+    const q = ui.qs.itens[ui.qs.i], prev = ui.qFlashPrev; if (!prev) return;
+    const fAprov = ($('#flash-prev-frente')?.value || prev.frente || '').trim();
+    const vAprov = ($('#flash-prev-verso')?.value || prev.verso || '').trim();
+    if (!fAprov || !vAprov) { ui.iaMsg = 'A frente e o verso não podem ficar em branco.'; render(); return; }
+    ui.carregando = 'Finalizando e criando o flashcard com Flash Lite…'; render();
+    let frente = fAprov, verso = vAprov, dica = prev.dica || '';
+    try {
+      const r = await chamarIa(`Finalize e formate este flashcard já aprovado pela estudante (mantenha o texto fiel ao aprovado, apenas garanta formatação limpa e clara para revisão espaçada de Medicina):\nFrente aprovada: ${fAprov}\nVerso aprovado: ${vAprov}\nDica: ${dica}\nMatéria: ${q.materia || ''}\nAssunto: ${q.assunto || ''}\nResponda SÓ com JSON: {"frente":"...","verso":"...","dica":"..."}`, 1200, [], 'flash-lite');
+      if (r.frente && r.verso) { frente = String(r.frente).trim(); verso = String(r.verso).trim(); dica = String(r.dica ?? dica).trim(); }
+    } catch { /* se estiver sem cota no instante da aprovação, cria direto com o texto aprovado */ }
+    const novo = { id: uid(), tipo: 'texto', materia: q.materia || 'Biologia', assunto: q.assunto || '', fonte: q.fonte || '', qid: q.id || '', ft: frente, vt: verso, frente, verso, dica, prox: hoje(), int: 0, fac: 2.3, n: 0 };
+    S.cartoes ||= []; S.cartoes.push(novo);
+    await guardarNaQuestao(q, { flashcards: [...(q.flashcards || []), { id: novo.id, frente, verso, dica }] });
+    ui.qFlashPrev = null; ui.carregando = '';
+    ui.iaMsg = '✓ Flashcard criado pelo Flash Lite e guardado em Caderno → Cartões!';
+    salvar(); render();
+  },
+  qFlashCancelar: () => { ui.qFlashPrev = null; render(); },
   qIaBanco: async () => {
     ui.qTema = ($('#q-tema')?.value ?? ui.qTema).trim(); const n = Math.max(1, Math.min(60, Math.round(+$('#qia-n')?.value || +ui.qNIa || 10))); ui.qNIa = n;
     ui.iaMsg = '';
@@ -385,19 +495,21 @@ Object.assign(ACOES, {
     } catch (e) { ui.carregando = ''; ui.iaMsg = `Não consegui gerar agora (${e.message}).`; render(); }
   },
   resolIa: async () => {
-    const q = ui.qs.itens[ui.qs.i]; ui.carregando = 'A IA está resolvendo…'; render();
+    const q = ui.qs.itens[ui.qs.i], mod = ui.qIaModelo || 'argon'; ui.carregando = 'A IA está resolvendo…'; render();
     try {
-      const r = await chamarIa(`Resolva esta questão de vestibular para uma estudante de Medicina, em português do Brasil, de forma clara e organizada: (1) o que a questão pede; (2) o raciocínio passo a passo até a alternativa certa (o gabarito oficial é dado: se o seu raciocínio chegar em outra, diga a dúvida); (3) em uma linha cada, por que as outras alternativas estão erradas; (4) o conceito para fixar. Use texto simples, sem tabelas. Vá direto ao conteúdo: sem saudação, sem comentar prazos ou provas.\n\n${textoQuestao(q)}\n\nResponda SÓ com JSON: {"resolucao":"..."}`, 3500, [], 'texto');
+      const r = await chamarIa(`Resolva esta questão de vestibular para uma estudante de Medicina, em português do Brasil, de forma clara e organizada: (1) o que a questão pede; (2) o raciocínio passo a passo até a alternativa certa (o gabarito oficial é dado: se o seu raciocínio chegar em outra, diga a dúvida); (3) em uma linha cada, por que as outras alternativas estão erradas; (4) o conceito para fixar. Use texto simples, sem tabelas. Vá direto ao conteúdo: sem saudação, sem comentar prazos ou provas.\n\n${textoQuestao(q)}\n\nResponda SÓ com JSON: {"resolucao":"..."}`, 3500, [], mod);
       await guardarNaQuestao(q, { res_ia: String(r.resolucao || '').trim() });
     } catch (e) { ui.iaMsg = `Não consegui resolver agora (${e.message}).`; }
     ui.carregando = ''; render();
   },
   duvidaIa: async () => {
     const q = ui.qs.itens[ui.qs.i], p = ($('#duvida-txt')?.value || ui.duvidaTxt || '').trim(); if (!p) return;
+    if (/^\s*(crie|criar|faz|faça| montar|gerar)\s+(um\s+)?flash\s*card/i.test(p)) { await ACOES.qFlashPrevia(); return; }
+    const mod = ui.qIaModelo || 'argon';
     ui.duvidaTxt = ''; ui.carregando = 'A IA está pensando…'; render();
     try {
       const hist = (q.duvidas || []).slice(-3).map(d => `Ela: ${d.p}\nVocê: ${d.r}`).join('\n');
-      const r = await chamarIa(`${textoQuestao(q)}\n${q.res_ia ? '\nResolução já dada: ' + q.res_ia : ''}\n${hist ? '\nConversa até aqui:\n' + hist : ''}\n\nDúvida dela: ${p}\nResponda de forma direta, didática e correta, em português do Brasil, só ao que foi perguntado, sem saudação nem comentários sobre prazos ou provas. Responda SÓ com JSON: {"resposta":"..."}`, 2500, [], 'texto');
+      const r = await chamarIa(`${textoQuestao(q)}\n${q.res_ia ? '\nResolução já dada: ' + q.res_ia : ''}\n${hist ? '\nConversa até aqui:\n' + hist : ''}\n\nDúvida dela: ${p}\nResponda de forma direta, didática e correta, em português do Brasil, só ao que foi perguntado, sem saudação nem comentários sobre prazos ou provas. Responda SÓ com JSON: {"resposta":"..."}`, 2500, [], mod);
       await guardarNaQuestao(q, { duvidas: [...(q.duvidas || []), { p, r: String(r.resposta || '').trim() }] });
     } catch (e) { ui.iaMsg = `Não consegui responder agora (${e.message}).`; ui.duvidaTxt = p; }
     ui.carregando = ''; render();

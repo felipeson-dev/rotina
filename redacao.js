@@ -153,9 +153,10 @@ Object.assign(ACOES, {
 
 // ---------- cartões: digitados, gerados pela IA ou à mão ----------
 function cartaoLado(c, lado) {
-  const t = lado === 'f' ? c.ft : c.vt;
+  const t = lado === 'f' ? (c.ft ?? c.frente) : (c.vt ?? c.verso);
   const rot = lado === 'f' ? 'Pergunta' : 'Resposta';
-  return `<div class="lado ${lado === 'f' ? 'pergunta' : 'resposta'}"><span class="lado-rotulo">${rot}</span>${t != null ? `<div class="cartao-texto">${esc(t)}</div>` : `<img class="desenho" data-desenho="${c.id}:${lado}" data-prop="${lado === 'f' ? 0.4 : 0.5}" alt="${rot}">`}</div>`;
+  const fmt = typeof mdLite === 'function' ? mdLite : esc;
+  return `<div class="lado ${lado === 'f' ? 'pergunta' : 'resposta'}"><span class="lado-rotulo">${rot}</span>${t != null ? `<div class="cartao-texto">${fmt(t)}</div>${lado === 'f' && c.dica ? `<p class="fraco" style="margin:6px 0 0;font-size:13px">💡 Dica: ${esc(c.dica)}</p>` : ''}` : `<img class="desenho" data-desenho="${c.id}:${lado}" data-prop="${lado === 'f' ? 0.4 : 0.5}" alt="${rot}">`}</div>`;
 }
 
 function vCartoes() {
@@ -173,7 +174,7 @@ function vCartoes() {
     const c = S.cartoes.find(x => x.id === s.fila[s.i]);
     if (!c) return `<section class="cartao"><h2>Revisão terminada</h2><p style="margin:0">Você revisou ${s.fila.length} ${s.fila.length === 1 ? 'cartão' : 'cartões'}. Volte amanhã.</p>
       <div class="linha"><button class="botao" data-acao="fimRevisao">Voltar</button></div></section>`;
-    return `<section class="cartao cartao-rev" style="${cor(c.materia)}"><div class="entre"><span class="rotulo">${s.i + 1} de ${s.fila.length}</span>${tag(c.materia)}</div>
+    return `<section class="cartao cartao-rev" style="${cor(c.materia)}"><div class="entre"><span class="rotulo">${s.i + 1} de ${s.fila.length}</span><span class="linha" style="gap:6px">${tag(c.materia)}${c.assunto ? `<span class="selo">${esc(c.assunto)}</span>` : ''}${c.fonte ? `<span class="fraco" style="font-size:12px">${esc(c.fonte)}</span>` : ''}</span></div>
       ${cartaoLado(c, 'f')}
       ${s.virado ? `<hr>${cartaoLado(c, 'v')}
         <div class="linha"><button class="botao contorno" data-acao="nota" data-v="0">Errei</button><button class="botao contorno" data-acao="nota" data-v="1">Difícil</button>
@@ -182,8 +183,8 @@ function vCartoes() {
   }
   const v = cartoesVencidos().length, tot = S.cartoes.length, g = ui.cgLista;
   return `<section class="cartao"><div class="entre"><h2>Cartões</h2><span class="fraco">${tot} ${tot === 1 ? 'cartão' : 'cartões'} · ${v} para hoje</span></div>
-    <p class="fraco" style="margin:0">Escreva (à mão ou digitando) a pergunta de um lado e a resposta do outro, ou peça para a IA gerar. Eu mostro de novo na hora certa: o que você erra volta logo, o que acerta volta cada vez mais espaçado.</p>
-    <div class="linha"><button class="botao grande" data-acao="revisar" ${v ? '' : 'disabled'}>${v ? `Revisar ${v}` : 'Nada para revisar hoje'}</button><button class="botao claro" data-acao="novoCartao">+ Novo cartão</button></div></section>
+    <p class="fraco" style="margin:0">Escreva (à mão ou digitando) a pergunta de um lado e a resposta do outro, crie direto dentro das questões ou peça para a IA gerar. O que você erra volta logo; o que acerta volta cada vez mais espaçado.</p>
+    <div class="linha"><button class="botao grande" data-acao="revisar" ${v ? '' : 'disabled'}>${v ? `Revisar ${v}` : 'Nada para revisar hoje'}</button>${tot && !v ? `<button class="botao claro" data-acao="revisarTodos">Revisar todos (${tot})</button>` : ''}<button class="botao claro" data-acao="novoCartao">+ Novo cartão</button></div></section>
     <section class="cartao"><h2>Gerar cartões com a IA</h2><p class="fraco" style="margin:0">Diga o que você quer, com as características que preferir.</p>
       <div class="linha"><label class="campo" style="flex:1 1 180px">Matéria<select data-ui="cgMat">${Object.keys(MATERIAS).map(m => `<option ${ui.cgMat === m ? 'selected' : ''}>${m}</option>`).join('')}</select></label></div>
       <textarea id="cg-pedido" data-ui="cgPedido" placeholder="Ex.: 10 cartões sobre o ciclo de Krebs, com pergunta curta e resposta objetiva. Pode incluir um macete para decorar.">${esc(ui.cgPedido)}</textarea>
@@ -192,7 +193,8 @@ function vCartoes() {
         <button class="botao" data-acao="cgGerar">Gerar ${ui.cgN}</button></div>
       ${g ? `<div class="coluna" style="gap:8px"><span class="rotulo">revise antes de adicionar</span>${g.map((x, i) => `<label class="cg-item"><input type="checkbox" data-acao="cgMarca" data-i="${i}" ${x.sel ? 'checked' : ''}><span><b>${esc(x.frente)}</b><br><span class="fraco">${esc(x.verso)}</span></span></label>`).join('')}
         <div class="linha"><button class="botao grande" data-acao="cgAdd">Adicionar ${g.filter(x => x.sel).length} ${g.filter(x => x.sel).length === 1 ? 'cartão' : 'cartões'}</button><button class="botao contorno" data-acao="cgDescartar">Descartar</button></div></div>` : ''}</section>
-    ${tot ? `<section class="cartao"><h2>Por matéria</h2>${[...new Set(S.cartoes.map(c => c.materia))].map(m => `<div class="entre prova"><span>${tag(m)}</span><span class="fraco">${S.cartoes.filter(c => c.materia === m).length} cartões</span></div>`).join('')}</section>` : ''}`;
+    ${tot ? `<section class="cartao"><h2>Por matéria</h2>${[...new Set(S.cartoes.map(c => c.materia))].map(m => `<div class="entre prova"><span>${tag(m)}</span><span class="fraco">${S.cartoes.filter(c => c.materia === m).length} cartões</span></div>`).join('')}
+      ${detalhe('vercartoes', `Ver meus cartões (${tot})`, `<div class="coluna" style="gap:8px">${S.cartoes.slice().reverse().map(c => `<div class="entre prova" style="align-items:flex-start"><div class="coluna" style="gap:2px"><span class="linha" style="gap:6px">${tag(c.materia)}${c.assunto ? `<span class="selo">${esc(c.assunto)}</span>` : ''}<span class="fraco" style="font-size:12px">próx.: ${diaCurto(c.prox)}</span></span>${(c.ft || c.frente) ? `<strong>${esc((c.ft || c.frente).slice(0, 120))}</strong><span class="fraco" style="font-size:13px">${esc((c.vt || c.verso || '').slice(0, 140))}</span>` : '<span class="fraco">Cartão escrito à mão</span>'}</div><button class="x" data-acao="apagarCartao" data-id="${c.id}" title="Apagar cartão">×</button></div>`).join('')}</div>`)}</section>` : ''}`;
 }
 
 Object.assign(ACOES, {

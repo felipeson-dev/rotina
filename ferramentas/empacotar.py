@@ -4,8 +4,9 @@ o app troca a versão em imagem pela de texto ao importar de novo (e o históric
 Pode rodar quantas vezes quiser (por exemplo, a cada dia de transcrição): cada pacote novo melhora o anterior.
 Uso: python empacotar.py
 """
-import gzip, json, os, sys, time
+import gzip, json, os, shutil, sys, time
 SAIDA = r'C:\rotina-banco'
+PACOTES_WEB = r'C:\rotina\pacotes'
 TRANSCRITO = sys.argv[1] if len(sys.argv) > 1 else os.path.join(SAIDA, 'transcrito.json')
 GRUPOS = [  # mesmos grupos de oficiais.py
     ('6-oficiais-Fuvest-Unicamp-UNESP', ['fuvest', 'unicamp', 'unesp']),
@@ -22,6 +23,8 @@ GRUPOS_DISC = [
 def principal():
     tx = {x['id'][3:]: x for x in json.load(open(TRANSCRITO, encoding='utf-8'))} if os.path.exists(TRANSCRITO) else {}
     total_t = total_i = 0
+    os.makedirs(PACOTES_WEB, exist_ok=True)
+    arquivos_gerados = []
     for nome, bancas in GRUPOS:
         orig = []
         for b in bancas:
@@ -57,6 +60,8 @@ def principal():
         with gzip.open(tmp, 'wt', encoding='utf-8', compresslevel=9) as f:
             json.dump(saida, f, ensure_ascii=False, separators=(',', ':'))
         os.replace(tmp, p)
+        shutil.copy2(p, os.path.join(PACOTES_WEB, nome + '.json.gz'))
+        arquivos_gerados.append(nome + '.json.gz')
         total_t += n_txt; total_i += len(saida) - n_txt
         print(f'{nome}: {len(saida)} questões · {n_txt} em texto · {len(saida) - n_txt} em imagem · {os.path.getsize(p) / 1e6:.1f} MB', flush=True)
     print(f'{time.strftime("%d/%m %H:%M")} total: {total_t} em texto, {total_i} em imagem', flush=True)
@@ -73,7 +78,12 @@ def principal():
         with gzip.open(p + '.tmp', 'wt', encoding='utf-8', compresslevel=9) as f:
             json.dump(lista, f, ensure_ascii=False, separators=(',', ':'))
         os.replace(p + '.tmp', p)
+        shutil.copy2(p, os.path.join(PACOTES_WEB, nome + '.json.gz'))
+        arquivos_gerados.append(nome + '.json.gz')
         print(f'{nome}: {len(lista)} discursivas · {os.path.getsize(p) / 1e6:.1f} MB', flush=True)
+    manifesto = {'v': int(time.time()), 'total': total_t + total_i, 'texto': total_t, 'arquivos': arquivos_gerados}
+    with open(os.path.join(PACOTES_WEB, 'manifesto.json'), 'w', encoding='utf-8') as f:
+        json.dump(manifesto, f, ensure_ascii=False)
 
 if __name__ == '__main__':
     principal()

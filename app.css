@@ -575,9 +575,12 @@ input[type="search"]:focus { border-color: var(--acento); }
 .alts.so-letras .alt-linha { flex: 0 1 84px; flex-direction: column; }
 .alts.so-letras .alt-linha .risca { width: auto; height: 30px; }
 .q-riscavel { position: relative; }
-.quadro.sobre { position: absolute; inset: 0; z-index: 2; }
-.quadro.sobre .quadro-barra { display: none; }
+.q-riscavel:has(.quadro.sobre) { padding-top: 52px; }
+.quadro.sobre { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; }
+.quadro.sobre .quadro-barra { display: flex; background: color-mix(in srgb, var(--painel) 94%, transparent); backdrop-filter: blur(6px); border-radius: 12px 12px 0 0; border: 1px solid color-mix(in srgb, var(--acento) 45%, transparent); border-bottom: 0; padding: 6px 8px; }
+.quadro.sobre .quadro-area { flex: 1; }
 .fundo-transparente .quadro-area { background: transparent !important; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--acento) 45%, transparent); }
+.quadro.sobre.fundo-quadriculado .quadro-area { background-color: transparent !important; background-image: linear-gradient(to right, color-mix(in srgb, var(--acento) 22%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in srgb, var(--acento) 22%, transparent) 1px, transparent 1px) !important; background-size: 24px 24px !important; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--acento) 45%, transparent); }
 .q-mapa button.resp { background: var(--suave); border-color: var(--acento); color: var(--tinta); }
 /* revisões e simulados */
 .rev-lista { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -628,3 +631,14 @@ input[type="search"]:focus { border-color: var(--acento); }
 /* listas abertas no banco de questões */
 .listas-abertas { border-color: color-mix(in srgb, var(--acento) 45%, var(--borda)); background: color-mix(in srgb, var(--suave) 35%, var(--painel)); }
 .botao.destaque { background: var(--acento); color: var(--sobre-acento); }
+
+/* barra completa da caneta + flashcards na questão */
+.qcor-branca { border: 1.5px solid var(--fraco) !important; }
+.qcor-custom { position: relative; overflow: hidden; background: conic-gradient(#f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00) !important; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.qcor-custom input[type="color"] { position: absolute; inset: -6px; opacity: 0; width: 36px; height: 36px; cursor: pointer; padding: 0; border: 0; }
+.qb-esp { min-width: 32px; padding: 4px 8px !important; font-weight: 700; }
+.qb-destaque { background: color-mix(in srgb, var(--acento) 20%, var(--painel2)) !important; color: var(--tinta) !important; font-weight: 700; }
+.ia-modelo-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-bottom: 4px; border-bottom: 1px dashed var(--linha); }
+.flash-previa { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px; background: var(--painel); border: 2px solid var(--acento); }
+.flash-salvo { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 14px; background: var(--painel); border: 1px solid var(--linha); }
+.flash-face { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 16px; background: var(--painel2); min-height: 90px; }

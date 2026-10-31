@@ -195,14 +195,29 @@ const CHAVE_LLAMA = 'rotina.llama';
 const lerLlama = () => { try { return JSON.parse(localStorage.getItem(CHAVE_LLAMA) || '{}'); } catch { return {}; } };
 const gravarLlama = o => { try { localStorage.setItem(CHAVE_LLAMA, JSON.stringify(o)); } catch { } };
 const temLlama = () => !!lerLlama().chave;
-const GEMINI = { texto: ['gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.5-flash'], visao: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'] };
+const CHAVE_ARGON = 'rotina.argon';
+const lerArgon = () => { try { return JSON.parse(localStorage.getItem(CHAVE_ARGON) || '{}'); } catch { return {}; } };
+const gravarArgon = o => { try { localStorage.setItem(CHAVE_ARGON, JSON.stringify(o)); } catch { } };
+const temArgon = () => !!lerArgon().chave;
+const GEMINI = {
+  texto: ['gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.5-flash'],
+  visao: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'],
+  flash: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'],
+  'flash-lite': ['gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.5-flash'],
+};
 
 const usoHoje = () => { S.uso ||= {}; if (S.uso.dia !== hoje()) S.uso = { dia: hoje(), n: {}, fim: {} }; return S.uso; };
 const marcarUso = (id, ok = true) => { const u = usoHoje(); u.n[id] = (u.n[id] || 0) + 1; if (!ok) u.fim[id] = true; };
 
 function rotaIa(tarefa) {
-  const l = lerLlama(), r = [];
-  const gem = GEMINI[tarefa] || GEMINI.texto;
+  const l = lerLlama(), ar = lerArgon(), r = [];
+  if (tarefa === 'argon' && ar.chave) {
+    const ch = ar.chave.trim();
+    const t = ch.startsWith('sk-ant-') ? 'anthropic' : ch.startsWith('AIza') ? 'gemini' : 'openrouter';
+    const modPadrao = t === 'anthropic' ? 'claude-sonnet-4-20250514' : t === 'gemini' ? 'gemini-2.5-pro' : 'anthropic/claude-sonnet-4';
+    r.push({ t, id: 'argon', modelo: (ar.modelo || '').trim() || modPadrao, chave: ch });
+  }
+  const gem = GEMINI[tarefa] || (tarefa === 'argon' ? GEMINI.flash : GEMINI.texto);
   if (tarefa === 'texto' && l.chave) r.push({ t: 'llama', id: 'llama', prov: l.prov || 'groq', modelo: l.modelo || PROVEDORES[l.prov || 'groq'].modelo, chave: l.chave });
   const chaves = lerChaves().map(k => (k || '').trim()).filter(Boolean);
   for (const m of gem) for (const k of chaves) r.push({ t: 'gemini', id: m + '|' + chaves.indexOf(k), modelo: m, chave: k });
@@ -210,7 +225,7 @@ function rotaIa(tarefa) {
   return [...r.filter(x => !fim[x.id]), ...r.filter(x => fim[x.id])]; // os esgotados vão para o fim, por garantia
 }
 
-/** Chama a IA conforme a tarefa. `imagens` = dataURLs jpeg (letra à mão). Devolve o JSON da resposta. */
+/** Chama a IA conforme a tarefa ('texto', 'visao', 'argon', 'flash', 'flash-lite'). `imagens` = dataURLs jpeg (letra à mão). Devolve o JSON da resposta. */
 async function chamarIa(prompt, max = 8000, imagens = [], tarefa = imagens.length ? 'visao' : 'texto') {
   let erro = 'sem chave';
   const rota = rotaIa(tarefa);
@@ -223,6 +238,17 @@ async function chamarIa(prompt, max = 8000, imagens = [], tarefa = imagens.lengt
         r = await fetch(PROVEDORES[x.prov].url, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + x.chave },
           body: JSON.stringify({ model: x.modelo, temperature: 0.6, max_tokens: Math.min(max, 8000), response_format: { type: 'json_object' },
             messages: [{ role: 'system', content: sistema() + '\nResponda sempre em JSON válido.' }, { role: 'user', content: prompt }] }), signal: AbortSignal.timeout(40000) });
+      } else if (x.t === 'openrouter') {
+        if (imagens.length) continue;
+        r = await fetch('https://openrouter.ai/api/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + x.chave },
+          body: JSON.stringify({ model: x.modelo, temperature: 0.5, max_tokens: Math.min(max, 8000), response_format: { type: 'json_object' },
+            messages: [{ role: 'system', content: sistema() + '\nResponda sempre em JSON válido.' }, { role: 'user', content: prompt }] }), signal: AbortSignal.timeout(45000) });
+      } else if (x.t === 'anthropic') {
+        if (imagens.length) continue;
+        r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': x.chave, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+          body: JSON.stringify({ model: x.modelo, max_tokens: Math.min(max, 4096), system: sistema() + '\nResponda APENAS com um objeto JSON válido, sem markdown em volta.',
+            messages: [{ role: 'user', content: prompt }] }), signal: AbortSignal.timeout(45000) });
       } else {
         const partes = [{ text: prompt }, ...imagens.map(d => ({ inlineData: { mimeType: 'image/jpeg', data: d.split(',')[1] } }))];
         r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${x.modelo}:generateContent`, { method: 'POST',
@@ -233,15 +259,17 @@ async function chamarIa(prompt, max = 8000, imagens = [], tarefa = imagens.lengt
     } catch (e) { erro = e.name === 'TimeoutError' ? 'a IA demorou demais' : 'sem internet?'; continue; }
     if (r.ok) {
       const j = await r.json();
-      const t = x.t === 'llama' ? (j.choices?.[0]?.message?.content || '') : (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
-      try { const out = JSON.parse(t.replace(/^```(json)?|```$/g, '').trim()); marcarUso(x.id); ui.ultimaIa = x.t === 'llama' ? 'Llama · ' + x.modelo : x.modelo; salvar(); return out; } catch { erro = 'resposta incompleta'; continue; }
+      const t = (x.t === 'llama' || x.t === 'openrouter') ? (j.choices?.[0]?.message?.content || '')
+        : x.t === 'anthropic' ? (j.content || []).map(p => p.text || '').join('')
+        : (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+      try { const out = JSON.parse(t.replace(/^```(json)?|```$/g, '').trim()); marcarUso(x.id); ui.ultimaIa = x.id === 'argon' ? 'Argon · ' + x.modelo : x.t === 'llama' ? 'Llama · ' + x.modelo : x.modelo; salvar(); return out; } catch { erro = 'resposta incompleta'; continue; }
     }
     if (r.status === 429) { marcarUso(x.id, false); erro = 'a cota grátis acabou por agora'; }
-    else erro = r.status === 503 ? 'a IA está sobrecarregada' : r.status === 401 || r.status === 403 ? 'chave recusada (' + (x.t === 'llama' ? 'Llama' : 'Gemini') + ')' : `erro ${r.status}`;
+    else erro = r.status === 503 ? 'a IA está sobrecarregada' : r.status === 401 || r.status === 403 ? 'chave recusada (' + x.id + ')' : `erro ${r.status}`;
   }
   throw new Error(erro);
 }
-const temChaveIa = () => temChave() || temLlama();
+const temChaveIa = () => temChave() || temLlama() || temArgon();
 
 const ACOES_IA = `Responda SÓ com JSON: {"resposta": "1 a 3 frases curtas para ela", "acoes": [ ... ]}
 Ações possíveis (use só as necessárias; lista vazia se for só conversa):
@@ -765,7 +793,7 @@ function anoMapa(meses, m0) {
 }
 
 function vAjustes() {
-  const p = S.perfil, ks = lerChaves(), ll = lerLlama();
+  const p = S.perfil, ks = lerChaves(), ll = lerLlama(), ar = lerArgon();
   const campo = (k, rot, tipo = 'text', dica = '') => `<label class="campo">${rot}${dica ? `<small>${dica}</small>` : ''}
     <input type="${tipo}" data-campo="${k}" value="${esc(p[k])}"></label>`;
   const caixa = (k, rot, dica, ph) => `<label class="campo">${rot}<small>${dica}</small><textarea data-campo="${k}" placeholder="${ph}">${esc(p[k])}</textarea></label>`;
@@ -809,6 +837,10 @@ function vAjustes() {
       <label class="campo">Serviço<select data-llama="prov">${Object.entries(PROVEDORES).map(([k, v]) => `<option value="${k}" ${(ll.prov || 'groq') === k ? 'selected' : ''}>${v.nome}</option>`).join('')}</select></label>
       <label class="campo">Chave do Llama<input type="password" data-llama="chave" value="${esc(ll.chave || '')}" autocomplete="off"></label>
       <label class="campo">Modelo<small>Deixe em branco para usar o padrão (${esc(PROVEDORES[ll.prov || 'groq'].modelo)}).</small><input type="text" data-llama="modelo" value="${esc(ll.modelo || '')}" placeholder="${esc(PROVEDORES[ll.prov || 'groq'].modelo)}"></label>
+      <hr>
+      <p class="fraco" style="margin:0"><strong>Argon (opcional — futuro)</strong>: para dúvidas nas questões e criação do rascunho de flashcards (aceita chave Anthropic <code>sk-ant-…</code>, OpenRouter <code>sk-or-…</code> ou Gemini Pro). Enquanto estiver em branco, o botão Argon usa o Flash automaticamente.</p>
+      <label class="campo">Chave do Argon<input type="password" data-argon="chave" value="${esc(ar.chave || '')}" autocomplete="off"></label>
+      <label class="campo">Modelo do Argon (opcional)<input type="text" data-argon="modelo" value="${esc(ar.modelo || '')}" placeholder="Ex.: claude-sonnet-4-20250514 ou anthropic/claude-sonnet-4"></label>
       <div class="linha"><button class="botao claro" data-acao="testarIa">Testar a IA</button></div>
       <p class="fraco" style="margin:0;font-size:14px">Usos de hoje: ${Object.entries(usoHoje().n).map(([k, v]) => `${esc(k.split('|')[0])} ${v}${usoHoje().fim[k] ? ' (cota acabou)' : ''}`).join(' · ') || 'nenhum ainda'}.</p>
     </section>
@@ -1218,6 +1250,7 @@ document.addEventListener('change', e => {
   if (el.dataset.cor) { const y = window.scrollY; ui.coresPrev = { ...(ui.coresPrev || S.cores), [el.dataset.cor]: el.value }; render(); window.scrollTo(0, y); }
   if (el.id === 'horas-livres') { const v = parseFloat(el.value); if (v > 0) { ui.horas = Math.min(16, v); diaHoje().horas = ui.horas; salvar(); } }
   if (el.dataset.llama) { gravarLlama({ ...lerLlama(), [el.dataset.llama]: el.value.trim() }); if (el.dataset.llama === 'prov') render(); }
+  if (el.dataset.argon) { gravarArgon({ ...lerArgon(), [el.dataset.argon]: el.value.trim() }); }
   if (el.dataset.chave) { const ks = lerChaves(); ks[+el.dataset.chave] = el.value.trim(); gravarChaves(ks); }
   if (el.dataset.acaoArquivo === 'importar' && el.files?.[0]) {
     el.files[0].text().then(t => {
