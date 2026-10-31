@@ -41,6 +41,36 @@ function metaTotal() { const t = soma(Object.values(metasPorMateria()), x => x);
 const feitasHoje = m => (S.qlog[hoje()] || {})[m]?.f || 0;
 const minQuestoes = metas => Math.round(soma(Object.entries(metas), ([m, n]) => n * minPorQ(m)));
 
+/** Quantidade de questões para um bloco de hoje: usa a meta do dia dividida pelos assuntos da matéria (ou o padrão do assunto). */
+function questoesDoBloco(b) {
+  if (!b) return 15;
+  if (b.tipo === 'revisao') return Math.max(4, ((b.revisao || []).length || 1) * (b.vaga === 'dia' ? 4 : 5));
+  const a = b.assuntoId && achar(b.assuntoId);
+  const metas = metasPorMateria(), metaMat = metas[b.materia];
+  if (metaMat > 0) {
+    const d = S.dias[hoje()];
+    const nBlocos = Math.max(1, (d?.blocos || []).filter(x => x.materia === b.materia && (!x.assuntoId || ehConteudo(achar(x.assuntoId)))).length);
+    return Math.max(5, Math.round(metaMat / nBlocos / 5) * 5);
+  }
+  return a ? (tempoDe(a).q || 15) : 15;
+}
+window.questoesDoBloco = questoesDoBloco;
+
+function sincronizarPassoQ(b, a) {
+  if (!b || !a || !ehConteudo(a) || !b.passos?.length) return;
+  const q = questoesDoBloco(b);
+  b.qMeta = q;
+  const p = b.passos.find(x => /quest/i.test(x.t));
+  if (!p) return;
+  if (/^Fazer \d+ quest/i.test(p.t)) p.t = `Fazer ${q} questões (~${fmtMin(Math.round(q * minPorQ(b.materia)))})`;
+  if (!p.ok && (a.questoes?.feitas || 0) >= q) {
+    p.ok = true;
+    S.feitos[hoje()] = (S.feitos[hoje()] || 0) + 1;
+    if (b.passos.every(x => x.ok)) setFeito(a, true, false);
+  }
+}
+window.sincronizarPassoQ = sincronizarPassoQ;
+
 function anelQ(feito, meta, tam = 108) {
   const r = tam / 2 - 9, C = 2 * Math.PI * r, p = meta ? Math.min(1, feito / meta) : 0;
   return `<div class="anel-q" style="width:${tam}px;height:${tam}px"><svg viewBox="0 0 ${tam} ${tam}" aria-hidden="true"><circle cx="${tam / 2}" cy="${tam / 2}" r="${r}" fill="none" stroke="var(--linha)" stroke-width="9"/>
@@ -113,14 +143,37 @@ function ajustesQuestoesHtml() {
     ${Object.keys(MIN_Q).map(m => `<span>${esc(m)}</span><input type="number" step="0.5" min="0.5" max="15" data-minq="${esc(m)}" value="${S.minQ[m] || ''}" placeholder="${(Math.round(minPorQ(m) * 10) / 10)}">`).join('')}</div></div></details></section>`;
 }
 
-function registrarFora(m, f, ac, min) {
+function registrarFora(m, f, ac, min, assuntoId = '') {
   const d = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0, s: 0, t: 0 });
   d.f += f; if (ac == null) d.s = (d.s || 0) + f; else d.a += ac;
   if (min > 0) { d.t = (d.t || 0) + min * 60; aprenderTempo(m, min * 60, f); }
+  const h = hoje(), dia = S.dias[h];
+  const bl = (dia?.blocos || []).find(b => assuntoId ? b.assuntoId === assuntoId : (b.materia === m && b.assuntoId && ehConteudo(achar(b.assuntoId))));
+  if (bl) {
+    const a = achar(bl.assuntoId);
+    if (a) {
+      const ant = a.questoes || { feitas: 0, acertos: 0 };
+      a.questoes = { feitas: ant.feitas + f, acertos: ant.acertos + (ac != null ? ac : f) };
+      a.qdia = h;
+      const metaB = questoesDoBloco(bl);
+      const p = (bl.passos || []).find(x => !x.ok && /quest/i.test(x.t));
+      if (p && a.questoes.feitas >= Math.min(metaB, f)) {
+        p.ok = true;
+        S.feitos[h] = (S.feitos[h] || 0) + 1;
+        if (bl.passos.every(x => x.ok)) setFeito(a, true, false);
+      }
+    }
+  }
 }
 
 { const qm0 = qMontar; qMontar = function () { const h = qm0(), i = h.indexOf('<!--meta-->'); return i < 0 ? painelQuestoes() + h : h.slice(0, i) + painelQuestoes() + h.slice(i); }; } // a escolha das questões vem primeiro; a meta logo abaixo
 document.addEventListener('toggle', e => { const k = e.target?.dataset?.k; if (k) ui.ab[k] = e.target.open; }, true);
+document.addEventListener('input', e => {
+  if (e.target?.id === 'mq-total') {
+    const n = Math.max(0, Math.min(400, Math.round(+e.target.value || 0)));
+    const p = planoQ(); p.total = n; p.dias = {}; salvar();
+  }
+});
 Object.assign(ACOES, {
   mqPer: el => { ui.mqPer = el.dataset.v; ui.ab.ritmo = true; render(); },
   mqComp: el => { planoQ().compensar = el.checked; ui.ab.plano = true; salvar(); render(); },
@@ -143,19 +196,22 @@ Responda SÓ com JSON: {"total":120,"dias":{"dom":0},"resposta":"1 frase objetiv
   qMais: el => { registrarFora(el.dataset.m, +el.dataset.v, null, 0); ui.ab.mat = true; salvar(); ui.iaMsg = `+${el.dataset.v} em ${el.dataset.m}.`; render(); },
   qForaRapido: () => {
     const mats = materiasDoDia(), todas = Object.keys(MIN_Q);
+    const blHoje = (S.dias[hoje()]?.blocos || []).filter(b => b.assuntoId && ehConteudo(achar(b.assuntoId)));
     abrirModal(`<div class="entre"><h2>Questões feitas fora do app</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
-      <p class="fraco" style="margin:0">Livro, apostila, Ferretto, simulado… Só o número já conta para a meta. Acertos e tempo são opcionais.</p>
+      <p class="fraco" style="margin:0">Livro, apostila, Ferretto, simulado… Já conta para a meta diária e marca a etapa de questões da tarefa de hoje.</p>
       <label class="campo">Matéria<select id="f-mat">${[...mats, ...todas.filter(m => !mats.includes(m))].map(m => `<option>${m}</option>`).join('')}</select></label>
+      ${blHoje.length ? `<label class="campo">Assunto de hoje (opcional)<select id="f-assunto"><option value="">Automático pela matéria</option>${blHoje.map(b => `<option value="${b.assuntoId}">${esc(b.materia)} · ${esc(b.titulo)}</option>`).join('')}</select></label>` : ''}
       <div class="linha"><label class="campo" style="flex:1 1 110px">Feitas<input type="number" id="f-feitas" min="1" max="500" inputmode="numeric"></label>
         <label class="campo" style="flex:1 1 110px">Acertos (opcional)<input type="number" id="f-acertos" min="0" max="500" inputmode="numeric"></label>
         <label class="campo" style="flex:1 1 130px">Tempo, min (opcional)<input type="number" id="f-min" min="1" max="600" inputmode="numeric"></label></div>
       <div class="linha"><button class="botao" data-acao="qForaSalvar">Registrar</button></div>`);
   },
   qForaSalvar: () => {
-    const m = $('#f-mat').value, f = Math.round(+$('#f-feitas').value), acTxt = $('#f-acertos').value, ac = acTxt === '' ? null : Math.round(+acTxt), min = +$('#f-min').value || 0;
+    const m = $('#f-mat').value, aId = $('#f-assunto')?.value || '', f = Math.round(+$('#f-feitas').value), acTxt = $('#f-acertos').value, ac = acTxt === '' ? null : Math.round(+acTxt), min = +$('#f-min').value || 0;
     if (!(f > 0) || (ac != null && (ac < 0 || ac > f))) { ui.iaMsg = 'Confira os números: os acertos não podem passar das questões feitas.'; fecharModal(); render(); return; }
-    registrarFora(m, f, ac, min); salvar(); fecharModal();
-    ui.iaMsg = `Anotado: ${f} questões de ${m}${ac != null ? `, ${ac} certas (${Math.round(ac / f * 100)}%)` : ''}.`; render();
+    const assuntoAlvo = aId ? achar(aId) : null;
+    registrarFora(assuntoAlvo ? assuntoAlvo.materia : m, f, ac, min, aId); salvar(); fecharModal();
+    ui.iaMsg = `Anotado: ${f} questões de ${assuntoAlvo ? assuntoAlvo.titulo : m}${ac != null ? `, ${ac} certas (${Math.round(ac / f * 100)}%)` : ''}.`; render();
   },
 });
 render();

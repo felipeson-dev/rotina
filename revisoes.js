@@ -96,27 +96,39 @@ const fixacao = () => estudados().filter(a => PESADAS_REV.includes(a.materia) &&
 /** A volta de 24–48 h das exatas não muda o calendário das outras voltas (7 dias, 1 mês): só marca que a fixação foi feita. */
 { const r0 = revisaoFeita; revisaoFeita = function (a, pct) { if (a?.rev && !a.rev.fix && PESADAS_REV.includes(a.materia) && a.feitoEm >= somaDias(hoje(), -2) && a.rev.n === 0) { a.rev.fix = hoje(); if (pct != null && pct < 60) a.rev.prox = somaDias(hoje(), 4); return; } return r0.apply(this, arguments); }; }
 
-/** Abre uma lista com questões do banco desses assuntos: primeiro as que ela errou ou ainda não fez. */
-async function questoesDosAssuntos(lista, extra = {}, porAssunto = 5) {
+/** Abre uma lista com questões NÃO FEITAS do banco desses assuntos (se faltarem inéditas, completa com as que ela errou antes). */
+async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
+  const k = extra.chaveLista;
+  if (k && S.listasAbertas?.[k]?.itens?.length && !S.listasAbertas[k].fim) {
+    ACOES.qContinuarLista({ dataset: { k } });
+    return;
+  }
   if (!BANCO.pronto) await carregarBanco();
-  const prio = q => S.qh[q.id] ? (S.qh[q.id].ok ? 2 : 0) : 1, ids = [];
+  fecharModal();
+  const prio = q => !S.qh[q.id] ? 0 : (!S.qh[q.id].ok ? 1 : 2);
+  const bancaBoa = q => /fuvest|unicamp|unesp|vunesp|unifesp|santa casa|einstein|fmabc|famerp|famema|sao camilo|enem/i.test(q.b || '') ? 0 : 1;
+  const ids = [];
   for (const a of lista) {
-    const l = BANCO.itens.filter(q => q.m === a.materia && q.as === tagDe(a) && !q.f).sort((x, y) => prio(x) - prio(y) || Math.random() - 0.5);
-    ids.push(...l.slice(0, porAssunto).map(q => q.id));
+    let candidatas = BANCO.itens.filter(q => q.m === a.materia && q.as === tagDe(a) && !q.ds && !q.f);
+    if (!candidatas.length) candidatas = BANCO.itens.filter(q => q.m === a.materia && q.as === tagDe(a) && !q.ds);
+    const ineditas = candidatas.filter(q => !S.qh[q.id]);
+    const fonte = ineditas.length >= porAssunto ? ineditas : candidatas;
+    fonte.sort((x, y) => prio(x) - prio(y) || bancaBoa(x) - bancaBoa(y) || Math.random() - 0.5);
+    ids.push(...fonte.slice(0, porAssunto).map(q => q.id));
   }
   if (!ids.length) {
-    // sem questão desse assunto no banco: abre as questões da matéria, já filtradas
-    ui.view = 'questoes'; ui.qAba = 'listas'; ui.qs = null; ui.qf.mat = lista[0]?.materia || ''; ui.qf.assunto = '';
-    ui.iaMsg = 'Ainda não há questões desse assunto no banco: abri as da matéria.'; window.scrollTo(0, 0); render(); return;
+    // sem questão desse assunto no banco: abre as questões não feitas da matéria, já filtradas
+    ui.view = 'questoes'; ui.qAba = 'listas'; ui.qs = null; ui.qf.mat = lista[0]?.materia || ''; ui.qf.assunto = ''; ui.qf.st = 'novas';
+    ui.iaMsg = 'Ainda não há questões desse assunto no banco: abri as inéditas da matéria.'; window.scrollTo(0, 0); render(); return;
   }
   ui.view = 'questoes'; ui.qAba = 'listas'; window.scrollTo(0, 0);
-  await ACOES.qIniciarIds(ids.sort(() => Math.random() - 0.5));
-  Object.assign(ui.qs, extra); render();
+  await ACOES.qIniciarIds(ids, extra);
 }
 
 // fim da lista: cada assunto revisado anda (com o acerto dela), e o passo de questões do bloco de hoje é abatido
 { const f0 = finalizarSessao; finalizarSessao = function () {
   const s = ui.qs; f0.apply(this, arguments);
+  if (!s) return;
   const feitas = s.itens.filter(q => q.resp != null);
   for (const id of s.revisaoIds || []) {
     const a = achar(id); if (!a) continue;
@@ -125,16 +137,33 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 5) {
   }
   const ids = [...(s.revisaoIds || []), ...(s.assuntoId ? [s.assuntoId] : [])];
   if (feitas.length) for (const b of diaHoje().blocos) {
-    if (!(ids.includes(b.assuntoId) || (b.revisao || []).some(x => s.revisaoIds?.includes(x)))) continue;
-    const p = b.passos.find(p => !p.ok && /quest/i.test(p.t)); if (p) p.ok = true;
+    if (!(b.id === s.blocoId || ids.includes(b.assuntoId) || (b.revisao || []).some(x => s.revisaoIds?.includes(x)))) continue;
+    const p = (b.passos || []).find(p => !p.ok && /quest/i.test(p.t));
+    if (p) {
+      p.ok = true;
+      S.feitos[hoje()] = (S.feitos[hoje()] || 0) + 1;
+      if (b.passos.every(x => x.ok)) {
+        b.feito = true;
+        if (b.assuntoId) setFeito(achar(b.assuntoId), true, false);
+      }
+    }
     if (b.tipo === 'revisao') b.contou = true;
   }
   salvar();
 }; }
 
 Object.assign(ACOES, {
-  qDoAssunto: async el => { const a = achar(el.dataset.id); if (!a) return; fecharModal(); await questoesDosAssuntos([a], { assuntoId: a.id }, Math.max(5, Math.min(30, tempoDe(a).q || 10))); },
-  qDaRevisao: async el => { const b = diaHoje().blocos.find(x => x.id === el.dataset.b); const l = (b?.revisao || []).map(achar).filter(Boolean); if (l.length) await questoesDosAssuntos(l, { revisaoIds: l.map(a => a.id) }); },
+  qDoAssunto: async el => {
+    const a = achar(el.dataset.id); if (!a) return;
+    const b = (el.dataset.b && diaHoje().blocos.find(x => x.id === el.dataset.b)) || diaHoje().blocos.find(x => x.assuntoId === a.id);
+    const nQ = b && window.questoesDoBloco ? window.questoesDoBloco(b) : Math.max(5, Math.min(40, tempoDe(a).q || 15));
+    await questoesDosAssuntos([a], { assuntoId: a.id, blocoId: b?.id || '', chaveLista: 'a:' + a.id, tituloLista: a.titulo }, nQ);
+  },
+  qDaRevisao: async el => {
+    const b = diaHoje().blocos.find(x => x.id === el.dataset.b);
+    const l = (b?.revisao || []).map(achar).filter(Boolean);
+    if (l.length) await questoesDosAssuntos(l, { revisaoIds: l.map(a => a.id), blocoId: b.id, chaveLista: 'rev:' + b.id, tituloLista: b.titulo }, b.vaga === 'dia' ? 4 : 5);
+  },
   fraco: el => { const a = achar(el.dataset.id); if (!a) return; a.fraco = !a.fraco; salvar(); ui.iaMsg = a.fraco ? `Anotado: "${a.titulo}" entra nas próximas revisões.` : 'Tirei a marca de fraco.'; fecharModal(); render(); },
   diaRev: el => { const v = +el.dataset.v, l = diasRev(); S.perfil.diasRev = l.includes(v) ? l.filter(x => x !== v) : [...l, v].sort(); salvar(); render(); },
   revCfg: el => { S.perfil.revCfg = { ...cfgRev(), [el.dataset.k]: +el.dataset.v }; salvar(); render(); },
@@ -153,6 +182,7 @@ Object.assign(ACOES, {
     const ids = [...document.querySelectorAll('[data-rev-esc]:checked')].map(x => x.dataset.revEsc).slice(0, +el.dataset.max);
     const l = ids.map(achar).filter(Boolean), novo = blocoRev(b.vaga === 'dia' ? `Revisão do dia: ${l.map(nomeDe).join(' · ') || 'sem assuntos'}` : b.titulo, l, b.min, b.vaga);
     Object.assign(b, { revisao: novo.revisao, titulo: novo.titulo, materia: novo.materia, passos: novo.passos, escolhidos: true });
+    if (S.listasAbertas?.['rev:' + b.id]) delete S.listasAbertas['rev:' + b.id];
     salvar(); fecharModal(); render();
   },
 });
@@ -162,19 +192,33 @@ Object.assign(ACOES, {
   let h = b0.apply(this, arguments);
   if (b.tipo === 'revisao') {
     const l = (b.revisao || []).map(achar).filter(Boolean);
+    const ab = S.listasAbertas?.['rev:' + b.id];
+    const btnRev = ab?.itens?.length && !ab.fim
+      ? `<button class="botao destaque" data-acao="qContinuarLista" data-k="rev:${b.id}">Continuar questões (${ab.itens.filter(q => q.resp != null).length}/${ab.itens.length})</button>`
+      : l.length ? `<button class="botao claro" data-acao="qDaRevisao" data-b="${b.id}">Fazer ${window.questoesDoBloco ? window.questoesDoBloco(b) : l.length * 4} questões no app</button>` : '';
     return h.replace('</article>', `<div class="rev-lista">${l.map(a => `<span class="tag" style="${cor(a.materia)}">${esc(nomeDe(a))}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}</span>`).join('')}</div>
-      <div class="linha acoes-bloco">${l.length ? `<button class="botao claro" data-acao="qDaRevisao" data-b="${b.id}">Fazer as questões no app</button>` : ''}<button class="link" data-acao="revEscolher" data-b="${b.id}">${b.escolhidos ? 'Trocar os assuntos' : 'Escolher eu mesma'}</button></div></article>`);
+      <div class="linha acoes-bloco">${btnRev}<button class="link" data-acao="revEscolher" data-b="${b.id}">${b.escolhidos ? 'Trocar os assuntos' : 'Escolher eu mesma'}</button></div></article>`);
   }
   const a = b.assuntoId && achar(b.assuntoId);
-  return a && ehConteudo(a) ? h.replace('<div class="linha acoes-bloco">', `<div class="linha acoes-bloco"><button class="link" data-acao="qDoAssunto" data-id="${a.id}">Fazer questões no app</button>`) : h;
+  if (!a || !ehConteudo(a)) return h;
+  const ab = S.listasAbertas?.['a:' + a.id];
+  const qMeta = window.questoesDoBloco ? window.questoesDoBloco(b) : (tempoDe(a).q || 15);
+  const btnAss = ab?.itens?.length && !ab.fim
+    ? `<button class="botao destaque" data-acao="qContinuarLista" data-k="a:${a.id}">Continuar questões (${ab.itens.filter(q => q.resp != null).length}/${ab.itens.length})</button>`
+    : `<button class="botao claro" data-acao="qDoAssunto" data-id="${a.id}" data-b="${b.id}">Fazer ${qMeta} questões no app</button>`;
+  return h.replace('<div class="linha acoes-bloco">', `<div class="linha acoes-bloco">${btnAss}`);
 }; }
 { const m0 = modalAssunto; modalAssunto = function (a) {
   m0.apply(this, arguments);
   if (!ehConteudo(a)) return;
   const linha = document.querySelector('#modal .janela > .linha:last-child');
   const rev = a.rev ? `<span class="fraco" style="font-size:14px">Revisão: ${a.rev.n === 0 ? '1ª volta' : `${a.rev.n + 1}ª volta`} em ${diaCurto(a.rev.prox)}${acertoDe(a) != null ? ` · acerto ${acertoDe(a)}%` : ''}</span>` : '';
+  const ab = S.listasAbertas?.['a:' + a.id];
+  const btn = ab?.itens?.length && !ab.fim
+    ? `<button class="botao destaque" data-acao="qContinuarLista" data-k="a:${a.id}">Continuar questões (${ab.itens.filter(q => q.resp != null).length}/${ab.itens.length})</button>`
+    : `<button class="botao" data-acao="qDoAssunto" data-id="${a.id}">Fazer questões no app</button>`;
   linha?.insertAdjacentHTML('beforebegin', rev);
-  linha?.insertAdjacentHTML('afterbegin', `<button class="botao" data-acao="qDoAssunto" data-id="${a.id}">Fazer questões no app</button><button class="botao contorno" data-acao="fraco" data-id="${a.id}">${a.fraco ? 'Não estou mais fraca nisso' : 'Estou fraca nisso'}</button>`);
+  linha?.insertAdjacentHTML('afterbegin', `${btn}<button class="botao contorno" data-acao="fraco" data-id="${a.id}">${a.fraco ? 'Não estou mais fraca nisso' : 'Estou fraca nisso'}</button>`);
 }; }
 
 // Ajustes: as vagas de revisão (tempo fixo) e os dias da revisão maior

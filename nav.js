@@ -42,11 +42,19 @@ function navSync() {
 
 function navSairSessao() {
   const s = ui.qs; if (!s) return;
-  if (!s.fim && s.itens.some(q => q.resp != null)) {
-    const f = s.itens.filter(q => q.resp != null).length, ac = s.itens.filter(q => q.certo).length;
-    finalizarSessao(); ui.iaMsg = `Suas ${f} ${f === 1 ? 'resposta foi salva' : 'respostas foram salvas'} (${ac} ${ac === 1 ? 'acerto' : 'acertos'}).`;
+  if (!s.fim) {
+    const feitas = s.itens.filter(q => q.resp != null), f = feitas.length, tot = s.itens.length;
+    if (f >= tot && tot > 0) {
+      finalizarSessao();
+    } else if (!s.simulado) {
+      for (const q of feitas) if (typeof contabilizarQuestaoRespondida === 'function' && !q.contabilizada) contabilizarQuestaoRespondida(s, q);
+      S.listasAbertas ||= {};
+      S.listasAbertas[s.chaveLista || 'avulsa'] = s;
+      salvar();
+      if (f > 0) ui.iaMsg = `Suas ${f} respostas já contaram e a lista continua aberta (${f}/${tot}). É só tocar em Continuar quando voltar.`;
+    }
   }
-  ui.qs = null; ui.qRasc = false;
+  ui.qs = null; ui.qRasc = false; DB.del('d:qs');
 }
 
 addEventListener('popstate', e => {

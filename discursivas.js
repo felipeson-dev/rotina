@@ -54,7 +54,7 @@ Object.assign(ACOES, {
   qDiscAval: el => {
     const s = ui.qs, q = s.itens[s.i], primeira = q.resp == null;
     q.resp = el.dataset.v; q.certo = q.resp === 'C';
-    if (primeira) registrarHist(q); else if (S.qh[q.id]) { const h = S.qh[q.id]; h.ok = q.certo; if (h.h?.length) { h.h[h.h.length - 1][1] = q.certo ? 1 : 0; h.h[h.h.length - 1][2] = q.resp; } salvar(); }
+    if (primeira) { registrarHist(q); if (typeof contabilizarQuestaoRespondida === 'function') contabilizarQuestaoRespondida(s, q); } else if (S.qh[q.id]) { const h = S.qh[q.id]; h.ok = q.certo; if (h.h?.length) { h.h[h.h.length - 1][1] = q.certo ? 1 : 0; h.h[h.h.length - 1][2] = q.resp; } salvar(); }
     render();
   },
   discIa: async () => {

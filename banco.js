@@ -5,8 +5,9 @@
    Questão: { id, banca, ano, area, materia, assunto, dif, fig, enunciado, imagens[], alts:[{l,t,img}], gab, coment, res_ia, duvidas }. */
 
 S.qh ||= {}; // histórico por questão: { id: { ok, dia, n, ac, er, h: [[dia, 1|0, letra]] } }
+S.qExtras ||= {}; // resoluções e dúvidas geradas pela IA por questão (sincroniza entre aparelhos)
 const BANCO = { itens: [], pronto: false, carregando: false, msg: '', baixando: false };
-ui.qf = { assunto: '', mat: '', banca: '', ano: '', st: 'todas', tag: '', semFig: true, res: false, n: 10, ordem: 'sorteio' };
+ui.qf = { assunto: '', mat: '', banca: '', ano: '', st: 'novas', tag: '', semFig: true, res: false, n: 15, ordem: 'sorteio' };
 
 const AREAS_Q = [['', 'Todas'], ['ciencias-natureza', 'Natureza'], ['matematica', 'Matemática'], ['ciencias-humanas', 'Humanas'], ['linguagens', 'Linguagens']];
 const AREA_DA_MATERIA = { 'Biologia': 'ciencias-natureza', 'Química': 'ciencias-natureza', 'Física': 'ciencias-natureza', 'Matemática': 'matematica', 'História': 'ciencias-humanas', 'Geografia': 'ciencias-humanas', 'Filosofia': 'ciencias-humanas', 'Sociologia': 'ciencias-humanas', 'Português': 'linguagens', 'Literatura': 'linguagens', 'Inglês': 'linguagens' };
@@ -60,24 +61,28 @@ const META_V = 2;   // muda quando a ficha leve ganha campos: refaz as fichas a 
 const metaDe = q => ({ id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(q.assunto).slice(0, 140), as: q.assunto || '', x: normBusca(q.enunciado).slice(0, 400), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0 });
 
 async function carregarBanco() {
-  if (BANCO.pronto || BANCO.carregando) return;
+  if (BANCO.pronto) return;
+  if (BANCO._prom) return BANCO._prom;
   BANCO.carregando = true;
-  try {
-    BANCO.itens = await BD.meta();
-    if (BANCO.itens.length && (await DB.get('banco:metav')) !== META_V) {
-      const novas = []; await BD.cada(q => novas.push(metaDe(q))); BANCO.itens = novas; await BD.setMeta(novas);
-    }
-    DB.set('banco:metav', META_V);
-    // traz o que existia no formato antigo (versão anterior do app)
-    const velhos = (await Promise.all(['enem', 'ia', 'import'].map(k => DB.get('banco:' + k)))).flatMap(p => Array.isArray(p) ? p : []);
-    if (velhos.length) {
-      const ja = new Set(BANCO.itens.map(m => m.id));
-      const novos = velhos.filter(q => !ja.has(q.id)).map(({ _f, ...q }) => ({ ...q, assunto: q.assunto || '', materia: q.materia || '' }));
-      await BD.put(novos); BANCO.itens.push(...novos.map(metaDe)); await BD.setMeta(BANCO.itens);
-      for (const k of ['enem', 'ia', 'import']) await DB.del('banco:' + k);
-    }
-  } catch (e) { BANCO.msg = 'Não consegui abrir o banco: ' + e.message; }
-  BANCO.pronto = true; BANCO.carregando = false; render();
+  BANCO._prom = (async () => {
+    try {
+      BANCO.itens = await BD.meta();
+      if (BANCO.itens.length && (await DB.get('banco:metav')) !== META_V) {
+        const novas = []; await BD.cada(q => novas.push(metaDe(q))); BANCO.itens = novas; await BD.setMeta(novas);
+      }
+      DB.set('banco:metav', META_V);
+      // traz o que existia no formato antigo (versão anterior do app)
+      const velhos = (await Promise.all(['enem', 'ia', 'import'].map(k => DB.get('banco:' + k)))).flatMap(p => Array.isArray(p) ? p : []);
+      if (velhos.length) {
+        const ja = new Set(BANCO.itens.map(m => m.id));
+        const novos = velhos.filter(q => !ja.has(q.id)).map(({ _f, ...q }) => ({ ...q, assunto: q.assunto || '', materia: q.materia || '' }));
+        await BD.put(novos); BANCO.itens.push(...novos.map(metaDe)); await BD.setMeta(BANCO.itens);
+        for (const k of ['enem', 'ia', 'import']) await DB.del('banco:' + k);
+      }
+    } catch (e) { BANCO.msg = 'Não consegui abrir o banco: ' + e.message; }
+    BANCO.pronto = true; BANCO.carregando = false; BANCO._prom = null; render();
+  })();
+  return BANCO._prom;
 }
 
 /** Acrescenta questões ao banco (sem repetir ids) e devolve quantas entraram. */
@@ -140,6 +145,19 @@ function contar(lista, campo) { const c = {}; for (const q of lista) { const k =
 const opcao = (v, t, atual) => `<option value="${esc(v)}" ${String(atual ?? '') === String(v) ? 'selected' : ''}>${esc(t)}</option>`;
 const milhar = n => n.toLocaleString('pt-BR');
 
+function listasAbertasHtml() {
+  const abertas = Object.entries(S.listasAbertas || {}).filter(([, s]) => s && s.itens?.length && !s.fim);
+  if (!abertas.length) return '';
+  return `<section class="cartao listas-abertas"><span class="rotulo">listas em andamento</span>
+    ${abertas.map(([k, s]) => {
+      const feitas = s.itens.filter(q => q.resp != null).length, tot = s.itens.length;
+      const tit = s.tituloLista || s.itens[0]?.assunto || s.itens[0]?.materia || 'Lista de questões';
+      return `<div class="entre"><div class="coluna" style="gap:2px"><strong>${esc(tit)}</strong><span class="fraco" style="font-size:13px">${feitas} de ${tot} respondidas</span></div>
+        <div class="linha"><button class="botao destaque" data-acao="qContinuarLista" data-k="${esc(k)}">Continuar (${feitas}/${tot})</button>
+          <button class="x" data-acao="qDescartarLista" data-k="${esc(k)}" title="Fechar lista" aria-label="Fechar lista">×</button></div></div>`;
+    }).join('')}</section>`;
+}
+
 function qMontar() {
   if (!BANCO.pronto) { carregarBanco(); return '<section class="cartao"><p class="fraco" style="margin:0">Abrindo o banco de questões…</p></section>'; }
   const f = ui.qf, todos = BANCO.itens;
@@ -152,8 +170,8 @@ function qMontar() {
   const caixa = (rot, id, html, ativo, extra = '') => `<label class="filtro ${ativo ? 'ativo' : ''}"><span>${rot}</span><select data-qf="${id}" ${extra}>${html}</select></label>`;
   const nSt = v => semSt.filter(q => situacaoOk(v, q.id)).length;
   const nAno = d => semAno.filter(q => q.a >= d).length;
-  const algum = f.mat || f.banca || f.ano || (f.st && f.st !== 'todas') || f.tag || f.res;
-  return `<section class="cartao escolher"><div class="entre"><h2>Escolher questões</h2>${algum ? '<button class="link" data-acao="qfLimpar">Limpar filtros</button>' : ''}</div>
+  const algum = f.mat || f.banca || f.ano || (f.st && f.st !== 'novas') || f.tag || f.res;
+  return `${listasAbertasHtml()}<section class="cartao escolher"><div class="entre"><h2>Escolher questões</h2>${algum ? '<button class="link" data-acao="qfLimpar">Limpar filtros</button>' : ''}</div>
     <div class="filtros">
       ${caixa('Matéria', 'mat', opcao('', `Todas as matérias (${milhar(semMat.length)})`, f.mat) + Object.entries(porMat).sort((a, b) => a[0].localeCompare(b[0])).map(([m, n]) => opcao(m, `${m} (${milhar(n)})`, f.mat)).join(''), f.mat)}
       ${caixa('Assunto', 'assunto', f.mat ? opcao('', 'Todos os assuntos', f.assunto) + assuntosDe(f.mat, semMat).map(([a, n]) => opcao(a, `${a} (${n})`, f.assunto)).join('') : opcao('', 'Escolha a matéria antes', ''), f.assunto, f.mat ? '' : 'disabled')}
@@ -255,7 +273,11 @@ function recorteObj(q, resolucao) {
 }
 
 const textoQuestao = q => `Questão (${q.fonte}${q.materia ? ', ' + q.materia : ''}):\n${q.enunciado}\n\nAlternativas:\n${q.alts.map(a => `${a.l}) ${a.t}`).join('\n')}\n\nGabarito oficial: ${q.gab}.${q.coment ? '\nResolução existente: ' + q.coment : ''}`;
-async function guardarNaQuestao(q, campos) { Object.assign(q, campos); try { const r = await BD.get(q.id); if (r) await BD.put([{ ...r, ...campos }]); } catch { } }
+async function guardarNaQuestao(q, campos) {
+  Object.assign(q, campos);
+  if (q.id) { S.qExtras ||= {}; S.qExtras[q.id] = { ...(S.qExtras[q.id] || {}), ...campos }; salvar(); }
+  try { const r = await BD.get(q.id); if (r) await BD.put([{ ...r, ...campos }]); } catch { }
+}
 
 // ---------- ações ----------
 async function baixarEnem() {
@@ -323,18 +345,24 @@ Object.assign(ACOES, {
     const r = ui.qPrevImg?.prev && await BD.get(ui.qPrevImg.prev);
     if (r) ui.qPrevImg = r; else ui.iaMsg = 'Não há questão antes desta no banco.'; render();
   },
-  qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', banca: '', ano: '', st: 'todas', tag: '', res: false }; ui.qPag = 0; render(); },
+  qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', banca: '', ano: '', st: 'novas', tag: '', res: false }; ui.qPag = 0; render(); },
   qGerar: async () => {
     let l = filtrarBanco();
     l = ui.qf.ordem === 'sorteio' || !ui.qf.ordem ? l.slice().sort(() => Math.random() - 0.5) : ordenarLista(l);
-    await ACOES.qIniciarIds(l.slice(0, Math.max(1, ui.qf.n)).map(m => m.id));
+    await ACOES.qIniciarIds(l.slice(0, Math.max(1, ui.qf.n)).map(m => m.id), {
+      chaveLista: ui.qf.assunto ? 'ass:' + ui.qf.assunto : 'banco',
+      tituloLista: [ui.qf.mat, ui.qf.assunto].filter(Boolean).join(' · ') || 'Lista do banco',
+    });
   },
-  qIniciarIds: async ids => {
+  qIniciarIds: async (ids, extra = {}) => {
     const recs = (await Promise.all(ids.map(id => BD.get(id)))).filter(Boolean);
-    const itens = recs.map(q => ({ id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
-      enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: q.res_ia || '', duvidas: q.duvidas || [],
-      modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, assunto: q.assunto || '', num: q.num || '', tipo: q.tipo || '', discIa: q.discIa || null }));
-    if (itens.length) iniciarSessao(itens);
+    const itens = recs.map(q => {
+      const ex = S.qExtras?.[q.id] || {};
+      return { id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
+        enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: ex.res_ia || q.res_ia || '', duvidas: ex.duvidas || q.duvidas || [],
+        modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, assunto: q.assunto || '', num: q.num || '', tipo: q.tipo || '', discIa: ex.discIa || q.discIa || null };
+    });
+    if (itens.length) iniciarSessao(itens, extra);
   },
   qIaBanco: async () => {
     ui.qTema = ($('#q-tema')?.value ?? ui.qTema).trim(); const n = Math.max(1, Math.min(60, Math.round(+$('#qia-n')?.value || +ui.qNIa || 10))); ui.qNIa = n;

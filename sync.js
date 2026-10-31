@@ -6,13 +6,14 @@ const SYNC_K = 'rotina.sync';
 const lerSync = () => { try { return JSON.parse(localStorage.getItem(SYNC_K) || '{}'); } catch { return {}; } };
 const gravarSync = c => { try { localStorage.setItem(SYNC_K, JSON.stringify(c)); } catch { } };
 const GH = 'https://api.github.com/gists';
-let syncTimer = 0, syncAplicando = false;
+let syncTimer = 0, syncAplicando = false, syncBoot = true;
+setTimeout(() => { syncBoot = false; }, 1000);
 
 function widgetDados() {
   const d = S.dias[hoje()] || { blocos: [], agenda: [] }, agora = new Date().getHours() * 60 + new Date().getMinutes();
   const hm2 = s => { const m = /^(\d\d):(\d\d)$/.exec(s || ''); return m ? +m[1] * 60 + +m[2] : null; };
   const ag = (d.agenda || []).filter(x => hm2(x.fim) > agora);
-  const falta = (d.blocos || []).filter(b => !b.passos.every(p => p.ok)).map(b => b.titulo);
+  const falta = (d.blocos || []).filter(b => !(typeof blocoConcluido === 'function' ? blocoConcluido(b) : b.passos.every(p => p.ok))).map(b => b.titulo);
   return { atualizado: new Date().toISOString(), dia: hoje(), agora: ag[0] ? `${ag[0].inicio} ${ag[0].titulo}` : '', proximo: ag[1] ? `${ag[1].inicio} ${ag[1].titulo}` : '',
     falta: falta.slice(0, 4), nFalta: falta.length, estudou: S.estudo[hoje()] || 0, meta: d.cap || 0,
     questoes: Object.values(S.qlog[hoje()] || {}).reduce((s, v) => s + (v.f || 0), 0) };
@@ -40,6 +41,9 @@ async function syncPull(mostrar) {
     gravarSync({ ...lerSync(), erro: '', quando: Date.now() });
     if (rem.t > (S._t || 0) && rem.t !== c.ult) {           // o outro aparelho gravou depois: traz
       syncAplicando = true; S = carregarDe(rem.S); salvar(); syncAplicando = false;
+      if (typeof BD !== 'undefined' && S.qExtras) {
+        (async () => { for (const [id, ex] of Object.entries(S.qExtras)) { try { const r = await BD.get(id); if (r) await BD.put([{ ...r, ...ex }]); } catch { } } })();
+      }
       gravarSync({ ...lerSync(), ult: rem.t, erro: '', quando: Date.now() }); if (mostrar !== false) { ui.iaMsg = 'Dados trazidos do outro aparelho.'; render(); }
     }
   } catch (e) { gravarSync({ ...lerSync(), erro: /load failed|failed to fetch|network/i.test(e.message) ? 'sem conexão com o GitHub' : e.message }); }
@@ -47,7 +51,7 @@ async function syncPull(mostrar) {
 // mesma normalização do carregar() do app, a partir de um objeto
 function carregarDe(obj) { try { localStorage.setItem(CHAVE, JSON.stringify(obj)); } catch { } return carregar(); }
 
-{ const s0 = salvar; salvar = function () { if (!syncAplicando) S._t = Date.now(); s0.apply(this, arguments); if (!syncAplicando && lerSync().token) { clearTimeout(syncTimer); syncTimer = setTimeout(syncPush, 4000); } }; }
+{ const s0 = salvar; salvar = function () { if (!syncAplicando && !syncBoot) S._t = Date.now(); s0.apply(this, arguments); if (!syncAplicando && !syncBoot && lerSync().token) { clearTimeout(syncTimer); syncTimer = setTimeout(syncPush, 4000); } }; }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) syncPull(); else if (lerSync().token) syncPush(); });
 setTimeout(() => syncPull(), 1500);
 

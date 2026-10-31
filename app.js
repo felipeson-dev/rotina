@@ -49,7 +49,7 @@ const icone = n => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
 const VAZIO = {
   perfil: { nome: 'Uany Rebeca', vestibular: 'ENEM e, logo depois, Medicina em SP: USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo e FMABC', dataProva: '', fortes: '', fracas: '', horarios: '',
     jeito: 'Primeiro foco total no ENEM. Cerca de 2 dias depois do ENEM, começar a estudar para as provas de Medicina em SP (USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC).' },
-  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, foco: [], focoAnalise: {}, timer: null, provas: [], semeado: false, v: 2,
+  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, listasAbertas: {}, qExtras: {}, foco: [], focoAnalise: {}, timer: null, provas: [], semeado: false, resetTesteV: 1, v: 2,
 };
 
 const provasFuturas = () => (S.provas || []).filter(p => okData(p.data) && p.data >= hoje()).sort((a, b) => a.data < b.data ? -1 : 1);
@@ -64,14 +64,21 @@ function aplicarPlanoBase(inicio) {
   distribuirSemanas();
 }
 
+function zerarDadosTeste(s) {
+  s.qh = {}; s.qlog = {}; s.erros = []; s.tq = {}; s.qmeta = {}; s.listasAbertas = {};
+  s.feitos = {}; s.estudo = {}; s.dias = {}; s.timer = null; s.foco = [];
+  for (const a of s.assuntos || []) { a.feito = false; a.feitoEm = null; delete a.questoes; delete a.qdia; delete a.rev; delete a.revisao; }
+}
+
 function carregar() {
   let s = null;
   try { s = JSON.parse(localStorage.getItem(CHAVE) || 'null'); } catch { }
   s = Object.assign(JSON.parse(JSON.stringify(VAZIO)), s || {});
   s.perfil = Object.assign({}, VAZIO.perfil, s.perfil);
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
-  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
+  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
+  if (s.resetTesteV !== 1) { s.resetTesteV = 1; zerarDadosTeste(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
   return s;
 }
 function salvar() {
@@ -115,8 +122,11 @@ const semanaCurta = s => `${deIso(s).getDate()}/${pad(deIso(s).getMonth() + 1)}`
 function setFeito(a, ok, sincronizar = true) {
   if (!a || !!a.feito === ok) return;
   a.feito = ok;
-  // integração: marcar o assunto em qualquer tela (Mês, Semana, Ano) marca também os passos do bloco de hoje, e vice-versa
-  if (sincronizar) for (const d of Object.values(S.dias)) for (const b of d.blocos || []) if (b.assuntoId === a.id) b.passos.forEach(p => { if (p.ok !== ok) { p.ok = ok; } });
+  // integração: marcar o assunto em qualquer tela (Mês, Semana, Ano) marca também o bloco e os passos de hoje, e vice-versa
+  if (sincronizar) for (const d of Object.values(S.dias)) for (const b of d.blocos || []) if (b.assuntoId === a.id) {
+    b.feito = ok;
+    (b.passos || []).forEach(p => { if (p.ok !== ok) p.ok = ok; });
+  }
   if (ok) { a.feitoEm = hoje(); S.estudo[hoje()] = (S.estudo[hoje()] || 0) + minDe(a); }
   else { const d = a.feitoEm; if (d && S.estudo[d]) S.estudo[d] = Math.max(0, S.estudo[d] - minDe(a)); a.feitoEm = null; }
 }
@@ -405,11 +415,17 @@ function fasesHtml() {
 const passosPadrao = a => {
   if (/^Redação/.test(a.titulo)) return ['Escolher a proposta e planejar a estrutura', 'Escrever o texto', 'Reler e marcar o que melhorar'];
   if (/^Simulado/.test(a.titulo)) return ['Fazer cronometrado', 'Corrigir com calma', 'Anotar os erros no caderno'];
-  if (a.min) return ['Começar (5 min)', 'Terminar'];
+  if (a.min) return [];
   const { t, q } = tempoDe(a), mq = minPorQ(a.materia);
-  return [`Teoria: aula ou resumo (~${fmtMin(t)})`, `Fazer ${q} questões (~${fmtMin(q * mq)})`, `Corrigir e anotar os erros (~${fmtMin(q * mq * 0.25)})`];
+  return [`Teoria: aula ou resumo (~${fmtMin(t)})`, `Fazer ${q} questões (~${fmtMin(Math.round(q * mq))})`, `Corrigir e anotar os erros (~${fmtMin(Math.round(q * mq * 0.25))})`];
 };
-const blocoDe = a => ({ id: uid(), assuntoId: a.id, titulo: a.titulo, materia: a.materia, min: minDe(a), passos: passosPadrao(a).map(t => ({ t, ok: false })) });
+const blocoDe = a => ({ id: uid(), assuntoId: a.id, titulo: a.titulo, materia: a.materia, min: minDe(a), feito: !!a.feito, passos: passosPadrao(a).map(t => ({ t, ok: !!a.feito })) });
+function blocoConcluido(b) {
+  const a = b.assuntoId && achar(b.assuntoId);
+  if (a) return !!a.feito;
+  if (b.passos?.length) return b.passos.every(p => p.ok);
+  return !!b.feito;
+}
 
 /** Fila do plano: atrasados primeiro, depois a semana atual, depois as próximas (adiantar). */
 const filaPlano = () => S.assuntos.filter(a => !a.feito)
@@ -451,7 +467,7 @@ function filaParaHoje(blocos = []) {
 function montarHoje(cap, so = []) {
   const d = diaHoje();
   d.cap = cap > 0 ? cap : d.cap || 0;
-  const mantidos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.passos.some(p => p.ok); });
+  const mantidos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.feito || (b.passos || []).some(p => p.ok); });
   let usado = soma(mantidos, b => b.min || 0);
   let fila = filaParaHoje(mantidos);
   const pedidas = fila.filter(a => so.includes(a.materia));
@@ -469,6 +485,34 @@ function montarHoje(cap, so = []) {
   d.blocos = [...mantidos, ...novos];
 }
 
+function proximosAdiantaveis(d, qtd = 3) {
+  let fila = filaParaHoje(d.blocos || []);
+  const simulados = [...(d.blocos || [])], out = [];
+  while (out.length < qtd && fila.length) {
+    const a = escolherProximo(fila, simulados, true) || fila[0];
+    if (!a) break;
+    out.push(a); simulados.push(blocoDe(a)); fila = fila.filter(x => x !== a);
+  }
+  return out;
+}
+
+function previaAdiantarHtml(d) {
+  if (!d?.blocos?.length) return '';
+  const candidatos = proximosAdiantaveis(d, 3);
+  if (!candidatos.length) return '';
+  const tudoFeito = d.blocos.every(blocoConcluido);
+  const aberto = tudoFeito || !!ui.ab?.['adiantar-prev'];
+  return `<details class="cartao adiantar-previa ${tudoFeito ? 'concluido' : ''}" data-k="adiantar-prev" ${aberto ? 'open' : ''}>
+    <summary><div class="entre" style="flex:1"><span><strong>${tudoFeito ? 'Dia concluído! Quer adiantar mais um pouco?' : 'Prévia para adiantar'}</strong> <span class="selo adiante">opcional</span></span><span class="fraco" style="font-size:13px">${tudoFeito ? 'meta cumprida' : 'se terminar mais cedo'}</span></div></summary>
+    <div class="adiantar-corpo">
+      <p class="fraco" style="margin:0;font-size:14px">${tudoFeito ? 'Sua meta de hoje já está batida — descanse sem culpa! Se estiver com energia sobrando e quiser ganhar folga nos próximos dias, escolha um assunto:' : 'Estes assuntos não fazem parte da obrigação de hoje. Eles ficam aqui caso você queira puxar algum depois de terminar:'}</p>
+      <div class="adiantar-lista">${candidatos.map(a => `<div class="adiantar-item" style="${cor(a.materia)}">
+        <div class="coluna" style="gap:2px;flex:1;min-width:180px"><div class="linha" style="gap:6px">${tag(a.materia)}<span class="fraco" style="font-size:13px">≈ ${fmtMin(minDe(a))}${ehConteudo(a) ? ` · ${tempoDe(a).q} questões` : ''}</span></div><strong>${esc(a.titulo)}</strong></div>
+        <button class="botao claro" data-acao="adiantarAssunto" data-id="${a.id}">+ Adiantar hoje</button>
+      </div>`).join('')}</div>
+    </div></details>`;
+}
+
 function vHoje() {
   const h = hoje(), d = S.dias[h] || { contexto: '', horas: 0, cap: 0, blocos: [] };
   const hr = new Date().getHours();
@@ -477,38 +521,54 @@ function vHoje() {
   const atrasados = S.assuntos.filter(a => estadoDe(a) === 'atrasado').length;
   const adiantados = S.assuntos.filter(a => a.feito && semDe(a) > semAtual());
   const feitoMin = S.estudo[h] || 0, meta = d.cap || 0;
-  const pct = meta ? Math.min(100, Math.round(feitoMin / meta * 100)) : 0;
+  const feitosBlocos = d.blocos.filter(blocoConcluido).length;
+  const pct = d.blocos.length && feitosBlocos === d.blocos.length ? 100 : meta ? Math.min(100, Math.round(feitoMin / meta * 100)) : 0;
   const selos = `${atrasados ? `<span class="selo atraso">${atrasados} ${atrasados === 1 ? 'atrasado' : 'atrasados'} da semana passada</span>` : ''}
     ${adiantados.length ? `<span class="selo adiante">${adiantados.length} ${adiantados.length === 1 ? 'assunto adiantado' : 'assuntos adiantados'} · ${fmtMin(soma(adiantados, minDe))}</span>` : ''}`;
   const painel = d.blocos.length ? `<section class="cartao dia-resumo">
-      <div class="entre"><strong>${fmtMin(feitoMin)} de assuntos concluídos${feitoMin >= meta ? ' · meta batida!' : ` · meta ${fmtMin(meta)}`}</strong><span class="fraco">${d.horas}h livres · 20% reservado para pausas</span></div>
-      <div class="barra grossa"><i style="width:${pct}%"></i></div><div class="linha">${selos}</div></section>` : '';
-  const planejar = d.blocos.length ? '' : `<section class="cartao"><h2>Ainda não há plano para hoje</h2><p class="fraco" style="margin:0">Conte como vai ser o seu dia (ou só quantas horas tem livres) e eu monto tudo: agenda, pausas e os assuntos certos.</p>
-    <div class="linha"><button class="botao grande" data-acao="ir" data-v="meudia">Planejar meu dia</button></div></section>`;
+      <div class="entre"><strong>${feitosBlocos} de ${d.blocos.length} tarefas concluídas · ${fmtMin(feitoMin)} estudados${feitosBlocos === d.blocos.length || (meta && feitoMin >= meta) ? ' · meta batida! 🎉' : meta ? ` · meta ${fmtMin(meta)}` : ''}</strong><span class="fraco">${d.horas ? `${d.horas}h livres · 20% reservado para pausas` : ''}</span></div>
+      <div class="barra grossa"><i style="width:${pct}%"></i></div>${selos.trim() ? `<div class="linha">${selos}</div>` : ''}</section>` : '';
+  const planejar = d.blocos.length ? '' : `<section class="cartao"><h2>Ainda não há plano para hoje</h2><p class="fraco" style="margin:0">Escolha quantas horas livres tem hoje para montar rápido, ou abra a agenda completa do dia.</p>
+    <div class="linha">${[2, 3, 4, 6, 8].map(n => `<button class="chip" data-acao="montarRapido" data-h="${n}">Tenho ${n}h hoje</button>`).join('')}
+      <button class="botao grande" data-acao="ir" data-v="meudia">Planejar agenda do dia</button></div></section>`;
 
-  const grupos = [['atrasado', 'Atrasados'], ['semana', 'Desta semana'], ['futuro', 'Adiantando a próxima semana'], ['feito', 'Já feitos']];
-  const dos = b => { const a = b.assuntoId && achar(b.assuntoId); return a ? (a.feito ? 'feito' : estadoDe(a)) : 'semana'; };
+  const grupos = [['atrasado', 'Atrasados'], ['semana', 'Para hoje'], ['futuro', 'Adiantando (opcional)'], ['feito', 'Concluídos hoje']];
+  const dos = b => { if (blocoConcluido(b)) return 'feito'; if (b.adiantado) return 'futuro'; const a = b.assuntoId && achar(b.assuntoId); return a ? estadoDe(a) : 'semana'; };
   const lista = grupos.map(([k, t]) => {
     const bs = d.blocos.filter(b => dos(b) === k);
     return bs.length ? `<h3 class="grupo ${k}">${t}<span class="fraco"> · ${fmtMin(soma(bs, b => b.min || 0))}</span></h3>${bs.map(blocoHtml).join('')}` : '';
-  }).join('');
+  }).join('') + previaAdiantarHtml(d);
 
   let prox = null;
-  for (const b of d.blocos) { const a = b.assuntoId && achar(b.assuntoId); if (a?.feito) continue; const i = b.passos.findIndex(p => !p.ok); if (i >= 0) { prox = { b, i }; break; } }
+  for (const b of d.blocos) {
+    if (blocoConcluido(b)) continue;
+    const i = (b.passos || []).findIndex(p => !p.ok);
+    prox = { b, i }; break;
+  }
   const seq = sequencia();
+  const bId = prox?.b?.id || '', pIdx = prox?.i ?? -1;
+  const controlesTimer = `<div class="timer-opcoes">
+    <span class="rotulo" style="color:inherit;opacity:.8">tempo de estudo (escolha ou deixe livre)</span>
+    <div class="linha" style="gap:6px">
+      ${[[5, '5 min'], [25, '25 min'], [50, '50 min'], [60, '1h'], [120, '2h']].map(([m, rot]) => `<button class="chip chip-timer" data-acao="timer" data-min="${m}" data-b="${bId}" data-i="${pIdx}">${rot}</button>`).join('')}
+      <button class="chip chip-timer destaque" data-acao="timerLivre" data-b="${bId}" data-i="${pIdx}">⏱ Cronômetro livre</button>
+    </div>
+    <div class="linha timer-custom-linha" style="gap:6px">
+      <input type="number" id="timer-custom-min" min="1" max="360" placeholder="Outro (min)" value="${esc(ui.timerCustom || '')}" data-ui="timerCustom">
+      <button class="botao claro" data-acao="timerCustom" data-b="${bId}" data-i="${pIdx}">Começar tempo</button>
+    </div>
+  </div>`;
   const lado = `<aside class="coluna">
     <div class="cartao proximo">
-      ${prox ? `<span class="rotulo">próximo passo</span><h2>${esc(prox.b.passos[prox.i].t)}</h2><span class="fraco" style="color:inherit;opacity:.75">${esc(prox.b.titulo)}</span>
-        <div class="linha"><button class="botao destaque grande" data-acao="timer" data-min="5" data-b="${prox.b.id}" data-i="${prox.i}">Só 5 minutos</button>
-        <button class="botao contorno" style="color:inherit" data-acao="timer" data-min="25" data-b="${prox.b.id}" data-i="${prox.i}">Foco 25</button></div>`
-        : d.blocos.length ? `<span class="rotulo">hoje</span><h2>Tudo feito por hoje. Orgulho!</h2>` : `<span class="rotulo">hoje</span><h2>Diga quanto tempo tem e eu encho o dia.</h2>`}
+      ${prox ? `<span class="rotulo">foco agora</span><h2>${esc(prox.b.titulo)}</h2>${prox.i >= 0 && prox.b.passos?.[prox.i] ? `<span class="fraco" style="color:inherit;opacity:.8">${esc(prox.b.passos[prox.i].t)}</span>` : ''}${controlesTimer}`
+        : d.blocos.length ? `<span class="rotulo">hoje</span><h2>Tudo feito por hoje. Orgulho! 🎉</h2><span class="fraco" style="color:inherit;opacity:.8">Se quiser estudar mais um pouco no seu ritmo:</span>${controlesTimer}` : `<span class="rotulo">hoje</span><h2>Diga quanto tempo tem e eu encho o dia.</h2>`}
     </div>
     ${window.metaQHtml?.() ?? ''}${window.pendHojeHtml?.() ?? ''}
     <div class="cartao ia-cartao"><strong>${seq ? `${seq} ${seq === 1 ? 'dia' : 'dias'} seguidos estudando` : 'Um passo hoje já conta'}</strong>
       <span>${esc(faseAtual()?.objetivo || S.meses[mesDe(h)]?.foco || 'Comece pelo passo mais fácil. O resto vem.')}</span></div>
-    ${d.blocos.length ? `<div class="linha"><button class="botao claro" data-acao="maisUm">Puxar mais um assunto</button>
-      <button class="botao contorno" data-acao="ir" data-v="meudia">Meu dia</button>
-      <button class="botao contorno" data-acao="novaTarefa">+ Tarefa</button></div>` : ''}
+    ${d.blocos.length ? `<div class="linha">
+      <button class="botao contorno" data-acao="ir" data-v="meudia">Agenda do dia</button>
+      <button class="botao contorno" data-acao="novaTarefa">+ Tarefa avulsa</button></div>` : ''}
   </aside>`;
   return topo + avisoIa() + painel + planejar + (d.blocos.length ? `<div class="grade2"><section class="coluna" aria-label="Assuntos de hoje">${lista}</section>${lado}</div>` : '');
 }
@@ -530,14 +590,28 @@ function planejarHtml(d) {
 
 function blocoHtml(b) {
   const a = b.assuntoId && achar(b.assuntoId);
-  const est = a ? estadoDe(a) : '';
-  const rot = { atrasado: 'atrasado', futuro: 'adiantando', feito: 'feito' }[est];
+  if (window.sincronizarPassoQ) window.sincronizarPassoQ(b, a);
+  const concluido = blocoConcluido(b);
+  const est = concluido ? 'feito' : b.adiantado ? 'futuro' : a ? estadoDe(a) : '';
+  const rot = { atrasado: 'atrasado', futuro: 'adiantando', feito: 'concluído' }[est];
+  const passos = b.passos || [], feitosP = passos.filter(p => p.ok).length;
+  const qMeta = window.questoesDoBloco ? window.questoesDoBloco(b) : (a ? tempoDe(a).q : 0);
+  const qFeitas = a?.questoes?.feitas || 0;
+  const pQ = passos.find(p => /quest/i.test(p.t));
+  const dicaResumo = a && ehConteudo(a)
+    ? `teoria ~${fmtMin(tempoDe(a).t)} + ${qMeta} questões${qFeitas ? ` (${qFeitas}/${qMeta} feitas${pQ?.ok ? ' ✓' : ''})` : pQ?.ok ? ' ✓' : ''}`
+    : passos.length ? `${feitosP} de ${passos.length} etapas concluídas` : '';
+  const detalhes = passos.length ? `<details class="etapas-bloco" data-k="bp-${b.id}" ${ui.ab?.['bp-' + b.id] ? 'open' : ''}>
+    <summary><span class="etapas-dica">${esc(dicaResumo)}</span><span class="etapas-seta">${feitosP}/${passos.length} etapas ▾</span></summary>
+    <div class="etapas-corpo">${passos.map((p, i) => `<label class="passo ${p.ok ? 'ok' : ''}"><input type="checkbox" data-acao="passo" data-b="${b.id}" data-i="${i}" ${p.ok ? 'checked' : ''}><span>${esc(p.t)}</span></label>`).join('')}</div>
+  </details>` : '';
   return `<article class="cartao bloco ${est}" style="${cor(b.materia)}">
-    <div class="bloco-topo"><h3>${esc(b.titulo)}</h3>
-      <span class="hora">≈ ${fmtMin(b.min || 0)}${b.sug ? ` · sugerido ${b.sug}` : ''}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
+    <div class="bloco-topo">
+      <label class="bloco-check"><input type="checkbox" class="check-bloco" data-acao="blocoFeito" data-b="${b.id}" ${concluido ? 'checked' : ''} aria-label="Marcar tarefa como concluída"><h3>${esc(b.titulo)}</h3></label>
+      <span class="hora">≈ ${fmtMin(b.min || 0)}${b.sug ? ` · ${b.sug}` : ''}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
       <button class="x" data-acao="tirarBloco" data-b="${b.id}" aria-label="Tirar bloco">×</button></div>
-    ${b.passos.map((p, i) => `<label class="passo ${p.ok ? 'ok' : ''}"><input type="checkbox" data-acao="passo" data-b="${b.id}" data-i="${i}" ${p.ok ? 'checked' : ''}><span>${esc(p.t)}</span></label>`).join('')}
-    ${a ? `<div class="linha acoes-bloco">${ehConteudo(a) ? `<button class="link" data-acao="questoes" data-id="${a.id}">${a.questoes ? `Questões: ${a.questoes.acertos}/${a.questoes.feitas}` : 'Registrar questões'}</button>` : ''}
+    ${detalhes}
+    ${a ? `<div class="linha acoes-bloco">${ehConteudo(a) ? `<button class="link" data-acao="questoes" data-id="${a.id}">${a.questoes ? `Fiz fora (${a.questoes.acertos}/${a.questoes.feitas} certas)` : 'Fiz questões fora'}</button>` : ''}
       <button class="link" data-acao="caderno" data-id="${a.id}">Caderno à mão</button></div>` : ''}
   </article>`;
 }
@@ -750,7 +824,8 @@ function vAjustes() {
     <section class="cartao"><h2>Cópia de segurança</h2>
       <p class="fraco" style="margin:0">Os dados ficam neste aparelho. De vez em quando, salve uma cópia.</p>
       <div class="linha"><button class="botao claro" data-acao="exportar">Salvar cópia</button>
-        <label class="botao contorno" style="display:inline-flex;align-items:center">Restaurar cópia<input type="file" accept="application/json,.json" data-acao-arquivo="importar" hidden></label></div>
+        <label class="botao contorno" style="display:inline-flex;align-items:center">Restaurar cópia<input type="file" accept="application/json,.json" data-acao-arquivo="importar" hidden></label>
+        <button class="botao contorno" data-acao="zerarTestes">Zerar questões e marcações de teste</button></div>
       ${ui.apagar ? `<div class="linha"><span>Apagar tudo mesmo? Não tem volta.</span><button class="botao" data-acao="apagarSim">Sim, apagar</button><button class="botao contorno" data-acao="apagarNao">Não</button></div>`
         : '<div><button class="link" data-acao="apagar">Apagar todos os dados</button></div>'}
     </section>
@@ -817,7 +892,7 @@ function modalTarefa() {
     <div class="linha"><button class="botao" data-acao="salvarTarefa">Adicionar</button></div>`);
 }
 
-// ---------- timer ----------
+// ---------- timer e cronômetro ----------
 let audio = null;
 function bip() {
   try {
@@ -830,51 +905,127 @@ function bip() {
   } catch { }
 }
 
+function fmtRelogio(seg) {
+  const s = Math.max(0, Math.round(seg)), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
+  return h > 0 ? `${h}:${pad(m)}:${pad(r)}` : `${pad(m)}:${pad(r)}`;
+}
+
 function iniciarTimer(min, b, i, modo = 'foco') {
   try { audio ||= new (window.AudioContext || window.webkitAudioContext)(); audio.resume?.(); } catch { }
   const bloco = (S.dias[hoje()]?.blocos || []).find(x => x.id === b);
-  const rotulo = modo === 'pausa' ? 'Pausa' : bloco?.passos[i]?.t || 'Foco';
-  S.timer = { fim: Date.now() + min * 60000, total: min * 60000, min, modo, b, i, rotulo, acabou: false };
+  const passo = i >= 0 && bloco?.passos?.[i] ? bloco.passos[i].t : '';
+  const rotulo = modo === 'pausa' ? 'Pausa para respirar' : bloco ? (passo ? `${bloco.titulo} · ${passo}` : bloco.titulo) : 'Tempo de estudo';
+  const agora = Date.now(), dur = Math.max(1, +min || 25) * 60000;
+  S.timer = modo === 'livre'
+    ? { inicio: agora, acum: 0, min: 0, modo: 'livre', b: b || '', i: i ?? -1, rotulo, pausado: false, acabou: false, salvoMin: 0 }
+    : { inicio: agora, fim: agora + dur, total: dur, restaPausa: dur, min: Math.round(dur / 60000), modo, b: b || '', i: i ?? -1, rotulo, pausado: false, acabou: false, salvoMin: 0 };
   salvar(); renderTimer(true);
+}
+
+function guardarMinutosTimer(t) {
+  if (!t || t.modo === 'pausa') return 0;
+  const decMs = t.modo === 'livre'
+    ? (t.acum || 0) + (t.pausado ? 0 : Math.max(0, Date.now() - (t.inicio || Date.now())))
+    : (t.total || 0) - (t.pausado ? (t.restaPausa || 0) : Math.max(0, (t.fim || Date.now()) - Date.now()));
+  const totMin = Math.floor(decMs / 60000), novo = Math.max(0, totMin - (t.salvoMin || 0));
+  if (novo > 0) {
+    t.salvoMin = totMin;
+    const b = t.b && (S.dias[hoje()]?.blocos || []).find(x => x.id === t.b);
+    const a = b?.assuntoId && achar(b.assuntoId);
+    if (!a?.feito && !b?.feito) S.estudo[hoje()] = (S.estudo[hoje()] || 0) + novo;
+  }
+  return novo;
 }
 
 function renderTimer(forcar = false) {
   const el = $('#timer'), t = S.timer;
   if (!t) { el.hidden = true; el.innerHTML = ''; el.dataset.estado = ''; return; }
-  const resta = Math.max(0, t.fim - Date.now());
-  if (!resta && !t.acabou) { t.acabou = true; salvar(); bip(); forcar = true; }
-  const estado = t.acabou ? 'fim' : 'rodando';
+  const livre = t.modo === 'livre';
+  const decMs = livre ? (t.acum || 0) + (t.pausado ? 0 : Math.max(0, Date.now() - (t.inicio || Date.now()))) : 0;
+  const resta = livre ? 0 : (t.pausado ? (t.restaPausa || 0) : Math.max(0, (t.fim || 0) - Date.now()));
+  if (!livre && !resta && !t.acabou) { t.acabou = true; guardarMinutosTimer(t); salvar(); bip(); forcar = true; }
+  const estado = `${t.acabou ? 'fim' : t.pausado ? 'pausado' : 'rodando'}-${t.modo}`;
   el.hidden = false;
   if (forcar || el.dataset.estado !== estado) {
     el.dataset.estado = estado;
-    const marcar = t.b && t.modo !== 'pausa' ? `<button class="botao claro" data-acao="timerFeito">Passo feito!</button>` : '';
-    if (!t.acabou) el.innerHTML = `<span class="rotulo">${t.modo === 'pausa' ? 'respira' : t.min === 5 ? 'só 5 minutos' : 'foco'}</span>
-      <h2>${esc(t.rotulo)}</h2><div class="anel"><div><span class="tempo"></span></div></div>
-      <div class="linha" style="justify-content:center">${marcar}<button class="botao contorno" data-acao="timerParar">Parar</button></div>`;
-    else if (t.modo === 'pausa') el.innerHTML = `<h2>Pausa acabou</h2><div class="linha" style="justify-content:center">
-      <button class="botao grande" data-acao="timerMais" data-min="25">Mais 25 min</button><button class="botao contorno" data-acao="timerParar">Parar por aqui</button></div>`;
-    else if (t.min === 5) el.innerHTML = `<h2>Você começou! Esse era o mais difícil.</h2><p class="fraco">Quer seguir mais um pouco?</p>
-      <div class="linha" style="justify-content:center"><button class="botao grande" data-acao="timerMais" data-min="20">Mais 20 min</button>${marcar}
-      <button class="botao contorno" data-acao="timerParar">Parar por aqui</button></div>`;
-    else el.innerHTML = `<h2>Bloco de foco feito!</h2><div class="linha" style="justify-content:center">
-      <button class="botao grande destaque" data-acao="timerPausa">Pausa de 5 min</button>${marcar}<button class="botao contorno" data-acao="timerParar">Parar</button></div>`;
+    const temPasso = t.b && t.i >= 0 && t.modo !== 'pausa';
+    const botoesFeito = t.b && t.modo !== 'pausa'
+      ? `${temPasso ? `<button class="botao claro" data-acao="timerFeito">Etapa feita</button>` : ''}<button class="botao destaque" data-acao="timerBlocoFeito">Tarefa concluída ✓</button>`
+      : '';
+    if (!t.acabou) {
+      const sub = t.modo === 'pausa' ? 'respira' : livre ? (t.pausado ? 'cronômetro pausado' : 'cronômetro livre') : t.pausado ? 'pausado' : t.min === 5 ? 'só 5 minutos' : `foco · ${fmtMin(t.min)}`;
+      el.innerHTML = `<span class="rotulo">${sub}</span>
+        <h2>${esc(t.rotulo)}</h2><div class="anel"><div><span class="tempo"></span><small class="fraco tempo-sub">${livre ? 'tempo estudando' : t.pausado ? 'em pausa' : 'restante'}</small></div></div>
+        <div class="linha" style="justify-content:center">
+          <button class="botao ${t.pausado ? 'grande' : 'contorno'}" data-acao="timerPausar">${t.pausado ? 'Continuar' : 'Pausar'}</button>
+          ${!livre && t.modo !== 'pausa' ? `<button class="botao contorno" data-acao="timerSomar" data-min="15">+15 min</button>` : ''}
+          ${botoesFeito}
+          <button class="botao contorno" data-acao="timerParar">${livre ? 'Encerrar e salvar' : 'Parar'}</button>
+        </div>`;
+    } else if (t.modo === 'pausa') {
+      el.innerHTML = `<h2>Pausa acabou</h2><div class="linha" style="justify-content:center">
+        <button class="botao grande" data-acao="timerMais" data-min="25">Voltar: +25 min</button>
+        <button class="botao claro" data-acao="timerMais" data-min="50">+50 min</button>
+        <button class="botao contorno" data-acao="timerParar">Parar por aqui</button></div>`;
+    } else if (t.min === 5) {
+      el.innerHTML = `<h2>Você começou! Esse era o mais difícil.</h2><p class="fraco">Quer continuar estudando?</p>
+        <div class="linha" style="justify-content:center"><button class="botao grande" data-acao="timerMais" data-min="25">Mais 25 min</button>
+        <button class="botao claro" data-acao="timerMais" data-min="50">Mais 50 min</button>${botoesFeito}
+        <button class="botao contorno" data-acao="timerParar">Parar por aqui</button></div>`;
+    } else {
+      el.innerHTML = `<h2>Tempo concluído! (${fmtMin(t.min)})</h2><div class="linha" style="justify-content:center">
+        <button class="botao grande destaque" data-acao="timerPausa">Pausa de 5 min</button>
+        <button class="botao claro" data-acao="timerMais" data-min="30">+30 min</button>
+        ${botoesFeito}<button class="botao contorno" data-acao="timerParar">Fechar</button></div>`;
+    }
   }
   if (!t.acabou) {
-    const s = Math.ceil(resta / 1000);
-    const tempo = $('.tempo', el); if (tempo) tempo.textContent = `${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
-    const anel = $('.anel', el); if (anel) anel.style.setProperty('--p', String(1 - resta / t.total));
+    const seg = livre ? Math.floor(decMs / 1000) : Math.ceil(resta / 1000);
+    const tempo = $('.tempo', el); if (tempo) tempo.textContent = fmtRelogio(seg);
+    const anel = $('.anel', el);
+    if (anel) anel.style.setProperty('--p', livre ? String((seg % 3600) / 3600) : String(1 - resta / Math.max(1, t.total)));
   }
 }
-setInterval(() => { if (S.timer && !S.timer.acabou) renderTimer(); }, 1000);
+setInterval(() => { if (S.timer && !S.timer.acabou && !S.timer.pausado) renderTimer(); }, 1000);
 
 // ---------- ações ----------
 function marcarPasso(b, i, ok) {
   const h = hoje(), bloco = (S.dias[h]?.blocos || []).find(x => x.id === b);
-  const p = bloco?.passos[i];
+  const p = bloco?.passos?.[i];
   if (!p || p.ok === ok) return;
+  const antes = blocoConcluido(bloco);
   p.ok = ok;
   S.feitos[h] = Math.max(0, (S.feitos[h] || 0) + (ok ? 1 : -1));
-  if (bloco.assuntoId) setFeito(achar(bloco.assuntoId), bloco.passos.every(x => x.ok), false);
+  const todosOk = bloco.passos.every(x => x.ok);
+  bloco.feito = todosOk;
+  if (bloco.assuntoId) setFeito(achar(bloco.assuntoId), todosOk, false);
+  else if (antes !== todosOk) {
+    if (todosOk) S.estudo[h] = (S.estudo[h] || 0) + (bloco.min || 30);
+    else S.estudo[h] = Math.max(0, (S.estudo[h] || 0) - (bloco.min || 30));
+  }
+}
+
+function marcarBloco(bId, ok) {
+  const h = hoje(), bloco = (S.dias[h]?.blocos || []).find(x => x.id === bId);
+  if (!bloco) return;
+  const antes = blocoConcluido(bloco);
+  bloco.feito = ok;
+  if (bloco.passos?.length) {
+    const mudaram = bloco.passos.filter(p => p.ok !== ok).length;
+    bloco.passos.forEach(p => { p.ok = ok; });
+    S.feitos[h] = Math.max(0, (S.feitos[h] || 0) + (ok ? mudaram : -mudaram));
+  } else if (antes !== ok) {
+    S.feitos[h] = Math.max(0, (S.feitos[h] || 0) + (ok ? 1 : -1));
+  }
+  if (bloco.assuntoId) setFeito(achar(bloco.assuntoId), ok, false);
+  else if (antes !== ok) {
+    if (ok) S.estudo[h] = (S.estudo[h] || 0) + (bloco.min || 30);
+    else S.estudo[h] = Math.max(0, (S.estudo[h] || 0) - (bloco.min || 30));
+  }
+  if (bloco.tipo === 'revisao' && ok && !bloco.contou && typeof revisaoFeita === 'function') {
+    bloco.contou = true;
+    (bloco.revisao || []).map(achar).filter(Boolean).forEach(a => revisaoFeita(a));
+  }
 }
 
 function contextoAtual() { return [ui.ctxTexto.trim(), ui.ctxEnergia].filter(Boolean).join(' · '); }
@@ -922,13 +1073,26 @@ const ACOES = {
     if (outro > 0) d.horas = Math.min(16, outro);
     if (!d.horas) { ui.iaMsg = 'Escolha quantas horas livres você tem hoje.'; render(); return; }
     d.contexto = contextoAtual() || 'dia normal';
-    montarHoje(); ui.planejar = false; salvar(); render();
+    montarHoje(Math.round(d.horas * 48)); ui.planejar = false; salvar(); render();
     if (temChave() && d.blocos.length) pedirIa(`Ajuste e detalhe meu dia. Contexto de hoje: ${d.contexto}. Tenho ${d.horas}h livres (uso ${fmtMin(d.cap)} com a folga de 20%). Devolva blocos_hoje com os assuntos de blocos_de_hoje (mantenha assuntoId e min; só tire ou troque algum se o contexto pedir) e, para cada um, de 3 a 5 passos concretos e específicos do assunto, o primeiro bem fácil. Se eu pedi algo no contexto (ex.: só uma matéria, ou mais de uma), troque os assuntos por outros da lista com o mesmo total de minutos. Sem pedido meu, mantenha a mistura que já vem: 1 matéria pesada (Matemática, Física, Química) e 1 leve alternadas, e no máximo 1 redação.`, 'Detalhando seus passos…');
+  },
+  montarRapido: el => {
+    const h = +el.dataset.h || 4, d = diaHoje();
+    d.horas = h; d.contexto = `${h}h livres`;
+    montarHoje(Math.round(h * 48)); salvar(); render();
+  },
+  adiantarAssunto: el => {
+    const a = achar(el.dataset.id), d = diaHoje();
+    if (!a || d.blocos.some(b => b.assuntoId === a.id)) return;
+    const b = blocoDe(a); b.adiantado = true;
+    d.blocos.push(b); salvar();
+    ui.iaMsg = `Adicionado como adiantamento opcional: "${a.titulo}".`; render();
   },
   maisUm: () => {
     const d = diaHoje(), a = escolherProximo(filaParaHoje(d.blocos), d.blocos);
     if (!a) { ui.iaMsg = 'Não há mais assuntos na fila.'; render(); return; }
-    d.blocos.push(blocoDe(a)); d.cap = (d.cap || 0) + minDe(a); salvar(); render();
+    const b = blocoDe(a); b.adiantado = true;
+    d.blocos.push(b); salvar(); render();
   },
   fazerHoje: el => {
     const a = achar(el.dataset.id), d = diaHoje();
@@ -943,6 +1107,7 @@ const ACOES = {
   salvarCores: () => { const y = window.scrollY; if (ui.coresPrev) S.cores = { ...ui.coresPrev }; ui.coresPrev = null; salvar(); ui.iaMsg = 'Cores salvas.'; render(); window.scrollTo(0, y); },
   descartarCores: () => { const y = window.scrollY; ui.coresPrev = null; render(); window.scrollTo(0, y); },
   passo: el => { marcarPasso(el.dataset.b, +el.dataset.i, el.checked); salvar(); render(); },
+  blocoFeito: el => { marcarBloco(el.dataset.b, el.checked); salvar(); render(); },
   tirarBloco: el => { const d = diaHoje(); d.blocos = d.blocos.filter(b => b.id !== el.dataset.b); salvar(); render(); },
   novaTarefa: () => modalTarefa(),
   salvarTarefa: () => {
@@ -950,15 +1115,48 @@ const ACOES = {
     const passos = $('#t-passos').value.split('\n').map(x => x.trim()).filter(Boolean);
     const d = diaHoje();
     if (!d.contexto) d.contexto = 'dia normal';
-    d.blocos.push({ id: uid(), assuntoId: null, titulo: t, materia: $('#t-materia').value, min: 30,
-      passos: (passos.length ? passos : ['Começar (5 min)', 'Terminar']).map(x => ({ t: x, ok: false })) });
+    d.blocos.push({ id: uid(), assuntoId: null, titulo: t, materia: $('#t-materia').value, min: 30, feito: false,
+      passos: passos.map(x => ({ t: x, ok: false })) });
     salvar(); fecharModal(); render();
   },
   timer: el => iniciarTimer(+el.dataset.min, el.dataset.b, +el.dataset.i),
-  timerMais: el => { const t = S.timer; iniciarTimer(+el.dataset.min, t?.b, t?.i); },
-  timerPausa: () => { const t = S.timer; iniciarTimer(5, t?.b, t?.i, 'pausa'); },
-  timerParar: () => { S.timer = null; salvar(); renderTimer(); render(); },
-  timerFeito: () => { const t = S.timer; if (t?.b) marcarPasso(t.b, t.i, true); S.timer = null; salvar(); render(); },
+  timerLivre: el => iniciarTimer(0, el.dataset.b, +el.dataset.i, 'livre'),
+  timerCustom: el => {
+    const m = Math.round(+($('#timer-custom-min')?.value || ui.timerCustom || 0));
+    if (!(m >= 1 && m <= 360)) { ui.iaMsg = 'Digite quantos minutos quer estudar (ex.: 90 ou 120).'; render(); return; }
+    iniciarTimer(m, el.dataset.b, +el.dataset.i);
+  },
+  timerPausar: () => {
+    const t = S.timer; if (!t) return;
+    if (!t.pausado) {
+      guardarMinutosTimer(t);
+      if (t.modo === 'livre') t.acum = (t.acum || 0) + Math.max(0, Date.now() - (t.inicio || Date.now()));
+      else t.restaPausa = Math.max(0, (t.fim || Date.now()) - Date.now());
+      t.pausado = true;
+    } else {
+      if (t.modo === 'livre') t.inicio = Date.now();
+      else t.fim = Date.now() + (t.restaPausa || 60000);
+      t.pausado = false;
+    }
+    salvar(); renderTimer(true);
+  },
+  timerSomar: el => {
+    const t = S.timer; if (!t || t.modo === 'livre') return;
+    const add = (+el.dataset.min || 15) * 60000;
+    if (t.pausado) t.restaPausa = (t.restaPausa || 0) + add;
+    else t.fim = Math.max(Date.now(), t.fim || Date.now()) + add;
+    t.total = (t.total || 0) + add; t.min = Math.round(t.total / 60000); t.acabou = false;
+    salvar(); renderTimer(true);
+  },
+  timerMais: el => { const t = S.timer; if (t) guardarMinutosTimer(t); iniciarTimer(+el.dataset.min, t?.b, t?.i); },
+  timerPausa: () => { const t = S.timer; if (t) guardarMinutosTimer(t); iniciarTimer(5, t?.b, t?.i, 'pausa'); },
+  timerParar: () => { const t = S.timer; if (t) guardarMinutosTimer(t); S.timer = null; salvar(); renderTimer(); render(); },
+  timerFeito: () => { const t = S.timer; if (t) { guardarMinutosTimer(t); if (t.b && t.i >= 0) marcarPasso(t.b, t.i, true); } S.timer = null; salvar(); render(); },
+  timerBlocoFeito: () => { const t = S.timer; if (t?.b) marcarBloco(t.b, true); S.timer = null; salvar(); render(); },
+  zerarTestes: () => {
+    zerarDadosTeste(S); ui.qs = null; try { DB.del('d:qs'); } catch { }
+    salvar(); ui.iaMsg = 'Questões e marcações de teste foram zeradas.'; render();
+  },
   semana: el => { ui.semana = el.dataset.v === '0' ? 0 : ui.semana + +el.dataset.v; render(); },
   reorganizar: el => {
     const ini = el.dataset.ini, fim = somaDias(ini, 6);

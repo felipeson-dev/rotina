@@ -35,10 +35,10 @@ if (typeof CRONOGRAMA !== 'undefined' && S.cronoV !== CRONOGRAMA.v) {
   ui.iaMsg = `O cronograma novo está no app: ${n} itens de ${diaCurto(CRONOGRAMA.inicio)} a junho, mais revisões, simulados e hábitos. O plano antigo ficou guardado em Ajustes > Cópias do plano.`;
 }
 
-// o dia respeita o começo do cronograma e os dias de limpeza
+// o dia respeita o começo do cronograma (se houver itens anteriores planejados) e os dias de limpeza
 { const f0 = filaParaHoje; filaParaHoje = function () {
   let l = f0.apply(this, arguments);
-  if (S.cronoInicio && hoje() < S.cronoInicio) l = l.filter(a => !a.crono);
+  if (S.cronoInicio && hoje() < S.cronoInicio && l.some(a => !a.crono)) l = l.filter(a => !a.crono);
   if ((S.diasLimpeza || []).includes(hoje())) l = l.filter(a => !ehConteudo(a) || estadoDe(a) === 'atrasado');
   return l;
 }; }

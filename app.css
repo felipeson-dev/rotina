@@ -602,3 +602,29 @@ input[type="search"]:focus { border-color: var(--acento); }
 .q-mapa button.h-meio { background: #FFF1D6; border-color: #E8C27A; color: #8A5A00; }
 .disc-av.C[aria-pressed="true"] { background: #2E8B57; color: #fff; } .disc-av.P[aria-pressed="true"] { background: #C98A12; color: #fff; } .disc-av.E[aria-pressed="true"] { background: #C2483D; color: #fff; }
 .q-hist .h-meio { color: #A66F00; }
+
+/* tarefa única no bloco + etapas discretas expansíveis */
+.bloco-check { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; flex: 1; min-width: 0; }
+.check-bloco { width: 24px; height: 24px; margin-top: 2px; accent-color: var(--acento); flex: none; cursor: pointer; }
+.bloco.feito .bloco-check strong { text-decoration: line-through; color: var(--fraco); }
+.etapas-bloco { border-top: 1px dashed var(--borda); padding-top: 8px; }
+.etapas-bloco > summary { cursor: pointer; font-size: 13px; color: var(--fraco); user-select: none; list-style: none; display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; background: var(--painel2); }
+.etapas-bloco > summary::-webkit-details-marker { display: none; }
+.etapas-bloco > summary::before { content: "▸"; font-size: 12px; transition: transform .15s; }
+.etapas-bloco[open] > summary::before { transform: rotate(90deg); }
+.etapas-bloco .passos { margin-top: 8px; }
+
+/* prévia opcional para adiantar assuntos */
+.adiantar-previa { border-style: dashed; background: color-mix(in srgb, var(--painel) 70%, var(--fundo)); }
+.adiantar-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.adiantar-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--painel); border: 1px solid var(--borda); }
+
+/* timer flexível e cronômetro */
+.timer-opcoes { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.chip-timer { padding: 6px 11px; min-height: 34px; font-size: 13px; }
+.timer-custom-linha { display: flex; align-items: center; gap: 6px; }
+.input-timer-min { width: 82px !important; min-height: 34px !important; padding: 4px 8px !important; font-size: 13px !important; text-align: center; }
+
+/* listas abertas no banco de questões */
+.listas-abertas { border-color: color-mix(in srgb, var(--acento) 45%, var(--borda)); background: color-mix(in srgb, var(--suave) 35%, var(--painel)); }
+.botao.destaque { background: var(--acento); color: var(--sobre-acento); }

@@ -56,7 +56,10 @@ async function listaIa(banca, materia, tema, n, dif) {
 }
 
 function iniciarSessao(itens, extra = {}) {
-  ui.qs = { itens: itens.map(q => ({ ...q, resp: null, seg: 0, certo: null })), i: 0, t0: Date.now(), ver: false, fim: false, ...extra };
+  const chaveLista = extra.chaveLista || (extra.assuntoId ? 'a:' + extra.assuntoId : extra.blocoId ? 'rev:' + extra.blocoId : 'avulsa');
+  ui.qs = { itens: itens.map(q => ({ ...q, resp: q.resp ?? null, seg: q.seg || 0, certo: q.certo ?? null, contabilizada: !!q.contabilizada })), i: 0, t0: Date.now(), ver: false, fim: false, chaveLista, ...extra };
+  S.listasAbertas ||= {};
+  if (!ui.qs.simulado) { S.listasAbertas[chaveLista] = ui.qs; salvar(); }
   // rascunho à mão: um por questão da lista (qtmp0, qtmp1…); os da lista anterior são apagados ao começar outra
   for (let i = 0; i < Math.max(60, ui.qsN || 0); i++) { DB.del('d:qtmp' + i); DB.del('d:qrisc' + i); }
   DB.del('d:qtmp'); ui.qsN = ui.qs.itens.length; ui.qs.tq = Date.now(); render();
@@ -152,21 +155,74 @@ function registrarHist(q) {
   S.qh[q.id] = h; salvar();
 }
 function fecharItem(s) { const q = s.itens[s.i]; q.seg += Math.round((Date.now() - s.tq) / 1000); s.tq = Date.now(); }
+
+function assuntoCorrespondenteHoje(s, q) {
+  if (s?.assuntoId) return achar(s.assuntoId);
+  const d = S.dias[hoje()]; if (!d?.blocos?.length) return null;
+  const tagF = typeof tagDe === 'function' ? tagDe : a => a.tag || a.titulo;
+  for (const b of d.blocos) {
+    const a = b.assuntoId && achar(b.assuntoId);
+    if (a && ehConteudo(a) && a.materia === q.materia && q.assunto && tagF(a) === q.assunto) return a;
+  }
+  for (const b of d.blocos) {
+    const a = b.assuntoId && achar(b.assuntoId);
+    if (a && ehConteudo(a) && a.materia === q.materia && !a.feito) return a;
+  }
+  return null;
+}
+
+/** Contabiliza cada questão assim que é respondida: atualiza a meta diária, o assunto de hoje e a lista aberta. */
+function contabilizarQuestaoRespondida(s, q) {
+  if (!s || !q || q.resp == null || q.contabilizada) return;
+  q.contabilizada = true;
+  const h = hoje(), m = q.materia;
+  if (m) {
+    const d = ((S.qlog[h] ||= {})[m] ||= { f: 0, a: 0, t: 0 });
+    d.f += 1; d.a += q.certo ? 1 : 0; d.t = (d.t || 0) + Math.round(q.seg || 0);
+    aprenderTempo(m, q.seg || 0, 1);
+  }
+  const ja = S.erros.find(e => (q.id && e.qid === q.id) || (q.enunciado && e.enunciado === q.enunciado));
+  if (!q.certo) {
+    if (ja) { ja.vezes = (ja.vezes || 0) + 1; ja.resp = q.resp; ja.rev = somaDias(h, 3); }
+    else S.erros.push({ id: uid(), dia: h, rev: somaDias(h, 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment, qid: q.id || '', imagens: (q.imagens || []).filter(u => /^https:/.test(u)), modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, tipo: q.tipo || '' });
+  } else if (ja && s.revisao) S.erros = S.erros.filter(e => e !== ja);
+
+  const a = assuntoCorrespondenteHoje(s, q);
+  if (a) {
+    const ant = a.questoes || { feitas: 0, acertos: 0 };
+    a.questoes = { feitas: ant.feitas + 1, acertos: ant.acertos + (q.certo ? 1 : 0) };
+    a.qdia = h;
+    for (const b of diaHoje().blocos || []) if (b.assuntoId === a.id) {
+      const metaB = window.questoesDoBloco ? window.questoesDoBloco(b) : (tempoDe(a).q || 15);
+      const p = (b.passos || []).find(x => !x.ok && /quest/i.test(x.t));
+      if (p && a.questoes.feitas >= metaB) {
+        p.ok = true;
+        S.feitos[h] = (S.feitos[h] || 0) + 1;
+        if (b.passos.every(x => x.ok)) setFeito(a, true, false);
+      }
+    }
+  }
+  S.listasAbertas ||= {};
+  if (!s.fim && !s.simulado && s.chaveLista) S.listasAbertas[s.chaveLista] = s;
+  salvar();
+}
+
 function finalizarSessao() {
-  const s = ui.qs; s.fim = true; ui.qRasc = false;
-  const feitas = s.itens.filter(q => q.resp != null);
-  const porMat = {};
-  for (const q of feitas) {
-    const m = (porMat[q.materia] ||= { f: 0, a: 0, seg: 0 }); m.f++; m.a += q.certo ? 1 : 0; m.seg += q.seg;
-  }
-  for (const [m, v] of Object.entries(porMat)) { const d = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); d.f += v.f; d.a += v.a; d.t = (d.t || 0) + Math.round(v.seg); aprenderTempo(m, v.seg, v.f); }
-  for (const q of feitas) {
-    const ja = S.erros.find(e => e.enunciado === q.enunciado);
-    if (!q.certo) { if (ja) { ja.vezes = (ja.vezes || 0) + 1; ja.resp = q.resp; ja.rev = somaDias(hoje(), 3); } else S.erros.push({ id: uid(), dia: hoje(), rev: somaDias(hoje(), 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment, qid: q.id || '', imagens: (q.imagens || []).filter(u => /^https:/.test(u)), modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0 }); }
-    else if (ja && s.revisao) S.erros = S.erros.filter(e => e !== ja); // acertou de novo um erro antigo: sai do caderno
-  }
+  const s = ui.qs; if (!s) return;
+  s.fim = true; ui.qRasc = false;
+  for (const q of s.itens) if (q.resp != null && !q.contabilizada) contabilizarQuestaoRespondida(s, q);
+  if (s.chaveLista && S.listasAbertas) delete S.listasAbertas[s.chaveLista];
+  const feitas = s.itens.filter(q => q.resp != null), ac = feitas.filter(q => q.certo).length;
   const a = s.assuntoId && achar(s.assuntoId);
-  if (a && feitas.length >= 3) s.msg = registrarQ(a, feitas.length, feitas.filter(q => q.certo).length);
+  if (a && feitas.length >= 3) {
+    let msg = `Anotado em ${a.titulo}: ${ac} de ${feitas.length} certas (${Math.round(ac / feitas.length * 100)}%).`;
+    if (feitas.length >= 10 && ac / feitas.length < 0.7 && !a.revisao) {
+      a.revisao = true;
+      S.assuntos.push({ id: uid(), mes: mesDe(somaDias(semAtual(), 7)), materia: a.materia, titulo: `Refazer os erros: ${a.titulo}`, semana: somaDias(semAtual(), 7), ord: 0.5, min: 45, feito: false });
+      msg += ' Abaixo de 70%: agendei uma revisão dos erros para a próxima semana.';
+    } else if (feitas.length >= 10 && ac / feitas.length >= 0.9) msg += ' Excelente!';
+    s.msg = msg;
+  }
   salvar();
 }
 
@@ -196,7 +252,20 @@ Object.assign(ACOES, {
   },
   qResp: el => {
     const s = ui.qs, q = s.itens[s.i]; if (q.resp != null) return;
-    fecharItem(s); q.resp = el.dataset.v; q.certo = q.resp === q.gab; registrarHist(q); render();
+    fecharItem(s); q.resp = el.dataset.v; q.certo = q.resp === q.gab; registrarHist(q); contabilizarQuestaoRespondida(s, q); render();
+  },
+  qContinuarLista: el => {
+    const k = el.dataset.k, s = S.listasAbertas?.[k];
+    if (!s || !s.itens?.length) return;
+    const proxIdx = s.itens.findIndex(q => q.resp == null);
+    s.i = proxIdx >= 0 ? proxIdx : Math.max(0, s.itens.length - 1);
+    s.tq = Date.now(); s.fim = false;
+    fecharModal();
+    ui.qs = s; ui.view = 'questoes'; ui.qAba = 'listas'; window.scrollTo(0, 0); render();
+  },
+  qDescartarLista: el => {
+    const k = el.dataset.k;
+    if (k && S.listasAbertas?.[k]) { delete S.listasAbertas[k]; salvar(); render(); }
   },
   qPular: () => { const s = ui.qs; fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; } else finalizarSessao(); render(); },
   qProx: () => { const s = ui.qs; if (s.itens[s.i].resp == null) fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); window.scrollTo(0, 0); } else finalizarSessao(); render(); },

@@ -39,29 +39,8 @@ function questoesSemana(w) {
     <div class="linha">${ms.map(([m, v]) => `<span class="tag" style="${cor(m)}">${esc(m)} ${v.f} · ${Math.round(v.a / v.f * 100)}%</span>`).join('')}</div></div>`;
 }
 
-// ---------- dia que se reabastece ----------
-/** Se ela está terminando mais rápido que o previsto, puxa o próximo assunto (adiantando) para não sobrar tempo. */
-function reabastecer() {
-  const d = S.dias[hoje()];
-  if (!d || !d.cap || !d.t0) return 0;
-  const gasto = (Date.now() - d.t0) / 60000, resta = d.cap - gasto;
-  let pend = soma(d.blocos.filter(b => !achar(b.assuntoId)?.feito && !b.passos.every(p => p.ok)), b => b.min || 0), n = 0;
-  // mesma regra do dia: respeita o período planejado e não puxa o que tem dia marcado para depois
-  let fila = filaParaHoje(d.blocos);
-  while (pend < resta - 20) {
-    const a = escolherProximo(fila.filter(x => pend + minDe(x) <= resta + 30), d.blocos);
-    if (!a) break;
-    d.blocos.push(blocoDe(a)); pend += minDe(a); n++; fila = fila.filter(x => x !== a);
-  }
-  return n;
-}
-{
-  const marca = () => { const d = diaHoje(); if (!d.t0) d.t0 = Date.now() - 25 * 60000; };
-  const depois = () => { const n = reabastecer(); if (n) { ui.iaMsg = `Você está rendendo! Puxei ${n} ${n === 1 ? 'assunto' : 'assuntos'} da fila para o seu dia.`; ui.desfazer = null; salvar(); render(); } };
-  const p0 = ACOES.passo, t0 = ACOES.timerFeito;
-  ACOES.passo = el => { marca(); p0(el); depois(); };
-  ACOES.timerFeito = el => { marca(); t0(el); depois(); };
-}
+// ---------- dia: o adiantamento agora fica na prévia opcional de Hoje (previaAdiantarHtml), sem empurrar tarefas obrigatórias ----------
+function reabastecer() { return 0; }
 
 // ---------- tempos calibrados pela IA ----------
 async function calibrarTempos(todos = false) {
@@ -220,6 +199,12 @@ Object.assign(ACOES, {
     const a = achar(el.dataset.id), f = Math.round(+$('#q-feitas').value), ac = Math.round(+$('#q-acertos').value);
     if (!a || !(f >= 0) || !(ac >= 0) || ac > f) { ui.iaMsg = 'Confira os números: os acertos não podem passar das questões feitas.'; fecharModal(); render(); return; }
     const msg = registrarQ(a, f, ac);
+    if (f > 0) {
+      for (const b of diaHoje().blocos || []) if (b.assuntoId === a.id) {
+        const p = (b.passos || []).find(x => !x.ok && /quest/i.test(x.t));
+        if (p) { p.ok = true; S.feitos[hoje()] = (S.feitos[hoje()] || 0) + 1; if (b.passos.every(x => x.ok)) setFeito(a, true, false); }
+      }
+    }
     salvar(); fecharModal(); ui.iaMsg = msg; ui.desfazer = null; render();
   },
   mesModo: el => { ui.mesModo = el.dataset.v; render(); },

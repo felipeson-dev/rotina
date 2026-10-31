@@ -42,13 +42,14 @@ def principal():
         for r in orig:
             t = tx.get(r['id'])
             if not t:
-                saida.append(r); continue                         # ainda não lida (ou não deu): fica no modo imagem
+                saida.append({k: v for k, v in r.items() if k != 'assunto_local'}); continue                         # ainda não lida (ou não deu): fica no modo imagem
             q = {k: v for k, v in t.items() if k != 'dep'}
             q['id'] = r['id']; q['v'] = 2
             q['prev'] = origem(r['prev']) if r.get('prev') in por_id else ''
             # depende do texto de outra questão: com a anterior no pacote, o app mostra um botão para ler o texto dela
             q['dep'] = 1 if t.get('dep') and q['prev'] else 0
             q['fig'] = 1 if t.get('dep') and not q['prev'] else 0
+            q['materia'] = t.get('materia') or r.get('materia') or ''
             q['assunto'] = t.get('assunto') or r.get('assunto') or ''
             saida.append(q); n_txt += 1
         p = os.path.join(SAIDA, 'para-o-ipad', nome + '.json.gz')
@@ -65,7 +66,7 @@ def principal():
         for b in bancas:
             a = os.path.join(SAIDA, f'objetivo-disc-{b}.json')
             if os.path.exists(a) and os.path.getsize(a) > 10:
-                lista += json.load(open(a, encoding='utf-8'))
+                lista += [{k: v for k, v in r.items() if k != 'assunto_local'} for r in json.load(open(a, encoding='utf-8'))]
         if not lista:
             continue
         p = os.path.join(SAIDA, 'para-o-ipad', nome + '.json.gz')

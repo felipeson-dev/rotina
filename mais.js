@@ -37,14 +37,6 @@ function pendHojeHtml() {
   return `<section class="cartao"><div class="entre"><h2>Pendências de hoje</h2><button class="link" data-acao="ir" data-v="pendencias">Ver todas</button></div>${l.map(itemPend).join('')}</section>`;
 }
 
-function metaQHtml() {
-  const d = S.dias[hoje()], q = S.qlog[hoje()] || {};
-  const mats = [...new Set([...(d?.blocos || []).map(b => b.materia), ...Object.keys(q)].filter(m => metaQ(m) > 0))];
-  if (!mats.length) return '';
-  return `<section class="cartao"><div class="entre"><h2>Meta de questões</h2><button class="link" data-acao="ir" data-v="questoes">Fazer questões</button></div>
-    ${mats.map(m => { const f = q[m]?.f || 0, meta = metaQ(m); return `<div class="meta-linha" style="${cor(m)}"><span><i class="ponto"></i>${esc(m)}</span><span class="fraco">${f}/${meta}${f >= meta ? ' ✓' : ''}</span><div class="barra"><i style="width:${Math.min(100, Math.round(f / meta * 100))}%;background:var(--c)"></i></div></div>`; }).join('')}</section>`;
-}
-
 function vPend() {
   const h = hoje(), ab = pendAbertas().sort((a, b) => ((a.dia || '9') + (a.hora || '')) < ((b.dia || '9') + (b.hora || '')) ? -1 : 1);
   const atras = ab.filter(p => p.dia && p.dia < h), hojeL = ab.filter(p => p.dia === h), prox = ab.filter(p => p.dia > h), sem = ab.filter(p => !p.dia);
@@ -137,19 +129,12 @@ function checarPend() {
 setInterval(checarPend, 20000); document.addEventListener('visibilitychange', () => { if (!document.hidden) checarPend(); });
 document.addEventListener('pointerdown', () => { try { audio ||= new (window.AudioContext || window.webkitAudioContext)(); } catch { } }, { once: true });
 
-// ---------- tempos à mão e metas (Ajustes) ----------
+// ---------- tempos à mão (Ajustes) ----------
 function tempoEditorHtml(a) {
   const { t, q } = tempoDe(a);
   return `<details class="tempo-man"><summary class="link">Definir o tempo à mão</summary>
     <div class="linha"><label class="campo" style="flex:1 1 130px">Teoria (min)<input type="number" id="t-teoria" min="10" max="400" value="${t}"></label><label class="campo" style="flex:1 1 130px">Questões<input type="number" id="t-q" min="0" max="200" value="${q}"></label></div>
     <div class="linha"><button class="botao claro" data-acao="tempoManual" data-id="${a.id}">Salvar meu tempo</button>${a.manual || a.calibrado ? `<button class="link" data-acao="tempoAuto" data-id="${a.id}">Voltar ao automático</button>` : ''}</div></details>`;
-}
-function ajustesQuestoesHtml() {
-  const mats = Object.keys(MIN_Q);
-  return `<section class="cartao"><h2>Questões: tempo e metas</h2>
-    <p class="fraco" style="margin:0">Quanto tempo você leva por questão e quantas quer fazer por dia em cada matéria. O tempo por questão entra no cálculo do tempo dos assuntos. Se deixar em branco, uso o valor automático (que aprende com as suas listas).</p>
-    <div class="tab-metas"><span class="rotulo">matéria</span><span class="rotulo">min por questão</span><span class="rotulo">meta por dia</span>
-    ${mats.map(m => `<span>${esc(m)}</span><input type="number" step="0.5" min="0.5" max="15" data-minq="${esc(m)}" value="${S.minQ[m] || ''}" placeholder="${(Math.round(minPorQ(m) * 10) / 10)}"><input type="number" min="0" max="500" data-metaq="${esc(m)}" value="${S.metaQ[m] ?? ''}" placeholder="${METAQ_PADRAO[m] ?? 0}">`).join('')}</div></section>`;
 }
 
 Object.assign(VIEWS, { pendencias: vPend });

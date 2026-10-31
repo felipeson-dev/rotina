@@ -17,7 +17,7 @@ _src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'classifica
 _ns = {'__file__': os.path.join(os.path.dirname(os.path.abspath(__file__)), 'classificar.py')}; exec(_src, _ns)   # só a lista de assuntos
 cl = types.SimpleNamespace(TAX=_ns['TAX'], TEXTO_TAX=_ns['TEXTO_TAX'])
 
-CHAVES = [k for k in os.environ.get('GEMINI_KEYS', '').split(',') if k]
+CHAVES = _ns['CHAVES']
 MODELOS = ['gemini-3.5-flash-lite']     # só o leve: o flash (20/dia) fica para a IA do app dela, que usa as mesmas chaves
 LIMITE_DIA = int(os.environ.get('LIMITE_DIA', 430))   # de 500/dia por chave, deixa uns 70 para o app dela
 USO_ARQ = r'C:\rotina-banco\uso-gemini.json'          # pedidos por dia e por chave (só o número da chave, nunca a chave)
