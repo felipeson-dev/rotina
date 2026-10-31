@@ -556,9 +556,12 @@ function vHoje() {
   const painel = d.blocos.length ? `<section class="cartao dia-resumo">
       <div class="entre"><strong>${feitosBlocos} de ${d.blocos.length} tarefas concluídas · ${fmtMin(feitoMin)} estudados${feitosBlocos === d.blocos.length || (meta && feitoMin >= meta) ? ' · meta batida! 🎉' : meta ? ` · meta ${fmtMin(meta)}` : ''}</strong><span class="fraco">${d.horas ? `${d.horas}h livres · 20% reservado para pausas` : ''}</span></div>
       <div class="barra grossa"><i style="width:${pct}%"></i></div>${selos.trim() ? `<div class="linha">${selos}</div>` : ''}</section>` : '';
-  const planejar = d.blocos.length ? '' : `<section class="cartao"><h2>Ainda não há plano para hoje</h2><p class="fraco" style="margin:0">Escolha quantas horas livres tem hoje para montar rápido, ou abra a agenda completa do dia.</p>
-    <div class="linha">${[2, 3, 4, 6, 8].map(n => `<button class="chip" data-acao="montarRapido" data-h="${n}">Tenho ${n}h hoje</button>`).join('')}
-      <button class="botao grande" data-acao="ir" data-v="meudia">Planejar agenda do dia</button></div></section>`;
+  const planejar = d.blocos.length ? '' : `<section class="cartao"><h2>Como vai ser o seu dia hoje?</h2><p class="fraco" style="margin:0">Escolha quantas horas livres tem hoje para montar rápido, ou conte abaixo seus horários (treino, compromissos, estudo) que eu organizo os assuntos e a programação do dia.</p>
+    <div class="linha">${[2, 3, 4, 6, 8].map(n => `<button class="chip" data-acao="montarRapido" data-h="${n}">Tenho ${n}h hoje</button>`).join('')}</div>
+    <textarea id="hoje-ia-txt" data-ui="diaTexto" rows="2" placeholder="Opcional: conte seus horários de hoje (ex.: treino às 18h, médico às 14h, estudo das 8h às 12h e das 15h30 às 17h30)">${esc(ui.diaTexto || '')}</textarea>
+    <div class="linha"><button class="botao grande" data-acao="hojeIaMontar">Montar meu dia (assuntos + horários)</button>
+      <button class="botao contorno" data-acao="ir" data-v="meudia">Ver rotina base / amanhã</button></div></section>`;
+  const progHoje = d.blocos.length && window.programacaoHojeHtml ? window.programacaoHojeHtml(d) : '';
 
   const grupos = [['atrasado', 'Atrasados'], ['semana', 'Para hoje'], ['futuro', 'Adiantando (opcional)'], ['feito', 'Concluídos hoje']];
   const dos = b => { if (blocoConcluido(b)) return 'feito'; if (b.adiantado) return 'futuro'; const a = b.assuntoId && achar(b.assuntoId); return a ? estadoDe(a) : 'semana'; };
@@ -598,7 +601,7 @@ function vHoje() {
       <button class="botao contorno" data-acao="ir" data-v="meudia">Agenda do dia</button>
       <button class="botao contorno" data-acao="novaTarefa">+ Tarefa avulsa</button></div>` : ''}
   </aside>`;
-  return topo + avisoIa() + painel + planejar + (d.blocos.length ? `<div class="grade2"><section class="coluna" aria-label="Assuntos de hoje">${lista}</section>${lado}</div>` : '');
+  return topo + avisoIa() + painel + progHoje + planejar + (d.blocos.length ? `<div class="grade2"><section class="coluna" aria-label="Assuntos de hoje">${lista}</section>${lado}</div>` : '');
 }
 
 function planejarHtml(d) {
@@ -633,10 +636,13 @@ function blocoHtml(b) {
     <summary><span class="etapas-dica">${esc(dicaResumo)}</span><span class="etapas-seta">${feitosP}/${passos.length} etapas ▾</span></summary>
     <div class="etapas-corpo">${passos.map((p, i) => `<label class="passo ${p.ok ? 'ok' : ''}"><input type="checkbox" data-acao="passo" data-b="${b.id}" data-i="${i}" ${p.ok ? 'checked' : ''}><span>${esc(p.t)}</span></label>`).join('')}</div>
   </details>` : '';
+  const dHoje = S.dias[hoje()];
+  const posB = dHoje?.blocos ? dHoje.blocos.indexOf(b) : -1, totB = dHoje?.blocos?.length || 0;
   return `<article class="cartao bloco ${est}" style="${cor(b.materia)}">
     <div class="bloco-topo">
       <label class="bloco-check"><input type="checkbox" class="check-bloco" data-acao="blocoFeito" data-b="${b.id}" ${concluido ? 'checked' : ''} aria-label="Marcar tarefa como concluída"><h3>${esc(b.titulo)}</h3></label>
-      <span class="hora">≈ ${fmtMin(b.min || 0)}${b.sug ? ` · ${b.sug}` : ''}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
+      <span class="hora" title="Horário e ordem flexíveis: faça na ordem que preferir">≈ ${fmtMin(b.min || 0)}${b.sug && !concluido ? ` · ~${b.sug} (flexível)` : ''}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
+      ${totB > 1 ? `<span class="linha" style="gap:2px"><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="-1" ${posB <= 0 ? 'disabled' : ''} title="Subir na ordem do dia">↑</button><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="1" ${posB < 0 || posB >= totB - 1 ? 'disabled' : ''} title="Descer na ordem do dia">↓</button></span>` : ''}
       <button class="x" data-acao="tirarBloco" data-b="${b.id}" aria-label="Tirar bloco">×</button></div>
     ${detalhes}
     ${a ? `<div class="linha acoes-bloco">${ehConteudo(a) ? `<button class="link" data-acao="questoes" data-id="${a.id}">${a.questoes ? `Fiz fora (${a.questoes.acertos}/${a.questoes.feitas} certas)` : 'Fiz questões fora'}</button>` : ''}
@@ -1136,8 +1142,11 @@ const ACOES = {
   },
   montarRapido: el => {
     const h = +el.dataset.h || 4, d = diaHoje();
-    d.horas = h; d.contexto = `${h}h livres`;
-    montarHoje(Math.round(h * 48)); salvar(); render();
+    d.horas = h; d.contexto = `${h}h livres`; d.agenda = [];
+    montarHoje(Math.round(h * 48));
+    if (window.garantirAgendaPadrao) window.garantirAgendaPadrao(d);
+    if (window.sugerirHorarios) window.sugerirHorarios(d);
+    salvar(); render();
   },
   adiantarAssunto: el => {
     const a = achar(el.dataset.id), d = diaHoje();
@@ -1164,9 +1173,9 @@ const ACOES = {
   cor: el => { const y = window.scrollY; ui.coresPrev = { ...(ui.coresPrev || S.cores), [el.dataset.campo]: el.dataset.v }; render(); window.scrollTo(0, y); },
   salvarCores: () => { const y = window.scrollY; if (ui.coresPrev) S.cores = { ...ui.coresPrev }; ui.coresPrev = null; salvar(); ui.iaMsg = 'Cores salvas.'; render(); window.scrollTo(0, y); },
   descartarCores: () => { const y = window.scrollY; ui.coresPrev = null; render(); window.scrollTo(0, y); },
-  passo: el => { marcarPasso(el.dataset.b, +el.dataset.i, el.checked); salvar(); render(); },
-  blocoFeito: el => { marcarBloco(el.dataset.b, el.checked); salvar(); render(); },
-  tirarBloco: el => { const d = diaHoje(); d.blocos = d.blocos.filter(b => b.id !== el.dataset.b); salvar(); render(); },
+  passo: el => { marcarPasso(el.dataset.b, +el.dataset.i, el.checked); if (window.sugerirHorarios) window.sugerirHorarios(diaHoje()); salvar(); render(); },
+  blocoFeito: el => { marcarBloco(el.dataset.b, el.checked); if (window.sugerirHorarios) window.sugerirHorarios(diaHoje()); salvar(); render(); },
+  tirarBloco: el => { const d = diaHoje(); d.blocos = d.blocos.filter(b => b.id !== el.dataset.b); if (window.sugerirHorarios) window.sugerirHorarios(d); salvar(); render(); },
   novaTarefa: () => modalTarefa(),
   salvarTarefa: () => {
     const t = $('#t-titulo').value.trim(); if (!t) return;

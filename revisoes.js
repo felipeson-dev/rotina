@@ -127,12 +127,13 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
   if (!BANCO.pronto) await carregarBanco();
   fecharModal();
   const prio = q => !S.qh[q.id] ? 0 : (!S.qh[q.id].ok ? 1 : 2);
-  const bancaBoa = q => /fuvest|unicamp|unesp|vunesp|unifesp|santa casa|einstein|fmabc|famerp|famema|sao camilo|enem/i.test(q.b || '') ? 0 : 1;
+  const bancaBoa = q => /fuvest|unicamp|unesp|vunesp|unifesp|santa casa|einstein|fmabc|famerp|famema|sao camilo|são camilo|sirio|sírio|fmj|enem/i.test(q.b || '') ? 0 : 1;
+  const naoMilitar = q => !/^(ita|ime)$/i.test(q.b || '');
   const ids = [];
   for (const a of lista) {
     const ehDisc = /^discursivas/i.test(nomeDe(a));
     if (ehDisc) {
-      let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.ds);
+      let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.ds);
       const ineditas = candidatas.filter(q => !S.qh[q.id]);
       const fonte = ineditas.length >= 3 ? ineditas : candidatas;
       fonte.sort((x, y) => prio(x) - prio(y) || bancaBoa(x) - bancaBoa(y) || Math.random() - 0.5);
@@ -140,8 +141,8 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
       continue;
     }
     const subRe = subRegexDe(a);
-    let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds && !q.f);
-    if (!candidatas.length) candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds);
+    let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds && !q.f);
+    if (!candidatas.length) candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds);
     const ineditas = candidatas.filter(q => !S.qh[q.id]);
     const fonte = ineditas.length >= porAssunto ? ineditas : candidatas;
     fonte.sort((x, y) => {

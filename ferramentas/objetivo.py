@@ -117,7 +117,16 @@ def cortar(info, disc=False):
     i_res = next((i for i, l in enumerate(ls) if re.match(r'^\s*Resol\s*u', l['t'], re.I) and l['y'] >= 120 and (disc or not alts or i > alts[-1])), None)
     letras = sorted({ALT.match(ls[i]['t']).group(1).lower() for i in alts})
     if disc and i_res is None:
-        return None
+        # em 2019/2020 a faixa "Resolução" era imagem gráfica: acha a 2ª vez que aparece "a)" após um espaço, ou o maior salto vertical da faixa
+        seg_a = [i for i in alts if ALT.match(ls[i]['t']).group(1).lower() == 'a' and ls[i]['y'] >= 150]
+        if len(seg_a) >= 2 and ys[seg_a[-1]] - ys[seg_a[-1] - 1] >= 26:
+            i_res = seg_a[-1]
+        else:
+            gaps = [(ys[j] - (ys[j - 1] + ls[j - 1]['h']), j) for j in range(2, len(ls)) if 150 <= ys[j] <= info.get('h', 9999) - 80]
+            if gaps and max(gaps)[0] >= 30:
+                i_res = max(gaps)[1]
+            else:
+                return None
     if i_res is not None and i_res > 0:
         corte = ls[i_res]['y'] - 6
         fim = i_res
@@ -128,6 +137,8 @@ def cortar(info, disc=False):
         normal = statistics.median(passos) if passos else 20
         ult = alts[-1]
         fim = next((j for j in range(ult + 1, i_resp) if ys[j] - ys[j - 1] > 2.1 * normal), None)
+        if fim is None:
+            fim = next((j for j in range(ult + 1, i_resp) if ys[j] - ys[j - 1] >= max(32, 1.65 * normal)), None)
         if fim is None:
             return None
         corte = (ys[fim - 1] + ls[fim - 1]['h'] + ys[fim]) // 2

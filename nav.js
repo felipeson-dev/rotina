@@ -27,15 +27,12 @@ function navSync() {
   if (!cur || !cur.k) { history.replaceState({ k }, '', navUrl()); return; }
   if (cur.k === k) { if (location.hash !== navUrl()) history.replaceState(cur, '', navUrl()); return; }
   const c = JSON.parse(cur.k), n = JSON.parse(k);
-  // só mudou "saiu da lista de questões" ou "fechou a janela": volta uma entrada em vez de empilhar outra
   const igual = c.v === n.v && c.a === n.a;
-  if (igual && ((c.q && !n.q && c.m === n.m) || (c.m && !n.m && c.q === n.q))) { if (!NAV.voltando) { NAV.voltando = true; history.back(); } return; }
-  // fechou a janela E mudou de tela na mesma ação (ex.: "Fazer hoje" na janela do assunto): a entrada da janela vira a da tela nova,
-  // em vez de voltar (o history.back() chega depois, assíncrono, e desfaria a troca de tela)
-  if (c.m && !n.m) { history.replaceState({ k }, '', navUrl()); NAV.y = 0; return; }
+  // saiu da lista de questões ("Voltar à lista") ou fechou a janela: substitui a entrada atual para nunca voltar para outra seção por engano
+  if ((c.q && !n.q) || (c.m && !n.m && !n.q)) { history.replaceState({ k }, '', navUrl()); NAV.y = 0; return; }
   history.replaceState({ ...cur, y: NAV.y }, '', location.href);
-  // começou uma lista vindo de outra tela (ex.: "Treinar" no Desempenho): deixa a tela de questões como entrada intermediária, para o Voltar cair nela
-  if (n.q && !c.q && !c.m && !n.m && !igual) history.pushState({ k: JSON.stringify({ ...n, q: false }) }, '', navUrl());
+  // começou uma lista vindo de outra tela ou de uma janela: deixa a tela de questões como entrada intermediária para o botão Voltar do navegador cair nela
+  if (n.q && !c.q && !igual) history.pushState({ k: JSON.stringify({ ...n, q: false, m: false }) }, '', navUrl());
   history.pushState({ k }, '', navUrl());
   NAV.y = 0;
 }

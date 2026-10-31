@@ -316,20 +316,24 @@ function mapaSessao(s) {
 const prevHtml = r => `<div class="coluna" style="gap:6px"><span class="rotulo">questão ${esc(r.num || '')} (anterior)</span>${r.modo === 'objetivo' ? recorteObj(r, false) : `<div class="enunciado q-prev">${mdLite(r.enunciado)}${(r.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`}
   ${r.prev ? '<button class="link" data-acao="qPrevMais" style="align-self:flex-start">‹ O texto não está aqui? Ver a questão antes desta</button>' : ''}</div>`;
 /** Enunciado com a camada para riscar por cima com a caneta (o dedo continua rolando a página). */
-const riscavel = html => `<div class="q-riscavel">${html}${ui.qRiscar ? `<div class="quadro-vaga sobre" data-chave="qrisc${ui.qs.i}" data-altura="0" data-fundo="transparente"></div>` : ''}</div>`;
+const riscavel = html => `<div class="q-riscavel">${ui.qRiscar ? `<div class="quadro-vaga sobre" data-chave="qrisc${ui.qs.i}" data-altura="0" data-fundo="transparente"></div>` : ''}<div class="q-riscavel-alvo">${html}</div></div>`;
 function ajudaIaHtml(q, resp) {
   const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado">${mdLite(q.res_ia)}</div></div>` : '';
   const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia">${mdLite(d.r)}</div>`).join('');
-  const cards = (q.flashcards || []).map(c => `<div class="flash-salvo"><span class="rotulo">🗂 flashcard salvo em Cartões</span><strong>${mdLite(c.frente)}</strong><div class="fraco">${mdLite(c.verso)}</div></div>`).join('');
+  const cards = (q.flashcards || []).map(c => `<div class="flash-salvo"><span class="rotulo">🗂 flashcard salvo em Cartões</span><div class="enunciado"><strong>${mdLite(c.frente)}</strong></div><div class="fraco enunciado">${mdLite(c.verso)}</div></div>`).join('');
   const mod = ui.qIaModelo || 'argon';
   const selMod = `<div class="ia-modelo-bar"><span class="rotulo">modelo da IA:</span><div class="alterna" role="group">
     ${[['argon', 'Argon'], ['flash', 'Flash'], ['flash-lite', 'Flash Lite']].map(([v, t]) => `<button type="button" data-acao="qIaModelo" data-v="${v}" aria-pressed="${mod === v}">${t}</button>`).join('')}
   </div>${mod === 'argon' && typeof temArgon === 'function' && !temArgon() ? '<span class="fraco" style="font-size:12px">(sem chave Argon em Ajustes · usando Flash por enquanto)</span>' : ''}</div>`;
   const prev = ui.qFlashPrev && ui.qFlashPrev.qid === q.id ? `<div class="flash-previa">
     <div class="entre"><span class="rotulo">prévia do flashcard (${esc(ui.qFlashPrev.modelo || mod)}) — está bom assim ou quer alterar?</span><button class="x" data-acao="qFlashCancelar" title="Cancelar">×</button></div>
-    <label class="campo"><span>Frente (pergunta)</span><textarea id="flash-prev-frente" rows="2" data-ui-flash="frente">${esc(ui.qFlashPrev.frente)}</textarea></label>
-    <label class="campo"><span>Verso (resposta)</span><textarea id="flash-prev-verso" rows="3" data-ui-flash="verso">${esc(ui.qFlashPrev.verso)}</textarea></label>
-    ${ui.qFlashPrev.dica ? `<p class="fraco" style="margin:0;font-size:13px">💡 Dica: ${esc(ui.qFlashPrev.dica)}</p>` : ''}
+    <div class="flash-face frente"><span class="rotulo">frente (pergunta)</span><div class="enunciado"><strong>${mdLite(ui.qFlashPrev.frente)}</strong></div></div>
+    <div class="flash-face verso"><span class="rotulo">verso (resposta)</span><div class="enunciado">${mdLite(ui.qFlashPrev.verso)}</div></div>
+    ${ui.qFlashPrev.dica ? `<p class="fraco" style="margin:0;font-size:13px">💡 Dica: ${mdLite(ui.qFlashPrev.dica)}</p>` : ''}
+    <details class="det-q"><summary>✏️ Editar texto manualmente (opcional)</summary><div class="det-corpo">
+      <label class="campo"><span>Frente (pergunta)</span><textarea id="flash-prev-frente" rows="2" data-ui-flash="frente">${esc(ui.qFlashPrev.frente)}</textarea></label>
+      <label class="campo"><span>Verso (resposta)</span><textarea id="flash-prev-verso" rows="3" data-ui-flash="verso">${esc(ui.qFlashPrev.verso)}</textarea></label>
+    </div></details>
     <div class="linha" style="flex-wrap:nowrap;align-items:flex-end">
       <input type="text" id="flash-ajuste-txt" placeholder="Quer mudar algo? Ex.: deixe mais curto, foque na fórmula, inclua exemplo…">
       <button class="botao claro" data-acao="qFlashAlterar" ${ui.carregando ? 'disabled' : ''}>Pedir alteração (${mod === 'argon' ? 'Argon' : mod === 'flash' ? 'Flash' : 'Flash Lite'})</button>

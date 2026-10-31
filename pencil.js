@@ -60,13 +60,16 @@ class Quadro {
     el.classList.add('quadro', 'fundo-' + this.fundo);
     el.innerHTML = `<div class="quadro-barra"></div><div class="quadro-area" style="height:${this.altura}px"><canvas class="q-fixo"></canvas><canvas class="q-vivo"></canvas></div>`;
     this.barra = el.firstElementChild; this.area = this.barra.nextElementSibling;
-    if (this.sobre) {
-      this.altura = Math.max(260, (el.parentElement.offsetHeight || 300) - (this.barra.offsetHeight || 44));
-      this.area.style.height = this.altura + 'px';
-    }
     [this.fixo, this.vivo] = this.area.querySelectorAll('canvas');
     this.cf = this.fixo.getContext('2d'); this.cv = this.vivo.getContext('2d');
-    this.ajustar(); this.desenharBarra();
+    this.desenharBarra();
+    if (this.sobre) {
+      const bh = this.barra.offsetHeight || 52;
+      this.area.style.top = bh + 'px';
+      this.altura = Math.max(180, (el.parentElement.offsetHeight || 300) - bh);
+      this.area.style.height = this.altura + 'px';
+    }
+    this.ajustar();
     this.vivo.addEventListener('pointerdown', e => this.baixo(e));
     this.vivo.addEventListener('pointermove', e => this.mover(e));
     this.vivo.addEventListener('pointerup', e => this.soltar(e));
@@ -76,7 +79,9 @@ class Quadro {
     el.addEventListener('input', e => { if (e.target.dataset.qCorCustom) { estadoQuadro.ferr = 'caneta'; estadoQuadro.cor = e.target.value; document.querySelectorAll('.quadro').forEach(x => x._q?.desenharBarra()); } });
     if ('ResizeObserver' in window) new ResizeObserver(() => { if (this.area.clientWidth && this.area.clientWidth !== this.largura) { this.ajustar(); this.redesenhar(); } }).observe(this.area);
     if (this.sobre && 'ResizeObserver' in window) new ResizeObserver(() => {
-      const h = Math.max(240, el.parentElement.offsetHeight - (this.barra.offsetHeight || 44));
+      const bh = this.barra.offsetHeight || 52;
+      this.area.style.top = bh + 'px';
+      const h = Math.max(180, el.parentElement.offsetHeight - bh);
       if (h && Math.abs(h - this.altura) > 4) { this.altura = h; this.area.style.height = h + 'px'; this.ajustar(); this.redesenhar(); }
     }).observe(el.parentElement);
     this.pronto = DB.get('d:' + this.chave).then(d => {
@@ -133,7 +138,9 @@ class Quadro {
         this.extra = Math.max(0, (this.extra || 0) + delta);
         ui.qRiscarExtra = this.extra;
         this.el.parentElement.style.paddingBottom = this.extra + 'px';
-        this.altura = Math.max(240, this.el.parentElement.offsetHeight - (this.barra.offsetHeight || 44));
+        const bh = this.barra.offsetHeight || 52;
+        this.area.style.top = bh + 'px';
+        this.altura = Math.max(180, this.el.parentElement.offsetHeight - bh);
       } else {
         this.altura = Math.max(220, this.altura + delta);
       }
@@ -351,7 +358,7 @@ function vCartoes() {
       ${tot && !v ? `<button class="botao claro" data-acao="revisarTodos">Revisar todos (${tot})</button>` : ''}
       <button class="botao claro" data-acao="novoCartao">+ Novo cartão</button></div></section>
     ${tot ? `<section class="cartao"><h2>Por matéria</h2>${[...new Set(S.cartoes.map(c => c.materia))].map(m => `<div class="entre prova"><span>${tag(m)}</span><span class="fraco">${S.cartoes.filter(c => c.materia === m).length} cartões</span></div>`).join('')}
-      ${detalhe('vercartoes', `Ver meus cartões (${tot})`, `<div class="coluna" style="gap:8px">${S.cartoes.slice().reverse().map(c => `<div class="entre prova" style="align-items:flex-start"><div class="coluna" style="gap:2px"><span class="linha" style="gap:6px">${tag(c.materia)}${c.assunto ? `<span class="selo">${esc(c.assunto)}</span>` : ''}<span class="fraco" style="font-size:12px">próx.: ${diaCurto(c.prox)}</span></span>${c.frente ? `<strong>${esc(c.frente.slice(0, 120))}</strong><span class="fraco" style="font-size:13px">${esc((c.verso || '').slice(0, 140))}</span>` : '<span class="fraco">Cartão escrito à mão</span>'}</div><button class="x" data-acao="apagarCartao" data-id="${c.id}" title="Apagar cartão">×</button></div>`).join('')}</div>`)}</section>` : ''}`;
+      ${detalhe('vercartoes', `Ver meus cartões (${tot})`, `<div class="coluna" style="gap:8px">${S.cartoes.slice().reverse().map(c => `<div class="entre prova" style="align-items:flex-start"><div class="coluna" style="gap:2px"><span class="linha" style="gap:6px">${tag(c.materia)}${c.assunto ? `<span class="selo">${esc(c.assunto)}</span>` : ''}<span class="fraco" style="font-size:12px">próx.: ${diaCurto(c.prox)}</span></span>${c.frente ? `<div class="enunciado"><strong>${fmt(c.frente)}</strong></div><div class="fraco enunciado" style="font-size:13px">${fmt(c.verso || '')}</div>` : '<span class="fraco">Cartão escrito à mão</span>'}</div><button class="x" data-acao="apagarCartao" data-id="${c.id}" title="Apagar cartão">×</button></div>`).join('')}</div>`)}</section>` : ''}`;
 }
 
 // ---------- IA com letra à mão ----------

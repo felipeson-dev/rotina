@@ -21,8 +21,12 @@ function tabelasMd(s) {
 }
 function mdLite(s) {
   if (/^\s*\|.*\|\s*$/m.test(s || '')) { const partes = tabelasMd(s).split(/(\u0001.*?\u0002)/s); return partes.map(p => p.startsWith('\u0001') ? p.slice(1, -1) : mdLite(p)).join(''); }
-  return esc(s || '').replace(/!\[[^\]]*\]\((https:\/\/[^)\s]+)\)/g, (_, u) => /broken-image/.test(u) ? '' : `<img class="q-img" src="${u}" alt="figura" loading="lazy">`)
-    .replace(/\[([^\]]+)\]\(https?:[^)\s]+\)/g, '$1').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|[^*\w$])\*([^*\n]+?)\*(?![*\w])/g, '$1<em>$2</em>').replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>');
+  const math = [];
+  const semMath = String(s || '').replace(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$[^$\n]+?\$/g, m => { math.push(esc(m)); return `\u0003${math.length - 1}\u0003`; });
+  return esc(semMath).replace(/!\[[^\]]*\]\((https:\/\/[^)\s]+)\)/g, (_, u) => /broken-image/.test(u) ? '' : `<img class="q-img" src="${u}" alt="figura" loading="lazy">`)
+    .replace(/\[([^\]]+)\]\(https?:[^)\s]+\)/g, '$1').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|[^*\w$])\*([^*\n]+?)\*(?![*\w])/g, '$1<em>$2</em>')
+    .replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>')
+    .replace(/\u0003(\d+)\u0003/g, (_, i) => math[+i]);
 }
 
 // ---------- montar listas ----------
@@ -100,7 +104,7 @@ function qQuestao() {
     <div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>
     <div class="alts">${q.alts.map(a => { const sel = q.resp === a.l, certa = resp && a.l === q.gab, errada = resp && sel && a.l !== q.gab;
       return `<button class="alt ${sel ? 'sel' : ''} ${certa ? 'certa' : ''} ${errada ? 'errada' : ''}" data-acao="qResp" data-v="${a.l}" ${resp ? 'disabled' : ''}><b>${a.l}</b><span>${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</span></button>`; }).join('')}</div>
-    ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<p style="margin:6px 0 0">${esc(q.coment)}</p>` : ''}</div>` : ''}
+    ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>` : ''}
     <div class="linha"><button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar o rascunho' : 'Rascunho à mão'}</button>
       ${resp ? `<button class="botao grande" data-acao="qProx">${s.i + 1 < s.itens.length ? 'Próxima' : 'Ver o resultado'}</button>` : `<button class="botao claro" data-acao="qPular">Pular</button>`}
       <button class="link" data-acao="qSair">Sair da lista</button></div>
@@ -270,9 +274,9 @@ Object.assign(ACOES, {
   qPular: () => { const s = ui.qs; fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; } else finalizarSessao(); render(); },
   qProx: () => { const s = ui.qs; if (s.itens[s.i].resp == null) fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); window.scrollTo(0, 0); } else finalizarSessao(); render(); },
   qRasc: () => { ui.qRasc = !ui.qRasc; render(); },
-  qSair: () => { navSairSessao(); render(); window.scrollTo(0, 0); },
+  qSair: () => { navSairSessao(); ui.view = 'questoes'; ui.qAba = 'listas'; render(); window.scrollTo(0, 0); },
   qAnt: () => { const s = ui.qs; if (s.i > 0) { if (s.itens[s.i].resp == null) fecharItem(s); s.i--; s.tq = Date.now(); window.scrollTo(0, 0); } render(); },
-  qNova: () => { ui.qs = null; ui.qAba = 'listas'; render(); },
+  qNova: () => { ui.qs = null; ui.view = 'questoes'; ui.qAba = 'listas'; render(); window.scrollTo(0, 0); },
   qApagarErro: el => { S.erros = S.erros.filter(e => e.id !== el.dataset.id); salvar(); render(); },
   qForaSalvar: () => {
     const m = $('#f-mat').value, f = Math.round(+$('#f-feitas').value), ac = Math.round(+$('#f-acertos').value), min = +$('#f-min').value || 0;
