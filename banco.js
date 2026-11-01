@@ -378,6 +378,7 @@ function qQuestao() {
       return `<div class="alt-linha ${risc ? 'riscada' : ''}"><button class="alt ${sel ? 'sel' : ''} ${certa ? 'certa' : ''} ${errada ? 'errada' : ''}" data-acao="qResp" data-v="${a.l}" ${resp ? 'disabled' : ''}><b>${a.l}</b><span>${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</span></button>
         ${resp ? '' : `<button class="risca" data-acao="qRiscarAlt" data-v="${a.l}" aria-label="${risc ? 'Desriscar' : 'Riscar'} a ${a.l}" title="${risc ? 'Desriscar' : 'Riscar (descartar)'}">${risc ? '↺' : '✕'}</button>`}</div>`; }).join('')}</div>
     ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>
+      ${motivoHtml(q)}
       ${q.modo === 'objetivo' && q.h > q.corte ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
     ${nav}
     ${ui.qRasc ? quadroHtml('qtmp' + s.i, 520, 'quadriculado') : ''}

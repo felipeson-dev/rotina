@@ -31,15 +31,66 @@ function dsSequencia() {
   return n;
 }
 
-/** Assuntos: junta o histórico por questão (S.qh) com a ficha do banco (matéria e assunto). */
-function dsAssuntos() {
-  const por = {}, id = {};
+// por que ela errou: marcado na própria questão (fica em S.qh[id].h[n][3]) e opcional
+const MOTIVOS = [['conteudo', 'Não sabia o conteúdo'], ['atencao', 'Falta de atenção'], ['enunciado', 'Não entendi a pergunta'], ['pressa', 'Pressa ou falta de tempo']];
+const DS_PROVAS = /fuvest|santa casa|einstein|unifesp|s[aã]o camilo|fmabc|famerp|enem/i;   // as provas dela
+
+function motivoHtml(q) {
+  if (q.certo || !q.id || q.tipo === 'disc') return '';
+  const l = S.qh[q.id]?.h, atual = l?.length ? l[l.length - 1][3] : '';
+  return `<div class="mot-erro"><span class="rotulo">por que errou? (opcional)</span><div class="linha" style="gap:6px">${MOTIVOS.map(([v, t]) => `<button class="chip" data-acao="qMotivo" data-v="${v}" aria-pressed="${atual === v}">${t}</button>`).join('')}</div></div>`;
+}
+
+/** Quanto cada assunto cai nos últimos 5 anos de cada prova dela. "muito" = 20% que mais caem; "médio" = os 40% seguintes. */
+let dsIncCache = null;
+function dsIncidencia() {
+  if (dsIncCache?.n === BANCO.itens.length) return dsIncCache;
+  const provas = BANCO.itens.filter(q => !q.ds && q.t === 'real' && +q.a && DS_PROVAS.test(q.b)), anos = {}, por = {};
+  for (const q of provas) (anos[q.b] ||= new Set()).add(+q.a);
+  const ult = {};
+  for (const [b, s] of Object.entries(anos)) ult[b] = new Set([...s].sort((x, y) => y - x).slice(0, 5));
+  for (const q of provas) if (ult[q.b].has(+q.a) && q.m && q.as && q.as !== 'Outro') por[q.m + '|' + q.as] = (por[q.m + '|' + q.as] || 0) + 1;
+  const ord = Object.values(por).sort((x, y) => y - x);
+  return dsIncCache = { n: BANCO.itens.length, por, muito: ord[Math.floor(ord.length * .2)] || 1, medio: ord[Math.floor(ord.length * .6)] || 1 };
+}
+
+/** Junta o histórico por questão (S.qh) com a ficha do banco. Vale a PRIMEIRA vez de cada questão no período: refazer a mesma questão não aumenta o acerto. */
+function dsAnalise(per) {
+  const ini = per === 'tudo' ? '' : dsDias(per)[0], id = {}, por = {}, bancas = {}, motivos = {}, mats = {};
+  let refeitas = 0, viraram = 0;
   for (const m of BANCO.itens) id[m.id] = m;
-  for (const [qid, h] of Object.entries(S.qh)) {
-    const m = id[qid]; if (!m || !m.m || !m.as || m.as === 'Outro') continue;
-    const x = (por[m.m + '|' + m.as] ||= { m: m.m, a: m.as, f: 0, ok: 0 }); x.f++; x.ok += h.ok ? 1 : 0;
+  for (const qid of Object.keys(S.qh)) {
+    const m = id[qid]; if (!m) continue;
+    const tent = histDe(qid).h.filter(t => (t[0] || '') >= ini); if (!tent.length) continue;
+    const pri = tent[0], erro = tent.findIndex(t => !t[1]);
+    if (erro >= 0 && erro < tent.length - 1) { refeitas++; if (tent[tent.length - 1][1]) viraram++; }
+    const b = (bancas[m.b] ||= { b: m.b, f: 0, ok: 0 }); b.f++; b.ok += pri[1] ? 1 : 0;
+    const x = m.m && m.as && m.as !== 'Outro' ? (por[m.m + '|' + m.as] ||= { m: m.m, a: m.as, f: 0, ok: 0, seq: [], mot: {} }) : null;
+    if (x) {
+      x.f++; x.ok += pri[1] ? 1 : 0; x.seq.push([pri[0] || '', pri[1] ? 1 : 0]);
+      const y = (mats[m.m] ||= { f: 0, ok: 0 }); y.f++; y.ok += pri[1] ? 1 : 0;
+    }
+    for (const t of tent) if (!t[1] && t[3]) { motivos[t[3]] = (motivos[t[3]] || 0) + 1; if (x) x.mot[t[3]] = (x.mot[t[3]] || 0) + 1; }
   }
-  return Object.values(por).map(x => ({ ...x, ac: Math.round(x.ok / x.f * 100) }));
+  const inc = dsIncidencia();
+  const assuntos = Object.values(por).map(x => {
+    const y = mats[x.m], erroMat = (y.f - y.ok + 2) / (y.f + 4);
+    // com poucas questões, o erro fica puxado para a média da matéria: 1 erro em 2 não vira "o assunto mais fraco"
+    const erro = (x.f - x.ok + 4 * erroMat) / (x.f + 4), n = inc.por[x.m + '|' + x.a] || 0;
+    const seq = x.seq.sort((p, q) => p[0] < q[0] ? -1 : 1), meio = seq.length >> 1;
+    const pct = l => soma(l, t => t[1]) / l.length * 100, dif = seq.length >= 8 ? pct(seq.slice(meio)) - pct(seq.slice(0, meio)) : 0;
+    const mot = Object.entries(x.mot).sort((p, q) => q[1] - p[1])[0];
+    return { ...x, ac: Math.round(x.ok / x.f * 100), prio: erro * (n || .5), nivel: n >= inc.muito ? 'cai muito' : n >= inc.medio ? 'cai às vezes' : 'cai pouco', tend: dif >= 15 ? 'melhorando' : dif <= -15 ? 'piorando' : '', mot: mot && mot[1] >= 2 ? mot[0] : '' };
+  });
+  return { assuntos, bancas: Object.values(bancas).filter(b => b.f >= 10).map(b => ({ ...b, ac: Math.round(b.ok / b.f * 100) })).sort((p, q) => p.ac - q.ac), motivos, refeitas, viraram };
+}
+
+/** Os que mais caem nas provas dela e que ela nunca testou (em nenhum período). */
+function dsNaoTestados() {
+  const inc = dsIncidencia(), feitos = new Set();
+  const id = {}; for (const m of BANCO.itens) id[m.id] = m;
+  for (const qid of Object.keys(S.qh)) if (id[qid]) feitos.add(id[qid].m + '|' + id[qid].as);
+  return Object.entries(inc.por).filter(([k, n]) => n >= inc.muito && !feitos.has(k)).sort((p, q) => q[1] - p[1]).slice(0, 10).map(([k]) => { const [m, a] = k.split('|'); return { m, a }; });
 }
 
 function dsBarras(serie) {
@@ -60,15 +111,29 @@ function dsMaterias(r) {
 
 function dsAssuntosHtml() {
   if (!BANCO.pronto) { carregarBanco(); return '<p class="fraco" style="margin:0">Abrindo o banco de questões…</p>'; }
-  const todos = dsAssuntos(), fracos = todos.filter(x => x.f >= 3 && x.ac < 80).sort((a, b) => a.ac - b.ac || b.f - a.f).slice(0, 8);
-  if (!todos.length) return '<p class="fraco" style="margin:0">Quando você resolver questões do banco, aqui aparecem os assuntos em que mais erra, com um botão para treinar.</p>';
-  const linha = x => `<div class="des-ass" style="${cor(x.m)}"><div class="coluna" style="gap:2px;flex:1;min-width:0"><b>${esc(x.a)}</b><span class="fraco" style="font-size:13px">${esc(x.m)} · ${x.ok} de ${x.f} certas</span></div>
-    <b style="color:${dsCorAc(x.ac)}">${x.ac}%</b><button class="chip" data-acao="dsTreinar" data-m="${esc(x.m)}" data-a="${esc(x.a)}">Treinar</button></div>`;
+  const an = dsAnalise(ui.dsPer), todos = an.assuntos;
+  const naoTestados = dsNaoTestados();
+  const treino = x => `<button class="chip" data-acao="dsTreinar" data-m="${esc(x.m)}" data-a="${esc(x.a)}">Treinar</button>`;
+  const faltando = naoTestados.length ? detalhe('dsNao', `Caem muito e ainda não testei (${naoTestados.length})`, naoTestados.map(x => `<div class="des-ass" style="${cor(x.m)}"><div class="coluna" style="gap:2px;flex:1;min-width:0"><b>${esc(x.a)}</b><span class="fraco" style="font-size:13px">${esc(x.m)}</span></div>${treino(x)}</div>`).join('')) : '';
+  if (!todos.length) return `<p class="fraco" style="margin:0">Nenhuma questão do banco neste período. Quando você resolver, aqui aparece o que estudar primeiro.</p>${faltando}`;
+  const nomeMot = v => (MOTIVOS.find(m => m[0] === v)?.[1] || '').toLowerCase();
+  const fracos = todos.filter(x => x.f >= 3 && x.ac < 80).sort((a, b) => b.prio - a.prio).slice(0, 8);
+  const linha = x => `<div class="des-ass" style="${cor(x.m)}"><div class="coluna" style="gap:2px;flex:1;min-width:0"><b>${esc(x.a)}</b><span class="fraco" style="font-size:13px">${esc(x.m)} · ${x.ok} de ${x.f} certas · ${x.nivel}${x.tend ? ' · ' + x.tend : ''}${x.mot ? ' · mais por: ' + nomeMot(x.mot) : ''}</span></div>
+    <b style="color:${dsCorAc(x.ac)}">${x.ac}%</b>${treino(x)}</div>`;
   const porMat = {};
   for (const x of todos) (porMat[x.m] ||= []).push(x);
-  return (fracos.length ? `<span class="rotulo">para melhorar</span>${fracos.map(linha).join('')}` : '<p class="fraco" style="margin:0">Nenhum assunto fraco por enquanto (abaixo de 80%, com pelo menos 3 questões feitas).</p>')
+  const nMot = soma(Object.values(an.motivos), n => n);
+  const semEstudo = (an.motivos.atencao || 0) + (an.motivos.pressa || 0) + (an.motivos.enunciado || 0);
+  const motivos = nMot ? `<div class="coluna" style="gap:8px"><span class="rotulo">por que você erra (${nMot} ${nMot === 1 ? 'erro marcado' : 'erros marcados'})</span>${MOTIVOS.filter(([v]) => an.motivos[v]).sort((a, b) => an.motivos[b[0]] - an.motivos[a[0]]).map(([v, t]) => { const p = Math.round(an.motivos[v] / nMot * 100); return `<div class="meta-linha"><span>${t}</span><span class="fraco">${p}%</span><div class="barra"><i style="width:${p}%"></i></div></div>`; }).join('')}
+      ${nMot >= 5 && semEstudo / nMot >= .5 ? '<p class="fraco" style="margin:0">Mais da metade destes erros não é falta de conteúdo: vale treinar a leitura e o ritmo, não só estudar mais teoria.</p>' : ''}</div>`
+    : '<p class="fraco" style="margin:0;font-size:13px">Ao errar uma questão, toque no motivo. Assim aparece aqui se o problema é conteúdo, atenção, interpretação ou tempo.</p>';
+  return (fracos.length ? `<span class="rotulo">o que estudar primeiro</span>${fracos.map(linha).join('')}<p class="fraco" style="margin:0;font-size:13px">A ordem junta quanto você erra com quanto o assunto cai nos últimos 5 anos das suas provas.</p>` : '<p class="fraco" style="margin:0">Nenhum assunto fraco neste período (abaixo de 80%, com pelo menos 3 questões feitas).</p>')
+    + motivos
+    + (an.refeitas >= 5 ? `<p style="margin:0">Dos erros que você refez, <b>${an.viraram} de ${an.refeitas}</b> viraram acerto.</p>` : '')
     + detalhe('dsAss', 'Todos os assuntos que já fiz', Object.entries(porMat).map(([m, l]) => `<div class="coluna" style="gap:6px"><span class="tag" style="${cor(m)};align-self:flex-start">${esc(m)}</span>${l.sort((a, b) => a.ac - b.ac).map(linha).join('')}</div>`).join(''))
-    + '<p class="fraco" style="margin:0;font-size:13px">Conta a última vez que você fez cada questão do banco.</p>';
+    + (an.bancas.length ? detalhe('dsBan', 'Acerto por banca', `<div class="coluna" style="gap:10px">${an.bancas.map(b => `<div class="meta-linha"><span>${esc(b.b)}</span><span class="fraco"><b style="color:${dsCorAc(b.ac)}">${b.ac}%</b> · ${b.f} q</span><div class="barra"><i style="width:${b.ac}%;background:${dsCorAc(b.ac)}"></i></div></div>`).join('')}</div>`) : '')
+    + faltando
+    + '<p class="fraco" style="margin:0;font-size:13px">Conta a primeira vez que você fez cada questão no período. Refazer a mesma questão não aumenta o acerto.</p>';
 }
 
 function dsPlano() {
@@ -118,7 +183,7 @@ function vDesempenho() {
       <div><strong>${seq}</strong><span>${seq === 1 ? 'dia seguido' : 'dias seguidos'}</span></div></div>
     ${dsDicas(r)}${dsBarras(dsSerie(ui.dsPer))}</section>
     <section class="cartao"><h2>Por matéria</h2>${dsMaterias(r)}</section>
-    <section class="cartao"><h2>Assuntos</h2>${dsAssuntosHtml()}</section>
+    <section class="cartao"><h2>Análise dos erros</h2>${dsAssuntosHtml()}</section>
     <section class="cartao"><h2>Plano de estudos</h2>${dsPlano()}</section>
     <section class="cartao"><h2>Redação</h2>${dsRedacao()}</section>
     <section class="cartao"><div class="entre"><h2>Caderno de erros</h2><span class="fraco">${S.erros.length} guardados · ${venc} para rever hoje</span></div>
@@ -128,12 +193,18 @@ function vDesempenho() {
 Object.assign(VIEWS, { desempenho: vDesempenho });
 Object.assign(ACOES, {
   dsPer: el => { ui.dsPer = el.dataset.v; render(); },
+  qMotivo: el => {
+    const q = ui.qs.itens[ui.qs.i], l = S.qh[q.id]?.h; if (!l?.length) return;
+    const y = window.scrollY, t = l[l.length - 1];
+    t[3] = t[3] === el.dataset.v ? '' : el.dataset.v; salvar(); render(); window.scrollTo(0, y);
+  },
   dsErros: () => { ui.view = 'questoes'; ui.qAba = 'erros'; ui.qs = null; window.scrollTo(0, 0); render(); },
   dsTreinar: async el => {
     const m = el.dataset.m, a = el.dataset.a;
-    // primeiro as que errou ou ainda não fez; completa com as já acertadas
+    // primeiro as que errou ou ainda não fez, das bancas de SP e do ENEM; completa com as já acertadas
     const l = BANCO.itens.filter(x => x.m === m && x.as === a), prio = x => S.qh[x.id] ? (S.qh[x.id].ok ? 2 : 0) : 1;
-    const ids = l.sort((x, y) => prio(x) - prio(y) || Math.random() - 0.5).slice(0, 15).map(x => x.id);
+    const fora = x => PRESETS_BANCA.sp[1].test(x.b) || /enem/i.test(x.b) ? 0 : 1;
+    const ids = l.map(x => [x, Math.random()]).sort(([x, r], [y, s]) => prio(x) - prio(y) || fora(x) - fora(y) || r - s).slice(0, 15).map(([x]) => x.id);
     if (!ids.length) { ui.iaMsg = 'Não achei questões desse assunto no banco.'; render(); return; }
     ui.view = 'questoes'; ui.qAba = 'listas'; window.scrollTo(0, 0);
     await ACOES.qIniciarIds(ids);
