@@ -8,6 +8,7 @@ import gzip, json, os, shutil, sys, time
 SAIDA = r'C:\rotina-banco'
 PACOTES_WEB = r'C:\rotina\pacotes'
 TRANSCRITO = sys.argv[1] if len(sys.argv) > 1 else os.path.join(SAIDA, 'transcrito.json')
+TOPOS = json.load(open(os.path.join(SAIDA, 'topos.json'), encoding='utf-8')) if os.path.exists(os.path.join(SAIDA, 'topos.json')) else {}   # esconder_resposta.py
 GRUPOS = [  # mesmos grupos de oficiais.py
     ('6-oficiais-Fuvest-Unicamp-UNESP', ['fuvest', 'unicamp', 'unesp']),
     ('7-oficiais-Medicina-SP', ['unifesp', 'santacasa', 'alberteinstein', 'famerp', 'fmabc', 'famema', 'fmj', 'saocamilo', 'siriolibanes', 'unisa']),
@@ -45,7 +46,10 @@ def principal():
         for r in orig:
             t = tx.get(r['id'])
             if not t:
-                saida.append({k: v for k, v in r.items() if k != 'assunto_local'}); continue                         # ainda não lida (ou não deu): fica no modo imagem
+                # ainda não lida (ou não deu): fica no modo imagem. "topo" esconde a faixa do número, onde algumas imagens trazem a letra da resposta; v=1 faz o iPad trocar a versão já baixada
+                img = {k: v for k, v in r.items() if k != 'assunto_local'}
+                if r.get('img') in TOPOS: img['topo'] = TOPOS[r['img']]; img['v'] = 1
+                saida.append(img); continue
             q = {k: v for k, v in t.items() if k != 'dep'}
             q['id'] = r['id']; q['v'] = 2
             q['prev'] = origem(r['prev']) if r.get('prev') in por_id else ''

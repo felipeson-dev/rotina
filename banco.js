@@ -387,8 +387,9 @@ function qQuestao() {
 /** Mostra só a parte da imagem do Objetivo que interessa: o enunciado (de cima até o corte) ou a resolução (do corte para baixo). */
 function recorteObj(q, resolucao) {
   if (!q?.img || !q.w) return '';
-  const alto = resolucao ? q.h - q.corte : q.corte;
-  return `<div class="obj-recorte" style="aspect-ratio:${q.w}/${Math.max(20, alto)}"><img src="${esc(q.img)}" alt="${resolucao ? 'resolução' : 'questão'}" loading="lazy" style="${resolucao ? `margin-top:-${(q.corte / q.w * 100).toFixed(3)}%` : ''}"></div>`;
+  const topo = resolucao ? q.corte : (+q.topo || 0);   // a faixa do número pode trazer a letra da resposta: a questão começa abaixo dela
+  const alto = resolucao ? q.h - q.corte : q.corte - topo;
+  return `<div class="obj-recorte" style="aspect-ratio:${q.w}/${Math.max(20, alto)}"><img src="${esc(q.img)}" alt="${resolucao ? 'resolução' : 'questão'}" loading="lazy" style="${topo ? `margin-top:-${(topo / q.w * 100).toFixed(3)}%` : ''}"></div>`;
 }
 
 const textoQuestao = q => `Questão (${q.fonte}${q.materia ? ', ' + q.materia : ''}):\n${q.enunciado}\n\nAlternativas:\n${q.alts.map(a => `${a.l}) ${a.t}`).join('\n')}\n\nGabarito oficial: ${q.gab}.${q.coment ? '\nResolução existente: ' + q.coment : ''}`;
@@ -432,7 +433,7 @@ function normalizarImportada(q, i) {
     const n = Math.max(2, Math.min(5, +q.nalts || 5));
     return { id: q.id, banca: String(q.banca), tipo: 'real', ano: +q.ano || 0, area: q.area || AREA_DA_MATERIA[q.materia] || '', materia: q.materia || '', assunto: limAss(q.assunto), dif: '', fig: 0,
       enunciado: String(q.enunciado || ''), imagens: [], alts: 'ABCDE'.slice(0, n).split('').map(l => ({ l, t: '', img: '' })), gab: q.gab, coment: '', fonte: q.fonte || 'Objetivo',
-      modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte, prev: q.prev || '', num: q.num || '', fase: q.fase || '', v: +q.v || 0 };
+      modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte, topo: +q.topo || 0, prev: q.prev || '', num: q.num || '', fase: q.fase || '', v: +q.v || 0 };
   }
   if (!q || !(q.enunciado || q.pergunta) || !Array.isArray(q.alts || q.alternativas)) return null;
   const bruto = q.alts || q.alternativas;
@@ -495,7 +496,7 @@ Object.assign(ACOES, {
       const ex = S.qExtras?.[q.id] || {};
       return { id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
         enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: ex.res_ia || q.res_ia || '', duvidas: ex.duvidas || q.duvidas || [], flashcards: ex.flashcards || q.flashcards || [],
-        modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, assunto: limAss(q.assunto), num: q.num || '', tipo: q.tipo || '', discIa: ex.discIa || q.discIa || null };
+        modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, topo: q.topo || 0, prev: q.prev || '', dep: q.dep || 0, assunto: limAss(q.assunto), num: q.num || '', tipo: q.tipo || '', discIa: ex.discIa || q.discIa || null };
     });
     if (itens.length) iniciarSessao(itens, extra);
   },
