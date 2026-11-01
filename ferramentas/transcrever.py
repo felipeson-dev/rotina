@@ -224,7 +224,8 @@ def principal():
         if not sys.argv[i].startswith('--'): args.append(sys.argv[i])
         i += 1
     *entradas, sai = args
-    q = [x for e in entradas for x in json.load(open(e, encoding='utf-8'))]
+    # os recortes dos cadernos em PDF (pdf_vunesp.py) já vêm com o texto do próprio PDF: não gastam cota nem viram cópia lida por IA
+    q = [x for e in entradas for x in json.load(open(e, encoding='utf-8')) if str(x.get('fonte', 'Objetivo')).startswith('Objetivo')]
     out = json.load(open(sai, encoding='utf-8')) if os.path.exists(sai) else []
     feitas = {x['id'] for x in out}
     if os.path.exists(sai + '.falhas.json'):

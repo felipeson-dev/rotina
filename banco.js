@@ -80,7 +80,7 @@ const previa = s => String(s || '').replace(/\$\$?[^$]*\$\$?/g, ' [fórmula] ').
 const txtBusca = s => { const t = normBusca(s); return t.length <= 700 ? t : t.slice(0, 350) + ' ' + t.slice(-350); };
 const META_V = 4;   // muda quando a ficha leve ganha campos: refaz as fichas a partir das questões guardadas
 const limAss = s => (typeof limparNomeAssunto === 'function' ? limparNomeAssunto(s) : s) || '';
-const metaDe = q => { const as = limAss(q.assunto); return { id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(as).slice(0, 140), as, x: txtBusca(q.enunciado), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: q.modo === 'objetivo' || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0 }; };
+const metaDe = q => { const as = limAss(q.assunto); return { id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(as).slice(0, 140), as, x: txtBusca(q.enunciado), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: (q.modo === 'objetivo' && q.h > q.corte) || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0 }; };
 
 async function carregarBanco() {
   if (BANCO.pronto) return;
@@ -378,7 +378,7 @@ function qQuestao() {
       return `<div class="alt-linha ${risc ? 'riscada' : ''}"><button class="alt ${sel ? 'sel' : ''} ${certa ? 'certa' : ''} ${errada ? 'errada' : ''}" data-acao="qResp" data-v="${a.l}" ${resp ? 'disabled' : ''}><b>${a.l}</b><span>${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</span></button>
         ${resp ? '' : `<button class="risca" data-acao="qRiscarAlt" data-v="${a.l}" aria-label="${risc ? 'Desriscar' : 'Riscar'} a ${a.l}" title="${risc ? 'Desriscar' : 'Riscar (descartar)'}">${risc ? '↺' : '✕'}</button>`}</div>`; }).join('')}</div>
     ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>
-      ${q.modo === 'objetivo' ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
+      ${q.modo === 'objetivo' && q.h > q.corte ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
     ${nav}
     ${ui.qRasc ? quadroHtml('qtmp' + s.i, 520, 'quadriculado') : ''}
     ${ajudaIaHtml(q, resp)}</section>`;
@@ -431,7 +431,7 @@ function normalizarImportada(q, i) {
   if (q && q.modo === 'objetivo' && /^https:/.test(q.img || '') && /^[A-E]$/.test(q.gab || '') && q.corte > 0) {
     const n = Math.max(2, Math.min(5, +q.nalts || 5));
     return { id: q.id, banca: String(q.banca), tipo: 'real', ano: +q.ano || 0, area: q.area || AREA_DA_MATERIA[q.materia] || '', materia: q.materia || '', assunto: limAss(q.assunto), dif: '', fig: 0,
-      enunciado: String(q.enunciado || ''), imagens: [], alts: 'ABCDE'.slice(0, n).split('').map(l => ({ l, t: '', img: '' })), gab: q.gab, coment: '', fonte: 'Objetivo',
+      enunciado: String(q.enunciado || ''), imagens: [], alts: 'ABCDE'.slice(0, n).split('').map(l => ({ l, t: '', img: '' })), gab: q.gab, coment: '', fonte: q.fonte || 'Objetivo',
       modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte, prev: q.prev || '', num: q.num || '', fase: q.fase || '', v: +q.v || 0 };
   }
   if (!q || !(q.enunciado || q.pergunta) || !Array.isArray(q.alts || q.alternativas)) return null;
