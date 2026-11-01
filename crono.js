@@ -52,14 +52,11 @@ if (Array.isArray(S?.assuntos)) {
   }
 }
 
-// o dia respeita o começo do cronograma (prioriza itens avulsos anteriores, mas não esvazia o dia) e os dias de limpeza
+// até o dia seguinte ao ENEM o dia é livre: o cronograma só entra a partir de 16/11 (pedido em 31/10); nos dias de limpeza não entra conteúdo novo
+const CRONO_LIBERA = '2026-11-16';
 { const f0 = filaParaHoje; filaParaHoje = function () {
   let l = f0.apply(this, arguments);
-  if (S.cronoInicio && hoje() < S.cronoInicio && l.some(a => !a.crono)) {
-    const avulsos = l.filter(a => !a.crono);
-    const crono = l.filter(a => a.crono);
-    l = [...avulsos, ...crono];
-  }
+  if (hoje() < CRONO_LIBERA) l = l.filter(a => !a.crono);
   if ((S.diasLimpeza || []).includes(hoje())) l = l.filter(a => !ehConteudo(a) || estadoDe(a) === 'atrasado');
   return l;
 }; }
