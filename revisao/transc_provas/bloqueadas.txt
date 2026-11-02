@@ -8,3 +8,13 @@ obj-alberteinstein2026-08
 obj-alberteinstein2026-09
 obj-alberteinstein2026-10
 obj-alberteinstein2026-11
+obj-fuvest2025_1fase-02
+obj-fuvest2025_1fase-04
+obj-fuvest2025_1fase-42
+obj-fuvest2025_1fase-46
+obj-fuvest2025_1fase-51
+obj-fuvest2025_1fase-58
+obj-santacasa2025-01
+obj-santacasa2025-02
+obj-santacasa2025-03
+obj-santacasa2025-04
