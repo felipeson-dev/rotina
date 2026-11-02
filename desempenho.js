@@ -41,6 +41,30 @@ function motivoHtml(q) {
   return `<div class="mot-erro"><span class="rotulo">por que errou? (opcional)</span><div class="linha" style="gap:6px">${MOTIVOS.map(([v, t]) => `<button class="chip" data-acao="qMotivo" data-v="${v}" aria-pressed="${atual === v}">${t}</button>`).join('')}</div></div>`;
 }
 
+// questões que ela marcou com erro: a lista sai por "Copiar lista" para corrigir no banco depois
+S.qProblemas ||= {};
+const TIPOS_PROBLEMA = [['texto', 'Texto errado'], ['gabarito', 'Gabarito errado'], ['tema', 'Tema errado'], ['imagem', 'Imagem cortada ou ilegível'], ['outro', 'Outro']];
+const nomeProblema = v => TIPOS_PROBLEMA.find(t => t[0] === v)?.[1] || 'Outro';
+
+function problemaHtml(q) {
+  if (!q.id) return '';
+  const p = S.qProblemas[q.id];
+  if (p) return `<div class="mot-erro"><span class="fraco" style="font-size:14px">Marcada com erro: ${nomeProblema(p.tipo)}.</span><button class="link" data-acao="qProblemaTirar" style="align-self:flex-start;font-size:14px">Desfazer</button></div>`;
+  if (ui.qProblemaDe !== q.id) return `<button class="link" data-acao="qProblemaAbrir" style="align-self:flex-start;font-size:14px">Esta questão tem erro?</button>`;
+  return `<div class="mot-erro"><span class="rotulo">qual é o erro?</span><div class="linha" style="gap:6px">${TIPOS_PROBLEMA.map(([v, t]) => `<button class="chip" data-acao="qProblemaMarcar" data-v="${v}">${t}</button>`).join('')}</div></div>`;
+}
+
+const textoProblemas = () => Object.entries(S.qProblemas).map(([id, p]) => `${id} | ${nomeProblema(p.tipo)} | ${p.fonte || ''}${p.num ? ' nº ' + p.num : ''} | ${p.dia}`).join('\n');
+
+function dsProblemas() {
+  const l = Object.entries(S.qProblemas).sort((a, b) => a[1].dia < b[1].dia ? 1 : -1);
+  if (!l.length) return `<section class="cartao"><h2>Questões com erro</h2><p class="fraco" style="margin:0">Nenhuma marcada. Se encontrar um erro em uma questão, toque em "Esta questão tem erro?".</p></section>`;
+  return `<section class="cartao"><div class="entre"><h2>Questões com erro</h2><span class="fraco">${l.length} ${l.length === 1 ? 'marcada' : 'marcadas'}</span></div>
+    <div class="linha"><button class="botao" data-acao="dsProblemasCopiar">Copiar lista</button></div>
+    ${detalhe('dsProb', 'Ver a lista', `<div class="coluna" style="gap:6px">${l.map(([id, p]) => `<div class="entre"><span style="font-size:14px">${esc(p.fonte || id)}${p.num ? ' nº ' + esc(p.num) : ''} · ${nomeProblema(p.tipo)}</span><button class="link" data-acao="dsProblemaTirar" data-id="${esc(id)}" style="font-size:14px">Tirar</button></div>`).join('')}
+      <textarea readonly rows="4" style="font-size:13px">${esc(textoProblemas())}</textarea></div>`)}</section>`;
+}
+
 /** Quanto cada assunto cai nos últimos 5 anos de cada prova dela. "muito" = 20% que mais caem; "médio" = os 40% seguintes. */
 let dsIncCache = null;
 function dsIncidencia() {
@@ -187,12 +211,22 @@ function vDesempenho() {
     <section class="cartao"><h2>Plano de estudos</h2>${dsPlano()}</section>
     <section class="cartao"><h2>Redação</h2>${dsRedacao()}</section>
     <section class="cartao"><div class="entre"><h2>Caderno de erros</h2><span class="fraco">${S.erros.length} guardados · ${venc} para rever hoje</span></div>
-      ${S.erros.length ? `<div class="linha"><button class="botao" data-acao="dsErros">Refazer erros</button></div>` : '<p class="fraco" style="margin:0">Nenhum erro guardado.</p>'}</section>`;
+      ${S.erros.length ? `<div class="linha"><button class="botao" data-acao="dsErros">Refazer erros</button></div>` : '<p class="fraco" style="margin:0">Nenhum erro guardado.</p>'}</section>
+    ${dsProblemas()}`;
 }
 
 Object.assign(VIEWS, { desempenho: vDesempenho });
 Object.assign(ACOES, {
   dsPer: el => { ui.dsPer = el.dataset.v; render(); },
+  qProblemaAbrir: () => { const y = window.scrollY; ui.qProblemaDe = ui.qs.itens[ui.qs.i].id; render(); window.scrollTo(0, y); },
+  qProblemaMarcar: el => { const y = window.scrollY, q = ui.qs.itens[ui.qs.i]; S.qProblemas[q.id] = { tipo: el.dataset.v, dia: hoje(), fonte: q.fonte || '', num: q.num || '' }; ui.qProblemaDe = null; salvar(); render(); window.scrollTo(0, y); },
+  qProblemaTirar: () => { const y = window.scrollY; delete S.qProblemas[ui.qs.itens[ui.qs.i].id]; salvar(); render(); window.scrollTo(0, y); },
+  dsProblemaTirar: el => { const y = window.scrollY; delete S.qProblemas[el.dataset.id]; salvar(); render(); window.scrollTo(0, y); },
+  dsProblemasCopiar: async () => {
+    try { await navigator.clipboard.writeText(textoProblemas()); ui.iaMsg = 'Lista copiada.'; }
+    catch { ui.iaMsg = 'Não consegui copiar. Abra "Ver a lista" e copie o texto da caixa.'; }
+    render();
+  },
   qMotivo: el => {
     const q = ui.qs.itens[ui.qs.i], l = S.qh[q.id]?.h; if (!l?.length) return;
     const y = window.scrollY, t = l[l.length - 1];

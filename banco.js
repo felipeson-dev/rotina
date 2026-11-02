@@ -382,6 +382,7 @@ function qQuestao() {
       ${motivoHtml(q)}
       ${verImagem(q) && q.h > q.corte ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
     ${nav}
+    ${problemaHtml(q)}
     ${ui.qRasc ? quadroHtml('qtmp' + s.i, 520, 'quadriculado') : ''}
     ${ajudaIaHtml(q, resp)}</section>`;
 }

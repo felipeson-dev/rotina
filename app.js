@@ -81,7 +81,7 @@ function carregar() {
   s = Object.assign(JSON.parse(JSON.stringify(VAZIO)), s || {});
   s.perfil = Object.assign({}, VAZIO.perfil, s.perfil);
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
-  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.qIgnorar ||= []; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
+  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.qIgnorar ||= []; s.qProblemas ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
   if (s.resetTesteV !== 2) { s.resetTesteV = 2; zerarDadosTeste(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
   return s;
