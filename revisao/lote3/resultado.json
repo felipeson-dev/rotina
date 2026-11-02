@@ -5906,5 +5906,3698 @@
   {
     "id": "obj-unesp2010_2-71",
     "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-72",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "B. hydrogenase e hidrogenação.",
+        "como_deveria_ser": "B. hidrogenase e hidrogenação."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2010_2-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-74",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-77",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-81",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-82",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-84",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-85",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-88",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Trecho com a sequência literal \"\\n\" (barra invertida seguida de n) em dois pontos: \"...na quantidade de ar inalada e expelida.\\nA velocidade...\" e \"...um ciclo do processo.\\nSabendo-se...\"",
+        "como_deveria_ser": "Sem a sequência literal \"\\n\"; as frases devem ser separadas por quebra de linha ou espaço, como no enunciado da imagem (\"...expelida. A velocidade...\" e \"...do processo. Sabendo-se...\")."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-11",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase), pois o texto é de Graciliano Ramos (Vidas Secas, romance de 1938, 2ª fase do Modernismo)."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-14",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-58",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"...e, salvo a mesma vida, tenhamos que agradecer aos Deus, é o dom de nos desconhecermos...\"",
+        "como_deveria_ser": "\"...e, salvo a mesma vida, tenhamos que agradecer aos Deuses, é o dom de nos desconhecermos...\""
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-66",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"...revertidas ao estado iPS, dariam origem à um ovócito pronto para ser fecundado in vitro.\"",
+        "como_deveria_ser": "\"...revertidas ao estado iPS, dariam origem a um ovócito pronto para ser fecundado in vitro.\" (a imagem traz \"a um\", sem crase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-71",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa em \"Buscando diferenças e semelhanças...\" e omite a instrução \"A questão de número 71 toma por base o texto\" e o texto-base \"Descarga de hormônios\".",
+        "como_deveria_ser": "O enunciado deveria incluir a instrução e o texto-base \"Descarga de hormônios\" antes de \"Buscando diferenças e semelhanças...\", como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-73",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O texto traz sequências literais \"\\n\\n\" (barra invertida seguida de n, escritas como texto) após \"apresentadas.\" e antes do item I.",
+        "como_deveria_ser": "Quebras de linha reais no lugar de \"\\n\\n\", como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-74",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "As alternativas A a E são descrições textuais (ex.: D: \"Gráfico com duas etapas, sendo o primeiro pico maior e o segundo menor.\"), no lugar dos cinco gráficos da imagem.",
+        "como_deveria_ser": "As alternativas deveriam ser os gráficos a) a e) da imagem. O gráfico correto (d) tem o primeiro pico menor e o segundo maior, como mostra a resolução; a descrição da alternativa D está invertida."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-78",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O texto contém a sequência literal de barra invertida e n (\\n) em dois pontos: antes de \"Num primeiro experimento\" e antes de \"Considere agora\".",
+        "como_deveria_ser": "Quebras de linha reais no lugar das sequências literais \\n, como no restante do enunciado."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-80",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-81",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-84",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-85",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-88",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-01",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa em \"Segundo o que é afirmado no primeiro parágrafo do texto\", mas não traz o texto-base nem a instrução \"As questões de números 01 a 05 tomam por base uma passagem...\" presentes na imagem.",
+        "como_deveria_ser": "Incluir a instrução \"As questões de números 01 a 05 tomam por base uma passagem da Proposta Curricular do Estado de São Paulo (2008)\" e o texto-base \"Prioridade para a competência da leitura e da escrita\" (com a referência Proposta Curricular do Estado de São Paulo: Língua Portuguesa / Coord. Maria Inês Fini. São Paulo: SEE, 2008. p. 16. Adaptado.)."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011_2-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-52",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Era Vargas",
+        "como_deveria_ser": "Redemocratização e Brasil atual"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011_2-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-74",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-77",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Atrito, plano inclinado e força centrípeta",
+        "como_deveria_ser": "Leis de Newton"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011_2-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-79",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "a quantidade de calor recebidas pelo paciente no tratamento foi igual a",
+        "como_deveria_ser": "a quantidade de calorias recebidas pelo paciente no tratamento foi igual a"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011_2-84",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-90",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Outro",
+        "como_deveria_ser": "Geometria espacial: poliedros, prismas e pirâmides"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-21",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado traz só a pergunta final. Faltam a instrução \"Instrução: Leia o texto e analise o gráfico para responder às questões de números 21 a 25.\" e o texto-base \"Why use biofuels for aviation?\", do qual dependem as \"razões apontadas\" pela questão.",
+        "como_deveria_ser": "Incluir a instrução e o texto-base completo \"Why use biofuels for aviation?\" conforme a imagem (o gráfico não precisa ser incluído), antes da pergunta."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-34",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Revolução Industrial",
+        "como_deveria_ser": "Absolutismo e mercantilismo"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-44",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Observe os perfis longitudinais de importantes rios de algumas das bacias hidrográfricas brasileiras. ... As bacias hidrográfricas identificadas nos perfis são, respectivamente,",
+        "como_deveria_ser": "Observe os perfis longitudinais de importantes rios de algumas das bacias hidrográficas brasileiras. ... As bacias hidrográficas identificadas nos perfis são, respectivamente,"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-63",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Os carros híbridos, cujo motores funcionam a combustão interna",
+        "como_deveria_ser": "Os carros híbridos, cujos motores funcionam a combustão interna"
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "...e as linhas vermelhas representam a emissão de CO2 pelo grupo de quatro homens.",
+        "como_deveria_ser": "...e as linhas vermelhas representam a emissão de CO2 pelo grupo de quatro homens. Considerando os resultados e as condições nas quais foi realizado o experimento, e considerando os processos de obtenção e produção da energia que permitem a movimentação dos músculos do homem, pode-se dizer corretamente que quatro homens"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-78",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado termina em 'a capacidade térmica da xícara é desprezível.' e não traz a suposição das densidades nem a pergunta: 'Considerando que as densidades do leite, do café e do adoçante sejam iguais e que a perda de calor para a atmosfera é desprezível, depois de atingido o equilíbrio térmico, a temperatura final da bebida de Clarice, em °C, estava entre'.",
+        "como_deveria_ser": "Incluir o trecho final da imagem: a suposição de densidades iguais e perda de calor para a atmosfera desprezível, seguida da pergunta sobre a temperatura final da bebida após o equilíbrio térmico."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-81",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-82",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "As alternativas B, C, D e E são apenas '...' e a alternativa A é uma descrição textual ('Figura com linhas de campo saindo de N e entrando em S...'), no lugar das figuras (a) a (e) da questão.",
+        "como_deveria_ser": "Cada alternativa deve trazer o conteúdo da respectiva figura (a) a (e): linhas de indução do ímã e sentido da corrente induzida no tubo de cobre, com a descrição completa de cada uma."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "A alternativa A indica corrente induzida com sentido anti-horário.",
+        "como_deveria_ser": "Na resolução a corrente induzida é horária, pela regra da mão direita, e é essa configuração que a alternativa A deve mostrar."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-12",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "As afirmações que correspondem as que se expõe no artigo são, apenas:",
+        "como_deveria_ser": "As afirmações que correspondem ao que se expõe no artigo são, apenas:"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012_2-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-31",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "A escavatura [na Roma antiga] foi praticada desde os tempos mais remotos dos reis",
+        "como_deveria_ser": "A escravatura [na Roma antiga] foi praticada desde os tempos mais remotos dos reis"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012_2-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-40",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Segunda Guerra e Guerra Fria",
+        "como_deveria_ser": "Revolução Russa e entreguerras"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012_2-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-44",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Elles margeiam os continentes apresentando, conforme o continente, características físicas diferentes, como extensão e profundidade.",
+        "como_deveria_ser": "Elas margeiam os continentes apresentando, conforme o continente, características físicas diferentes, como extensão e profundidade."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012_2-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-54",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Outro",
+        "como_deveria_ser": "Biomas e questão ambiental"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012_2-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-77",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-80",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-81",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-83",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...o circuito dissipará, em $[TAB]ext{W}$, uma potência igual a",
+        "como_deveria_ser": "...o circuito dissipará, em $\\text{W}$, uma potência igual a"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012_2-87",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "São considerados nanomateriais aqueles cuyas dimensões variam entre 1 e 100 nanômetros (nm)",
+        "como_deveria_ser": "São considerados nanomateriais aqueles cujas dimensões variam entre 1 e 100 nanômetros (nm)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-15",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Parnasianismo e Simbolismo (o poema é de Luís Delfino, 1834-1910, o mesmo autor e poema da questão 11, classificada como Parnasianismo e Simbolismo)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-25",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Outro",
+        "como_deveria_ser": "Vocabulário, cognatos e falsos cognatos"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-47",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado termina em \"...regime de chuva do Brasil.\" e não traz o comando da questão.",
+        "como_deveria_ser": "Acrescentar ao final do enunciado: \"A partir da leitura do texto e da observação do mapa, é correto afirmar que, no Brasil,\""
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-51",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Brasil Colônia: economia e sociedade",
+        "como_deveria_ser": "República Velha"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013-52",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...novas aplicações que poluem menos.",
+        "como_deveria_ser": "...novas aplicações que poluam menos."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013-53",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "(Martha San Juan França. O etanol na encruzilhada. Unesp Ciência, maior de 2012. Adaptado)",
+        "como_deveria_ser": "(Martha San Juan França. O etanol na encruzilhada. Unesp Ciência, maio de 2012. Adaptado)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-74",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-80",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Gases",
+        "como_deveria_ser": "Forças intermoleculares e propriedades físicas"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013-81",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-85",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-88",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-90",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-08",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Romantismo"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013_2-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-29",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Conectivos e pronomes",
+        "como_deveria_ser": "Vocabulário, cognatos e falsos cognatos"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013_2-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-38",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Expansão marítima e colonização",
+        "como_deveria_ser": "República Velha"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013_2-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-74",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-84",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-85",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-88",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-90",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-05",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "d) vontade e trocar o futebol por outra profissão.",
+        "como_deveria_ser": "d) vontade de trocar o futebol por outra profissão."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-18",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Morfologia e classes de palavras",
+        "como_deveria_ser": "Modernismo (3ª fase) e Contemporânea (a questão trata da versificação métrica do poema, não de classes de palavras; o mesmo poema é classificado assim nas questões 17 e 20)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-22",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A) conveniência de consumidores a darem preferência a produtos que não agridam a natureza.",
+        "como_deveria_ser": "A) convencimento de consumidores a darem preferência a produtos que não agridam a natureza."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-37",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) da disseminação de ideias republicanos e salvacionistas nos meios militares, que articularam a ação de derrubada da Monarquia.",
+        "como_deveria_ser": "D) da disseminação de ideias republicanas e salvacionistas nos meios militares, que articularam a ação de derrubada da Monarquia."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-77",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O texto contém sequências literais \"\\n\\n\" e \"\\n\" (barra invertida seguida de n) antes de \"A figura ilustra o fenômeno descrito.\", antes de \"(John E. Hall e Arthur C. Guyton...)\", antes de \"Assim, o fluxo sanguíneo...\" e após a fórmula.",
+        "como_deveria_ser": "Quebras de linha reais no lugar das sequências \"\\n\" literais, separando os parágrafos e a legenda da figura, como nos demais enunciados."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-79",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Trabalho, energia e potência",
+        "como_deveria_ser": "Leis de Newton"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014-81",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-84",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-85",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-08",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Filosofia moderna e contemporânea",
+        "como_deveria_ser": "Filosofia antiga e medieval (a questão relaciona a ilustração à discussão de Cícero sobre a compaixão; não há conteúdo de filosofia moderna ou contemporânea)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014_2-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-44",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "a manifestação do fenômeno $La Niña$ e o reforço das condições climatológicas de ambiente quente e seco por questões sazonais.",
+        "como_deveria_ser": "a manifestação do fenômeno La Niña e o reforço das condições climatológicas de ambiente quente e seco por questões sazonais."
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado começa em \"A dinâmica de circulação atmosférica...\", sem o texto de apoio \"Leia a notícia em 11.02.2014 para responder às questões de números 44 e 45\" e o trecho da notícia (\"As chuvas torrenciais que costumam causar tormentas...\" até \"...nos verões dos últimos 20 anos.\", com a atribuição \"(http://brasil.elpais.com. Adaptado.)\").",
+        "como_deveria_ser": "Enunciado deveria incluir o texto de apoio completo da imagem, antes da pergunta: \"Leia a notícia em 11.02.2014 para responder às questões de números 44 e 45.\" seguido do trecho da notícia e da atribuição \"(http://brasil.elpais.com. Adaptado.)\"."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014_2-45",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado começa em \"Considerando conhecimentos geográficos sobre as formas de uso dos recursos hídricos...\", sem o texto de apoio \"Leia a notícia em 11.02.2014 para responder às questões de números 44 e 45\" e o trecho da notícia que descreve o cenário referido em \"cenário apresentado pela região Centro-Sul\".",
+        "como_deveria_ser": "Enunciado deveria incluir o texto de apoio completo da imagem, antes da pergunta: \"Leia a notícia em 11.02.2014 para responder às questões de números 44 e 45.\" seguido do trecho da notícia e da atribuição \"(http://brasil.elpais.com. Adaptado.)\"."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014_2-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-72",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Outro",
+        "como_deveria_ser": "Matéria, substâncias e separação de misturas"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014_2-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-80",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-82",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-84",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-88",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-29",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...children in poverty hear 30 milion fewer words than **those** in higher-income households.",
+        "como_deveria_ser": "...children in poverty hear 30 million fewer words than **those** in higher-income households."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-39",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "(Piotr Kropolkin. \"Carta a Lênin (04.03.1920)\"",
+        "como_deveria_ser": "(Piotr Kropotkin. \"Carta a Lênin (04.03.1920)\""
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-42",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A) ... que extinguiriam a república e reinstauraram a monarquia no país.",
+        "como_deveria_ser": "A) ... que extinguiriam a república e reinstaurariam a monarquia no país."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-49",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Outro",
+        "como_deveria_ser": "Era Vargas"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-66",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "as digestões de proteínas, de lipidios e de carboidratos",
+        "como_deveria_ser": "as digestões de proteínas, de lipídios e de carboidratos"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-80",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-82",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-85",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-01",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Estestes suspiros que eu solto",
+        "como_deveria_ser": "Estes suspiros que eu solto"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-03",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Que eu canto e canterei sempre",
+        "como_deveria_ser": "Que eu canto e cantarei sempre"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-06",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-18",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado copia a cena V só até \"...é um capricho verdadeiro...\" e fecha as notas. Omite o trecho seguinte de Jorge (\"Depois de aturarem metidos ali dentro...\" até \"...mudar de ares.\"), as falas de Madalena e Maria (\"Pois coitados!...\", \"Coitado do povo!...\", \"Emendá-lo.\", \"Deixá-los vir.\", \"O meu!\", \"Fechamos-lhes as portas...\", \"Louquinha!\", \"Mas que mal fizemos nós...\") e o restante da cena.",
+        "como_deveria_ser": "Enunciado com a cena V completa, como está na imagem, incluindo as falas até \"...e que estou eu aqui?...\" e as notas 1, 2 e 3."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-23",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Tempos verbais e voz passiva",
+        "como_deveria_ser": "Vocabulário, cognatos e falsos cognatos"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-24",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "C) prenuncia o aprofundando da concentração de riquezas no mundo.",
+        "como_deveria_ser": "C) prenuncia o aprofundamento da concentração de riquezas no mundo."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-38",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O \"novo tipo de colonialismo\", mencionado no texto, tem, entre suas características,",
+        "como_deveria_ser": "Leia o texto para responder às questões 38 e 39. A África só começou a ser ocupada pelas potências europeias exatamente quando a América se tornou independente, quando o antigo sistema colonial ruiu, dando lugar a outras formas de enriquecimento e desenvolvimento das economias mais dinâmicas, que se industrializavam e ampliavam seus mercados consumidores. Nesse momento foi criado um novo tipo de colonialismo, implantado na África a partir do final do século XIX [...]. (Marina de Mello e Souza. África e Brasil africano, 2007.) O \"novo tipo de colonialismo\", mencionado no texto, tem, entre suas características,"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-41",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Era Vargas",
+        "como_deveria_ser": "Redemocratização e Brasil atual"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-50",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Industrialização e matriz energética",
+        "como_deveria_ser": "Globalização e blocos econômicos"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-74",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-85",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...sendo que três deles estão com os respectivos preços.\n\n![Buquês de flores](https://i.imgur.com/example.png)\n\nDe acordo com a representação...",
+        "como_deveria_ser": "...sendo que três deles estão com os respectivos preços.\n\nDe acordo com a representação..."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-86",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...a coluna de água contida in um recipiente que não se afunila...",
+        "como_deveria_ser": "...a coluna de água contida em um recipiente que não se afunila..."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-88",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-90",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...o número mínimo de letras retiradas das urnas dessa maneira até que seja possível formar...",
+        "como_deveria_ser": "...o número mínimo de letras retiradas dessas urnas dessa maneira até que seja possível formar..."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2016-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-20",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2016-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-24",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"Leia o texto para responder às questões de **24** a **27**.\" e \"**24**\" antes de \"According to the text\" (asteriscos de markdown no texto)",
+        "como_deveria_ser": "\"Leia o texto para responder às questões de 24 a 27.\" e \"24\" antes de \"According to the text\", sem asteriscos, como na imagem"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2016-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-48",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "E) um fórum internacional que objetiva solucionar impasses em questões tarifárias, sobre patentes e ações protecionistas entre países desenvolvido e em desenvolvimento.",
+        "como_deveria_ser": "E) um fórum internacional que objetiva solucionar impasses em questões tarifárias, sobre patentes e ações protecionistas entre países desenvolvidos e em desenvolvimento."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2016-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-60",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Caraturar nunca é crime. Caneta e lápis não matam.",
+        "como_deveria_ser": "Caricaturar nunca é crime. Caneta e lápis não matam."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2016-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-003",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-004",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Respiração e circulação humana",
+        "como_deveria_ser": "Zoologia: invertebrados"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2011_1fase-005",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-006",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-007",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-010",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-011",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-012",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-013",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-016",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-018",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-019",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-022",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-023",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-024",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-025",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-027",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-029",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "C) x ∈ ]1, 3[, y ∈ ]4, 6",
+        "como_deveria_ser": "C) x ∈ ]1, 3[, y ∈ ]4, 6[."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2011_1fase-030",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-031",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-033",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-034",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-035",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-037",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-038",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-039",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-040",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Brasil Colônia: economia e sociedade",
+        "como_deveria_ser": "Brasil Império"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2011_1fase-041",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-042",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-043",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-044",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-045",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-046",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-047",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-048",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-002",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-006",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Para construir uma cerca com 300 m de comprimento, são necessários",
+        "como_deveria_ser": "TEXTO PARA AS QUESTÕES 6 E 7 Um carpinteiro foi contratado para construir uma cerca formada por ripas de madeira. As figuras abaixo apresentam uma vista parcial da cerca, bem como os detalhes das ligações entre as ripas, nos quais os parafusos são representados por círculos brancos. Note que cada ripa está presa à cerca por dois parafusos em cada extremidade. Para construir uma cerca com 300 m de comprimento, são necessários"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2012_1fase-008",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...seus limites são considerados em conjunto.\\nEm um determinado voo... (contém a sequência de caracteres barra-invertida + n no meio do texto)",
+        "como_deveria_ser": "Quebra de parágrafo real, sem a sequência \\n escrita, como na imagem: '...seus limites são considerados em conjunto.' seguido de 'Em um determinado voo, tanto um casal como um senhor que viajava sozinho transportaram 60 kg de bagagem...'"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2012_1fase-009",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-011",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-014",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-016",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-017",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-018",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-019",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-021",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-022",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-023",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-026",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-028",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-030",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-031",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-032",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-035",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-037",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-038",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-039",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-040",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-043",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-044",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-046",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-047",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-048",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-22",
+    "ok": true
   }
 ]
