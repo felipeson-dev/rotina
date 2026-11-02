@@ -1,0 +1,2384 @@
+[
+  {
+    "id": "obj-unesp2011_2-06",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...por meio do processo bem conhecido da inoculação de uma matéria colorente na epiderme.",
+        "como_deveria_ser": "...por meio do processo bem conhecido da inoculação de uma matéria colorante na epiderme."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-13",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"... 80% de estrôgenio foram removidos ...\"",
+        "como_deveria_ser": "\"... 80% de estrogênio foram removidos ...\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2011_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-19",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A) O mar sopra sinos / os sinos secavam as flores / as flores eram cabeças de santos. ...",
+        "como_deveria_ser": "A) O mar soprava sinos / os sinos secavam as flores / as flores eram cabeças de santos. ..."
+      }
+    ]
+  },
+  {
+    "id": "obj-alberteinstein2025-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2014_1fase-015",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-036",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-39",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-47",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "os atos oficiais ... 'Diada, ... por ser a data que relebra a batalha'",
+        "como_deveria_ser": "por ser a data que relembra a batalha"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2015_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-84",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-11",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "A descrição do velório sugere",
+        "como_deveria_ser": "Deveria constar o fragmento do romance de Érico Veríssimo (Um lugar ao sol, 1978) com a instrução 'Para responder às questões de números 11 a 15, leia o fragmento de um romance de Érico Veríssimo (1905-1975).', antes da pergunta 'A descrição do velório sugere'."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-62",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "viagem de circunnavegação",
+        "como_deveria_ser": "viagem de circunavegação"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2012_1fase-045",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-81",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa em 'Astrônomos observaram...' e não traz a observação de constantes que aparece na imagem.",
+        "como_deveria_ser": "Incluir antes do enunciado: 'OBSERVAÇÃO: Nas questões em que for necessário, adote para g, aceleração da gravidade na superfície da Terra, o valor de 10 m/s²; para c, velocidade da luz no vácuo, o valor de 3 x 10^8 m/s.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2024_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-25",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-74",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-028",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Sabendo que a distância real entre a catedral e a prefeitura é de 500 m, ...",
+        "como_deveria_ser": "Enunciado precedido do texto de apoio das questões 28 e 29 (descrição do mapa: Avenida Brasil formada pelos pontos equidistantes da catedral e da prefeitura, Avenida Juscelino Kubitschek formada pelos pontos equidistantes da prefeitura e da câmara de vereadores)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2020_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-27",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "B) Gerazeiros da região da Amazônia Ocidental se beneficiam dos rios para a pesca e praticam o extrativismo de frutos utilizados na culinária regional e transformados em produtos alimentícios.",
+        "como_deveria_ser": "B) Geraizeiros da região da Amazônia Ocidental se beneficiam dos rios para a pesca e praticam o extrativismo de frutos utilizados na culinária regional e transformados em produtos alimentícios."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-85",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-39",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-84",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-58",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-47",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado sem o texto-base; começa em 'Infere-se da leitura desse texto...'.",
+        "como_deveria_ser": "Incluir antes da pergunta o texto-base da imagem (trecho de Caio Prado Júnior, Evolução política do Brasil, iniciado em 'Não era e não podia o pequeno reino lusitano ser uma potência colonizadora à feição da antiga Grécia' e terminado em '...insaciáveis companheiros de D. João I.'), com a indicação 'Texto para as questões de 47 a 49' e a referência bibliográfica."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2015_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2014_1fase-043",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-28",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Expansão marítima e colonização",
+        "como_deveria_ser": "Iluminismo e Revolução Francesa"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-68",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado traz apenas a pergunta ('A partir das informações contidas no esquema, é correto afirmar...'), sem o parágrafo introdutório do texto que a imagem apresenta antes do esquema.",
+        "como_deveria_ser": "Incluir antes da pergunta o parágrafo: 'A energia liberada pelo Sol é fundamental para a manutenção da vida no planeta Terra. Grande parte da energia produzida pelo Sol decorre do processo de fusão nuclear em que são formados átomos de hélio a partir de isótopos de hidrogênio, conforme representado no esquema:'"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014_2-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-26",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa com 'No texto, a sequência temporal...' sem o texto de referência (o 'Texto para as questões 26 e 27').",
+        "como_deveria_ser": "Incluir o texto de referência da imagem, 'Leia esta notícia científica: Há 1,5 milhão de anos, ancestrais do homem moderno deixaram pegadas...' até '...pertencerem ao \"Homo erectus\".' (Revista FAPESP, nº 157, março de 2009. Adaptado.), antes do enunciado."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013_2-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-01",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Com a expressão *fugia das entradas*, no primeiro parágrafo, o narrador sugere que o jogador Joca manifestava em campo:",
+        "como_deveria_ser": "Enunciado com o trecho do romance Água-Mãe (José Lins do Rego) que as questões 01 a 05 focalizam, antes da pergunta, incluindo o primeiro parágrafo citado."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-31",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado termina em 'será de aproximadamente', sem o quadro de dados.",
+        "como_deveria_ser": "Incluir o quadro 'Dados: 1 mol de elétrons corresponde a uma carga de 96.500 C; Sn: 119 g . mol-1.' ao final do enunciado."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2024_1fase-69",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Em uma matéria para um site, jornalistas fizeram interações com o ChatGPT a fim de analisar sua capacidade de criar textos provavelmente problemáticos.",
+        "como_deveria_ser": "Em uma matéria para um site, jornalistas fizeram interações com o ChatGPT a fim de analisar sua capacidade de criar textos possivelmente problemáticos."
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "Para tanto, pediram que o programa de inteligência artificial reescrevesse um e-mail",
+        "como_deveria_ser": "Para tanto, eles pediram que o programa de inteligência artificial reescrevesse um e-mail"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-79",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-19",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...with complete and distracted enjoyment",
+        "como_deveria_ser": "...with complete and undistracted enjoyment"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2024_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-41",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-40",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado começa em 'Considere as seguintes afirmações, relacionadas ao excerto de O cortiço:' sem o excerto do romance.",
+        "como_deveria_ser": "Incluir antes do enunciado o texto de O cortiço (Aluísio Azevedo) que aparece na imagem, com o título 'Texto para as questões de 40 a 46'."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-015",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-83",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-34",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Expansão marítima e colonização",
+        "como_deveria_ser": "Independência das Américas e do Brasil (o texto trata de nacionalidade e cidadania a partir do século XIX, não da expansão marítima e colonização dos séculos XV a XVIII)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-51",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-05",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-45",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-70",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) Na(CO_3)_2 e NaOH.",
+        "como_deveria_ser": "D) Na(HCO_3)_2 e NaOH."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2012_1fase-007",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-041",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-90",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-89",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-017",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Para um pedaço da fita de área A = 5,0 · 10^-4 m² mantido a uma distância constante d = 2,0 mm do rolo, ... (o enunciado começa diretamente na questão 17).",
+        "como_deveria_ser": "Deve vir precedido do texto de apoio da imagem (\"TEXTO PARA AS QUESTÕES 17 E 18\"): \"Quando um rolo de fita adesiva é desenrolado, ocorre uma transferência de cargas negativas da fita para o rolo, conforme ilustrado na figura abaixo. Quando o campo elétrico criado pela distribuição de cargas é maior que o campo elétrico de ruptura do meio, ocorre uma descarga elétrica. Foi demonstrado recentemente que essa descarga pode ser utilizada como uma fonte econômica de raios-X.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-032",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-46",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-01",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-39",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O Rio Grande é a sentinela do Brasil, que olha vigilante para o Rio da Plata.",
+        "como_deveria_ser": "O Rio Grande é a sentinela do Brasil, que olha vigilante para o Rio da Prata."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-44",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "polipropileno (un homopolímero):",
+        "como_deveria_ser": "polipropileno (um homopolímero):"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014-40",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-09",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-042",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-86",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "“Foi exclamagões admirativas”",
+        "como_deveria_ser": "“exclamações admirativas”"
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "“sem medo de cônones convencionais”",
+        "como_deveria_ser": "“sem medo de cânones convencionais”"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2019_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-52",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-81",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D: e $F = \\frac{2kQ^2}{d^2}$",
+        "como_deveria_ser": "D: e $F = -\\frac{2kQ^2}{d^2}$"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2010-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-29",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-06",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa em 'A leitura deste fragmento da peça A raposa e as uvas...' e não contém o fragmento; a imagem traz, antes da questão, a instrução 'As questões de números 06 a 10 tomam por base um fragmento...' e o diálogo de Melita, Cleia e Xantós (texto de Guilherme Figueiredo).",
+        "como_deveria_ser": "Incluir no enunciado a instrução das questões 06 a 10 e o fragmento da peça (a partir de 'Casa de Xantós, em Samos. Entradas à D., E., e F.') antes da frase final 'A leitura deste fragmento da peça A raposa e as uvas revela que a personagem Cleia'."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2010_2-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-62",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Quadro “Glossário” (Bug, Computar, Dar load, Lolking, Ranked, Server, Upar) omitido do enunciado",
+        "como_deveria_ser": "Incluir o quadro “Glossário” com as definições de Bug, Computar, Dar load, Lolking, Ranked, Server e Upar, como aparece na imagem"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2013_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-02",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A) ... estabelecendo classificação próprias que, em muitos casos, atribuíam aos animais papéis sociais distintos dos observados nas sociedades europeias.",
+        "como_deveria_ser": "A) ... estabelecendo classificações próprias que, em muitos casos, atribuíam aos animais papéis sociais distintos dos observados nas sociedades europeias."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2018_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-77",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-34",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Texto termina em 'Richard Hartshorne ... pursuit of scientific knowledge\". (Adaptado de Saul Bernard Cohen ...) Conforme o texto,' sem a nota de rodapé",
+        "como_deveria_ser": "Incluir a nota: '*Dogma: a belief or set of beliefs held by a group or organization, which others are expected to accept without argument.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-54",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2026_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-39",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) ... ao conferir status de arte à danças populares.",
+        "como_deveria_ser": "D) ... ao conferir status de arte a danças populares."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2020_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-60",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a E escritas como descrições textuais (ex.: 'Gráficos mostrando massa constante para o ferro e massa constante para o aço inoxidável.')",
+        "como_deveria_ser": "Alternativas A a E são gráficos (massa x tempo para ferro e aço inoxidável), como na imagem"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-79",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado termina na afirmação III (\"...terá 1/4 da altura do objeto.\") sem a frase de comando.",
+        "como_deveria_ser": "Após a afirmação III, deve constar a frase: \"Está correto apenas o conteúdo em\", antes das alternativas."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015-46",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "B) a união política e ideológica entre Estado, forças guerrilheiras e grupos paramilitares e a divisão do território colombiano em zonas de domínio militar dos agentes envolvidos.",
+        "como_deveria_ser": "B) a união política e ideológica entre Estado, forças guerrilheiras e grupos paramilitares e a divisão do território colombiano em zonas de domínio militar dos agentes envolvidos no conflito."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2010_2-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-10",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...triângulo equilátero.\\nNote que, neste caso... (contém a sequência literal barra-invertida + n)",
+        "como_deveria_ser": "...triângulo equilátero. Note que, neste caso... (sem a sequência literal \\n)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2026_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-51",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Poco tempo após o acidente",
+        "como_deveria_ser": "Pouco tempo após o acidente"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-58",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Elet um modelo um pouco mais plausível.",
+        "como_deveria_ser": "Eis um modelo um pouco mais plausível."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2022_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-90",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Título: 'Genetic Fortune-Selling'. Citação: 'Derek Brahney, Genetic Fortune-Selling. MIT Technology Review'.",
+        "como_deveria_ser": "Título: 'Genetic Fortune-Telling'. Citação: 'Derek Brahney, Genetic Fortune-Telling. MIT Technology Review, Março/Abril 2018'."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2010-27",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-39",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-43",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-santacasa2021-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-62",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) ... ampliação dos movimentos de libertação nacioal, como os de Angola e Moçambique.",
+        "como_deveria_ser": "D) ... ampliação dos movimentos de libertação nacional, como os de Angola e Moçambique."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "E) ... pelo regime democrático português, implantando em 1974, e o fim dos conflitos internos ...",
+        "como_deveria_ser": "E) ... pelo regime democrático português, implantado em 1974, e o fim dos conflitos internos ..."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-34",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-15",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Ecologia: cadeias, ciclos e pirâmides",
+        "como_deveria_ser": "Evolução biológica"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-03",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "'...até que collidissem.'",
+        "como_deveria_ser": "'...até que colidissem.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-033",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-32",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Reações orgânicas: oxidação, redução e esterificação",
+        "como_deveria_ser": "Eletroquímica: pilhas e oxirredução (ou Reações inorgânicas e balanceamento)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2012_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-85",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-35",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado começa em 'Quanto à relação do engenho colonial com as áreas externas a ele, o texto', sem o texto de apoio.",
+        "como_deveria_ser": "Incluir o trecho 'Leia o texto para responder às questões 34 e 35.' e o texto sobre o engenho colonial (A casa-grande ... 'área de circulação ... adquiria alhures [...]', com a citação 'Alice Canabrava apud Déa Ribeiro Fenelon (org.). 50 textos de história do Brasil, 1986.') antes da pergunta."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2017_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-23",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-05",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "usados no pescoço sobretudo por populações de origem africana",
+        "como_deveria_ser": "usados ao pescoço sobretudo por populações de origem africana"
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "termina em \"...quando diversos mandingueiros foram presos pela Inquisição.\" sem a pergunta final",
+        "como_deveria_ser": "deve terminar com a pergunta \"Com base no excerto, é correto afirmar que as bolsas de mandinga\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-84",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2014_1fase-006",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-71",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado traz apenas a pergunta ('O argumento central do texto ...'), sem o texto de referência.",
+        "como_deveria_ser": "Incluir o texto de referência 'Texto para as questões de 71 a 73' (Discover, May 31, 2013, Adaptado), que começa com 'To live the longest and healthiest life possible, get smarter.' e termina com '...your mortality rate would go down only by 1 to 2 percent.', antes do comando da questão."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013_2-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-39",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-39",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "... podem estar relacionado a uma doença.\\n\\nEm comparação ... (com \\n literais no texto)",
+        "como_deveria_ser": "... relacionado a uma doença.[quebra de parágrafo]Em comparação ... (sem caracteres \\n literais)"
+      },
+      {
+        "campo": "assunto",
+        "como_esta": "1ª e 2ª leis de Mendel",
+        "como_deveria_ser": "Biotecnologia e engenharia genética"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2024_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-82",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-71",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...while exposing the evis of animal testing.",
+        "como_deveria_ser": "...while exposing the evils of animal testing."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-44",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-05",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "'Estestes suspiros que eu solto'",
+        "como_deveria_ser": "'Estes suspiros que eu solto'"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2024_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-034",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-35",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2014_1fase-013",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-01",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa direto na pergunta; faltam a instrução inicial e a passagem da crônica 'O pai, hoje e amanhã', de Carlos Drummond de Andrade.",
+        "como_deveria_ser": "Incluir a instrução ('As questões de números 01 a 05 tomam por base uma passagem da crônica O pai, hoje e amanhã, de Carlos Drummond de Andrade (1902-1987).') e o texto integral da passagem antes da pergunta."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-005",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2011_1fase-008",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-41",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-015",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unifesp2024-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-71",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-45",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Segunda Guerra e Guerra Fria",
+        "como_deveria_ser": "Revolução Russa e entreguerras"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2011_1fase-11",
+    "ok": true
+  }
+]

@@ -1,0 +1,586 @@
+[
+  {
+    "id": "obj-unesp2014_2-62",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Valor de referência da contagem de plaquetas: 150 000 a 449 000/mm³.",
+        "como_deveria_ser": "150 000 a 450 000/mm³, como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2018_1fase-36",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Em 14 de maio de 2017 o Metrô de São Paulo trocou 240 metros de trilhos",
+        "como_deveria_ser": "Em 12 de maio de 2017 o Metrô de São Paulo trocou 240 metros de trilhos"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2017_1fase-38",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Existem atualmente, na região que mais produz energia eólica no Brasil, 309 usinas em operação",
+        "como_deveria_ser": "Existem atualmente, na região que mais produz energia eólica no Brasil, 306 usinas em operação"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2026_1fase-69",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "(Adaptado de BACH, K. et al. ChemRxiv, DOI: 10.26434/chemrxiv-2024-xb06z-v2. Acesso em 11/10/2025.)",
+        "como_deveria_ser": "(Adaptado de BACH, K. et al. ChemRxiv, DOI: 10.26434/chemrxiv-2024-xb06z-v2. Acesso em 09/10/2025.)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2010_1fase-71",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Suponha ... Um automóvel ... consome 37 litros deste combustível para percorrer 258 km.",
+        "como_deveria_ser": "Um automóvel ... consome 37 litros deste combustível para percorrer 259 km."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2024_1fase-45",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Já as fêmeas operárias (não reprodutivas) são indivíduos formados pela fusão entre um óvulo com genoma característico da linhagem 6 e um espermatozoide com genoma característico da linhagem 2.",
+        "como_deveria_ser": "Já as fêmeas operárias (não reprodutivas) são indivíduos formados pela fusão entre um óvulo com genoma característico da linhagem 1 e um espermatozoide com genoma característico da linhagem 2."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2011_1fase-014",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Suponha que os pneus de um carro têm o código 198/60R15.",
+        "como_deveria_ser": "Suponha que os pneus de um carro têm o código 195/60R15."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2012-76",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Tabela: pizza de mussarela | 963",
+        "como_deveria_ser": "Tabela: pizza de mussarela | 960"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2022_1fase-70",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "(Adaptado de Anderson Garbuglio Oliveira e outros. Química Nova, São Paulo, v. 36, 2013, p. 317-319.)",
+        "como_deveria_ser": "(Adaptado de Anderson Garbuglio Oliveira e outros. Química Nova, São Paulo, v. 36, 2013, p. 314-319.)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2010_2-83",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Paulo quer comprar um sorvete com 6 bolas em uma sorveteria que possui três sabores de sorvete",
+        "como_deveria_ser": "Paulo quer comprar um sorvete com 4 bolas em uma sorveteria que possui três sabores de sorvete"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2025_1fase-70",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "b_{n+4} = b_n + a_n",
+        "como_deveria_ser": "b_{n+1} = b_n + a_n"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2019_1fase-68",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Matriz A com terceira linha '2 b 4' (elemento a33 = 4).",
+        "como_deveria_ser": "Matriz A com terceira linha '2 b 2' (elemento a33 = 2), como na imagem e na resolução."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-22",
+    "controle": "plantado",
+    "campo_plantado": "enunciado",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Até o momento, só foi possível sintetizar poucos átomos de fleróvio na forma dos isótopos 289 e 289, pela fusão dos elementos plutônio e cálcio em um acelerador de partículas.",
+        "como_deveria_ser": "Até o momento, só foi possível sintetizar poucos átomos de fleróvio na forma dos isótopos 288 e 289, pela fusão dos elementos plutônio e cálcio em um acelerador de partículas."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013_2-89",
+    "controle": "plantado",
+    "campo_plantado": "alternativa C",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-31",
+    "controle": "plantado",
+    "campo_plantado": "alternativa A",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A) A 22°C, 1 mL de ácido etanoico tem massa maior do que 1 mL de ácido n-pentanoico.",
+        "como_deveria_ser": "A) A 20°C, 1 mL de ácido etanoico tem massa maior do que 1 mL de ácido n-pentanoico."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2012_1fase-024",
+    "controle": "plantado",
+    "campo_plantado": "alternativa B",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "B) 4/3.",
+        "como_deveria_ser": "B) 2/3."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-36",
+    "controle": "plantado",
+    "campo_plantado": "alternativa A",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A) 4, 6 e 4.",
+        "como_deveria_ser": "A) 4, 4 e 4."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2018_1fase-38",
+    "controle": "plantado",
+    "campo_plantado": "alternativa A",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "a) 21 monômeros por molécula.",
+        "como_deveria_ser": "a) 19 monômeros por molécula."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-01",
+    "controle": "plantado",
+    "campo_plantado": "alternativa C",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "C) Cerca de 905 mil pessoas da região Norte do Brasil podem desenvolver anemia hemolítica devido ao tratamento com cloroquina, sendo a maioria do sexo masculino.",
+        "como_deveria_ser": "C) Cerca de 900 mil pessoas da região Norte do Brasil podem desenvolver anemia hemolítica devido ao tratamento com cloroquina, sendo a maioria do sexo masculino."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2015_1fase-52",
+    "controle": "plantado",
+    "campo_plantado": "alternativa D",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) 278 milhões de litros de refrigerante.",
+        "como_deveria_ser": "D) 273 milhões de litros de refrigerante."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-85",
+    "controle": "plantado",
+    "campo_plantado": "alternativa D",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) 17 pontos.",
+        "como_deveria_ser": "D) 15 pontos."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2022_1fase-62",
+    "controle": "plantado",
+    "campo_plantado": "alternativa A",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A: \\theta pode ter qualquer valor maior que 103^\\circ\\text{C}.",
+        "como_deveria_ser": "A: \\theta pode ter qualquer valor maior que 100^\\circ\\text{C}."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-75",
+    "controle": "plantado",
+    "campo_plantado": "alternativa D",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) 7 e 3, apenas.",
+        "como_deveria_ser": "D) 2 e 3, apenas."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-22",
+    "controle": "plantado",
+    "campo_plantado": "alternativa E",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "E: tem exatamente 7 pontos, sendo dois no primeiro quadrante e dois no segundo quadrante.",
+        "como_deveria_ser": "E: tem exatamente 4 pontos, sendo dois no primeiro quadrante e dois no segundo quadrante."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-36",
+    "controle": "plantado",
+    "campo_plantado": "alternativa A",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A, ocorrem falta do substrato 4 e acúmulo do substrato 2.",
+        "como_deveria_ser": "A, ocorrem falta do substrato 1 e acúmulo do substrato 2."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2012_1fase-80",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Um móbile pendurado no teto tem três elefeanzinhos presos um ao outro por fios",
+        "como_deveria_ser": "Um móbile pendurado no teto tem três elefantezinhos presos um ao outro por fios"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-13",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado não traz o quadro 'Note e adote'.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote: Fórmula do etanol: C2H5OH; Massas molares: C(12 g/mol), H(1 g/mol), O(16 g/mol)'."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-09",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "d) passa de completamente intracelular a completamente extracelular, a partir dos nematedmintos.",
+        "como_deveria_ser": "d) passa de completamente intracelular a completamente extracelular, a partir dos nematelmintos."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-12",
+    "controle": "erro_real",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-25",
+    "controle": "erro_real",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-35",
+    "controle": "erro_real",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-40",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "E: I: saturadas | II: ácido maleico | III: diminui | IV: iguais | V: dissolvido | VI: líquido",
+        "como_deveria_ser": "E: I: saturadas | II: ácido maleico | III: diminui | IV: iguais | V: sólido | VI: líquido"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2019_1fase-41",
+    "controle": "erro_real",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-88",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "B: H2N-CH2-CO-NH-CH2-CO-H",
+        "como_deveria_ser": "Estrutura da imagem: H2N-CO-CH2-C(=NH)-CHO"
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "C: H2N-CH2-CH2-CH2-OH",
+        "como_deveria_ser": "Estrutura da imagem: H2N-CO-CH2-CH2-OH (com carbonila C=O)"
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "E: H2N-CH2-CH(NH2)-COOH",
+        "como_deveria_ser": "Estrutura da imagem: H2N-CO-CH2-CH(NH2)-COOH (com carbonila C=O)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-14",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) Estrutura com um C ligado a 3 H, um N ligado a 2 H, com carga neutra e ligações simples.",
+        "como_deveria_ser": "Estrutura com um C ligado a 3 H, um N ligado a 3 H, com carga neutra e ligações simples (conforme a estrutura da alternativa d da imagem)."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-29",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...atirava a culpa à suçuaranat\".(...)",
+        "como_deveria_ser": "...atirava a culpa à suçuarana”.(...)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-67",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado sem o quadro \"Note e adote\".",
+        "como_deveria_ser": "Enunciado com o quadro \"Note e adote: A relação entre a resistência R de um dispositivo, a corrente I que o percorre e a diferença de potencial elétrico V entre seus terminais é V = RI.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2024_1fase-33",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado não traz o quadro 'Note e adote'.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote: Considere que os outros custos de produção permaneceram inalterados.'."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2025_1fase-62",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado termina em 'a energia mecânica perdida durante a descida inicial é, aproximadamente,' sem o quadro 'Note e adote'.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote: Aceleração da gravidade: g = 10 m/s²'."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2025_1fase-69",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a E com o texto 'Gráfico da alternativa A' ... 'Gráfico da alternativa E' no lugar dos gráficos",
+        "como_deveria_ser": "Alternativas A a E devem ser os respectivos gráficos da função f(x) = |x^2 + 5x - 6| - 5x + 6 (figuras), e não textos descritivos"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2010-63",
+    "controle": "erro_real",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-71",
+    "controle": "erro_real",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-70",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O processo de recobrimento das fatias de silício é conhecido como",
+        "como_deveria_ser": "Incluir o texto-base da questão, que na imagem começa com \"Instrução: Leia o texto para responder às questões números 70 e 71.\" e continua \"O silício metalúrgico, purificado até atingir 99,99% de pureza, é conhecido como silício eletrônico. ... As fatias de silício são colocadas numa solução de sulfato de cobre. Nesse processo, íons de cobre deslocam-se para a superfície da fatia (cátodo), aumentando a sua condutividade elétrica.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2012_1fase-013",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa em 'A força gravitacional entre dois corpos...' e omite o texto introdutório da questão, que traz os dados das órbitas usados na resolução.",
+        "como_deveria_ser": "Incluir antes do enunciado o trecho 'Em setembro de 2010, Júpiter atingiu a menor distância da Terra em muitos anos. ... o raio da órbita terrestre (RT) mede 1,5 × 10^11 m e que o raio da órbita de Júpiter (RJ) equivale a 7,5 × 10^11 m.' (as figuras ficam à parte)."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2015_1fase-83",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A, B, C e D são textos descritivos: \"Gráfico da alternativa A\", \"Gráfico da alternativa B\", etc.",
+        "como_deveria_ser": "Os gráficos de cada alternativa, como mostrados na imagem (figuras a), b), c) e d))."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2018_1fase-82",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a D descritas em texto (ex.: 'Gráfico A com curvas de 0 a 2 e de 2 a 3.'), no lugar dos quatro gráficos que são as alternativas na imagem.",
+        "como_deveria_ser": "Alternativas A, B, C e D como os quatro gráficos da imagem (a), b), c) e d))."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "C: 'Gráfico C com picos pontiagudos em x = 1 e zeros em x = 0, x = 2 e x = 3.'",
+        "como_deveria_ser": "Gráfico C com pico pontiagudo em x = 1, zero em x = 0 e x = 2, e terminando em y = 1 em x = 3 (f(3)^2 = 1), como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2019_1fase-23",
+    "controle": "erro_real",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-23",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A: 'Gráfico da alternativa A'; B: 'Gráfico da alternativa B'; C: 'Gráfico da alternativa C'; D: 'Gráfico da alternativa D'",
+        "como_deveria_ser": "Os quatro gráficos (figuras) das alternativas A a D, conforme a imagem"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2021_1fase-46",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado termina em 'na condição de remoção máxima de sulfeto de hidrogênio relatada no estudo,' sem o quadro de massas molares.",
+        "como_deveria_ser": "Deveria constar, após a equação, o quadro 'Massas molares (g mol-1): Fe = 56, H = 1, O = 16 e S = 32.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2026_1fase-49",
+    "controle": "erro_real",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Al final do dia, cada criança retira um brinquedo da Caixa Divertida sem olhar, e o leva para brincar em casa.",
+        "como_deveria_ser": "Ao final do dia, cada criança retira um brinquedo da Caixa Divertida sem olhar, e o leva para brincar em casa."
+      }
+    ]
+  }
+]
