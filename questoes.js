@@ -255,8 +255,12 @@ Object.assign(ACOES, {
         prev: r.prev ?? e.prev ?? '', dep: r.dep ?? e.dep ?? 0, num: r.num || '', res_ia: r.res_ia || '', duvidas: r.duvidas || [], tipo: r.tipo || e.tipo || '', discIa: r.discIa || null }; }), { revisao: true });
   },
   qResp: el => {
-    const s = ui.qs, q = s.itens[s.i]; if (q.resp != null) return;
-    fecharItem(s); q.resp = el.dataset.v; q.certo = q.resp === q.gab; registrarHist(q); contabilizarQuestaoRespondida(s, q); render();
+    const q = ui.qs.itens[ui.qs.i]; if (q.resp != null) return;
+    q.esc = q.esc === el.dataset.v ? null : el.dataset.v; render();   // só marca; vale ao confirmar
+  },
+  qConfirmar: () => {
+    const s = ui.qs, q = s.itens[s.i]; if (q.resp != null || !q.esc) return;
+    fecharItem(s); q.resp = q.esc; q.esc = null; q.certo = q.resp === q.gab; registrarHist(q); contabilizarQuestaoRespondida(s, q); render();
   },
   qContinuarLista: el => {
     const k = el.dataset.k, s = S.listasAbertas?.[k];
