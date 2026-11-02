@@ -8,3 +8,13 @@ obj-mackenzie2006_5dia-18
 obj-mackenzie2006_5dia-19
 obj-mackenzie2006_5dia-20
 obj-mackenzie2006_5dia-21
+obj-pucsp2006-66
+obj-pucsp2006-67
+obj-pucsp2006-68
+obj-pucsp2006-69
+obj-pucsp2006-70
+obj-pucsp2006-71
+obj-pucsp2006-72
+obj-pucsp2006-73
+obj-pucsp2006-74
+obj-pucsp2006-75
