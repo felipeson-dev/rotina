@@ -1,0 +1,314 @@
+[
+  {
+    "id": "obj-fuvest2015_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-88",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-77",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-19",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Fez tão bem que virou internacional (...)",
+        "como_deveria_ser": "Fez tão bem que virou exemplo internacional (...)"
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "quando ficou dois anos fora do quilombola que leva seu sobrenome",
+        "como_deveria_ser": "quando ficou dois anos fora do quilombo que leva seu sobrenome"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2014_1fase-042",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-025",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-14",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado (Texto 2, 2º verso)",
+        "como_esta": "Os átomos e os moléculas são a realeza,",
+        "como_deveria_ser": "Os átomos e as moléculas são a realeza,"
+      },
+      {
+        "campo": "enunciado (faltando o quadro de dados)",
+        "como_esta": "O texto não contém o bloco 'Dados de Massa Molar (g/mol)'.",
+        "como_deveria_ser": "Incluir após as equações: 'Dados de Massa Molar (g/mol): C57H104O6 = 884; C2H5OH = 46; C20H38O2 = 310; C3H8O3 = 92; C12H22O11 = 342; H2O = 18; CO2 = 44.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2026_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-58",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativa A",
+        "como_esta": "Gráfico da alternativa a",
+        "como_deveria_ser": "Alternativa é uma figura (gráfico) e não deve ser substituída por legenda de texto; o gráfico A começa em ~16, máximo ~24 em t~2,7 e mínimo ~15,5 em t~5,9"
+      },
+      {
+        "campo": "alternativa B",
+        "como_esta": "Gráfico da alternativa b",
+        "como_deveria_ser": "Alternativa é uma figura (gráfico) e não deve ser substituída por legenda de texto; o gráfico B começa em ~16, cai até ~3 e termina em ~5"
+      },
+      {
+        "campo": "alternativa C",
+        "como_esta": "Gráfico da alternativa c",
+        "como_deveria_ser": "Alternativa é uma figura (gráfico) e não deve ser substituída por legenda de texto; o gráfico C começa em ~20, mínimo ~11, máximo ~20 e termina ~12"
+      },
+      {
+        "campo": "alternativa D",
+        "como_esta": "Gráfico da alternativa d",
+        "como_deveria_ser": "Alternativa é uma figura (gráfico) e não deve ser substituída por legenda de texto; o gráfico D começa em ~20, mínimo ~9, máximo ~15 e termina ~3"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-78",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-64",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-44",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-83",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-16",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Trecho '($\\text{cm}^2$)' gravado com barra simples no JSON: '\\t' é lido como tabulação, resultando em '($' + TAB + 'ext{cm}^2$)'.",
+        "como_deveria_ser": "'($\\text{cm}^2$)' com barra dupla no JSON (na imagem: 'área total (cm²)')."
+      },
+      {
+        "campo": "alternativa A",
+        "como_esta": "'...descarregarem o $\\text{O}_2$.' gravado com barra simples: '\\t' é lido como tabulação, resultando em 'o $' + TAB + 'ext{O}_2$.'.",
+        "como_deveria_ser": "'...descarregarem o $\\text{O}_2$.' com barra dupla no JSON (na imagem: 'descarregarem o O2')."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2010-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015_2-80",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-79",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-17",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas A a E",
+        "como_esta": "Alternativas escritas como descrições em texto (ex.: A 'A lâmina bimetálica reta e horizontal, mas um pouco mais longa.'; C 'A lâmina curvada para cima, com a parte superior de bronze mais longa.'; D 'A lâmina curvada para baixo, com a parte superior de bronze e a inferior de ferro.'; E 'A lâmina muito curvada para cima.')",
+        "como_deveria_ser": "Alternativas são figuras (a, b, c, d, e) da lâmina; o texto deveria apresentar as letras A a E associadas às figuras, sem descrições textuais no lugar delas"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2013_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-004",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-39",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Texto contém a sequência literal de barra invertida seguida de n ('\\n' como caracteres visíveis) entre 'sínteses de moléculas.' e 'Após determinada refeição'",
+        "como_deveria_ser": "Quebra de parágrafo entre 'sínteses de moléculas.' e 'Após determinada refeição', sem o caractere literal '\\n' no texto"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2018_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-20",
+    "ok": true
+  }
+]
