@@ -2903,5 +2903,1541 @@
   {
     "id": "obj-fuvest2018_1fase-85",
     "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-88",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...whose rounded frame perches atop hundreds of plinth across the Commonwealth...",
+        "como_deveria_ser": "...whose rounded frame perches atop hundreds of plinths across the Commonwealth..."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2019_1fase-01",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...Escavações revelam hábitos de antigos povos que ocuparam o Sul do país. **Folha de S.Paulo**. 20/03/2016. Adaptado.",
+        "como_deveria_ser": "...Escavações revelam hábitos de antigos povos que ocuparam o Sul do país. Folha de S.Paulo. 20/03/2016. Adaptado. (nome do jornal em negrito, sem asteriscos)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2019_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-16",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-33",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Heranças: ligada ao sexo, alelos múltiplos, ABO e Rh",
+        "como_deveria_ser": "1ª e 2ª leis de Mendel (a questão trata de herança autossômica recessiva em heredograma, sem herança ligada ao sexo, alelos múltiplos ou sistema ABO/Rh)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2019_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-39",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado sem o quadro 'Note e adote' (estruturas de lisina, glicina e fenilalanina)",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote' com as estruturas da lisina, da glicina e da fenilalanina, como na imagem"
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A-D: 'fórmula estrutural (a)', '(b)', '(c)' e '(d)' no lugar das fórmulas estruturais",
+        "como_deveria_ser": "Cada alternativa deve trazer a fórmula estrutural correspondente da imagem (a, b, c e d), e não um marcador de texto"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2019_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-49",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "'Gráfico da alternativa A' a 'Gráfico da alternativa E' no lugar dos gráficos",
+        "como_deveria_ser": "Os cinco gráficos (a) a (e) da imagem, com faturamento quinzenal (ordenada) por tempo em meses (abscissa)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2019_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-64",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...se o que há de mais profundo em nós é no fin de contas a opinião dos outros...",
+        "como_deveria_ser": "...se o que há de mais profundo em nós é no fim de contas a opinião dos outros..."
+      },
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Realismo e Naturalismo (Brás Cubas) e Pré-Modernismo e Modernismo (1ª e 2ª fase) (Vidas Secas)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2019_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-79",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-83",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-01",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado termina em \"A adição de café quente inicia o processo descrito, pois\" e não traz o quadro \"Note e adote\" da imagem.",
+        "como_deveria_ser": "Incluir o quadro \"Note e adote\": \"Temperatura de fusão da sacarose à pressão ambiente = 186 °C; Solubilidade da sacarose a 20°C = 1,97 kg/L de água.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-10",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a E sao os placeholders '[Figura: Alternativa a]' a '[Figura: Alternativa e]', no lugar das estruturas quimicas que sao figuras na imagem.",
+        "como_deveria_ser": "Alternativas A a E devem ser as estruturas quimicas da imagem (A: cetona mantida com hidrazona no outro carbono; B: CH2=C(CH3)-CH2-C(=N-NH-Ar)-CH2-CH3, com Ar = 2,4-dinitrofenila, a correta; C, D e E: estruturas com nitro ligado ao nitrogenio ou cadeias diferentes, conforme a figura)."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-15",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativa E: '$25,1\\text{ m}$.' seguida de 'Note e adote: $\\pi \\cong 3,14$' dentro do texto da alternativa.",
+        "como_deveria_ser": "Alternativa E: '$25,1\\text{ m}$.' apenas. O quadro 'Note e adote: $\\pi \\cong 3,14$' deve estar no enunciado, apos as alternativas, como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-33",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa em \"O argumento de Benedito Nunes...\", sem os textos base da questão.",
+        "como_deveria_ser": "Incluir antes do enunciado o bloco \"TEXTOS PARA AS QUESTÕES 33 A 35\" com os três trechos: Benedito Nunes, \"Ética e leitura\" (\"Os textos literários são obras de discurso...\"); Graciliano Ramos, Angústia (\"O que eu preciso era ler um romance fantástico...\"); e Graciliano Ramos, Memórias do Cárcere (\"Romance desagradável, abafado, ambiente sujo...\")."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-41",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"Nem mesmo comparando com outros robinhos: tanto os que espalham...\"",
+        "como_deveria_ser": "\"Nem mesmo comparando com outros robozinhos: tanto os que espalham...\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-44",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa em \"No excerto, o autor recorre à intertextualidade...\", sem o trecho de Machado de Assis (Quincas Borba) ao qual a questão se refere.",
+        "como_deveria_ser": "Incluir o excerto de Quincas Borba, de Machado de Assis, antes do enunciado, desde \"E Sofia? interroga impaciente a leitora, tal qual Orgon: Et Tartufe?...\" até \"...'estrelas de primeira grandeza'.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-64",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Na alvorada do sétimo dia eu soltei uma pomba e deixi que se fosse.",
+        "como_deveria_ser": "Na alvorada do sétimo dia eu soltei uma pomba e deixei que se fosse."
+      },
+      {
+        "campo": "assunto",
+        "como_esta": "Antiguidade: Grécia e Roma",
+        "como_deveria_ser": "Antiguidade Oriental e Clássica"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-67",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Revolução Industrial",
+        "como_deveria_ser": "Absolutismo e mercantilismo (o texto trata da política britânica entre os séculos XVII e XIX, não da Revolução Industrial)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-79",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Calorimetria e mudanças de fase",
+        "como_deveria_ser": "Termometria, dilatação e propagação de calor"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-83",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...alterações climáticas e as atividades humanas.\\nBRASIL, Ministério do Meio Ambiente. Disponível em http://www.mma.gov.br/.\\nDentre as medidas...",
+        "como_deveria_ser": "Quebra de linha real (sem a sequência literal \\n) entre o trecho, a fonte e 'Dentre as medidas...'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-84",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-88",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a E contêm a sequência literal \\n entre os itens I e II (ex.: 'posição dos EUA.\\nII – ...')",
+        "como_deveria_ser": "Quebra de linha real entre 'I – ...' e 'II – ...' em cada alternativa, como na imagem"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-16",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-20",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado sem o quadro \"Note e adote\" (OMC: Organização Mundial do comércio; PRONAF: Programa Nacional de Fortalecimento da Agricultura Familiar; SAFs: Sistemas Agroflorestais; UE: união Europeia).",
+        "como_deveria_ser": "Incluir ao final do enunciado o quadro \"Note e adote\" com: OMC: Organização Mundial do comércio; PRONAF: Programa Nacional de Fortalecimento da Agricultura Familiar; SAFs: Sistemas Agroflorestais; UE: união Europeia."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-21",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "C) \"... limitando-se dessedentação animal.\"",
+        "como_deveria_ser": "C) \"... limitando-se à dessedentação animal.\" (falta a crase/preposição \"à\" presente na imagem)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-29",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a E descritas em texto, por exemplo: \"A representação com cromossomos homólogos duplicados e cromátides irmãs idênticas (A, A, a, a e B, B, b, b) sem membrana nuclear.\"",
+        "como_deveria_ser": "Alternativas a) a e) são figuras (esquemas de células com membrana plasmática ou nuclear e cromossomos com alelos), e não descrições em texto."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-36",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"...mesmo numa interpretação liberal do Tratada de Tordesilhas...\"",
+        "como_deveria_ser": "\"...mesmo numa interpretação liberal do Tratado de Tordesilhas...\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-40",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Segunda Guerra e Guerra Fria",
+        "como_deveria_ser": "Revolução Russa e entreguerras"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-41",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-42",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativa B: \"Os índices elevados de óbito forem verificados entre os distritos que se concentravam que concentravam os contingente demográfico, independente do tipo de moradia e dos benefícios existentes.\"",
+        "como_deveria_ser": "Alternativa B: \"Os índices elevados de óbito foram verificados entre os distritos que se concentravam os contingentes demográficos, independente do tipo de moradia e dos benefícios existentes.\""
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativa D: \"... as condições sanitárias e residenciais no distritos da Se e da Liberdade ...\"",
+        "como_deveria_ser": "Alternativa D: \"... as condições sanitárias e residenciais nos distritos da Sé e da Liberdade ...\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-45",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativa B: \"Somente as afirmações I e III sąo corretas.\"",
+        "como_deveria_ser": "Alternativa B: \"Somente as afirmações I e III são corretas.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-48",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"uma minusina hidrelétrica\"",
+        "como_deveria_ser": "\"uma miniusina hidrelétrica\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-51",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a E: 'Esquema A', 'Esquema B', 'Esquema C', 'Esquema D', 'Esquema E'.",
+        "como_deveria_ser": "As alternativas são esquemas ópticos (figuras), e o texto deveria descrever cada esquema, por exemplo: lente côncava entre o objeto e o olho, com raios divergindo antes da incidência na córnea, em vez do rótulo genérico 'Esquema X'."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-66",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-80",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...sobre separação de misturas e transformação química e física, no trecho grifado no poema...",
+        "como_deveria_ser": "...sobre separação de misturas e transformações químicas e físicas, no trecho grifado no poema..."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-82",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...para entender o efeito anticorrossivo desses metais no titânio.",
+        "como_deveria_ser": "...para entender o efeito anticorrosivo desses metais no titânio."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "C) A escala de potencial anticorrossivo, segundo esse experimento, ...",
+        "como_deveria_ser": "C) A escala de potencial anticorrosivo, segundo esse experimento, ..."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-83",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-84",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...é correto afirmar que esse mel",
+        "como_deveria_ser": "Inserir o quadro 'Note e adote:' ao final do enunciado, com 'Massa molar (g/mol): HMF = 126' e 'Desconsidere qualquer possibilidade de contaminação do mel por fonte externa de HMF.'"
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "B) não pode ser usado como mel de mesa, mais pode ser usado para fins industriais, segundo a legislação brasileira.",
+        "como_deveria_ser": "B) não pode ser usado como mel de mesa, mas pode ser usado para fins industriais, segundo a legislação brasileira."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2021_1fase-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-90",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O texto contém a sequência literal \\n (barra invertida e n) antes de \"Recentemente\" e de \"Com base\", em vez de quebra de linha.",
+        "como_deveria_ser": "Quebra de linha real entre os parágrafos, como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-06",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"Tons mais claros indicam valores menores e tons maisescuros, valores maiores.\"",
+        "como_deveria_ser": "\"Tons mais claros indicam valores menores e tons mais escuros, valores maiores.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-31",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a E com o texto placeholder \"Representação alternativa a\" até \"Representação alternativa e\".",
+        "como_deveria_ser": "Alternativas são figuras com símbolos do sistema de barras (chinês científico); a alternativa A mostra a representação de 91625 (símbolos de barras em sequência, com traço, cruz/T e barras)."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-61",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a E descritas em texto (ex.: \"Paisagem mostrando relevo suave com vegetação de pastagem...\").",
+        "como_deveria_ser": "Alternativas a) a e) são fotografias da paisagem, no lugar das descrições textuais."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-62",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"pode-se atribuir o refluutamento do Ever Given\"",
+        "como_deveria_ser": "\"pode-se atribuir o reflutuamento do Ever Given\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-69",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas com o texto \"Alternativa a\", \"Alternativa b\", \"Alternativa c\", \"Alternativa d\" e \"Alternativa e\".",
+        "como_deveria_ser": "Alternativas a) a e) são as estruturas químicas dos componentes ativos (figuras), no lugar dos textos genéricos."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-72",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Sequências literais \"\\n\" e \"\\Considerando\" no texto (ex.: \"...superfície metálica.\\Considerando\" e \"Note e adote:\\nConstante de Planck\").",
+        "como_deveria_ser": "Quebras de linha reais, sem a barra invertida literal, como na imagem (\"...superfície metálica.\" seguido de \"Considerando...\")."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-75",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Outro",
+        "como_deveria_ser": "Física moderna (radioatividade, na lista de Física)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2022_1fase-79",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-83",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-84",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-11",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "C) Ácido 4-metilbenzoico + etanol",
+        "como_deveria_ser": "C) 1,4-dimetilbenzeno (p-xileno) + etanol, como mostra a figura da alternativa C (anel com dois grupos CH3 e sem grupo carboxila)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-16",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-30",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-39",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-41",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-43",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Foi ela nos permitiu a intuição de que carecemos, sob pena de morte, de procurar uma arte de expressão nacional",
+        "como_deveria_ser": "Foi ela que nos permitiu a intuição de que carecemos, sob pena de morte, de procurar uma arte de expressão nacional"
+      },
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-65",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) Erupcões vulcânicas, abalos sísmicos e depósitos minerais.",
+        "como_deveria_ser": "Erupções vulcânicas, abalos sísmicos e depósitos minerais."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-82",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "As alternativas A a E estão descritas em texto (ex.: A 'Pirâmide etária com base estreita e topo estreito (tipo urna ou estreita na base).'; D 'Pirâmide etária com base intermediária.'; E 'Pirâmide etária com estrangulamento na base e alargamento no corpo.'), no lugar das pirâmides figuradas na imagem.",
+        "como_deveria_ser": "As alternativas são as cinco pirâmides etárias da imagem, identificadas como (A) a (E), sem descrição textual substituindo as figuras."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-83",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-84",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-12",
+    "ok": true
   }
 ]
