@@ -53,8 +53,9 @@ function qQuestaoSimulado() {
   return `<section class="cartao sim-barra"><div class="entre"><strong>${esc(s.simNome)}</strong><span class="fraco"><span id="sim-relogio">${fmtMin(Math.round((Date.now() - s.t0) / 60000))}</span> · ${resp} de ${s.itens.length} respondidas</span></div>
       <div class="linha"><button class="botao destaque" data-acao="simEntregar">Entregar prova</button></div></section>${mapa}
     <section class="cartao questao"><div class="entre"><span class="tag" style="${cor(q.materia)}">${esc(q.materia)}</span><span class="fraco">${q.num ? 'nº ' + esc(q.num) : ''}</span></div>
-      ${q.modo === 'objetivo' ? recorteObj(q, false) : `<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`}
-      <div class="alts ${q.modo === 'objetivo' ? 'so-letras' : ''}">${q.alts.map(a => `<button class="alt ${q.resp === a.l ? 'sel' : ''}" data-acao="qResp" data-v="${a.l}"><b>${a.l}</b><span>${mdLite(a.t)}</span></button>`).join('')}</div>
+      ${trocaImagemHtml(q)}
+      ${verImagem(q) ? recorteObj(q, false) : `<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`}
+      <div class="alts ${verImagem(q) ? 'so-letras' : ''}">${q.alts.map(a => `<button class="alt ${q.resp === a.l ? 'sel' : ''}" data-acao="qResp" data-v="${a.l}"><b>${a.l}</b><span>${mdLite(a.t)}</span></button>`).join('')}</div>
       <div class="q-nav"><button class="botao contorno" data-acao="qAnt" ${s.i ? '' : 'disabled'}>‹ Anterior</button><button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar rascunho' : 'Rascunho'}</button>
         <button class="botao claro" data-acao="qProxSim" ${s.i + 1 < s.itens.length ? '' : 'disabled'}>Próxima ›</button></div>
       ${ui.qRasc ? quadroHtml('qtmp' + s.i, 420, 'quadriculado') : ''}</section>`;

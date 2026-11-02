@@ -51,7 +51,9 @@ def principal():
                 if r.get('img') in TOPOS: img['topo'] = TOPOS[r['img']]; img['v'] = 1
                 saida.append(img); continue
             q = {k: v for k, v in t.items() if k != 'dep'}
-            q['id'] = r['id']; q['v'] = 2
+            q['id'] = r['id']; q['v'] = 3   # v=3: o texto agora leva também a imagem recortada, para ela poder alternar no app
+            for k in ('w', 'h', 'corte'): q[k] = r.get(k) or 0
+            if r.get('img') in TOPOS: q['topo'] = TOPOS[r['img']]
             q['prev'] = origem(r['prev']) if r.get('prev') in por_id else ''
             # depende do texto de outra questão: com a anterior no pacote, o app mostra um botão para ler o texto dela
             q['dep'] = 1 if t.get('dep') and q['prev'] else 0

@@ -371,19 +371,25 @@ function qQuestao() {
   return `${mapaSessao(s)}<section class="cartao questao"><div class="entre"><span class="linha" style="gap:6px"><span class="tag" style="${cor(q.materia)}">${esc(q.materia)}</span>${q.assunto ? `<span class="selo">${esc(q.assunto)}</span>` : ''}</span><span class="fraco">${esc(q.fonte)}${q.num ? ' · nº ' + esc(q.num) : ''}</span></div>
     ${histHtml(q.id)}
     ${q.fig ? '<p class="fraco" style="margin:0;font-size:13px">⚠ Pode depender de um texto ou figura de outra questão. Se não der para resolver, vá para a próxima.</p>' : ''}
-    ${q.modo === 'objetivo' ? `${q.prev ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ver'} o texto/figura da questão anterior (às vezes o texto-base está nela)</button>${ui.qPrevImg ? prevHtml(ui.qPrevImg) : ''}` : ''}
+    ${trocaImagemHtml(q)}
+    ${verImagem(q) ? `${q.prev ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ver'} o texto/figura da questão anterior (às vezes o texto-base está nela)</button>${ui.qPrevImg ? prevHtml(ui.qPrevImg) : ''}` : ''}
       ${riscavel(recorteObj(q, false))}` : `${q.prev && q.dep ? `<button class="link" data-acao="qPrev" style="align-self:flex-start">${ui.qPrevImg ? 'Esconder' : 'Ler'} o texto da questão anterior (o texto-base desta questão está nela)</button>${ui.qPrevImg ? prevHtml(ui.qPrevImg) : ''}` : ''}${riscavel(`<div class="enunciado">${mdLite(q.enunciado)}${(q.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`)}${q.img ? `<a class="link" href="${esc(q.img)}" target="_blank" rel="noopener" style="align-self:flex-start;font-size:13px">ver a imagem original da prova</a>` : ''}`}
-    <div class="alts ${q.modo === 'objetivo' ? 'so-letras' : ''}">${q.alts.map(a => { const sel = q.resp === a.l, certa = resp && a.l === q.gab, errada = resp && sel && a.l !== q.gab;
+    <div class="alts ${verImagem(q) ? 'so-letras' : ''}">${q.alts.map(a => { const sel = q.resp === a.l, certa = resp && a.l === q.gab, errada = resp && sel && a.l !== q.gab;
       const risc = !resp && (q.risc || []).includes(a.l);   // alternativa descartada por ela enquanto pensa
       return `<div class="alt-linha ${risc ? 'riscada' : ''}"><button class="alt ${sel ? 'sel' : ''} ${certa ? 'certa' : ''} ${errada ? 'errada' : ''}" data-acao="qResp" data-v="${a.l}" ${resp ? 'disabled' : ''}><b>${a.l}</b><span>${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</span></button>
         ${resp ? '' : `<button class="risca" data-acao="qRiscarAlt" data-v="${a.l}" aria-label="${risc ? 'Desriscar' : 'Riscar'} a ${a.l}" title="${risc ? 'Desriscar' : 'Riscar (descartar)'}">${risc ? '↺' : '✕'}</button>`}</div>`; }).join('')}</div>
-    ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>
+    ${resp ? `<div class="gabarito ${q.certo ? 'ok' : 'errou'}"><strong>${q.certo ? 'Acertou!' : `Errou. A certa era ${q.gab}.`}</strong>${q.coment && !verImagem(q) ? `<div class="resolucao">${mdLite(q.coment)}</div>` : ''}</div>
       ${motivoHtml(q)}
-      ${q.modo === 'objetivo' && q.h > q.corte ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
+      ${verImagem(q) && q.h > q.corte ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
     ${nav}
     ${ui.qRasc ? quadroHtml('qtmp' + s.i, 520, 'quadriculado') : ''}
     ${ajudaIaHtml(q, resp)}</section>`;
 }
+
+// questão em texto que também tem a imagem recortada: ela escolhe como ver (fica valendo para as próximas)
+const temImagemETexto = q => q.modo !== 'objetivo' && q.img && q.w > 0 && q.corte > 0;
+const verImagem = q => q.modo === 'objetivo' || (S.qVerImg && temImagemETexto(q));
+const trocaImagemHtml = q => temImagemETexto(q) ? `<button class="link" data-acao="qTrocaImagem" style="align-self:flex-start;font-size:14px">${S.qVerImg ? 'Ver em texto' : 'Ver a imagem da prova'}</button>` : '';
 
 /** Mostra só a parte da imagem do Objetivo que interessa: o enunciado (de cima até o corte) ou a resolução (do corte para baixo). */
 function recorteObj(q, resolucao) {
@@ -443,10 +449,11 @@ function normalizarImportada(q, i) {
   if (alts.length < 2 || !/^[A-E]$/.test(gab)) return null;
   return { id: q.id || `imp-${Date.now().toString(36)}-${i}`, banca: String(q.banca || 'Importada'), tipo: 'real', ano: +q.ano || 0, area: q.area || '', materia: q.materia || '', assunto: limAss(q.assunto), dif: q.dif || q.dificuldade || '', fig: q.fig ? 1 : 0,
     enunciado: String(q.enunciado || q.pergunta), imagens: (q.imagens || []).filter(u => /^(https:|data:image\/)/.test(u)), alts, gab, coment: String(q.coment || q.comentario || ''), fonte: q.fonte || '',
-    img: /^https:/.test(q.img || '') ? q.img : '', num: q.num || '', fase: q.fase || '', prev: q.prev || '', dep: q.dep ? 1 : 0, v: +q.v || 0 };
+    img: /^https:/.test(q.img || '') ? q.img : '', w: +q.w || 0, h: +q.h || 0, corte: +q.corte || 0, topo: +q.topo || 0, num: q.num || '', fase: q.fase || '', prev: q.prev || '', dep: q.dep ? 1 : 0, v: +q.v || 0 };
 }
 
 Object.assign(ACOES, {
+  qTrocaImagem: () => { const y = window.scrollY; S.qVerImg = !S.qVerImg; salvar(); render(); window.scrollTo(0, y); },
   bancoSincronizar: () => sincronizarPacotesBanco(true),
   bancoEnem: () => baixarEnem(),
   bancoAjuda: () => abrirModal(`<div class="entre"><h2>Como importar questões</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
