@@ -945,5 +945,1963 @@
   {
     "id": "obj-fuvest2013_1fase-09",
     "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-15",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "As cinco alternativas são apenas textos do tipo 'Gráficos da alternativa a' até 'Gráficos da alternativa e'.",
+        "como_deveria_ser": "Cada alternativa deve mostrar, como figura, o par de gráficos de I em função de x e de I em função de y indicados na imagem (a, b, c, d e e)."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-16",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-20",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "No texto gravado, o trecho '$\\text{Mi } (660\\text{ Hz})$' e '$\\text{Lá } (220\\text{ Hz})$' está com uma barra invertida simples antes de 'text'; ao ser lido como JSON, '\\t' vira tabulação e o trecho fica corrompido ('Mi' sem o formato correto).",
+        "como_deveria_ser": "Trecho com a barra invertida escapada (duas barras), para que as notas apareçam como 'Mi (660 Hz)' e 'Lá (220 Hz)', como na imagem."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "As alternativas A a E contêm '\\text{ cm}' e '\\text{ m}' com barra invertida simples, que vira tabulação ao ser lido como JSON.",
+        "como_deveria_ser": "Unidades escritas corretamente ('6,6 cm', '2,2 cm', '22 cm', '5,4 cm', '12 cm', '37 cm', '50 cm', '1,5 m', '16 cm'), como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-23",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Cinemática: MU e MUV",
+        "como_deveria_ser": "Gravitação, ou outro assunto de Física da lista que trate de dimensões da Terra; a questão não envolve movimento, apenas geometria do arco (θ = Δs/R) e a incidência dos raios solares."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-33",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado sem o quadro de dados da imagem (\"Dados: √3 ≅ 1,73\" e a fórmula sen²(θ/2) = (1 − cos θ)/2).",
+        "como_deveria_ser": "Incluir o quadro \"Dados: √3 ≅ 1,73\" e a relação sen²(θ/2) = (1 − cos θ)/2 após o enunciado."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-34",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "\"8,5 milhões de $<TAB>ext{km}^2$\" (a sequência \\text foi lida com \\t, gerando tabulação).",
+        "como_deveria_ser": "\"8,5 milhões de km²\" (como na imagem)."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativa A: \"habitantes por $<TAB>ext{km}^2$.\" (\\text lido com \\t).",
+        "como_deveria_ser": "Alternativa A: \"habitantes por km².\""
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativa E: \"habitantes por $<TAB>ext{km}^2$.\" (\\text lido com \\t).",
+        "como_deveria_ser": "Alternativa E: \"habitantes por km².\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-39",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-68",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado traz somente a pergunta. Falta o texto de base da crônica 'Vivendo e...' (título e parágrafos), inclusive o último parágrafo com a lacuna 'É vivendo e ...........'.",
+        "como_deveria_ser": "Incluir antes da pergunta o cabeçalho 'Texto para as questões de 68 a 70.', o título 'Vivendo e...' e o texto integral da crônica de Luís Fernando Veríssimo (Comédias para se ler na escola), que termina com 'Na verdade, deve-se revisar aquela antiga frase. É vivendo e ........... .'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-70",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "II. \"Lembro o orgulha\" (L. 20) = Recordo-me do orgulho.",
+        "como_deveria_ser": "II. \"Lembro o orgulho\" (L. 20) = Recordo-me do orgulho."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-79",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-84",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-86",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "De acordo com o texto, a indústria publicitária (sem o texto de apoio)",
+        "como_deveria_ser": "Incluir o texto de apoio 'Texto para as questões de 86 a 88', que começa em 'Time was, advertising was a relatively simple undertaking' e termina em '...a medium in which the audience must be earned, not simply bought.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-89",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Segundo o texto, o livro Missing Out: In Praise of the Unlived Life sugere que (sem o texto de apoio)",
+        "como_deveria_ser": "Incluir o texto de apoio 'Texto para as questões 89 e 90', que começa em 'Missing Out: In Praise of the Unlived Life is Adam Phillips's 17th book' e termina em '...so that every time we feel a bit restless or bored or irritable, we eat, or we shop.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2013_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-10",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...de uma determinanete quantidade de gás carbônico...",
+        "como_deveria_ser": "...de uma determinada quantidade de gás carbônico..."
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "Como passar do tempo, esse gás se dispersaria...",
+        "como_deveria_ser": "Com o passar do tempo, esse gás se dispersaria..."
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "I. Moléculas de glicose sintetizadas pelso produtores.",
+        "como_deveria_ser": "I. Moléculas de glicose sintetizadas pelos produtores."
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "Texto com sequências literais \\n (barra e n) no lugar de quebras de linha, por exemplo após 'carbono.' e após 'seguintes moléculas:'.",
+        "como_deveria_ser": "Quebras de linha reais, como na imagem, sem a sequência literal \\n."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-25",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Fórmulas em LaTeX com \\text quebrado: a sequência \\t vira tabulação, então aparece '$<TAB>ext{O}_3$', '$<TAB>ext{Ne}$', '$<TAB>ext{He}$', '$<TAB>ext{N}_2$', '$<TAB>ext{Ar}$', '$<TAB>ext{H}_2$' e '22,4<TAB>ext{ L}$' (o mesmo ocorre no enunciado do recipiente de 22,4 L).",
+        "como_deveria_ser": "Fórmulas com \\text preservado, como '$\\text{O}_3$', '$\\text{Ne}$', '$\\text{He}$', '$\\text{N}_2$', '$\\text{Ar}$', '$\\text{H}_2$' e '$22,4\\text{ L}$', que exibem O3, Ne, He, N2, Ar, H2 e 22,4 L como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-47",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "As alternativas A a E são descrições em texto (ex.: A: 'I - Mata Atlântica; II - Mata de Araucárias; III - Cerrado; IV - Caatinga; V - Pantanal.'), no lugar dos conjuntos de mapas (linhas a) a e)) que são as alternativas na imagem.",
+        "como_deveria_ser": "Alternativas representadas pelas linhas de mapas a) a e) com os mapas I a V, como na imagem, ou apresentadas de forma que indique que são figuras."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "A alternativa C termina com 'V - Pantanal (alternativa c).'",
+        "como_deveria_ser": "A alternativa C deve terminar em 'V - Pantanal.', sem a expressão '(alternativa c)', que não aparece na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-56",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Fonte da figura: 'Münchener Rückversicherungs-Gesselschaft, Geo Risks Research, 2012. Adaptado.'",
+        "como_deveria_ser": "Münchener Rückversicherungs-Gesellschaft, Geo Risks Research, 2012. Adaptado. (grafia da imagem)"
+      },
+      {
+        "campo": "assunto",
+        "como_esta": "Geologia, relevo e solos",
+        "como_deveria_ser": "Climatologia e fenômenos climáticos"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-63",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "C) ... já que o levante daquela ano derrubou o regime.",
+        "como_deveria_ser": "C) ... já que o levante daquele ano derrubou o regime."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-64",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "E) ... havia formas de discriminação religiosa que se sobrepunham às formas de discriminação religiosa que se sobrepunham às formas de discriminação racial, sendo estas, assim, pouco significativas.",
+        "como_deveria_ser": "E) ... havia formas de discriminação religiosa que se sobrepunham às formas de discriminação racial, sendo estas, assim, pouco significativas."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-77",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "... pode ser substituída, sem prejuízo para o sentido to texto, por",
+        "como_deveria_ser": "... pode ser substituída, sem prejuízo para o sentido do texto, por"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-79",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "... e de Poder... [...} ",
+        "como_deveria_ser": "... e de Poder... [...]"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-83",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-08",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "É um erro comum crer que o história da conquista representa, para os índios, uma sucessão linear de perdas...",
+        "como_deveria_ser": "É um erro comum crer que a história da conquista representa, para os índios, uma sucessão linear de perdas..."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-12",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...quanto menor essa relação, maior a motorização de um país.\\n\\nHABITANTES POR AUTOVEÍCULOS EM ALGUNS PAÍSES\\n\\nCom base no gráfico...",
+        "como_deveria_ser": "...quanto menor essa relação, maior a motorização de um país.<quebra de linha>HABITANTES POR AUTOVEÍCULOS EM ALGUNS PAÍSES<quebra de linha>Com base no gráfico..."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-25",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "percebeu João Fera que destinavam eles uns cinquenta mil-réis",
+        "como_deveria_ser": "percebeu Jão Fera que destinavam eles uns cinquenta mil-réis"
+      },
+      {
+        "campo": "gabarito",
+        "como_esta": "D (I e II, apenas.)",
+        "como_deveria_ser": "E (I, II e III), pois a resolução considera corretas as três afirmações"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-39",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Ele sabe que não é, nunca fui meu irmão, que não nos entenderemos nunca.",
+        "como_deveria_ser": "Ele sabe que não é, nunca foi meu irmão, que não nos entenderemos nunca."
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "Daqui a um minuto será tarde e estaremo irremediavelmente separados",
+        "como_deveria_ser": "Daqui a um minuto será noite e estaremos irremediavelmente separados"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-73",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "pode ser transformado em seu isomero isoeugenol",
+        "como_deveria_ser": "pode ser transformado em seu isômero isoeugenol"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-76",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D: A: 4-hidroxipentanal; B: 2-pentanol",
+        "como_deveria_ser": "D: A: 4-hidroxipentanal; B: 2-butanol (butan-2-ol)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-79",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-80",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Reações orgânicas: oxidação, redução e esterificação",
+        "como_deveria_ser": "Funções orgânicas oxigenadas e nitrogenadas"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-83",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D: é produzido energia, que pode ser transformada em várias substâncias orgânicas",
+        "como_deveria_ser": "D: é produzida energia, que pode ser transformada em várias substâncias orgânicas"
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "E: é produzido energia, que pode ser transformada em substâncias catalisadoras de processos",
+        "como_deveria_ser": "E: é produzida energia, que pode ser transformada em substâncias catalisadoras de processos"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-84",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-89",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "a) Alternativa a; b) Alternativa b; c) Alternativa c; d) Alternativa d; e) Alternativa e (textos genéricos no lugar das figuras).",
+        "como_deveria_ser": "As alternativas são diagramas de Venn com círculos rotulados: a) círculos I, II e III com P na interseção dos três; b) círculos I, III e IV com P na interseção dos três; c) círculos I, II e V com P na interseção dos três; d) círculos II, III e IV com P na interseção dos três; e) círculos II, III e V com P na interseção dos três."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2015_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-11",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Em \"apresenta $\\text{pH } 9$\" a barra do \\text foi lida como tabulação (texto sai como tab + \"ext{pH } 9\"), o que corrompe o pH.",
+        "como_deveria_ser": "apresenta $\\text{pH } 9$ (com barra invertida escapada no JSON, ou seja, \\\\text), como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-16",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Fórmulas $\\text{NH}_4\\text{Cl}$ e $\\text{CH}_3\\text{NH}_3\\text{Cl}$ chegam com tabulação no lugar de \\text (ex.: 'ext{NH}_4...').",
+        "como_deveria_ser": "$\\text{NH}_4\\text{Cl}$ e $\\text{CH}_3\\text{NH}_3\\text{Cl}$, como na imagem (barra invertida escapada no JSON)."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "As alternativas A a E estão descritas em texto (ex.: 'Estrutura com anel aromático ligado a -CH2-CHO.') no lugar das estruturas da imagem; A-C também têm tabulação no lugar de \\text.",
+        "como_deveria_ser": "As estruturas das alternativas a) a e) da imagem: a) fenil-CH2-CHO; b) p-metilfenil-CH2-CHO; c) fenil-CH(OH)-CH3; d) fenil-CHO; e) aldeído ramificado com CH3 e CH2-fenil."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativa E: 'Estrutura ramificada com cetona e anel aromático.'",
+        "como_deveria_ser": "Estrutura ramificada com aldeído (grupo CHO) e anel aromático, como na figura e)."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-18",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Equação e fórmulas com \\text e \\rightarrow chegam com tabulação/caractere de controle no lugar da barra invertida (ex.: 'C8H18 (g)', 'ightarrow', 'H2O' na Note e adote).",
+        "como_deveria_ser": "$\\text{C}_8\\text{H}_{18}\\text{ (g)} + \\frac{25}{2}\\text{ O}_2\\text{ (g)} \\rightarrow 8\\text{ CO}_2\\text{ (g)} + 9\\text{ H}_2\\text{O}\\text{ (g)}$, como na imagem (barras invertidas escapadas no JSON)."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-19",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "As alternativas A a E são descrições em texto (ex.: 'Representação com a ligação inferior de C-G errada') no lugar das cinco figuras de pares de bases da imagem.",
+        "como_deveria_ser": "As figuras a) a e) da imagem (pares adenina-timina e guanina-citosina) em vez de descrições."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-20",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Símbolos $\\text{Fe}^0$, $\\text{Mg}^0$, $\\text{Sn}^0$, $\\text{HCl}$ e $\\text{(aq)}$ (e os cabeçalhos da tabela) chegam com tabulação no lugar de \\text.",
+        "como_deveria_ser": "$\\text{Fe}^0$, $\\text{Mg}^0$, $\\text{Sn}^0$, $\\text{HCl}$ e $\\text{(aq)}$, como na imagem (barras invertidas escapadas no JSON)."
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a E com tabulação no lugar de \\text (ex.: '$\\text{V2} > \\text{V3} > \\text{V1}$' sai corrompida).",
+        "como_deveria_ser": "$\\text{V2} > \\text{V3} > \\text{V1}$, etc., com \\text correto (ordem das alternativas a-e da imagem: V2>V3>V1; V3>V1>V2; V1>V3>V2; V2>V1>V3; V1>V2>V3)."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-27",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado termina em 'a potência dissipada em R2, é igual a' e não há quadro 'Note e adote'.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote': 'A resistência interna do voltímetro é muito maior que a dos resistores (voltímetro ideal). As resistências dos fios de ligação devem ser ignoradas.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-38",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O texto contém a sequência literal barra invertida + n ('\\n\\n') entre 'num autossomo.' e 'A probabilidade de que seu irmão...'.",
+        "como_deveria_ser": "Quebra de parágrafo real entre 'num autossomo.' e 'A probabilidade de que seu irmão II-2...', sem os caracteres literais '\\n'."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-48",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Começa com '_' e traz '**História do Brasil**' na fonte (marcação de Markdown que não aparece na imagem).",
+        "como_deveria_ser": "Sem marcadores: 'ARMA DA PROPAGANDA' como título e 'Bóris Fausto, História do Brasil. Adaptado.' como fonte, sem '_' nem '**'."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-53",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase), pois Capitães da Areia (1937) é romance da 2ª fase modernista."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-56",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase), pois Capitães da Areia (1937) e Vidas Secas (1938) são da 2ª fase modernista."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-57",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Fonte com marcação de Markdown ('Jorge Amado, *Capitães da Areia*') e nota com marcação quebrada ('\\\\*\\\\*lazareto:**').",
+        "como_deveria_ser": "Fonte 'Jorge Amado, Capitães da Areia' e nota '*lazareto: estabelecimento para isolamento sanitário de pessoas atingidas por determinadas doenças.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-64",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "B: \"...considerável volume de sedimentos grossos e blocos rochosos, que, aos poucos, depositam-se ao longo da costa.\"",
+        "como_deveria_ser": "B: \"...considerável volume de sedimentos grosseiros e blocos rochosos, que, aos poucos, depositam-se ao longo da costa.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-67",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "As cinco alternativas (A a E) são textos descrevendo os esquemas, por exemplo \"Esquemas mostrando setas cruzando as isóbaras para fora em HS e HN.\"",
+        "como_deveria_ser": "As alternativas são os esquemas figurados a) a e) (pares HS/HN com isóbaras e setas), sem texto substituindo as figuras."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-71",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "É preocuponte a detecção de resíduos de agrotóxicos...",
+        "como_deveria_ser": "É preocupante a detecção de resíduos de agrotóxicos..."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-73",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado começa em \"Considerando-se o trajeto indicado no mapa...\", sem o parágrafo introdutório.",
+        "como_deveria_ser": "Incluir antes: \"O mapa representa um dos possíveis trajetos da chamada Ferrovia Transoceânica, planejada para atender, entre outros interesses, ao transporte de produtos agrícolas e de minérios, tornando as exportações possíveis tanto pelo Oceano Atlântico quanto pelo Oceano Pacífico.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-83",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-84",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Na Belle Époque brasileira, que difusamente coincidiu com o transição para o regime republicano...",
+        "como_deveria_ser": "Na Belle Époque brasileira, que difusamente coincidiu com a transição para o regime republicano..."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-15",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "B) Jacinto, de A cidade e as serras, tendo em vista suas práticas de benefício junto aos pobres de Paris.",
+        "como_deveria_ser": "B) Jacinto, de A cidade e as serras, tendo em vista suas práticas de beneficência junto aos pobres de Paris."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-16",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-27",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Brasil Colônia: economia e sociedade",
+        "como_deveria_ser": "Independência das Américas e do Brasil"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-34",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Origem da vida e tempo geológico",
+        "como_deveria_ser": "Digestão e nutrição humana"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-39",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-59",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado não traz o quadro 'Note e adote'.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote:' com a frase 'O ar está em repouso.' ao final do enunciado, antes das alternativas."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-64",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Outro",
+        "como_deveria_ser": "Física moderna"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-65",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado não traz o quadro 'Note e adote'.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote:' com 'Índice de refração do ar: 1,0', 'sen 15° ≈ 0,3', 'sen 25° ≈ 0,4' e 'sen 40° ≈ 0,6'."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-73",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado não traz o quadro 'Note e adote'.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote: Composição aproximada do ar em volume: 80% de N2 e 20% de O2.' (a imagem o traz após o enunciado/alternativas)."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-78",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "As alternativas a, b, c, d e e são textos genéricos ('Fórmula estrutural da alternativa a' etc.).",
+        "como_deveria_ser": "Cada alternativa deve trazer a fórmula estrutural desenhada na imagem (a, b, c, d e e), e não o texto genérico."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-84",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-85",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...$\\overline{BN}$ nos pontos $E$ e $F$, respectivamente.\\n\\nA área do triângulo $AEF$ é igual a",
+        "como_deveria_ser": "...$\\overline{BN}$ nos pontos $E$ e $F$, respectivamente."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2017_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-89",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-02",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-21",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Gráfico A (mostrando pH aumentando durante o dia e caindo na noite)",
+        "como_deveria_ser": "Gráfico A"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-23",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "era psicológicamente crucial para mim",
+        "como_deveria_ser": "era psicologicamente crucial para mim"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-39",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-41",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-44",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-52",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Industrialização e matriz energética",
+        "como_deveria_ser": "Globalização e blocos econômicos"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-53",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "(...) E, mal vagava uma das casinhas, ou um quarto, um canto onde coubesse um colchão, surgía uma nuvem de pretendentes a disputá-los.",
+        "como_deveria_ser": "(...) E, mal vagava uma das casinhas, ou um quarto, um canto onde coubesse um colchão, surgia uma nuvem de pretendentes a disputá-los."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-65",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Outro",
+        "como_deveria_ser": "Segunda Guerra e Guerra Fria (valor existente em assuntos.txt; 'Outro' não consta na lista)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-66",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Segunda Guerra e Guerra Fria",
+        "como_deveria_ser": "Revolução Russa e entreguerras (o futurismo de 1909 e o fascismo de 1919-1922 pertencem ao período entreguerras, não à Segunda Guerra)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-68",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...característica da Ilusão.",
+        "como_deveria_ser": "...característica da Ilustração."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-72",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "não conhei o casamento",
+        "como_deveria_ser": "não conheci o casamento"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-77",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Apareceu numa a Isaura, se dispunha a começar a limpeza da casa.",
+        "como_deveria_ser": "Apareceu numa a Isaura, que se dispunha a começar a limpeza da casa."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-78",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-79",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Modernismo (3ª fase) e Contemporânea",
+        "como_deveria_ser": "Pré-Modernismo e Modernismo (1ª e 2ª fase)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-83",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Ó tal como quisésramos",
+        "como_deveria_ser": "Ó tal como quiséramos"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-84",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-85",
+    "ok": true
   }
 ]
