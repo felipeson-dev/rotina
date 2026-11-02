@@ -1,0 +1,1586 @@
+[
+  {
+    "id": "obj-fuvest2015_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-41",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-61",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "E mostra para a companhia sua axila suada.",
+        "como_deveria_ser": "E mostra para a companheira sua axila suada."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2018_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-76",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-70",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O processo de recobrimento das fatias de silício é conhecido como",
+        "como_deveria_ser": "Instrução: Leia o texto para responder às questões de números 70 e 71. O silício metalúrgico, purificado até atingir 99,99% de pureza, é conhecido como silício eletrônico. Quando cortado em fatias finas, recobertas com cobre por um processo eletrolítico e montadas de maneira interconectada, o silício eletrônico transforma-se em microchips. A figura reproduz uma das últimas etapas da preparação de um microchip. As fatias de silício são colocadas numa solução de sulfato de cobre. Nesse processo, íons de cobre deslocam-se para a superfície da fatia (cátodo), aumentando a sua condutividade elétrica. O processo de recobrimento das fatias de silício é conhecido como"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2016-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-71",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "A barra invertida de \\text foi lida como TAB: '($<TAB>ext{CH}_4$)', '$<TAB>ext{CO}_2$' e '$<TAB>ext{H}_2<TAB>ext{O}$' (JSON com uma barra só)",
+        "como_deveria_ser": "Fórmulas em LaTeX com barra dupla no JSON: ($\\\\text{CH}_4$), $\\\\text{CO}_2$ e $\\\\text{H}_2\\\\text{O}$ (lidas como CH4, CO2 e H2O)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-12",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "A fórmula '$\\text{CH}_3\\text{CO}_3\\text{H}$' com uma barra só foi lida como TAB: '$<TAB>ext{CH}_3<TAB>ext{CO}_3<TAB>ext{H}$'",
+        "como_deveria_ser": "Fórmula CH3CO3H escrita como $\\\\text{CH}_3\\\\text{CO}_3\\\\text{H}$ (barra dupla no JSON)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_simulado-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-74",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-51",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-75",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-64",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "termina com o trecho \"mais textos adaptados\" após \"(Se necessário, utilize c = 3 × 10^8 m/s.)\"",
+        "como_deveria_ser": "termina em \"(Se necessário, utilize c = 3 × 10^8 m/s.)\", sem o trecho \"mais textos adaptados\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2016_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-88",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-013",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado começa em \"A força gravitacional entre dois corpos de massas m1 e m2...\", sem o texto de apresentação que a imagem traz antes da questão.",
+        "como_deveria_ser": "Antes do enunciado deveria constar o texto de apresentação: \"Em setembro de 2010, Júpiter atingiu a menor distância da Terra em muitos anos. As figuras abaixo ilustram a situação de maior afastamento e a de maior aproximação dos planetas, considerando que suas órbitas são circulares, que o raio da órbita terrestre (RT) mede 1,5 × 10^11 m e que o raio da órbita de Júpiter (RJ) equivale a 7,5 × 10^11 m.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-81",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-13",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado termina em 'como sendo, respectivamente, próximos de' e nao traz o quadro 'Note e adote'.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote: Fórmula do etanol: C2H5OH. Massas molares: C(12 g/mol), H(1 g/mol), O(16 g/mol).'"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-65",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-66",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-49",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Al final do dia, cada criança retira um brinquedo da Caixa Divertida sem olhar, e o leva para brincar em casa.",
+        "como_deveria_ser": "Ao final do dia, cada criança retira um brinquedo da Caixa Divertida sem olhar, e o leva para brincar em casa."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2011_1fase-001",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Enunciado começa em \"Os corais, espalhados por grande extensão de regiões tropicais...\" sem o texto-base \"TEXTO PARA AS QUESTÕES 1, 2 E 3\".",
+        "como_deveria_ser": "Enunciado deveria trazer antes da pergunta o texto-base \"TEXTO PARA AS QUESTÕES 1, 2 E 3: O vazamento de petróleo no Golfo do México, em abril de 2010, foi considerado o pior da história dos EUA. O vazamento causou o aparecimento de uma extensa mancha de óleo na superfície do oceano, ameaçando a fauna e a flora da região. Estima-se que o vazamento foi da ordem de 800 milhões de litros de petróleo em cerca de 100 dias.\""
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2020_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-05",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010-63",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Respiração celular e fermentação",
+        "como_deveria_ser": "Fotossíntese e respiração celular"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2014-70",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-73",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-santacasa2022-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-82",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts (A-D)",
+        "como_esta": "Alternativas escritas como descrições: A 'Gráfico A com curvas de 0 a 2 e de 2 a 3.'; B 'Gráfico B com dois arcos parabólicos...'; C 'Gráfico C com picos pontiagudos em x = 1 e zeros em x = 0, x = 2 e x = 3.'; D 'Gráfico D com pico pontiagudo em x = 1 e curvas diferentes.'",
+        "como_deveria_ser": "As alternativas são os quatro gráficos (figuras a, b, c, d) da imagem, e não descrições em texto. A figura c atinge 1 em x = 3, e não zero como diz a descrição C."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2011-82",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "contém caractere de tabulação (escape \\t do JSON) no lugar de '\\text' no trecho '... em $<TAB>ext{kJ}$, igual a'",
+        "como_deveria_ser": "em $\\text{kJ}$, igual a (ou seja, 'em kJ, igual a', sem caractere de tabulação)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2011_1fase-014",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-33",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "O enunciado termina em 'Qual é o aumento, em reais, no custo do medicamento?' e não traz o quadro 'Note e adote'.",
+        "como_deveria_ser": "Deve constar o quadro 'Note e adote:' com o texto 'Considere que os outros custos de produção permaneceram inalterados', junto às alternativas."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-62",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-90",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-65",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Paulo discordou, pois não comia carne animal e preferia frutos-do-mar; pois isso, sugeriu uma porção de camarões fritos e cinco casquinhas-de-siri, uma para cada amigo.",
+        "como_deveria_ser": "Paulo discordou, pois não comia carne animal e preferia frutos-do-mar; por isso, sugeriu uma porção de camarões fritos e cinco casquinhas-de-siri, uma para cada amigo."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2023_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-40",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-14",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts (alternativa D)",
+        "como_esta": "Estrutura com um C ligado a 3 H, um N ligado a 2 H, com carga neutra e ligações simples.",
+        "como_deveria_ser": "Estrutura com um C ligado a 3 H, um N ligado a 3 H, com carga neutra e ligações simples."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2020_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-10",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-90",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-69",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts.A.t",
+        "como_esta": "Gráfico da alternativa A",
+        "como_deveria_ser": "o gráfico da alternativa A, como aparece na imagem (figura)"
+      },
+      {
+        "campo": "alts.B.t",
+        "como_esta": "Gráfico da alternativa B",
+        "como_deveria_ser": "o gráfico da alternativa B, como aparece na imagem (figura)"
+      },
+      {
+        "campo": "alts.C.t",
+        "como_esta": "Gráfico da alternativa C",
+        "como_deveria_ser": "o gráfico da alternativa C, como aparece na imagem (figura)"
+      },
+      {
+        "campo": "alts.D.t",
+        "como_esta": "Gráfico da alternativa D",
+        "como_deveria_ser": "o gráfico da alternativa D, como aparece na imagem (figura)"
+      },
+      {
+        "campo": "alts.E.t",
+        "como_esta": "Gráfico da alternativa E",
+        "como_deveria_ser": "o gráfico da alternativa E, como aparece na imagem (figura)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2015_2-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-82",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts.A.t",
+        "como_esta": "Image/Vector A",
+        "como_deveria_ser": "o vetor da alternativa A, como aparece na imagem (figura)"
+      },
+      {
+        "campo": "alts.B.t",
+        "como_esta": "Image/Vector B",
+        "como_deveria_ser": "o vetor da alternativa B, como aparece na imagem (figura)"
+      },
+      {
+        "campo": "alts.C.t",
+        "como_esta": "Image/Vector C",
+        "como_deveria_ser": "o vetor da alternativa C, como aparece na imagem (figura)"
+      },
+      {
+        "campo": "alts.D.t",
+        "como_esta": "Image/Vector D",
+        "como_deveria_ser": "o vetor da alternativa D, como aparece na imagem (figura)"
+      },
+      {
+        "campo": "alts.E.t",
+        "como_esta": "Image/Vector E",
+        "como_deveria_ser": "o vetor da alternativa E, como aparece na imagem (figura)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2025_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-41",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-78",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-020",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-003",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-66",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-77",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2010_2-83",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-41",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts",
+        "como_esta": "alternativas A a E são textos descritivos, por exemplo 'Gráfico a) com P.E. decrescente para F e constante para I'",
+        "como_deveria_ser": "alternativas A a E são as figuras de gráficos a), b), c), d) e e) mostradas na imagem, no lugar de descrições textuais"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2017_1fase-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-88",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-46",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Falta o quadro de massas molares logo após a frase 'pode-se afirmar que, na condição de remoção máxima de sulfeto de hidrogênio relatada no estudo,'.",
+        "como_deveria_ser": "Incluir a linha 'Massas molares (g mol-1): Fe = 56, H = 1, O = 16 e S = 32.'"
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "Fórmulas com '\\text' gravadas com barra simples no JSON; o '\\t' é decodificado como tabulação, ficando 'TAB + ext{H}_2 ... TAB + ext{S}'.",
+        "como_deveria_ser": "$\\text{H}_2\\text{S}$ (e demais '\\text{...}' com barra dupla ou simples escapada corretamente, sem tabulação)."
+      },
+      {
+        "campo": "alts[C].t",
+        "como_esta": "'$' + TAB + 'ext{H}_2' + TAB + 'ext{S}$' (o '\\t' de '\\text' foi decodificado como tabulação).",
+        "como_deveria_ser": "$\\text{H}_2\\text{S}$"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2024_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-67",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Não há o quadro 'Note e adote' após o enunciado.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote: A relação entre a resistência R de um dispositivo, a corrente I que o percorre e a diferença de potencial elétrico V entre seus terminais é V = RI.'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2019_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-74",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-76",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2025_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-84",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-62",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Texto termina em 'a energia mecânica perdida durante a descida inicial é, aproximadamente,' sem o quadro de dado da gravidade.",
+        "como_deveria_ser": "Incluir o quadro 'Note e adote: Aceleração da gravidade: g = 10 m/s²' ao final do enunciado, antes das alternativas."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2015_1fase-78",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-72",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-027",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-09",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts (D)",
+        "como_esta": "passa de completamente intracelular a completamente extracelular, a partir dos nematedmintos.",
+        "como_deveria_ser": "passa de completamente intracelular a completamente extracelular, a partir dos nematelmintos."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2014_1fase-022",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-024",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2025_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-77",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts",
+        "como_esta": "A: 'Gráfico da alternativa a'; B: 'Gráfico da alternativa b'; C: 'Gráfico da alternativa c'; D: 'Gráfico da alternativa d' (texto descritivo no lugar das alternativas)",
+        "como_deveria_ser": "As alternativas a) a d) são gráficos (figuras) de pressão (atm) por tempo (h), que ficam à parte; não deveriam ser substituídas por texto descritivo 'Gráfico da alternativa x'"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-25",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts",
+        "como_esta": "A: 'Gráfico A'; B: 'Gráfico B'; C: 'Gráfico C'; D: 'Gráfico D'; E: 'Gráfico E' (texto no lugar das alternativas)",
+        "como_deveria_ser": "As alternativas a) a e) são gráficos (figuras) de funções, que ficam à parte; não deveriam ser substituídas pelo texto 'Gráfico A' a 'Gráfico E'"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2019_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2026_1fase-82",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-34",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-23",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-14",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-83",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts",
+        "como_esta": "Alternativas A a D com os textos 'Gráfico da alternativa A', 'Gráfico da alternativa B', 'Gráfico da alternativa C' e 'Gráfico da alternativa D' no lugar dos gráficos.",
+        "como_deveria_ser": "Alternativas A a D como as figuras (gráficos) de a) a d) da imagem, cada uma com o gráfico correspondente de y = 2f(x - 1)."
+      }
+    ]
+  },
+  {
+    "id": "obj-unesp2013_2-73",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2016-62",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Tabela com três colunas no cabeçalho (Aluno | Descrição | Sisters), a terceira vazia.",
+        "como_deveria_ser": "Tabela com apenas duas colunas, sem a coluna 'Sisters' (a imagem não mostra essa coluna)."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2026_1fase-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-35",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts.C",
+        "como_esta": "H – O – H, apenas com três átomos ligados ao O.",
+        "como_deveria_ser": "Estrutura com três H ligados ao O, sendo um deles abaixo do O com traço vertical, sem colchetes e sem carga, como na imagem."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2022_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-88",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts[B].t",
+        "como_esta": "H2N-CH2-CO-NH-CH2-CO-H",
+        "como_deveria_ser": "H2N-CO-CH2-C(=NH)-CHO (amida terminal com carbonila, C=NH e grupo aldeído, conforme a figura)"
+      },
+      {
+        "campo": "alts[C].t",
+        "como_esta": "H2N-CH2-CH2-CH2-OH",
+        "como_deveria_ser": "H2N-CO-CH2-CH2-OH (carbonila presente no carbono ligado ao NH2, conforme a figura)"
+      },
+      {
+        "campo": "alts[E].t",
+        "como_esta": "NH2 / H2N-CH2-CH-COOH (sem carbonila)",
+        "como_deveria_ser": "H2N-CO-CH2-CH(NH2)-COOH (carbonila do grupo amida faltando no texto, conforme a figura)"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2026_1fase-86",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2015_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-87",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2012_1fase-001",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-85",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2022_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2013_1fase-20",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-83",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-51",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Fisiologia vegetal: hormônios e tropismos",
+        "como_deveria_ser": "Fisiologia vegetal: transporte de seiva elaborada no floema e armazenamento de glicídios"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-26",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014-80",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2015-77",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2014_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2020_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2023_1fase-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-72",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts[A].t",
+        "como_esta": "Gráfico com as curvas correspondentes no plano p × V, mostrando a compressão adiabática, aquecimento isovolumétrico, expansão adiabática e resfriamento isovolumétrico formando o ciclo com as características descritas.",
+        "como_deveria_ser": "Alternativa a) é uma figura (gráfico p × V com um ciclo de curvas), não um texto descritivo."
+      },
+      {
+        "campo": "alts[B].t",
+        "como_esta": "Gráfico com um ciclo retangular no plano p × V entre V1 e V2.",
+        "como_deveria_ser": "Alternativa b) é uma figura (gráfico p × V com ciclo retangular entre V1 e V2), não um texto descritivo."
+      },
+      {
+        "campo": "alts[C].t",
+        "como_esta": "Gráfico com curvas adiabáticas distintas no plano p × V.",
+        "como_deveria_ser": "Alternativa c) é uma figura (gráfico p × V com duas curvas), não um texto descritivo."
+      },
+      {
+        "campo": "alts[D].t",
+        "como_esta": "Gráfico com formato diferente.",
+        "como_deveria_ser": "Alternativa d) é uma figura (gráfico p × V com ciclo de curvas), não um texto descritivo."
+      },
+      {
+        "campo": "alts[E].t",
+        "como_esta": "Gráfico com outro formato retangular.",
+        "como_deveria_ser": "Alternativa e) é uma figura (gráfico p × V com ciclo retangular), não um texto descritivo."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2011_1fase-026",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2013_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2021_1fase-10",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts.D.t",
+        "como_esta": "$\\{(x, y); x^2 + y^2 \\le 1 \\text{ e } x + x \\ge 1\\}$",
+        "como_deveria_ser": "$\\{(x, y); x^2 + y^2 \\le 1 \\text{ e } y + x \\ge 1\\}$"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2020_1fase-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2015_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2010_1fase-80",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2011_2-82",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2024_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013_2-89",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-42",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2012_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2022_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2019_1fase-40",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts[E].t",
+        "como_esta": "I: saturadas | II: ácido maleico | III: diminui | IV: iguais | V: dissolvido | VI: líquido",
+        "como_deveria_ser": "I: saturadas | II: ácido maleico | III: diminui | IV: iguais | V: sólido | VI: líquido"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2019_1fase-23",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "A sequência '\\text{SO}_2', '\\text{HF}' e '\\text{HCl}' está com barra simples no JSON, e o '\\t' foi lido como tabulação (TAB + 'ext{SO}_2', etc.).",
+        "como_deveria_ser": "Fórmulas escritas como $\\\\text{SO}_2$, $\\\\text{HF}$ e $\\\\text{HCl}$ (barra dupla), exibindo SO2, HF e HCl."
+      },
+      {
+        "campo": "alts[A,B,C,D].t",
+        "como_esta": "Fórmulas HF e HCl escritas com '\\text' de barra simples, lidas como TAB + 'ext{HF}' e TAB + 'ext{HCl}'.",
+        "como_deveria_ser": "Fórmulas escritas como $\\\\text{HF}$ e $\\\\text{HCl}$ (barra dupla), exibindo HF e HCl."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2018_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2016_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-29",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...atirava a culpa à suçuaranat\".(...)",
+        "como_deveria_ser": "...atirava a culpa à suçuarana\".(...)"
+      },
+      {
+        "campo": "assunto",
+        "como_esta": "Fisiologia vegetal: hormônios e tropismos",
+        "como_deveria_ser": "Assunto que trate de adaptações anatômicas da planta ao armazenamento de água (morfologia/anatomia vegetal, parênquima aquífero), como 'Anatomia vegetal: adaptações de plantas da Caatinga'."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2014_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2011_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2013-82",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2017_1fase-38",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2023_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2012_2-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unesp2014_2-81",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2024_1fase-69",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2016_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2018_1fase-11",
+    "ok": true
+  },
+  {
+    "id": "obj-fuvest2017_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2020_1fase-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2018_1fase-79",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2021_1fase-23",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts[A].t",
+        "como_esta": "Gráfico da alternativa A",
+        "como_deveria_ser": "Alternativa A é uma figura (gráfico de f(x)), não um texto"
+      },
+      {
+        "campo": "alts[B].t",
+        "como_esta": "Gráfico da alternativa B",
+        "como_deveria_ser": "Alternativa B é uma figura (gráfico de f(x)), não um texto"
+      },
+      {
+        "campo": "alts[C].t",
+        "como_esta": "Gráfico da alternativa C",
+        "como_deveria_ser": "Alternativa C é uma figura (gráfico de f(x)), não um texto"
+      },
+      {
+        "campo": "alts[D].t",
+        "como_esta": "Gráfico da alternativa D",
+        "como_deveria_ser": "Alternativa D é uma figura (gráfico de f(x)), não um texto"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2010_1fase-85",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alts[A].t",
+        "como_esta": "Figura a",
+        "como_deveria_ser": "Alternativa A é uma figura (setas de direção e sentido), não um texto"
+      },
+      {
+        "campo": "alts[B].t",
+        "como_esta": "Figura b",
+        "como_deveria_ser": "Alternativa B é uma figura (setas de direção e sentido), não um texto"
+      },
+      {
+        "campo": "alts[C].t",
+        "como_esta": "Figura c",
+        "como_deveria_ser": "Alternativa C é uma figura (setas de direção e sentido), não um texto"
+      },
+      {
+        "campo": "alts[D].t",
+        "como_esta": "Figura d",
+        "como_deveria_ser": "Alternativa D é uma figura (setas de direção e sentido), não um texto"
+      },
+      {
+        "campo": "alts[E].t",
+        "como_esta": "Figura e",
+        "como_deveria_ser": "Alternativa E é uma figura (setas de direção e sentido), não um texto"
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2012_1fase-80",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...três elefeanzinhos presos um ao outro por fios...",
+        "como_deveria_ser": "...três elefantezinhos presos um ao outro por fios..."
+      }
+    ]
+  },
+  {
+    "id": "obj-fuvest2011_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2019_1fase-18",
+    "ok": true
+  }
+]
