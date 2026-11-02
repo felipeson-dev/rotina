@@ -12774,5 +12774,631 @@
   {
     "id": "obj-unicamp2026_1fase-47",
     "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-56",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Outro",
+        "como_deveria_ser": "Interpretação de texto e tipologia"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2026_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-59",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Considering as imagens do texto 1 desta questão, o texto 2 pode ser caracterizado como",
+        "como_deveria_ser": "Considerando as imagens do texto 1 desta questão, o texto 2 pode ser caracterizado como"
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "Em entrevistas, he expressou preocupação",
+        "como_deveria_ser": "Em entrevistas, ele expressou preocupação"
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "B) ... no intuito confundir as pessoas.",
+        "como_deveria_ser": "B) ... no intuito de confundir as pessoas."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2026_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-67",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2026_1fase-68",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-03",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-11",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...MOFs ... cuyas propriedades — como acidez, interação molecular e polaridade ...",
+        "como_deveria_ser": "...MOFs ... cujas propriedades — como acidez, interação molecular e polaridade ..."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_1fase-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-14",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Fisiologia vegetal",
+        "como_deveria_ser": "Excreção e homeostase (o texto trata de absorção e metabolização de fármaco no plasma, não de fisiologia vegetal)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_1fase-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-16",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "Em uma pista de gelo de $45,\\text{m}$ de extensão",
+        "como_deveria_ser": "Em uma pista de gelo de $45,7\\text{m}$ de extensão (a imagem traz 45,7 m)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_1fase-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-35",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-37",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-38",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "dava um prazo para abandonar o thegarejo",
+        "como_deveria_ser": "dava um prazo para abandonar o lugarejo"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_1fase-39",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-41",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "esforços negacionistas se gladiam para estender suas fronteiras",
+        "como_deveria_ser": "esforços negacionistas se digladiam para estender suas fronteiras"
+      },
+      {
+        "campo": "enunciado",
+        "como_esta": "Os negacionistas se concentram nessa região cinzenta",
+        "como_deveria_ser": "Os negacionismos se concentram nessa região cinzenta"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_1fase-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-44",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "ouriços e anémonas não possuem cérebros",
+        "como_deveria_ser": "ouriços e anêmonas não possuem cérebros"
+      },
+      {
+        "campo": "alternativas",
+        "como_esta": "alternativa D: (i) cnidários; (ii) equinodermos; (III) do envoltório nuclear; (iv) potássio; (v) sódio.",
+        "como_deveria_ser": "alternativa D: (i) cnidários; (ii) equinodermos; (iii) do envoltório nuclear; (iv) potássio; (v) sódio."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_1fase-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-47",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-49",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-50",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-51",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-58",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a D são descrições textuais das ilustrações (ex.: \"Ilustração de um fruto alongado e estriado avermelhado (alternativa a).\")",
+        "como_deveria_ser": "As alternativas devem ser as próprias figuras (a, b, c e d) da obra \"Floresta na Boca\", como na imagem, e não descrições delas"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_1fase-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-61",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-65",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-67",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "Alternativas A a D são descrições textuais dos gráficos (ex.: \"Gráfico com temperatura variando de 20 °C até 30 °C no intervalo de 0 a 10 s...\")",
+        "como_deveria_ser": "As alternativas devem ser os quatro gráficos (a, b, c e d) como aparecem na imagem, e não descrições deles"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_1fase-70",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_1fase-71",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-01",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-04",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-06",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-07",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-08",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-09",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-10",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Química: Cálculo estequiométrico e mol",
+        "como_deveria_ser": "Física: Estática e hidrostática (densidade, massa e peso)"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_simulado-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-12",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-13",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-15",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-16",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-17",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-18",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-19",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-20",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-21",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-22",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-24",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-25",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-27",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-28",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-29",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-30",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-31",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-32",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-33",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-36",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-38",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-41",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-42",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-43",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-45",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-46",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-48",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-50",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "assunto",
+        "como_esta": "Sistemas lineares",
+        "como_deveria_ser": "Equações e inequações"
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_simulado-52",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-53",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-54",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-55",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-56",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-57",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-58",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-59",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-60",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-62",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-63",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-64",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-68",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "D) menor quantidade do agente VX da pele, mas propicia maior liberação do agente na corrente sanguínea.",
+        "como_deveria_ser": "D) menor quantidade do agente VX da pele, mas propicia menor liberação do agente na corrente sanguínea."
+      }
+    ]
+  },
+  {
+    "id": "obj-unicamp2027_simulado-69",
+    "ok": true
+  },
+  {
+    "id": "obj-unicamp2027_simulado-72",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "alternativas",
+        "como_esta": "A: \"Gráfico A\"; B: \"Gráfico B\"; C: \"Gráfico C\"; D: \"Gráfico D\"",
+        "como_deveria_ser": "As alternativas são gráficos (figuras) de produção de H2 versus tempo, identificados por a), b), c) e d); o texto deve dar lugar às figuras, não a rótulos genéricos."
+      }
+    ]
+  },
+  {
+    "id": "obj-unifesp2011-02",
+    "ok": true
+  },
+  {
+    "id": "obj-unifesp2017-11",
+    "ok": true
+  },
+  {
+    "id": "obj-unifesp2017-37",
+    "ok": false,
+    "erros": [
+      {
+        "campo": "enunciado",
+        "como_esta": "...\"I spent too much time in there, instead!\", o termo em destaque se refere",
+        "como_deveria_ser": "...\"I spent too much time *in there*, instead!\", o termo em destaque se refere (na imagem, o termo em destaque é \"there\", com ênfase tipográfica)."
+      },
+      {
+        "campo": "assunto",
+        "como_esta": "Vocabulário, cognatos e falsos cognatos",
+        "como_deveria_ser": "Conectivos e pronomes (a questão pede o referente do termo \"there\", e a resolução trata da referência, sem cognatos ou falsos cognatos)."
+      }
+    ]
   }
 ]
