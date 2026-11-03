@@ -25,6 +25,9 @@ EDICOES = [  # arq = objetivo-<arq>.json; col = qual versão do gabarito (0 = a 
     dict(arq='simulados', banca='Simulado Fuvest 2ª edição', ano=2027, fase='simfuvest2027_2', perfil='fuvest', prova='prova-s1-simulado-fuvest-2027-2edicao.pdf', gab='FUVEST 2027 - simulado 2ª edição - gabarito.pdf', col=0, pasta='simulados', pref='simfuvest2027_2', fonte='Fuvest (simulado oficial, prova S1)'),
 ]
 TOTAL = 80
+# anuladas depois de o gabarito sair: o PDF baixado ainda traz a letra preliminar, então ficam de fora aqui (e são tiradas do arquivo ao gravar)
+ANULADAS = {'fuvest2027_1fase': [23],      # erro de longitude de Porto de Galinhas (V1 23 = V2 3 = V3 66 = V4 45), anunciada em 02/11/2026
+            'simfuvest2027_1': [51]}       # "Note e adote" com duas respostas possíveis (S1 51 = S2 32 = S3 10 = S4 70), gabarito de 27/04/2026
 
 def gabarito_colunas(arq, col):
     """Fuvest: as versões (V1..V4 ou S1..S4) ficam lado a lado, duas colunas de 40 questões por versão."""
@@ -164,6 +167,8 @@ def principal(gravar):
         for n in range(1, TOTAL + 1):
             ini, fim, a, tem_e = rg[n]
             txt = texto(s, ini, fim, a)
+            if n in ANULADAS.get(ed['pref'], []):
+                avisos.append(f'{ed["pref"]}-{n:02d}: anulada pela banca, fica de fora'); continue
             if g.get(n) not in tuple('ABCDE'):
                 avisos.append(f'{ed["pref"]}-{n:02d}: sem resposta no gabarito ({g.get(n)}), fica de fora'); continue
             img, npartes = recorte(d, s, ini, fim)
@@ -194,7 +199,7 @@ def principal(gravar):
             novas = [{k: v for k, v in q.items() if k != '_arq'} for q in tudo if q['_arq'] == arq]
             f = os.path.join(SAIDA, f'objetivo-{arq}.json')
             velhas = json.load(open(f, encoding='utf-8')) if os.path.exists(f) and os.path.getsize(f) > 10 else []
-            ids = {q['id'] for q in novas}
+            ids = {q['id'] for q in novas} | {f'obj-{p}-{n:02d}' for p, ns in ANULADAS.items() for n in ns}
             json.dump([q for q in velhas if q['id'] not in ids] + novas, open(f, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
             print(f'gravado objetivo-{arq}.json: {len(velhas)} que já havia + {len(novas)}')
 
