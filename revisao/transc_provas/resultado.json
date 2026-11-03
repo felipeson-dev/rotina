@@ -79133,5 +79133,2285 @@
   "depende_de_outro_texto": false,
   "desatualizada": false,
   "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-142",
+  "enunciado": "Três amigos, André, Bernardo e Carlos, moram em um condomínio fechado de uma cidade. O quadriculado representa a localização das ruas paralelas e perpendiculares, delimitando quadras de mesmo tamanho nesse condomínio, em que nos pontos A, B e C estão localizadas as casas de André, Bernardo e Carlos, respectivamente.\n\n[figura]\n\nAndré deseja deslocar-se da sua casa até a casa de Bernardo, sem passar pela casa de Carlos, seguindo ao longo das ruas do condomínio, fazendo sempre deslocamentos para a direita ($\\rightarrow$) ou para cima ($\\uparrow$), segundo o esquema da figura.\n\nO número de diferentes caminhos que André poderá utilizar para realizar o deslocamento nas condições propostas é",
+  "alternativas": [
+   "4",
+   "14",
+   "17",
+   "35",
+   "48"
+  ],
+  "gabarito": "C",
+  "resolucao": "O número de diferentes caminhos é:\n\n$P_7^{4,3} - P_4^{2,2} \\cdot P_3^2 = \\frac{7!}{4!3!} - \\frac{4!}{2!2!} \\cdot \\frac{3!}{2!} = 35 - 6 \\cdot 3 = 35 - 18 = 17$\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Análise combinatória",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-143",
+  "enunciado": "Uma pessoa precisa comprar 15 sacos de cimento para uma reforma em sua casa. Faz pesquisa de preço em cinco depósitos que vendem o cimento de sua preferência e cobram frete para entrega do material, conforme a distância do depósito à sua casa. As informações sobre preço do cimento, valor do frete e distância do depósito até a casa dessa pessoa estão apresentadas no quadro.\n\n| Depósito | Valor do saco de cimento (R$) | Valor do frete para cada quilômetro (R$) | Distância entre a casa e o depósito (km) |\n|---|---|---|---|\n| A | 23,00 | 1,00 | 10 |\n| B | 21,50 | 3,00 | 12 |\n| C | 22,00 | 1,50 | 14 |\n| D | 21,00 | 3,50 | 18 |\n| E | 24,00 | 2,50 | 2 |\n\nA pessoa escolherá um desses depósitos para realizar sua compra, considerando os preços do cimento e do frete oferecidos em cada opção.\n\nSe a pessoa decidir pela opção mais econômica, o depósito escolhido para a realização dessa compra será o",
+  "alternativas": [
+   "A",
+   "B",
+   "C",
+   "D",
+   "E"
+  ],
+  "gabarito": "C",
+  "resolucao": "| Depósito | Gasto em reais |\n|---|---|\n| A | $15 \\cdot 23 + 1 \\cdot 10 = 355,00$ |\n| B | $15 \\cdot 21,50 + 3 \\cdot 12 = 358,50$ |\n| C | $15 \\cdot 22 + 1,5 \\cdot 14 = 351,00$ |\n| D | $15 \\cdot 21 + 3,5 \\cdot 18 = 378,00$ |\n| E | $15 \\cdot 24 + 2,5 \\cdot 2 = 365,00$ |\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Conceito de função e função afim (1º grau)",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-144",
+  "enunciado": "Um motociclista planeja realizar uma viagem cujo destino fica a 500 km de sua casa. Sua moto consome 5 litros de gasolina para cada 100 km rodados, e o tanque da moto tem capacidade para 22 litros. Pelo mapa, observou que no trajeto da viagem o último posto disponível para reabastecimento, chamado Estrela, fica a 80 km do seu destino. Ele pretende partir com o tanque da moto cheio e planeja fazer somente duas paradas para reabastecimento, uma na ida e outra na volta, ambas no posto Estrela. No reabastecimento para a viagem de ida, deve considerar também combustível suficiente para se deslocar por 200 km no seu destino.\n\nA quantidade mínima de combustível, em litro, que esse motociclista deve reabastecer no posto Estrela na viagem de ida, que seja suficiente para fazer o segundo reabastecimento, é",
+  "alternativas": [
+   "13",
+   "14",
+   "17",
+   "18",
+   "21"
+  ],
+  "gabarito": "C",
+  "resolucao": "I) O motociclista anda inicialmente 420 km e gasta $(420 \\div 100) \\cdot 5 = 21$ litros.\n\nII) Como o tanque estava cheio, sobrará $22 \\text{ litros} - 21 \\text{ litros} = 1 \\text{ litro}$ no tanque.\n\nIII) O motociclista vai andar 80 km para chegar à sua casa, vai andar 200 km na cidade e vai andar mais 80 km para voltar ao posto, num total de $(80 + 200 + 80)$ km = 360 km. Assim, ele vai precisar de $(360 \\div 100) \\cdot 5$ litros = 18 litros. Como sobrou 1 litro de combustível no tanque, ele deve colocar no mínimo 17 litros.\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-145",
+  "enunciado": "Um processo de aeração, que consiste na introdução de ar num líquido, acontece do seguinte modo: uma bomba B retira o líquido de um tanque T1 e o faz passar pelo aerador A1, que aumenta o volume do líquido em 15%, e em seguida pelo aerador A2, ganhando novo aumento de volume de 10%. Ao final, ele fica armazenado num tanque T2, de acordo com a figura.\n\n[figura]\n\nOs tanques T1 e T2 são prismas retos de bases retangulares, sendo que a base de T1 tem comprimento $c$ e largura $L$, e a base de T2 tem comprimento $\\frac{c}{2}$ e largura $2L$. Para finalizar o processo de aeração sem derramamento do líquido em T2, o responsável deve saber a relação entre a altura da coluna de líquido que já saiu de T1, denotada por $x$, e a altura da coluna de líquido que chegou a T2, denotada por $y$.\n\nDisponível em: www.dec.ufcg.edu.br. Acesso em: 21 abr. 2015.\n\nA equação que relaciona as medidas das alturas $y$ e $x$ é dada por",
+  "alternativas": [
+   "$y = 1,265x$",
+   "$y = 1,250x$",
+   "$y = 1,150x$",
+   "$y = 1,125x$",
+   "$y = x$"
+  ],
+  "gabarito": "A",
+  "resolucao": "Sendo $V_{T1} = c \\cdot L \\cdot x$ e $V_{T2} = \\frac{c}{2} \\cdot 2L \\cdot y = c \\cdot L \\cdot y$ os volumes dos tanques T1 e T2 e sabendo que $V_{T2} = 1,10 \\cdot 1,15 \\cdot V_{T1}$, temos que $c \\cdot L \\cdot y = 1,265\\, c \\cdot L \\cdot x$ e então $y = 1,265x$.\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: poliedros, prismas e pirâmides",
+  "segundo_assunto": "Porcentagem e juros",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-146",
+  "enunciado": "Para chegar à universidade, um estudante utiliza um metrô e, depois, tem duas opções:\n\n- seguir num ônibus, percorrendo 2,0 km;\n- alugar uma bicicleta, ao lado da estação do metrô, seguindo 3,0 km pela ciclovia.\n\nO quadro fornece as velocidades médias do ônibus e da bicicleta, em km/h, no trajeto metrô-universidade.\n\n| Dia da semana | Velocidade média: ônibus (km/h) | Velocidade média: bicicleta (km/h) |\n|---|---|---|\n| Segunda-feira | 9 | 15 |\n| Terça-feira | 20 | 22 |\n| Quarta-feira | 15 | 24 |\n| Quinta-feira | 12 | 15 |\n| Sexta-feira | 10 | 18 |\n| Sábado | 30 | 16 |\n\nA fim de poupar tempo no deslocamento para a universidade, em quais dias o aluno deve seguir pela ciclovia?",
+  "alternativas": [
+   "Às segundas, quintas e sextas-feiras.",
+   "Às terças e quintas-feiras e aos sábados.",
+   "Às segundas, quartas e sextas-feiras.",
+   "Às terças, quartas e sextas-feiras.",
+   "Às terças e quartas-feiras e aos sábados."
+  ],
+  "gabarito": "C",
+  "resolucao": "A tabela abaixo compara os tempos de ônibus e bicicleta para cada dia da semana.\n\n| Dia da semana | Comparação dos tempos (ônibus e bicicleta) |\n|---|---|\n| Segunda-feira | $\\frac{2}{9} = \\frac{10}{45} > \\frac{9}{45} = \\frac{3}{15}$ |\n| Terça-feira | $\\frac{2}{20} = \\frac{22}{220} < \\frac{30}{220} = \\frac{3}{22}$ |\n| Quarta-feira | $\\frac{2}{15} = \\frac{16}{120} > \\frac{15}{120} = \\frac{3}{24}$ |\n| Quinta-feira | $\\frac{2}{12} = \\frac{10}{60} < \\frac{12}{60} = \\frac{3}{15}$ |\n| Sexta-feira | $\\frac{2}{10} = \\frac{18}{90} > \\frac{15}{90} = \\frac{3}{18}$ |\n| Sábado | $\\frac{2}{30} = \\frac{16}{240} < \\frac{45}{240} = \\frac{3}{16}$ |\n\nLogo, o aluno deve seguir pela ciclovia às segundas, quartas e sextas-feiras.\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-147",
+  "enunciado": "Pesquisadores da Universidade de Tecnologia de Viena, na Áustria, produziram miniaturas de objetos em impressoras 3D de alta precisão. Ao serem ativadas, tais impressoras lançam feixes de laser sobre um tipo de resina, esculpindo o objeto desejado. O produto final da impressão é uma escultura microscópica de três dimensões, como visto na imagem ampliada.\n\n[figura]\n\nA escultura apresentada é uma miniatura de um carro de Fórmula 1, com 100 micrômetros de comprimento. Um micrômetro é a milionésima parte de um metro.\n\nUsando notação científica, qual é a representação do comprimento dessa miniatura, em metro?",
+  "alternativas": [
+   "$1,0 \\times 10^{-1}$",
+   "$1,0 \\times 10^{-3}$",
+   "$1,0 \\times 10^{-4}$",
+   "$1,0 \\times 10^{-6}$",
+   "$1,0 \\times 10^{-7}$"
+  ],
+  "gabarito": "C",
+  "resolucao": "(1) 1 micrômetro = $\\frac{1}{1\\,000\\,000} = 10^{-6}$ m\n\n(2) O comprimento da miniatura é $100$ micrômetros = $100 \\times 10^{-6}$ m = $10^2 \\times 10^{-6}$ m = $1,0 \\times 10^{-4}$ m\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Outro",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-148",
+  "enunciado": "A fabricação da Bandeira Nacional deve obedecer ao descrito na Lei n. 5.700, de 1º de setembro de 1971, que trata dos Símbolos Nacionais. No artigo que se refere às dimensões da Bandeira, observa-se:\n\n“Para cálculos das dimensões, será tomada por base a largura, dividindo-a em 14 (quatorze) partes iguais, sendo que cada uma das partes será considerada uma medida ou módulo (M). Os demais requisitos dimensionais seguem o critério abaixo:\nI. Comprimento será de vinte módulos (20 M);\nII. A distância dos vértices do losango amarelo ao quadro externo será de um módulo e sete décimos (1,7 M);\nIII. O raio do círculo azul no meio do losango amarelo será de três módulos e meio (3,5 M).”\n\nBRASIL, Lei n. 5.700, de 1º de setembro de 1971. Disponível em: www.planalto.gov.br. Acesso em: 15 set. 2015.\n\nA figura indica as cores da bandeira do Brasil e localiza o quadro externo a que se refere a Lei n. 5.700.\n\n[figura]\n\nUm torcedor, preparando-se para a Copa do Mundo e dispondo de cortes de tecidos verde (180 cm x 150 cm) e amarelo (o quanto baste), deseja confeccionar a maior Bandeira Nacional possível a partir das medidas do tecido verde.\n\nQual a medida, em centímetro, do lado do menor quadrado de tecido azul que deverá ser comprado para confecção do círculo da bandeira desejada?",
+  "alternativas": [
+   "27",
+   "32",
+   "53",
+   "63",
+   "90"
+  ],
+  "gabarito": "D",
+  "resolucao": "Pelo artigo que se refere às dimensões da Bandeira, temos 14M de largura e 20M de comprimento. Dispondo de 180 cm x 150 cm de tecido verde, para confeccionar a maior bandeira possível, utilizam-se 180 cm x 126 cm, pois:\n\n$\\frac{20M}{14M} = \\frac{180}{126}$\n\nLogo, $M = \\frac{180}{20} = \\frac{126}{14} = 9$ cm e, portanto, a medida do lado do menor quadrado de tecido azul que deve ser comprado para confeccionar o círculo de diâmetro $7M$ é igual a $7 \\cdot 9$ cm = 63 cm.\n\nResposta: D",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "Geometria plana",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-149",
+  "enunciado": "Uma empresa de ônibus utiliza um sistema de vendas de passagens que fornece a imagem de todos os assentos do ônibus, diferenciando os assentos já vendidos, por uma cor mais escura, dos assentos ainda disponíveis. A empresa monitora, permanentemente, o número de assentos já vendidos e compara-o com o número total de assentos do ônibus para avaliar a necessidade de alocação de veículos extras.\n\nNa imagem tem-se a informação dos assentos já vendidos e dos ainda disponíveis em um determinado instante.\n\n[figura]\n\nA razão entre o número de assentos já vendidos e o total de assentos desse ônibus, no instante considerado na imagem, é",
+  "alternativas": [
+   "$\\frac{16}{42}$",
+   "$\\frac{16}{26}$",
+   "$\\frac{26}{42}$",
+   "$\\frac{42}{26}$",
+   "$\\frac{42}{16}$"
+  ],
+  "gabarito": "A",
+  "resolucao": "Da imagem do enunciado, concluímos que há 16 assentos vendidos dentre 42 totais.\n\nLogo, a razão pedida é dada por $\\frac{16}{42}$.\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-150",
+  "enunciado": "A caixa-d'água de um edifício terá a forma de um paralelepípedo retângulo com volume igual a 28 080 litros. Em uma maquete que representa o edifício, a caixa-d'água tem dimensões 2 cm x 3,51 cm x 4 cm.\n\nDado: $1\\ dm^3 = 1\\ L$.\n\nA escala usada pelo arquiteto foi",
+  "alternativas": [
+   "1:10",
+   "1:100",
+   "1:1 000",
+   "1:10 000",
+   "1:100 000"
+  ],
+  "gabarito": "B",
+  "resolucao": "Sendo as dimensões da maquete $0{,}2\\ dm \\times 0{,}351\\ dm \\times 0{,}4\\ dm$, seu volume é dado por\n\n$V = 0{,}2 \\cdot 0{,}351 \\cdot 0{,}4 = 0{,}02808\\ dm^3$\n\nAssim, a razão $1 : K^3$ entre o volume da maquete e o volume da caixa d'água é $1 : 1\\,000\\,000$.\n\nPortanto, a escala $1 : K$ usada pelo arquiteto foi de $1 : 100$.\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: poliedros, prismas e pirâmides",
+  "segundo_assunto": "Razão, proporção e regra de três",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-151",
+  "enunciado": "Os gráficos representam a produção de peças em uma indústria e as horas trabalhadas dos funcionários no período de cinco dias. Em cada dia, o gerente de produção aplica uma metodologia diferente de trabalho. Seu objetivo é avaliar a metodologia mais eficiente para utilizá-la como modelo nos próximos períodos. Sabe-se que, neste caso, quanto maior for a razão entre o número de peças produzidas e o número de horas trabalhadas, maior será a eficiência da metodologia.\n\n[figura]\n\nEm qual dia foi aplicada a metodologia mais eficiente?",
+  "alternativas": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "gabarito": "C",
+  "resolucao": "O dia em que foi aplicada a metodologia mais eficiente foi o dia 3, de acordo com a tabela a seguir:\n\n| Dia | Razão |\n|---|---|\n| 1 | $\\frac{800}{4} = 200$ |\n| 2 | $\\frac{1000}{8} = 125$ |\n| 3 | $\\frac{1100}{5} = 220$ |\n| 4 | $\\frac{1800}{9} = 200$ |\n| 5 | $\\frac{1400}{10} = 140$ |\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Estatística",
+  "segundo_assunto": "Razão, proporção e regra de três",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-152",
+  "enunciado": "O proprietário de um apartamento decidiu instalar porcelanato no piso da sala. Essa sala tem formato retangular com 3,2 m de largura e 3,6 m de comprimento. As peças do porcelanato têm formato de um quadrado com lado medindo 80 cm. Esse porcelanato é vendido em dois tipos de caixas, com os preços indicados a seguir.\n\n• Caixas do tipo A: 4 unidades de piso, R$ 35,00;\n• Caixas do tipo B: 3 unidades de piso, R$ 27,00.\n\nNa instalação do porcelanato, as peças podem ser recortadas e devem ser assentadas sem espaçamento entre elas, aproveitando-se ao máximo os recortes feitos.\n\nA compra que atende às necessidades do proprietário, proporciona a menor sobra de pisos e resulta no menor preço é",
+  "alternativas": [
+   "5 caixas do tipo A.",
+   "1 caixa do tipo A e 4 caixas do tipo B.",
+   "3 caixas do tipo A e 2 caixas do tipo B.",
+   "5 caixas do tipo A e 1 caixa do tipo B.",
+   "6 caixas do tipo B."
+  ],
+  "gabarito": "C",
+  "resolucao": "A sala retangular com 3,2m de largura e 3,6m de comprimento possui área de $(3,2\\text{m}) \\times (3,6\\text{m}) = 11{,}52\\text{m}^2$\n\nComo as peças de porcelanato têm formato quadrado com lado medindo 80 cm = 0,8 m e podem ser recortadas, o número mínimo de peças é igual a\n\n$\\frac{11{,}52}{(0{,}8)^2} = 18$\n\nEntre as alternativas propostas, as que atendem às necessidades do proprietário são:\n\nI) 5 caixas do tipo A, a um custo de R$ 175,00.\nII) 3 caixas do tipo A e 2 caixas do tipo B, a um custo de R$ 159,00.\nIII) 5 caixas do tipo A e 1 caixa do tipo B, a um custo de R$ 202,00.\nIV) 6 caixas do tipo B, a um custo de 162,00.\n\nLogo, o menor preço corresponde a 3 caixas do tipo A e 2 caixas do tipo B.\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Geometria plana",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-153",
+  "enunciado": "Um hotel de 3 andares está sendo construído. Cada andar terá 100 quartos. Os quartos serão numerados de 100 a 399 e cada um terá seu número afixado à porta. Cada número será composto por peças individuais, cada uma simbolizando um único algarismo.\n\nQual a quantidade mínima de peças, simbolizando o algarismo 2, necessárias para identificar o número de todos os quartos?",
+  "alternativas": [
+   "160",
+   "157",
+   "130",
+   "120",
+   "60"
+  ],
+  "gabarito": "A",
+  "resolucao": "I) Os quartos numerados de 100 a 199 possuem 20 peças simbolizando o algarismo 2 (9 peças em que o 2 ocupa a posição das unidades e 11 peças em que o 2 ocupa a posição das dezenas).\n\nII) Analogamente, 20 peças simbolizando o algarismo 2, para os quartos numerados de 300 a 399.\n\nIII) De 200 a 299 temos 120 peças simbolizando o algarismo 2 (9 peças em que o 2 ocupa a posição das unidades, 11 peças em que o 2 ocupa a posição das dezenas e 100 peças em que o 2 ocupa a posição das centenas).\n\nLogo, o total de peças simbolizando o algarismo 2 é $20 + 20 + 120 = 160$.\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Análise combinatória",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-154",
+  "enunciado": "O fenômeno das manifestações populares de massa traz à discussão como estimar o número de pessoas presentes nesse tipo de evento. Uma metodologia usada é: no momento do ápice do evento, é feita uma foto aérea da via pública principal na área ocupada, bem como das vias afluentes que apresentem aglomerações de pessoas que acessam a via principal. A foto é sobreposta por um mapa virtual das vias, ambos na mesma escala, fazendo-se um esboço geométrico da situação. Em seguida, subdivide-se o espaço total em trechos, quantificando a densidade, da seguinte forma:\n\n• 4 pessoas por metro quadrado, se elas estiverem andando em uma mesma direção;\n• 5 pessoas por metro quadrado, se elas estiverem se movimentando sem deixar o local;\n• 6 pessoas por metro quadrado, se elas estiverem paradas.\n\nÉ feito, então, o cálculo do total de pessoas, considerando os diversos trechos, e desconta-se daí 1 000 pessoas para cada carro de som fotografado.\n\nCom essa metodologia, procederam-se aos cálculos para estimar o número de participantes na manifestação cujo esboço geométrico é dado na figura. Há três trechos na via principal: MN, NO e OP, e um trecho numa via afluente da principal: QR. [figura]\n\nSegundo a metodologia descrita, o número estimado de pessoas presentes a essa manifestação foi igual a",
+  "alternativas": [
+   "110 000.",
+   "104 000.",
+   "93 000.",
+   "92 000.",
+   "87 000."
+  ],
+  "gabarito": "B",
+  "resolucao": "Nos trechos indicados, teremos:\n\n• $\\overline{NM}$: 3 000 m² ⇒ 12 000 pessoas\n• $\\overline{NO}$: 9 000 m² ⇒ 54 000 pessoas\n• $\\overline{OP}$: 6 000 m² ⇒ 30 000 pessoas\n• $\\overline{QR}$: 3 000 m² ⇒ 12 000 pessoas\n\nTOTAL: 108 000 pessoas\n\nTemos, nos trechos citados, 4 carros de som, para os quais descontam-se 4 000 pessoas. Logo, o número estimado de pessoas presentes será:\n\n$108\\,000 - 4\\,000 = 104\\,000$ pessoas\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Geometria plana",
+  "segundo_assunto": "Razão, proporção e regra de três",
+  "depende_de_outro_texto": true,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-155",
+  "enunciado": "A Pesquisa Nacional por Amostra de Domicílios (Pnad) é uma pesquisa feita anualmente pelo IBGE, exceto nos anos em que há Censo. Em um ano, foram entrevistados 363 mil jovens para fazer um levantamento sobre suas atividades profissionais e/ou acadêmicas. Os resultados da pesquisa estão indicados no gráfico.\n\n[figura]\n\nDisponível em: http://noticias.uol.com.br. Acesso em 20 ago. 2014.\n\nDe acordo com as informações dadas, o número de jovens entrevistados que trabalha é",
+  "alternativas": [
+   "114 708.",
+   "164 076.",
+   "213 444.",
+   "284 592.",
+   "291 582."
+  ],
+  "gabarito": "C",
+  "resolucao": "Foram entrevistados 363 mil jovens, e, de acordo com os dados do gráfico, temos:\n\n[figura]\n\n1) O percentual de jovens entrevistados que trabalham é de:\n$45{,}2\\% + 13{,}6\\% = 58{,}8\\%$\n\n2) O número de jovens entrevistados que trabalham é:\n$58{,}8\\%$ de $363\\,000 = \\frac{58{,}8}{100} \\cdot 363\\,000 = 0{,}588 \\cdot 363\\,000 = 213\\,444$\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Estatística",
+  "segundo_assunto": "Porcentagem e juros",
+  "depende_de_outro_texto": true,
+  "desatualizada": false,
+  "motivo_desatualizada": "A descrição da Pnad como pesquisa anual está antiga (a Pnad anual foi substituída pela Pnad Contínua a partir de 2012), mas a resposta e a pergunta, feitas sobre os dados do gráfico, continuam valendo."
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-156",
+  "enunciado": "A Lei de Zipf, batizada com o nome do linguista americano George Zipf, é uma lei empírica que relaciona a frequência (f) de uma palavra em um dado texto com o seu ranking (r). Ela é dada por\n\n$f = \\frac{A}{r^{B}}$\n\nO ranking da palavra é a sua posição ao ordenar as palavras por ordem de frequência. Ou seja, r = 1 para a palavra mais frequente, r = 2 para a segunda palavra mais frequente e assim sucessivamente. A e B são constantes positivas.\n\nDisponível em: http://klein.sbm.org.br. Acesso em: 12 ago. 2020 (adaptado).\n\nCom base nos valores de $X = \\log(r)$ e $Y = \\log(f)$, é possível estimar valores para A e B.\n\nNo caso hipotético em que a lei é verificada exatamente, a relação entre Y e X é",
+  "alternativas": [
+   "$Y = \\log(A) - B \\cdot X$",
+   "$Y = \\frac{\\log(A)}{X + \\log(B)}$",
+   "$Y = \\frac{\\log(A)}{B} - X$",
+   "$Y = \\frac{\\log(A)}{B \\cdot X}$",
+   "$Y = \\frac{\\log(A)}{X^{B}}$"
+  ],
+  "gabarito": "A",
+  "resolucao": "Do anunciado, temos: $f = \\frac{A}{r^{B}}$, $X = \\log(r)$ e $Y = \\log(f)$.\n\nAssim, temos:\n\n$\\log(f) = \\log\\left(\\frac{A}{r^{B}}\\right) \\Leftrightarrow \\log(f) = \\log(A) - \\log(r^{B}) \\Leftrightarrow \\log(f) = \\log(A) - B\\log(r) \\Leftrightarrow Y = \\log(A) - B \\cdot X$\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Logaritmos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-157",
+  "enunciado": "Enquanto um ser está vivo, a quantidade de carbono 14 nele existente não se altera. Quando ele morre, essa quantidade vai diminuindo. Sabe-se que a meia-vida do carbono 14 é de 5 730 anos, ou seja, num fóssil de um organismo que morreu há 5 730 anos haverá metade do carbono 14 que existia quando ele estava vivo. Assim, cientistas e arqueólogos usam a seguinte fórmula para saber a idade de um fóssil encontrado:\n\n$Q(t) = Q_0 \\cdot 2^{-\\frac{t}{5730}}$\n\nem que t é o tempo, medido em anos, Q(t) é a quantidade de carbono 14 medida no instante t e $Q_0$ é a quantidade de carbono 14 no ser vivo correspondente.\n\nUm grupo de arqueólogos, numa de suas expedições, encontrou 5 fósseis de espécies conhecidas e mediram a quantidade de carbono 14 neles existente. Na tabela temos esses valores juntamente com a quantidade de carbono 14 nas referidas espécies vivas.\n\n| Fóssil | $Q_0$ | $Q(t)$ |\n|---|---|---|\n| 1 | 128 | 32 |\n| 2 | 256 | 8 |\n| 3 | 512 | 64 |\n| 4 | 1 024 | 512 |\n| 5 | 2 048 | 128 |\n\nO fóssil mais antigo encontrado nessa expedição foi",
+  "alternativas": [
+   "1.",
+   "2.",
+   "3.",
+   "4.",
+   "5."
+  ],
+  "gabarito": "B",
+  "resolucao": "A idade de um fóssil é dada por:\n\n$Q(t) = Q_0 \\cdot 2^{-\\frac{t}{5730}} \\Leftrightarrow 2^{-\\frac{t}{5730}} = \\frac{Q(t)}{Q_0}$\n\nDe acordo com a tabela dada, temos:\n\n• Fóssil 1: $2^{-\\frac{t}{5730}} = \\frac{32}{128} \\Leftrightarrow 2^{-\\frac{t}{5730}} = \\frac{1}{4} \\Leftrightarrow \\left(\\frac{1}{2}\\right)^{\\frac{t}{5730}} = \\left(\\frac{1}{2}\\right)^{2} \\Leftrightarrow \\frac{t}{5730} = 2 \\Leftrightarrow t = 11.460$ anos\n\n• Fóssil 2: $2^{-\\frac{t}{5730}} = \\frac{8}{256} \\Leftrightarrow 2^{-\\frac{t}{5730}} = \\frac{1}{32} \\Leftrightarrow \\left(\\frac{1}{2}\\right)^{\\frac{t}{5730}} = \\left(\\frac{1}{2}\\right)^{5} \\Leftrightarrow \\frac{t}{5730} = 5 \\Leftrightarrow t = 28.650$ anos\n\n• Fóssil 3: $2^{-\\frac{t}{5730}} = \\frac{64}{512} \\Leftrightarrow 2^{-\\frac{t}{5730}} = \\frac{1}{8} \\Leftrightarrow \\left(\\frac{1}{2}\\right)^{\\frac{t}{5730}} = \\left(\\frac{1}{2}\\right)^{3} \\Leftrightarrow \\frac{t}{5730} = 3 \\Leftrightarrow t = 17.190$ anos\n\n• Fóssil 4: $2^{-\\frac{t}{5730}} = \\frac{512}{1024} \\Leftrightarrow 2^{-\\frac{t}{5730}} = \\frac{1}{2} \\Leftrightarrow \\left(\\frac{1}{2}\\right)^{\\frac{t}{5730}} = \\left(\\frac{1}{2}\\right)^{1} \\Leftrightarrow \\frac{t}{5730} = 1 \\Leftrightarrow t = 5.730$ anos\n\n• Fóssil 5: $2^{-\\frac{t}{5730}} = \\frac{128}{2048} \\Leftrightarrow 2^{-\\frac{t}{5730}} = \\frac{1}{16} \\Leftrightarrow \\left(\\frac{1}{2}\\right)^{\\frac{t}{5730}} = \\left(\\frac{1}{2}\\right)^{4} \\Leftrightarrow \\frac{t}{5730} = 4 \\Leftrightarrow t = 22.920$ anos\n\nAssim, o fóssil mais antigo encontrado é o 2.\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Função exponencial",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-158",
+  "enunciado": "Uma das Sete Maravilhas do Mundo Moderno é Templo de Kukulkán, localizado na cidade de Chichén Itzá, no México. Geometricamente, esse templo pode ser representado por um tronco reto de pirâmide de base quadrada.\n\nAs quantidades de cada tipo de figura plana que formam esse tronco de pirâmide são",
+  "alternativas": [
+   "2 quadrados e 4 retângulos.",
+   "1 retângulo e 4 triângulos isósceles.",
+   "2 quadrados e 4 trapézios isósceles.",
+   "1 quadrado, 3 retângulos e 2 trapézios retângulos.",
+   "2 retângulos, 2 quadrados e 2 trapézios retângulos."
+  ],
+  "gabarito": "C",
+  "resolucao": "Do anunciado, temos a seguinte figura:\n\n[figura]\n\nAs quantidades de cada tipo de figura plana que formam esse tronco de pirâmide são 2 quadrados e 4 trapézios isósceles.\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: poliedros, prismas e pirâmides",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-159",
+  "enunciado": "A Figura 1 apresenta uma casa e a planta do seu telhado, em que as setas indicam o sentido do escoamento da água de chuva. [figura] Um pedreiro precisa fazer a planta do escoamento da água de chuva de um telhado que tem três caídas de água, como apresentado na Figura 2. [figura]\n\nA figura que representa a planta do telhado da Figura 2 com o escoamento da água de chuva que o pedreiro precisa fazer é",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "B",
+  "resolucao": "[figura]\n\nA figura que representa a planta do telhado da Figura 2 é a planta [figura].\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Geometria plana",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": true,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-160",
+  "enunciado": "Suponha que uma equipe de corrida de automóveis disponha de cinco tipos de pneu (I, II, III, IV, V), em que o fator de eficiência climática EC (índice que fornece o comportamento do pneu em uso, dependendo do clima) é apresentado:\n\n• EC do pneu I: com chuva 6, sem chuva 3;\n• EC do pneu II: com chuva 7, sem chuva –4;\n• EC do pneu III: com chuva –2, sem chuva 10;\n• EC do pneu IV: com chuva 2, sem chuva 8;\n• EC do pneu V: com chuva –6, sem chuva 7.\n\nO coeficiente de rendimento climático (CRC) de um pneu é calculado como a soma dos produtos dos fatores de EC, com ou sem chuva, pelas correspondentes probabilidades de se ter tais condições climáticas: ele é utilizado para determinar qual pneu deve ser selecionado para uma dada corrida, escolhendo-se o que apresentar o maior CRC naquele dia. No dia de certa corrida, a probabilidade de chover era de 70% e o chefe da equipe calculou o CRC de cada um dos cinco tipos de pneu.\n\nO pneu escolhido foi",
+  "alternativas": [
+   "I.",
+   "II.",
+   "III.",
+   "IV.",
+   "V."
+  ],
+  "gabarito": "A",
+  "resolucao": "Cálculo do coeficiente de rendimento climático (CRC) de cada tipo de pneu:\n\n| Pneu | CRC |\n|---|---|\n| I | $6 \\cdot \\frac{70}{100} + 3 \\cdot \\frac{30}{100} = 5{,}1$ |\n| II | $7 \\cdot \\frac{70}{100} + (-4) \\cdot \\frac{30}{100} = 3{,}7$ |\n| III | $(-2) \\cdot \\frac{70}{100} + 10 \\cdot \\frac{30}{100} = 1{,}6$ |\n| IV | $2 \\cdot \\frac{70}{100} + 8 \\cdot \\frac{30}{100} = 3{,}8$ |\n| V | $(-6) \\cdot \\frac{70}{100} + 7 \\cdot \\frac{30}{100} = -2{,}1$ |\n\nO pneu escolhido é o do tipo I.\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Probabilidade",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-161",
+  "enunciado": "Um pé de eucalipto em idade adequada para o corte rende, em média, 20 mil folhas de papel A4. A densidade superficial do papel A4, medida pela razão da massa de uma folha desse papel por sua área, é de 75 gramas por metro quadrado, e a área de uma folha de A4 é 0,062 metro quadrado.\n\nDisponível em: http://revistagalileu.globo.com. Acesso em: 28 fev. 2013 (adaptado).\n\nNessas condições, quantos quilogramas de papel rende, em média, um pé de eucalipto?",
+  "alternativas": [
+   "4 301",
+   "1 500",
+   "930",
+   "267",
+   "93"
+  ],
+  "gabarito": "E",
+  "resolucao": "1) Um pé de eucalipto rende 20 000 folhas. Como a área de cada folha é de 0,062 m², temos uma área total de $20\\,000 \\times 0{,}062 = 1\\,240\\ \\text{m}^2$.\n\n2) A densidade do papel é de 75 g/m². Então,\n\n$\\frac{\\text{massa}}{1\\,240\\ \\text{m}^2} = 75\\ \\text{g/m}^2 \\Rightarrow \\text{massa} = 93\\,000\\ \\text{g} = 93\\ \\text{kg}$\n\nResposta: E",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-162",
+  "enunciado": "Com o objetivo de contratar uma empresa responsável pelo serviço de atendimento ao público, os executivos de uma agência bancária realizaram uma pesquisa de satisfação envolvendo cinco empresas especializadas nesse segmento. Os procedimentos analisados (com pesos que medem sua importância para a agência) e as respectivas notas que cada empresa recebeu estão organizados no quadro.\n\nNotas da empresa\n\n| Procedimento | Peso | X | Y | Z | W | T |\n|---|---|---|---|---|---|---|\n| Rapidez no atendimento | 3 | 5 | 1 | 4 | 3 | 4 |\n| Clareza nas informações passadas aos clientes | 5 | 1 | 4 | 3 | 3 | 2 |\n| Cortesia no atendimento | 2 | 2 | 2 | 2 | 3 | 4 |\n\nA agência bancária contratará a empresa com a maior média ponderada das notas obtidas nos procedimentos analisados.\n\nApós a análise dos resultados da pesquisa de satisfação, os executivos da agência bancária contrataram a empresa",
+  "alternativas": [
+   "X.",
+   "Y.",
+   "Z.",
+   "W.",
+   "T."
+  ],
+  "gabarito": "C",
+  "resolucao": "As notas ponderadas são:\n\n| Empresa | Notas |\n|---|---|\n| X | $\\frac{3 \\cdot 5 + 5 \\cdot 1 + 2 \\cdot 2}{3 + 5 + 2} = 2,4$ |\n| Y | $\\frac{3 \\cdot 1 + 5 \\cdot 4 + 2 \\cdot 2}{3 + 5 + 2} = 2,7$ |\n| Z | $\\frac{3 \\cdot 4 + 5 \\cdot 3 + 2 \\cdot 2}{3 + 5 + 2} = 3,1$ |\n| W | $\\frac{3 \\cdot 3 + 5 \\cdot 3 + 2 \\cdot 3}{3 + 5 + 2} = 3$ |\n| T | $\\frac{3 \\cdot 4 + 5 \\cdot 2 + 2 \\cdot 4}{3 + 5 + 2} = 3$ |\n\nA empresa contratada foi a Z.\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Estatística",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-163",
+  "enunciado": "O Estatuto do Idoso, no Brasil, prevê certos direitos às pessoas com idade avançada, concedendo a estas, entre outros benefícios, a restituição de imposto de renda antes dos demais contribuintes. A tabela informa os nomes e as idades de 12 idosos que aguardam suas restituições de imposto de renda. Considere que, entre os idosos, a restituição seja concedida em ordem decrescente de idade e que, em subgrupos de pessoas com a mesma idade, a ordem seja decidida por sorteio.\n\n| Nome | Idade (em ano) |\n|---|---|\n| Orlando | 89 |\n| Gustavo | 86 |\n| Luana | 86 |\n| Teresa | 85 |\n| Márcia | 84 |\n| Roberto | 82 |\n| Heloisa | 75 |\n| Marisa | 75 |\n| Pedro | 75 |\n| João | 75 |\n| Antônio | 72 |\n| Fernanda | 70 |\n\nNessas condições, a probabilidade de João ser a sétima pessoa do grupo a receber sua restituição é igual a",
+  "alternativas": [
+   "$\\frac{1}{12}$",
+   "$\\frac{7}{12}$",
+   "$\\frac{1}{8}$",
+   "$\\frac{5}{6}$",
+   "$\\frac{1}{4}$"
+  ],
+  "gabarito": "E",
+  "resolucao": "Existem 4 pessoas aptas a receber a restituição em 7.º lugar, são eles: Heloísa, Marisa, Pedro e João.\n\nA probabilidade de João ser escolhido é $\\frac{1}{4}$.\n\nResposta: E",
+  "materia": "Matemática",
+  "assunto": "Probabilidade",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-164",
+  "enunciado": "No Brasil, o tempo necessário para um estudante realizar sua formação até a diplomação em um curso superior, considerando os 9 anos de ensino fundamental, os 3 anos do ensino médio e os 4 anos de graduação (tempo médio), é de 16 anos. No entanto, a realidade dos brasileiros mostra que o tempo médio de estudo de pessoas acima de 14 anos é ainda muito pequeno, conforme apresentado na tabela.\n\nTempo médio de estudo de pessoas acima de 14 anos\n\n| Ano da Pesquisa | 1995 | 1999 | 2003 | 2007 |\n|---|---|---|---|---|\n| Tempo de estudo (em ano) | 5,2 | 5,8 | 6,4 | 7,0 |\n\nDisponível em: www.ibge.gov.br. Acesso em: 19 dez. 2012 (adaptado).\n\nConsidere que o incremento no tempo de estudo, a cada período, para essas pessoas, se mantenha constante até o ano 2050, e que se pretenda chegar ao patamar de 70% do tempo necessário à obtenção do curso superior dado anteriormente.\n\nO ano em que o tempo médio de estudo de pessoas acima de 14 anos atingirá o percentual pretendido será",
+  "alternativas": [
+   "2018.",
+   "2023.",
+   "2031.",
+   "2035.",
+   "2043."
+  ],
+  "gabarito": "D",
+  "resolucao": "Os valores que indicam os tempos de estudo a cada 4 anos formam uma PA cujo 1.º termo é $a_1 = 5,2$ e $r = 0,6$.\n\n$a_n = \\frac{70}{100} \\cdot 16 = 11,2 \\Leftrightarrow a_n = a_1 + (n - 1) \\cdot r \\Leftrightarrow 11,2 = 5,2 + (n - 1) \\cdot 0,6 \\Leftrightarrow 6 = (n - 1) \\cdot 0,6 \\Leftrightarrow 10 = n - 1 \\Leftrightarrow n = 11 \\Rightarrow a_{11} = 11,2$\n\nComo os anos da pesquisa vão de 4 em 4, o termo $a_{11}$ representa o ano de 2035.\n\nResposta: D",
+  "materia": "Matemática",
+  "assunto": "Progressão aritmética e geométrica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-165",
+  "enunciado": "Uma torneira está gotejando água em um balde com capacidade de 18 litros. No instante atual, o balde se encontra com ocupação de 50% de sua capacidade. A cada segundo caem 5 gotas de água da torneira, e uma gota é formada, em média, por $5 \\times 10^{-2}$ mL de água.\n\nQuanto tempo, em hora, será necessário para encher completamente o balde, partindo do instante atual?",
+  "alternativas": [
+   "$2 \\times 10^{1}$",
+   "$1 \\times 10^{1}$",
+   "$2 \\times 10^{-2}$",
+   "$1 \\times 10^{-2}$",
+   "$1 \\times 10^{-3}$"
+  ],
+  "gabarito": "B",
+  "resolucao": "Para encher o balde, faltam 9 litros = 9000 mL.\n\n1 gota ⟷ $5 \\cdot 10^{-2}$ mL\n\n$x$ ⟷ 9000 mL\n\n$x = 180\\,000$ gotas\n\n5 gotas ⟷ 1 s\n\n180 000 gotas ⟷ $y$\n\n$\\therefore y = 36\\,000$ s = 10 h = $1 \\times 10^{1}$ h\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-166",
+  "enunciado": "O artista gráfico holandês Maurits Cornelius Escher criou belíssimas obras nas quais as imagens se repetem, com diferentes tamanhos, induzindo ao raciocínio de repetição infinita das imagens. Inspirado por ele, um artista fez um rascunho de uma obra na qual propunha a ideia de construção de uma sequência de infinitos quadrados, cada vez menores, uns sob os outros, conforme indicado na figura.\n\n[figura]\n\nO quadrado $PRST$, com lado de medida 1, é o ponto de partida. O segundo quadrado é construído sob ele tomando-se o ponto médio da base do quadrado anterior e criando-se um novo quadrado, cujo lado corresponde à metade dessa base. Essa sequência de construção se repete recursivamente.\n\nQual é a medida do lado do centésimo quadrado construído de acordo com esse padrão?",
+  "alternativas": [
+   "$\\left(\\frac{1}{2}\\right)^{100}$",
+   "$\\left(\\frac{1}{2}\\right)^{99}$",
+   "$\\left(\\frac{1}{2}\\right)^{97}$",
+   "$\\left(\\frac{1}{2}\\right)^{-98}$",
+   "$\\left(\\frac{1}{2}\\right)^{-99}$"
+  ],
+  "gabarito": "B",
+  "resolucao": "As medidas $1, \\frac{1}{2}, \\frac{1}{4}, \\ldots$ dos lados dos quadrados formam uma P.G. de razão $\\frac{1}{2}$.\n\nA medida do lado do centésimo quadrado é dada por $\\ell_{100} = \\ell_1 \\cdot q^{99}$.\n\n$\\ell_{100} = 1 \\cdot \\left(\\frac{1}{2}\\right)^{99} = \\left(\\frac{1}{2}\\right)^{99}$\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Progressão aritmética e geométrica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-167",
+  "enunciado": "O gerente de uma loja de cosméticos colocou à venda cinco diferentes tipos de perfume, tendo em estoque na loja as mesmas quantidades de cada um deles. O setor de controle de estoque encaminhou ao gerente registros gráficos descrevendo os preços unitários de cada perfume, em real, e a quantidade vendida de cada um deles, em percentual, ocorrida no mês de novembro.\n\nPreço do perfume por unidade (R$)\n\n| Perfume | Preço (R$) |\n|---|---|\n| Perfume I | 200 |\n| Perfume II | 170 |\n| Perfume III | 150 |\n| Perfume IV | 100 |\n| Perfume V | 80 |\n\nPorcentagem da quantidade vendida de cada perfume\n\n| Perfume | Porcentagem |\n|---|---|\n| Perfume I | 13% |\n| Perfume II | 10% |\n| Perfume III | 16% |\n| Perfume IV | 29% |\n| Perfume V | 32% |\n\nDados a chegada do final de ano e o aumento das vendas, a gerência pretende aumentar a quantidade estocada do perfume do tipo que gerou a maior arrecadação em espécie, em real, no mês de novembro.\n\nNessas condições, qual o tipo de perfume que deverá ter maior reposição no estoque?",
+  "alternativas": [
+   "I",
+   "II",
+   "III",
+   "IV",
+   "V"
+  ],
+  "gabarito": "D",
+  "resolucao": "Sendo $Q$ a quantidade em estoque dos perfumes, temos que a arrecadação de cada um deles será dada por:\n\nI) $0,13 \\cdot Q \\cdot 200 = 26 \\cdot Q$\n\nII) $0,1 \\cdot Q \\cdot 170 = 17 \\cdot Q$\n\nIII) $0,16 \\cdot Q \\cdot 150 = 24 \\cdot Q$\n\nIV) $0,29 \\cdot Q \\cdot 100 = 29 \\cdot Q$\n\nV) $0,32 \\cdot Q \\cdot 80 = 25,6 \\cdot Q$\n\nPortanto, o que trouxe mais arrecadação foi o perfume IV.\n\nResposta: D",
+  "materia": "Matemática",
+  "assunto": "Estatística",
+  "segundo_assunto": "Porcentagem e juros",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-168",
+  "enunciado": "Uma loja de materiais de construção vende dois tipos de caixas-d'água: tipo A e tipo B. Ambas têm formato cilíndrico e possuem o mesmo volume, e a altura da caixa-d'água do tipo B é igual a 25% da altura da caixa-d'água do tipo A.\n\nSe $R$ denota o raio da caixa-d'água do tipo A, então o raio da caixa-d'água do tipo B é",
+  "alternativas": [
+   "$\\frac{R}{2}$",
+   "$2R$",
+   "$4R$",
+   "$5R$",
+   "$16R$"
+  ],
+  "gabarito": "B",
+  "resolucao": "Seja $x$ o raio da caixa-d'água do tipo B.\n\n[figura]\n\nComo os volumes são iguais, temos:\n\n$\\pi R^2 H = \\pi x^2 \\cdot \\frac{H}{4} \\Rightarrow 4R^2 = x^2 \\Rightarrow 2R = x$, pois $R$ e $x$ são positivos.\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: cilindro, cone e esfera",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-169",
+  "enunciado": "A lei municipal para a edificação de casas em lotes de uma cidade determina que sejam obedecidos os seguintes critérios:\n\n- afastamento mínimo de 4 m da rua;\n- afastamento mínimo de 1 m da divisa com outro lote;\n- área total construída da casa entre 40% e 50% da área total do lote.\n\nUm construtor submeteu para aprovação na prefeitura dessa cidade uma planta com propostas para a construção de casas em seus 5 lotes. Cada lote tem área medindo 200 m².\n\nA imagem apresenta um esquema, sem escala, no qual estão representados os lotes, as ruas e os afastamentos considerados nos projetos entre as casas e as divisas dos lotes. As medidas indicadas no esquema estão expressas em metro.\n\n[figura]\n\nA prefeitura aprovará apenas a planta da casa",
+  "alternativas": [
+   "1.",
+   "2.",
+   "3.",
+   "4.",
+   "5."
+  ],
+  "gabarito": "E",
+  "resolucao": "De acordo com os critérios determinados, a única casa que será aprovada é a casa 5, pois ela tem afastamento de 4m da rua, afastamento de 1m de cada lote com o qual ela faz divisa e sua área é dada por $(20 - 2) \\cdot (10 - 5)\\ \\text{m}^2 = 90\\ \\text{m}^2$, sendo que $40\\% \\cdot 200\\ \\text{m}^2 < 90\\ \\text{m}^2 < 50\\% \\cdot 200\\ \\text{m}^2$.\n\nResposta: E",
+  "materia": "Matemática",
+  "assunto": "Geometria plana",
+  "segundo_assunto": "Porcentagem e juros",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-170",
+  "enunciado": "Nos livros *Harry Potter*, um anagrama do nome do personagem “TOM MARVOLO RIDDLE” gerou a frase “I AM LORD VOLDEMORT”.\n\nSuponha que Harry quisesse formar todos os anagramas da frase “I AM POTTER”, de tal forma que as vogais e consoantes aparecessem sempre intercaladas, e sem considerar o espaçamento entre as letras.\n\nNessas condições, o número de anagramas formados é dado por",
+  "alternativas": [
+   "$9!$",
+   "$4!\\,5!$",
+   "$2 \\times 4!\\,5!$",
+   "$\\frac{9!}{2}$",
+   "$\\frac{4!\\,5!}{2}$"
+  ],
+  "gabarito": "E",
+  "resolucao": "Como existem 5 consoantes e 4 vogais e elas devem aparecer intercaladas, as posições entre consoantes e vogais será fixa do tipo CVCVCVCVC.\n\nPortanto, o número de anagramas será dado pelas permutações das consoantes e vogais entre si, dado por:\n\n$P_{5}^{2} \\cdot P_{4} = \\frac{5!}{2!} \\cdot 4! = \\frac{4!\\,5!}{2}$\n\nResposta: E",
+  "materia": "Matemática",
+  "assunto": "Análise combinatória",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-171",
+  "enunciado": "A exposição a barulhos excessivos, como os que percebemos em geral em trânsitos intensos, casas noturnas e espetáculos musicais, podem provocar insônia, estresse, infarto, perda de audição, entre outras enfermidades. De acordo com a Organização Mundial da Saúde, todo e qualquer som que ultrapasse os 55 decibéis (unidade de intensidade do som) já pode ser considerado nocivo para a saúde. O gráfico foi elaborado a partir da medição do ruído produzido, durante um dia, em um canteiro de obras.\n\n[figura]\n\nDisponível em: www.revistaencontro.com.br. Acesso em: 12 ago. 2020 (adaptado).\n\nNesse dia, durante quantas horas o ruído esteve acima de 55 decibéis?",
+  "alternativas": [
+   "5",
+   "8",
+   "10",
+   "11",
+   "13"
+  ],
+  "gabarito": "E",
+  "resolucao": "Ruído acima de 55 decibéis:\n\nI) 2h até 5h ⟶ duração 3h\n\nII) 6h até 9h ⟶ duração 3h\n\nIII) 11h até 14h ⟶ duração 3h\n\nIV) 16h até 17h ⟶ duração 1h\n\nV) 19h até 22h ⟶ duração 3h\n\nTotal = 3h + 3h + 3h + 1h + 3h = 13 horas\n\nResposta: E",
+  "materia": "Física",
+  "assunto": "Ondas e acústica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-172",
+  "enunciado": "O técnico de um time de basquete pretende aumentar a estatura média de sua equipe de 1,93 m para, no mínimo, 1,99 m. Para tanto, dentre os 15 jogadores que fazem parte de sua equipe, irá substituir os quatro mais baixos, de estaturas: 1,78 m, 1,82 m, 1,84 m e 1,86 m. Para isso, o técnico contratou um novo jogador de 2,02 m. Os outros três jogadores que ele ainda precisa contratar devem satisfazer à sua necessidade de aumentar a média das estaturas da equipe. Ele fixará a média das estaturas para os três jogadores que ainda precisa contratar dentro do critério inicialmente estabelecido.\n\nQual deverá ser a média mínima das estaturas, em metro, que ele deverá fixar para o grupo de três novos jogadores que ainda irá contratar?",
+  "alternativas": [
+   "1,96",
+   "1,98",
+   "2,05",
+   "2,06",
+   "2,08"
+  ],
+  "gabarito": "D",
+  "resolucao": "Sendo $S_{11}$ a soma das alturas dos outros 11 jogadores e $S_3$ a soma das alturas dos 3 novos contratados, temos:\n\n$1{,}93 = \\frac{1{,}78 + 1{,}82 + 1{,}84 + 1{,}86 + S_{11}}{15}$\n\n$28{,}95 - 7{,}3 = S_{11}$\n\n$1{,}99 \\leq \\frac{21{,}65 + 2{,}02 + S_3}{15}$\n\n$29{,}85 \\leq 23{,}67 + S_3$\n\n$6{,}18 \\leq S_3$\n\nPortanto, a média dos novos jogadores deve ser no mínimo\n\n$\\frac{6{,}18}{3} = 2{,}06$\n\nResposta: D",
+  "materia": "Matemática",
+  "assunto": "Estatística",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-173",
+  "enunciado": "O consumo de espumantes no Brasil tem aumentado nos últimos anos. Uma das etapas do seu processo de produção consiste no envasamento da bebida em garrafas semelhantes às da imagem. Nesse processo, a vazão do líquido no interior da garrafa é constante e cessa quando atinge o nível de envasamento.\n\n[figura]\n\nQual esboço de gráfico melhor representa a variação da altura do líquido em função do tempo, na garrafa indicada na imagem?",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "B",
+  "resolucao": "Sendo a vazão constante, enquanto o raio da garrafa for constante a altura terá o seguinte gráfico:\n\n[figura]\n\nQuando o raio da garrafa diminuir, a altura crescerá mais rapidamente segundo o gráfico:\n\n[figura]\n\nResposta: B",
+  "materia": "Física",
+  "assunto": "Hidrodinâmica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-174",
+  "enunciado": "O quadro representa os gastos mensais, em real, de uma família com internet, mensalidade escolar e mesada do filho.\n\n| Internet | Mensalidade escolar | Mesada do filho |\n|---|---|---|\n| 120 | 700 | 400 |\n\nNo início do ano, a internet e a mensalidade escolar tiveram acréscimos, respectivamente, de 20% e 10%. Necessitando manter o valor da despesa mensal total com os itens citados, a família reduzirá a mesada do filho.\n\nQual será a porcentagem da redução da mesada?",
+  "alternativas": [
+   "15,0",
+   "23,5",
+   "30,0",
+   "70,0",
+   "76,5"
+  ],
+  "gabarito": "B",
+  "resolucao": "I) O gasto da família com internet, mensalidade escolar e mesada do filho em reais é\n\n$120 + 700 + 400 = 1220$\n\nII) Com os aumentos de $20\\%$ da internet e $10\\%$ da mensalidade escolar, tais gastos passarem a ser $144$ e $770$ reais, respectivamente.\n\nIII) Para manter os gastos em $1220$ reais, sendo $x$ o novo valor da mesada, em reais, temos.\n\n$144 + 770 + x = 1220$\n\n$x = 1220 - 914$\n\n$x = 306$\n\nIV) A mesada de $306$ reais representa $\\frac{306}{400} = 0{,}765$ ou $76{,}5\\%$ de $400$ reais; logo, uma redução de $23{,}5\\%$.\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-175",
+  "enunciado": "Num recipiente com a forma de paralelepípedo reto-retângulo, colocou-se água até a altura de 8 cm e um objeto, que ficou flutuando na superfície da água.\n\nPara retirar o objeto de dentro do recipiente, a altura da coluna de água deve ser de, pelo menos, 15 cm. Para a coluna de água chegar até essa altura, é necessário colocar dentro do recipiente bolinhas de volume igual a $6\\ \\text{cm}^3$ cada, que ficarão totalmente submersas.\n\n[figura]\n\nO número mínimo de bolinhas necessárias para que se possa retirar o objeto que flutua na água, seguindo as instruções dadas, é de",
+  "alternativas": [
+   "14",
+   "16",
+   "18",
+   "30",
+   "34"
+  ],
+  "gabarito": "A",
+  "resolucao": "I) Para que a água passe do nível 8 cm para 15 cm, este deve aumentar 7 cm. Assim, o volume correspondente a esse aumento é:\n\n$4\\ \\text{cm} \\cdot 3\\ \\text{cm} \\cdot 7\\ \\text{cm} = 84\\ \\text{cm}^3$\n\nII) Como cada bolinha que será adicionada tem volume de $6\\ \\text{cm}^3$, segue-se que devem ser colocadas $n$ bolinhas; logo:\n\n$n \\cdot 6\\ \\text{cm}^3 = 84\\ \\text{cm}^3 \\Leftrightarrow n = \\frac{84\\ \\text{cm}^3}{6\\ \\text{cm}^3}$\n\n$\\therefore n = 14$\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: poliedros, prismas e pirâmides",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-176",
+  "enunciado": "Azulejo designa peça de cerâmica vitrificada e/ou esmaltada usada, sobretudo, no revestimento de paredes. A origem das técnicas de fabricação de azulejos é oriental, mas sua expansão pela Europa traz consigo uma diversificação de estilos, padrões e usos, que podem ser decorativos, utilitários e arquitetônicos.\n\nDisponível em: www.itaucultural.org.br. Acesso em: 31 jul. 2012.\n\nAzulejos no formato de octógonos regulares serão utilizados para cobrir um painel retangular conforme ilustrado na figura.\n\n[figura]\n\nEntre os octógonos e na borda lateral dessa área, será necessária a colocação de 15 azulejos de outros formatos para preencher os 15 espaços em branco do painel. Uma loja oferece azulejos nos seguintes formatos:\n\n1 — Triângulo retângulo isósceles;\n2 — Triângulo equilátero;\n3 — Quadrado.\n\nOs azulejos necessários para o devido preenchimento das áreas em branco desse painel são os de formato",
+  "alternativas": [
+   "1",
+   "3",
+   "1 e 2",
+   "1 e 3",
+   "2 e 3"
+  ],
+  "gabarito": "D",
+  "resolucao": "A partir da figura e das informações do texto, tem-se:\n\n[figura]\n\nCada ângulo interno do octógono mede\n\n$\\frac{180^\\circ (8-2)}{8} = 135^\\circ$\n\nAssim, cada ângulo externo do octógono mede\n\n$180^\\circ - 135^\\circ = 45^\\circ$\n\nComo os octógonos são regulares, é possível constatar que os triângulos que representam os preenchimentos são triângulos isósceles com ângulos de 45 graus. Assim, o terceiro ângulo mede $90^\\circ$, o que faz com que uma das regiões seja um triângulo retângulo isósceles. O quadrilátero é equilátero e pela figura é possível obter seu ângulo interno.\n\n$135^\\circ + 135^\\circ + x = 360^\\circ$\n\n$x = 90^\\circ$\n\nAssim o preenchimento em formato de quadrilátero é um quadrado. As figuras necessárias são\n\n1 — Triângulo retângulo isósceles;\n3 — Quadrado.\n\nResposta: D",
+  "materia": "Matemática",
+  "assunto": "Geometria plana",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-177",
+  "enunciado": "No período de fim de ano, o síndico de um condomínio resolveu colocar, em um poste, uma iluminação natalina em formato de cone, lembrando uma árvore de Natal, conforme as figuras 1 e 2.\n\n[figura]\n\n[figura]\n\nA árvore deverá ser feita colocando-se mangueiras de iluminação, consideradas segmentos de reta de mesmo comprimento, a partir de um ponto situado a 3 m de altura no poste até um ponto de uma circunferência de fixação, no chão, de tal forma que esta fique dividida em 20 arcos iguais. O poste está fixado no ponto C (centro da circunferência) perpendicularmente ao plano do chão.\n\nPara economizar, ele utilizará mangueiras de iluminação aproveitadas de anos anteriores, que juntas totalizaram pouco mais de 100 m de comprimento, dos quais ele decide usar exatamente 100 m e deixar o restante como reserva.\n\nPara que ele atinja seu objetivo, o raio, em metro, da circunferência deverá ser de",
+  "alternativas": [
+   "4,00",
+   "4,87",
+   "5,00",
+   "5,83",
+   "6,26"
+  ],
+  "gabarito": "A",
+  "resolucao": "I) Como os 100 m de mangueiras de iluminação devem ser divididos em 20 segmentos de reta, cada segmento deve ter 5 m.\n\nII) O trio poste, mangueira e raio da circunferência podem ser representados na figura a seguir.\n\n[figura]\n\nPelo Teorema de Pitágoras, segue-se que:\n\n$x^2 + 3^2 = 5^2 \\Leftrightarrow x^2 = 25 - 9 \\Leftrightarrow x^2 = 16 \\Leftrightarrow x = 4$\n\nPortanto, o raio da circunferência será 4,0 metros.\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: cilindro, cone e esfera",
+  "segundo_assunto": "Geometria plana",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-178",
+  "enunciado": "Um grupo sanguíneo, ou tipo sanguíneo, baseia-se na presença ou ausência de dois antígenos, A e B, na superfície das células vermelhas do sangue. Como dois antígenos estão envolvidos, os quatro tipos sanguíneos distintos são:\n\n- Tipo A: apenas o antígeno A está presente;\n- Tipo B: apenas o antígeno B está presente;\n- Tipo AB: ambos os antígenos estão presentes;\n- Tipo O: nenhum dos antígenos está presente.\n\nDisponível em: http://saude.hsw.uol.com.br. Acesso em: 15 abr. 2012 (adaptado).\n\nForam coletadas amostras de sangue de 200 pessoas e, após análise laboratorial, foi identificado que em 100 amostras está presente o antígeno A, em 110 amostras há presença do antígeno B e em 20 amostras nenhum dos antígenos está presente.\n\nDessas pessoas que foram submetidas à coleta de sangue, o número das que possuem o tipo sanguíneo A é igual a",
+  "alternativas": [
+   "30",
+   "60",
+   "70",
+   "90",
+   "100"
+  ],
+  "gabarito": "C",
+  "resolucao": "Das 200 pessoas do estudo, tem-se que 180 apresentam os antígenos A, B ou ambos.\n\nSeja $x$ o número de pessoas que possuem os dois antígenos, A e B.\n\nTal situação pode ser descrita pelo diagrama a seguir.\n\n[figura]\n\nAssim:\n\n$x + 100 - x + 110 - x = 180$\n\n$210 - 180 = x$\n\n$x = 30$\n\nPortanto, o número de pessoas que possuem apenas o antígeno A é 70.\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Conjuntos e conjuntos numéricos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-179",
+  "enunciado": "Antônio, Joaquim e José são sócios de uma empresa cujo capital é dividido, entre os três, em partes proporcionais a: 4, 6 e 6, respectivamente. Com a intenção de igualar a participação dos três sócios no capital da empresa, Antônio pretende adquirir uma fração do capital de cada um dos outros dois sócios.\n\nA fração do capital de cada sócio que Antônio deverá adquirir é",
+  "alternativas": [
+   "$\\frac{1}{2}$",
+   "$\\frac{1}{3}$",
+   "$\\frac{1}{9}$",
+   "$\\frac{2}{3}$",
+   "$\\frac{4}{3}$"
+  ],
+  "gabarito": "C",
+  "resolucao": "Seja $C$ o capital da empresa e $x$, $y$ e $z$ as partes de Antônio, Joaquim e José, respectivamente, proporcionais a 4, 6, 6. Sendo assim, temos:\n\n$\\frac{x}{4} = \\frac{y}{6} = \\frac{z}{6} \\Leftrightarrow \\frac{x+y+z}{16} = \\frac{x}{4} = \\frac{y}{6} = \\frac{z}{6} \\Leftrightarrow \\frac{C}{16} = \\frac{x}{4} = \\frac{y}{6} = \\frac{z}{6} \\Leftrightarrow \\begin{cases} x = \\frac{4}{16}C \\\\ y = \\frac{6}{16}C \\\\ z = \\frac{6}{16}C \\end{cases}$\n\nSendo $2K$ a fração do capital que Antônio adquiriu de Joaquim e José, temos que:\n\n$\\frac{4}{16}C + 2K = \\frac{C}{3} \\Leftrightarrow 12C + 96K = 16C \\Leftrightarrow K = \\frac{C}{24}$\n\nLogo, a fração que Antônio deve adquirir de cada sócio será:\n\n$\\frac{\\frac{C}{24}}{\\frac{6C}{16}} = \\frac{1}{9}$\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-180",
+  "enunciado": "Pergolado é o nome que se dá a um tipo de cobertura projetada por arquitetos, comumente em praças e jardins, para criar um ambiente para pessoas ou plantas, no qual há uma quebra da quantidade de luz, dependendo da posição do sol. É feito como um estrado de vigas iguais, postas paralelas e perfeitamente em fila, como ilustra a figura.\n\n[figura]\n\nUm arquiteto projeta um pergolado com vãos de 30 cm de distância entre suas vigas, de modo que, no solstício de verão, a trajetória do sol durante o dia seja realizada num plano perpendicular à direção das vigas, e que o sol da tarde, no momento em que seus raios fizerem 30° com a posição a pino, gere a metade da luz que passa no pergolado ao meio-dia.\n\nPara atender à proposta do projeto elaborado pelo arquiteto, as vigas do pergolado devem ser construídas de maneira que a altura, em centímetro, seja a mais próxima possível de",
+  "alternativas": [
+   "9",
+   "15",
+   "26",
+   "52",
+   "60"
+  ],
+  "gabarito": "C",
+  "resolucao": "I) Considere a ilustração abaixo que representa os raios de sol quando ele está a pino.\n\n[figura]\n\nII) Quando o sol se inclina 30° em relação à posição a pino, os raios de sol que estavam passando antes do ponto que representa a metade da distância entre as duas vigas passam a ser barrados. Veja a ilustração a seguir.\n\n[figura]\n\nIII) Seja x a altura da viga, assim:\n\n$\\frac{x}{15} = \\operatorname{tg} 60^\\circ \\Leftrightarrow x = 15 \\cdot \\sqrt{3} \\Leftrightarrow n \\cong 15 \\cdot 1{,}7 \\Leftrightarrow n \\cong 25{,}5$\n\nLogo, o valor mais próximo é 26.\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Trigonometria no triângulo e ciclo",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-01",
+  "enunciado": "Considere a tirinha *Garfield*, de Jim Davis.\n\n[figura]\n\nFalas: 1º quadrinho, “O MUNDO EXISTE PARA ME DIVERTIR.”; 3º quadrinho, “ESTE DEVE SER O INTERVALO.”\n\n(www.folha.uol.com.br)\n\nO pronome “este”, no terceiro quadrinho,",
+  "alternativas": [
+   "refere-se ao presente em que não há diversão.",
+   "retoma o sentido das palavras “o mundo”.",
+   "refere-se ao período em que o mundo diverte o personagem.",
+   "aponta para um momento em que o desejo do personagem se realiza.",
+   "retoma o sentido da frase “o mundo existe para me divertir”."
+  ],
+  "gabarito": "A",
+  "resolucao": "O pronome demonstrativo este refere-se ao que está próximo da pessoa que fala, no caso, o tempo presente para Garfield, em que ele alude a um intervalo (3.º quadrinho) porque nada acontece, ou seja, não há diversão (1.º quadrinho).\n\nResposta: A",
+  "materia": "Português",
+  "assunto": "Coesão e coerência",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-02",
+  "enunciado": "Leia os versos de Manoel de Barros.\n\nEscrever nem uma coisa\nNem outra —\nA fim de dizer todas —\nOu, pelo menos, nenhumas.\n\nAssim,\nAo poeta faz bem\nDesexplicar —\nTanto quanto escurecer acende os vaga-lumes.\n\n(Poesia completa, 2013.)\n\nTanto na forma quanto no conteúdo, o poema",
+  "alternativas": [
+   "descreve uma maneira de fazer poesia que consiste em criar um enigma, a ser resolvido pelo leitor, que revelará o significado do poema.",
+   "prescreve uma escrita que consiste em subtrair das palavras seu sentido rígido usual, fazendo aparecer nelas significados inusitados.",
+   "defende que a poesia deve ser construída com elementos bem encadeados da realidade, de modo a formular uma crítica social fundamentada.",
+   "critica a poesia espontânea e ingênua que não se preocupa em utilizar corretamente os elementos da linguagem prescritos pela gramática.",
+   "argumenta em favor de uma poesia libertária, que expresse os estados de espírito mais extremos do ser humano."
+  ],
+  "gabarito": "B",
+  "resolucao": "Os versos de Manoel de Barros prescrevem uma arte poética em que não haja o sentido corrente e normal da linguagem. A poesia deve “desexplicar”, neologismo que conota o surgimento de significados inusitados que causem estranhamento no leitor.",
+  "materia": "Literatura",
+  "assunto": "Modernismo (3ª fase) e Contemporânea",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-03",
+  "enunciado": "Leia o início do conto “Luís Soares”, de Machado de Assis, para responder às questões de 03 a 06.\n\nTrocar o dia pela noite, dizia Luís Soares, é restaurar o império da natureza corrigindo a obra da sociedade. O calor do sol está dizendo aos homens que vão descansar e dormir, ao passo que a frescura relativa da noite é a verdadeira estação em que se deve viver. Livre em todas as minhas ações, não quero sujeitar-me à lei absurda que a sociedade me impõe: velarei de noite, dormirei de dia.\n\nContrariamente a vários ministérios, Soares cumpria este programa com um escrúpulo digno de uma grande consciência. A aurora para ele era o crepúsculo, o crepúsculo era a aurora. Dormia 12 horas consecutivas durante o dia, quer dizer das seis da manhã às seis da tarde. Almoçava às sete e jantava às duas da madrugada. Não ceava. A sua ceia limitava-se a uma xícara de chocolate que o criado lhe dava às cinco horas da manhã quando ele entrava para casa. Soares engolia o chocolate, fumava dois charutos, fazia alguns trocadilhos com o criado, lia uma página de algum romance, e deitava-se.\n\nNão lia jornais. Achava que um jornal era a cousa mais inútil deste mundo, depois da Câmara dos Deputados, das obras dos poetas e das missas. Não quer isto dizer que Soares fosse ateu em religião, política e poesia. Não. Soares era apenas indiferente. Olhava para todas as grandes cousas com a mesma cara com que via uma mulher feia. Podia vir a ser um grande perverso; até então era apenas uma grande inutilidade.\n\n(Contos fluminenses, 2006.)\n\nCom a referência a “jornais”, “Câmara dos Deputados”, “obras dos poetas” e “missas” (3.º parágrafo), o narrador",
+  "alternativas": [
+   "relativiza o retrato do personagem como um alienado, na medida em que enumera elementos da sociedade com os quais ele se identifica.",
+   "critica a homogeneidade da população, defendendo uma sociedade plural, em que cada pessoa escolha com liberdade a maneira como vive.",
+   "informa que o personagem recusava-se a se envolver com certos elementos da vida em sociedade, tanto quanto se recusava a seguir os ciclos convencionais de sono e de vigília.",
+   "reconhece como os hábitos da sociedade em questão são fúteis, ressaltando os benefícios para a sociedade das escolhas extravagantes de Luís Soares.",
+   "revela sua parcialidade, concordando com a maneira como o personagem se comporta em relação a seus horários e às atividades sociais usuais da sociedade da época."
+  ],
+  "gabarito": "C",
+  "resolucao": "O narrador diz que Luís Soares dormia 12 horas consecutivas durante o dia, invertendo, portanto, “os ciclos convencionais de sono e de vigília”, como também se recusava a informar sobre os acontecimentos porque “achava que um jornal era a cousa mais inútil deste mundo”.",
+  "materia": "Português",
+  "assunto": "Interpretação de texto e tipologia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-04",
+  "enunciado": "No contexto em que está inserida, a expressão “ateu em religião, política e poesia” (3.º parágrafo) poderia ser atribuída a alguém que",
+  "alternativas": [
+   "adotasse comportamentos beligerantes, envoltos em fanatismo.",
+   "tivesse uma posição indefinida em relação a tais assuntos.",
+   "tivesse conhecimentos muito precários em tais assuntos.",
+   "manifestasse suas preferências, em tais assuntos, de maneira moderada.",
+   "fosse contrário aos princípios da política e da poesia, tanto quanto aos da religião."
+  ],
+  "gabarito": "E",
+  "resolucao": "A expressão “ateu” poderia ter o sentido de afastamento, aversão, indicando alguém que se mantivesse avesso aos princípios da política e da poesia, como também aos da religião.",
+  "materia": "Português",
+  "assunto": "Interpretação de texto e tipologia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": true,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-05",
+  "enunciado": "Assinale a alternativa que apresenta um trecho do texto e uma figura de linguagem que nele ocorre.",
+  "alternativas": [
+   "“O calor do sol está dizendo aos homens que vão descansar e dormir” (1.º parágrafo) – personificação.",
+   "“a frescura relativa da noite é a verdadeira estação em que se deve viver” (1.º parágrafo) – eufemismo.",
+   "“Trocar o dia pela noite, dizia Luís Soares, é restaurar o império da natureza corrigindo a obra da sociedade” (1.º parágrafo) – gradação.",
+   "“Olhava para todas as grandes cousas com a mesma cara com que via uma mulher feia” (3.º parágrafo) – pleonasmo.",
+   "“Podia vir a ser um grande perverso; até então era apenas uma grande inutilidade” (3.º parágrafo) – paradoxo."
+  ],
+  "gabarito": "A",
+  "resolucao": "Há personificação ou prosopopeia, pois se atribuem características do ser humano, no caso a ação de dizer, ao “calor do sol”.",
+  "materia": "Português",
+  "assunto": "Figuras de linguagem",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-06",
+  "enunciado": "No primeiro parágrafo, o trecho “Livre em todas as minhas ações, não quero sujeitar-me à lei absurda que a sociedade me impõe” é parte da fala do personagem Luís Soares. O mesmo trecho, em discurso indireto, seria:",
+  "alternativas": [
+   "Luís Soares dizia que, livre em todas as suas ações, não quer sujeitar-se à lei absurda que a sociedade lhe impõe.",
+   "Luís Soares dizia, livre em todas as suas ações, que não quer sujeitar-se à lei absurda que a sociedade o impõe.",
+   "Luís Soares dizia, livre em todas as suas ações, que não queria sujeitar-se à lei absurda que a sociedade o impunha.",
+   "Luís Soares dizia, livre em todas as suas ações, que não quis sujeitar-se à lei absurda que a sociedade o impôs.",
+   "Luís Soares dizia que, livre em todas as suas ações, não queria sujeitar-se à lei absurda que a sociedade lhe impunha."
+  ],
+  "gabarito": "E",
+  "resolucao": "Emprega-se o verbo de elocução “dizer” que está, no início do excerto, na passagem para o discurso indireto. Os verbos que, no discurso direto, estão no presente, passam no discurso indireto para o pretérito imperfeito: “queria” e “impunha”. O pronome de primeira pessoa “me” vai para a terceira pessoa “lhe”, pois o verbo impor é transitivo indireto, nesse caso.",
+  "materia": "Português",
+  "assunto": "Sintaxe: período composto",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-07",
+  "enunciado": "Quanto à matéria, o romance brasileiro nasceu regionalista e de costumes; ou melhor, pendeu desde cedo para a descrição dos tipos humanos e formas de vida social nas cidades e nos campos. O romance histórico se enquadrou nesta mesma orientação; o romance __________ constituiu desenvolvimento à parte, do ponto de vista da evolução do gênero, e corresponde a certas necessidades, poéticas e históricas, de estabelecer um passado heroico e lendário para a nossa civilização, a que os __________ desejavam, numa utopia retrospectiva, dar tanto quanto possível traços autóctones.\n\nA figura dominante do período, __________, passou por todas essas vertentes e em todas deixou boas obras.\n\n(Antonio Candido. Formação da literatura brasileira, 1975. Adaptado.)\n\nAs três lacunas do texto são preenchidas por:",
+  "alternativas": [
+   "urbano – românticos – Manuel Antônio de Almeida.",
+   "indianista – românticos – José de Alencar.",
+   "urbano – naturalistas – Aluísio Azevedo.",
+   "urbano – românticos – José de Alencar.",
+   "indianista – naturalistas – Aluísio Azevedo."
+  ],
+  "gabarito": "B",
+  "resolucao": "O excerto de Antônio Cândido refere-se aos vários tipos de romance da estética denominada Romantismo: regionalista, de costumes, histórico e indianista. O prosador mais destacado dessa estética, e que passou por todas essas vertentes, foi José de Alencar.",
+  "materia": "Literatura",
+  "assunto": "Romantismo",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-08",
+  "enunciado": "Leia o texto de Luiz Eduardo Soares para responder às questões de 08 a 10.\n\nLogo depois que assumi a Secretaria Nacional de Segurança, em 2003, recebi, por vias transversas, uma mensagem de Luciano, da Rocinha. Ele desejava deixar a vida de traficante e viajar para longe. Tinha chegado à conclusão de que seu caminho era a perdição: morreria cedo, de modo cruel, em mãos inimigas. Queria começar de novo e pedia uma chance. Tratara com respeito a comunidade, que era, afinal de contas, sua família. A violência, ele a usara apenas na medida necessária à proteção de seus negócios. Esse era seu ponto de vista, sem dúvida demasiado edulcorado. Não obstante a possível autoidealização, o fato é que explicitá-la, naquele contexto, não deixava de ser significativo, indicando a valorização positiva do lado certo da vida. Era um negociante clandestino, dizia, não um criminoso selvagem: alguns traziam uísque do Paraguai; ele vendia outras drogas. Reivindicava uma diferença importante, no mundo do crime carioca.\n\n(Cabeça de porco, 2005.)\n\nA “diferença importante”, citada no último período do texto, corresponde",
+  "alternativas": [
+   "à distância entre as posições sociais do traficante e do Secretário de Segurança.",
+   "à alegação do traficante de que ele não seria um bandido, mas um comerciante.",
+   "ao respeito com que o traficante tratou o Secretário de Segurança.",
+   "à maneira cordial como os traficantes tratam a comunidade onde vivem.",
+   "ao modo seguro como o traficante se dirigia ao Secretário da Segurança."
+  ],
+  "gabarito": "B",
+  "resolucao": "O traficante da Rocinha, Luciano, considera-se um comerciante na mensagem que escreve à autoridade pública. Essa é a distinção que o emissor faz, não se considera transgressor do código penal.",
+  "materia": "Português",
+  "assunto": "Interpretação de texto e tipologia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-09",
+  "enunciado": "A frase “A violência, ele a usara apenas na medida necessária à proteção de seus negócios” expressa uma opinião",
+  "alternativas": [
+   "do autor do texto, baseada no relato de Luciano.",
+   "do autor do texto, baseada em relatos da comunidade em que Luciano vivia.",
+   "da comunidade em que Luciano vivia.",
+   "de Luciano, sobre a qual o autor faz ponderações.",
+   "de Luciano, com a qual o autor do texto concorda."
+  ],
+  "gabarito": "D",
+  "resolucao": "Luiz Eduardo Soares reflete sobre as justificativas do traficante em relação à violência empregada para manter o domínio sobre o comércio ilegal de drogas. Considera esse ponto de vista idealizado, edulcorado.",
+  "materia": "Português",
+  "assunto": "Interpretação de texto e tipologia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-10",
+  "enunciado": "A forma verbal no pretérito mais-que-perfeito, que indica uma ação, anterior a outra, ambas ocorridas no passado, está sublinhada em:",
+  "alternativas": [
+   "“morreria cedo, de modo cruel, em mãos inimigas”.",
+   "“Ele desejava deixar a vida de traficante”.",
+   "“Esse era seu ponto de vista”.",
+   "“recebi, por vias transversas, uma mensagem de Luciano, da Rocinha”.",
+   "“Tratara com respeito a comunidade”."
+  ],
+  "gabarito": "E",
+  "resolucao": "O pretérito mais-que-perfeito, como está indicado no enunciado aparece em tratara com respeito a comunidade. Esse tempo verbal refere-se a uma ação no passado anterior a outra ação no passado.",
+  "materia": "Português",
+  "assunto": "Morfologia e classes de palavras",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-11",
+  "enunciado": "Leia o infográfico para responder às questões de 11 a 15.\n\nSUSTAINABLE TRAVEL\nTravelers - especially millennials - are aware of the impact that they and their vacations have on the planet. The new breed of conscientious traveler is seeking out experiences that don’t come with an environmental cost.\n\nANIMAL FRIENDLY\nTravelers also are aware of the damage that they do to animals by picking attractions that abuse them. This type of entertainment is on it’s way out.\n\nTRAVEL DEALS\nEveryone loves a travel deal but more travelers are “letting the destination pick them” based on where they can get the most bang for their buck. Cheap flights - sign me up for wherever.\n\nSOCIAL MEDIA WORTHY\nI know some people roll their eyes but more travelers than ever are influenced by experiences they see on social media or by what trips will get them the most likes. Insta-worthy destinations continue to be a huge trend.\n\n(Karmen Clair. https://karmenclair.wordpress.com, 03.04.2019. Adaptado.)\n\nThe purpose of this infographic is to",
+  "alternativas": [
+   "illustrate the latest travel deals.",
+   "explain how to use social media for travel planning.",
+   "give tips about the most sustainable tourism destinations.",
+   "give tips about millenials’ lifestyle.",
+   "present the latest travel trends."
+  ],
+  "gabarito": "E",
+  "resolucao": "O propósito do infográfico é apresentar as tendências de viagens mais recentes.",
+  "materia": "Inglês",
+  "assunto": "Interpretação de textos em inglês",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-12",
+  "enunciado": "According to the infographic, a mindful traveler should keep an eye on the following issue:",
+  "alternativas": [
+   "book the cheapest flight.",
+   "never leave a pet home alone.",
+   "be nature-friendly.",
+   "use social media while traveling.",
+   "set a budget."
+  ],
+  "gabarito": "C",
+  "resolucao": "De acordo com o infográfico, o viajante consciente deveria ser respeitoso com a natureza.",
+  "materia": "Inglês",
+  "assunto": "Interpretação de textos em inglês",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": true,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-13",
+  "enunciado": "De acordo com o segundo tópico, atrações turísticas que exploram animais como entretenimento",
+  "alternativas": [
+   "desrespeitam o meio ambiente.",
+   "estão com os dias contados.",
+   "podem levar animais à morte.",
+   "incentivam o tráfico de fauna.",
+   "devem ser proibidas."
+  ],
+  "gabarito": "B",
+  "resolucao": "Lê-se no texto:\n“This type of entertainment is on it's way out.”",
+  "materia": "Inglês",
+  "assunto": "Interpretação de textos em inglês",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": true,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-14",
+  "enunciado": "De acordo com o contexto do terceiro tópico, o trecho “the most bang for their buck” pode ser entendido como:",
+  "alternativas": [
+   "o destino mais exótico.",
+   "o destino mais seguro.",
+   "o destino mais procurado.",
+   "a tarifa mais baixa.",
+   "o melhor custo-benefício."
+  ],
+  "gabarito": "E",
+  "resolucao": "Lê-se no texto:\n“Cheap flights – sign me up for wherever.”",
+  "materia": "Inglês",
+  "assunto": "Vocabulário, cognatos e falsos cognatos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-15",
+  "enunciado": "In the excerpt from the fourth topic “continue to be a huge trend”, the underlined word can be replaced, without changing the meaning of the sentence, by",
+  "alternativas": [
+   "new.",
+   "mega.",
+   "reverse.",
+   "old.",
+   "natural."
+  ],
+  "gabarito": "B",
+  "resolucao": "A palavra “huge” pode ser substituída, sem mudar o significado por “mega”.\n\n* huge = mega = enorme",
+  "materia": "Inglês",
+  "assunto": "Vocabulário, cognatos e falsos cognatos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-16",
+  "enunciado": "Leia o texto para responder às questões 16 e 17.\n\nThe Mona Lisa was recently moved from her usual gallery in the Salle des États, currently being renovated, to a temporary home in the Galérie Médicis. Visitors to the Louvre who have queued patiently for hours are complaining that museum staff are allowing them less than a minute to view the masterpiece. The relocation has created bottlenecks of visitors lining corridors and the Louvre is now advising that only those who have pre-booked will be guaranteed a glimpse of the world’s most famous portrait.\n\n(David Chazan. www.telegraph.co.uk, 13.08.2019. Adaptado.)\n\nThe author’s aim is to",
+  "alternativas": [
+   "protest against the results of accepting tourist overcrowding at the Louvre.",
+   "share his opinion about the visitors to the Louvre.",
+   "inform the reader about a troubled masterpiece’s temporary relocation.",
+   "persuade the reader to agree with his position.",
+   "amuse the reader with details of a famous portrait."
+  ],
+  "gabarito": "C",
+  "resolucao": "O autor visa a informar o leitor sobre uma problemática mudança temporária de uma obra-prima.",
+  "materia": "Inglês",
+  "assunto": "Interpretação de textos em inglês",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-17",
+  "enunciado": "In the excerpt “only those who have pre-booked will be guaranteed a glimpse of the world’s most famous portrait”, the underlined word refers to",
+  "alternativas": [
+   "hours.",
+   "bottlenecks.",
+   "corridors.",
+   "staff.",
+   "visitors."
+  ],
+  "gabarito": "E",
+  "resolucao": "A palavra “those” refere-se aos visitantes.",
+  "materia": "Inglês",
+  "assunto": "Interpretação de textos em inglês",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": true,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-18",
+  "enunciado": "Leia o texto para responder às questões 18 e 19.\n\nWhat does love look like? Love is accepting that your partner is not perfect, but you want to be with him or her anyway. Love is being grateful that you are accepted despite your imperfections. Love is still being happy to come home to that same person, even after 30 years.\n\n(Harriet Koral. www.nytimes.com, 19.11.2017. Adaptado.)\n\nO trecho dessa carta aberta publicada no jornal The New York Times é norteado pelo caráter",
+  "alternativas": [
+   "informativo.",
+   "reivindicativo.",
+   "instrutivo.",
+   "protestativo.",
+   "opinativo."
+  ],
+  "gabarito": "E",
+  "resolucao": "O trecho dessa carta é norteado pelo caráter opinativo.",
+  "materia": "Inglês",
+  "assunto": "Interpretação de textos em inglês",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-19",
+  "enunciado": "O trecho “accepting that your partner is not perfect” pode ser associado ao seguinte provérbio:",
+  "alternativas": [
+   "“A bird in hand is worth two in the bush”.",
+   "“Gold cannot be pure, and people cannot be flawless”.",
+   "“Better late than never”.",
+   "“Laughter is the best medicine”.",
+   "“All good things come to an end”."
+  ],
+  "gabarito": "B",
+  "resolucao": "O ouro pode não ser puro, e as pessoas podem não ser perfeitas.",
+  "materia": "Inglês",
+  "assunto": "Interpretação de textos em inglês",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-20",
+  "enunciado": "Observe the image.\n[figura]\n(www.michaelkonik.com, 05.10.2013.)\nThe art print overlaps",
+  "alternativas": [
+   "inappropriate feelings.",
+   "harmonious terms.",
+   "opposing terms.",
+   "dangerous behaviors.",
+   "relevant information."
+  ],
+  "gabarito": "C",
+  "resolucao": "A gravura sobrepõe termos opostos: “love” e “hate”\n\n* love = amor\n* hate = ódio",
+  "materia": "Inglês",
+  "assunto": "Vocabulário, cognatos e falsos cognatos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-21",
+  "enunciado": "Observe as três ordens da arquitetura grega clássica.\n[figura]\n(Pedro Paulo Funari. Grécia e Roma, 2019. Adaptado.)\nAs três colunas correspondem, respectivamente, aos estilos:",
+  "alternativas": [
+   "dórico, jônico e coríntio.",
+   "jônico, gótico e românico.",
+   "românico, coríntio e dórico.",
+   "gótico, dórico e barroco.",
+   "coríntio, barroco e gótico."
+  ],
+  "gabarito": "A",
+  "resolucao": "De acordo com sua denominação, os estilos de colunas gregas, com seus respectivos capitéis, receberam o nome de dórico (dominante em Esparta, cujas manifestações artísticas se caracterizavam pela simplicidade), jônico (surgido em Atenas e caracterizado pelos capitéis ornamentados com volutas, típicos da época Clássica) e coríntio (capitel surgido na cidade de Corinto e cuja complexidade ornamental já denotava uma cronologia pós-clássica). Poder-se-ia acrescentar o formato das próprias colunas, que no estilo dórico se caracteriza por seu aspecto maciço e despojado, no jônico já possui linhas salientes que lhe conferem maior elegância e no coríntio é mais rebuscado e trabalhado em caneluras.",
+  "materia": "História",
+  "assunto": "Antiguidade Oriental e Clássica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-22",
+  "enunciado": "[...] o senhor faz-se homem de um senhor mais poderoso cuja força, neste caso, já não reside nos vestígios de uma função pública, mas tão só na extensão das terras e no número de vassalos que o reconhecem como suserano.\n(Charles Parain et al. Sobre o feudalismo, 1973. Apud Hamilton M. Monteiro. O feudalismo: economia e sociedade, 1987.)\nNo âmbito da Idade Média ocidental, o texto caracteriza",
+  "alternativas": [
+   "os conflitos socioeconômicos nos campos e a valorização da hegemonia monárquica.",
+   "as relações baseadas na propriedade rural e o controle do poder pelos funcionários públicos.",
+   "as concorrências entre donos de manufaturas e a rigidez da hierarquia social.",
+   "as relações entre classes sociais distintas e o princípio da soberania política.",
+   "as relações internas à nobreza e a noção de riqueza como posse de terras."
+  ],
+  "gabarito": "E",
+  "resolucao": "O texto trata das relações de suserania e vassalagem, nas quais um nobre se subordinava a outro hierarquicamente superior, ou ao próprio rei. Eventualmente poderia ocorrer a subenfeudação, isto é, a relação de apoio recíproco entre um senhor e outro que lhe fosse inferior. Os critérios para o estabelecimento da relação feudo-vassálica baseavam-se não só na hierarquia dos títulos de nobreza, mas também no poder representado pela posse de terras e pelo número de vassalos que prestassem homenagem ao titular do feudo.",
+  "materia": "História",
+  "assunto": "Idade Média e feudalismo",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-23",
+  "enunciado": "[Maquiavel] elogia a República romana como tendo sido a mais perfeita forma de governo e um verdadeiro Estado unido pelo espírito público de seus cidadãos; no entanto, numa época como a sua, seria necessário um líder que utilizasse a força como princípio, tese que desenvolve em O Príncipe.\n(Teresa Aline Pereira de Queiroz. O Renascimento, 1995.)\nA obra O Príncipe foi escrita por Maquiavel em 1513 e publicada em 1532. Nela, o pensador florentino",
+  "alternativas": [
+   "rejeita a noção de república, valorizando o princípio de participação política direta de todos os cidadãos.",
+   "defende a submissão do poder secular ao poder atemporal, reconhecendo a Igreja como o centro da vida política.",
+   "analisa experiências políticas do passado e do presente, propondo um modelo de atuação do governante.",
+   "celebra o princípio da experiência do indivíduo, identificando os conselhos dos anciãos como origem de todo poder.",
+   "questiona o militarismo da Roma Antiga, sugerindo aos governantes abandonar projetos imperiais e expansionistas."
+  ],
+  "gabarito": "C",
+  "resolucao": "Maquiavel, enquanto pensador político renascentista, admirava e valorizava o passado clássico (greco-romano), embora reconhecesse sua inviabilidade em um período tão conturbado quanto o do início da Modernidade. Assim, contrariando a visão otimista do pensamento antropocentrista de sua época, propôs, como modelo de governo eficaz, a autoridade forte de um príncipe que não se deixasse tolher por normas éticas, mas visasse apenas à manutenção da ordem na sociedade.",
+  "materia": "História",
+  "assunto": "Renascimento e Reformas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-24",
+  "enunciado": "A camada intermediária abrangia, nas Minas, indivíduos entregues a uma gama variada de atividades profissionais. Creio ser possível arriscar a hipótese de que poucos viviam com certo conforto e despreocupação, a grande maioria sendo constituída pelos que tinham de lutar diariamente pela subsistência, numa capitania inteiramente voltada para a faina aurífera e para a mineração de diamantes.\n(Laura Vergueiro. Opulência e miséria das Minas Gerais, 1983.)\nEntre os membros do grupo social apresentado no texto, viviam nas Minas Gerais do século XVIII:",
+  "alternativas": [
+   "pecuaristas, alfaiates e escravos.",
+   "vendeiros, bandeirantes e grandes produtores rurais.",
+   "pintores, altos dignitários da Igreja e prostitutas.",
+   "tropeiros, contratadores de diamante e romeiros.",
+   "carpinteiros, padres e faiscadores."
+  ],
+  "gabarito": "E",
+  "resolucao": "Considerando que a sociedade da mineração no século XVIII era essencialmente urbana, poderiam ser encontrados em seu interior elementos pertencentes às mais diversas atividades, tais como os citados na alternativa.",
+  "materia": "História",
+  "assunto": "Brasil Colônia: economia e sociedade",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-25",
+  "enunciado": "Leia o texto para responder às questões 25 e 26.\nTodo processo de industrialização é necessariamente doloroso, porque envolve a erosão de padrões de vida tradicionais. Contudo, na Grã-Bretanha, ele ocorreu com uma violência excepcional, e nunca foi acompanhado por um sentimento de participação nacional num esforço comum, ao contrário do que se pode observar em países que atravessam uma revolução nacional. Sua única ideologia foi a dos patrões.\n(E.P. Thompson. A formação da classe operária inglesa, vol. II, 1987.)\nO texto caracteriza o surgimento e a expansão das fábricas, na Grã-Bretanha dos séculos XVIII e XIX, como",
+  "alternativas": [
+   "superação do arcaísmo da produção artesanal e manufatureira.",
+   "vitória de um projeto coletivo de hegemonia econômica.",
+   "resultado de forte avanço tecnológico.",
+   "exemplo do eterno sofrimento das sociedades.",
+   "afirmação de um controle de classe."
+  ],
+  "gabarito": "E",
+  "resolucao": "O autor considera que, na Revolução Industrial Inglesa, o proletariado atuou como mero instrumento da burguesia empresarial, sem a consciência de estar participando de um esforço voltado para a prosperidade nacional (o que, aliás, não ocorreu com qualquer dos agentes envolvidos, inclusive a burguesia capitalista). Essa interpretação explica, ao menos parcialmente, por que a grande prosperidade inglesa do período não foi compartilhada pelo conjunto da população.",
+  "materia": "História",
+  "assunto": "Revolução Industrial",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-26",
+  "enunciado": "A associação das fábricas com “a erosão de padrões de vida tradicionais” pode ser explicada pelo fato de que a industrialização gerou",
+  "alternativas": [
+   "o primeiro movimento de êxodo rural da história e o surgimento das grandes metrópoles europeias.",
+   "a mudança de comportamentos sociais e o avanço do processo de disciplinarização do trabalho.",
+   "a modernização tecnológica e a valorização do conhecimento da totalidade do processo produtivo pelos trabalhadores fabris.",
+   "a constituição de um novo cotidiano dos trabalhadores rurais e o imediato surgimento de leis de proteção ao trabalho fabril.",
+   "o fim do poder político e econômico dos senhores feudais e o desestímulo às práticas místicas e religiosas."
+  ],
+  "gabarito": "B",
+  "resolucao": "A passagem do modo de produção artesanal e manufatureiro para o fabril não apenas produziu transformações econômicas como também sociais, dando origem ao proletariado – categoria desprovida dos instrumentos de produção e por isso mais controlável pelo patronato. Um dos aspectos desse controle é a disciplinarização dos empregados por meio da imposição de regras rígidas, entre as quais os horários de trabalho, que obrigaram as classes trabalhadoras a modificar suas formas de comportamento.",
+  "materia": "História",
+  "assunto": "Revolução Industrial",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": true,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-27",
+  "enunciado": "A independência foi, desse modo, ruptura e continuidade.\n(Miriam Dolhnikoff. História do Brasil Império, 2019.)\nNa independência brasileira, uma ruptura e uma continuidade podem ser exemplificadas, respectivamente,",
+  "alternativas": [
+   "pelo esforço de unificação nacional e pelo respeito aos direitos trabalhistas.",
+   "pelo afastamento da Grã-Bretanha e pela aproximação com os Estados Unidos.",
+   "pela fragmentação política do território e pela hegemonia política das elites rurais.",
+   "pelo rompimento em relação ao império português e pela preservação da escravidão.",
+   "pela implantação do sistema republicano e pelo estímulo à produção agrícola."
+  ],
+  "gabarito": "D",
+  "resolucao": "Além dos aspectos citados na alternativa escolhida, poderíamos aduzir, como exemplo de ruptura, a passagem da economia brasileira do mercantilismo lusitano para a órbita do capitalismo industrial britânico; e, como exemplos de continuidade, a adoção da forma monárquica de governo e o caráter agroexportador da economia brasileira.",
+  "materia": "História",
+  "assunto": "Independência das Américas e do Brasil",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-28",
+  "enunciado": "Observe a charge de Storni, publicada na revista Careta em 19.02.1927.\n[figura]\nAS PRÓXIMAS ELEIÇÕES... “DE CABRESTO”\nELLA - É O ZÉ BESTA?\nELLE - NÃO, É O ZÉ BURRO\n(Apud Renato Lemos (org.). Uma história do Brasil através da caricatura: 1840-2006, 2006.)\nDivulgada durante a Primeira República brasileira, a charge faz referência a uma",
+  "alternativas": [
+   "ação corrupta que permitia o desvio de verbas públicas.",
+   "prática política que facilitava a continuidade do domínio oligárquico.",
+   "proposição constitucional que determinava a obrigatoriedade do voto.",
+   "experiência política que favorecia a soberania do voto popular.",
+   "lei eleitoral que visava garantir a fidelidade do eleitor."
+  ],
+  "gabarito": "B",
+  "resolucao": "A questão faz referência a uma prática corrente ao longo da República das Oligarquias (1894-1930): o “voto de cabresto”, no qual o eleitor, sofrendo alguma forma de coerção ou sendo cooptado pelo clientelismo político, votava de acordo com a vontade do “coronel” a quem estivesse subordinado.",
+  "materia": "História",
+  "assunto": "República Velha",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-29",
+  "enunciado": "Dentro e fora dos campos [de concentração], as SS levaram até as últimas consequências a política racista e expansionista do nazismo. A princípio, os presos políticos eram os mais visados para serem enviados aos campos. Esse tratamento era também dispensado aos grevistas, sabotadores e adeptos da resistência, mesmo nos territórios estrangeiros. O leque de perseguidos abriu-se na direção de judeus, ciganos, presos comuns, doentes mentais, padres e clérigos, homossexuais.\n(Alcir Lenharo. Nazismo, o triunfo da vontade, 1986.)\nO trecho analisa a atuação das SS, tropas nazistas, e estabelece um vínculo entre sua",
+  "alternativas": [
+   "concepção de militarização da sociedade alemã e a disposição de aliar-se a grupos políticos de esquerda.",
+   "ação de controle político e social e o conjunto de valores e princípios excludentes que movia o nazismo.",
+   "proposta de disciplinarização da sociedade alemã e o respeito às práticas econômicas e políticas liberais.",
+   "intenção de implantar uma ditadura na Alemanha e a ideologia marxista que servia de base ao pensamento nazista.",
+   "articulação com sindicatos de trabalhadores e o posicionamento político direitista que caracterizava o nazismo."
+  ],
+  "gabarito": "B",
+  "resolucao": "Inicialmente um corpo restrito responsável pela proteção de Hitler, as SS gradativamente assumiram o controle de toda a organização de segurança do III Reich, atuando por meio de várias organizações. Algumas delas (Gestapo, SD e responsáveis pelos campos de concentração e de extermínio), tornaram-se executoras da política nazista de perseguição a minorias étnicas e de adversários políticos.",
+  "materia": "História",
+  "assunto": "Segunda Guerra e Guerra Fria",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-30",
+  "enunciado": "Observe a charge de Lan, publicada no Jornal do Brasil em 13.06.1963.\n[figura]\nSANTO ANTÔNIO CASAMENTEIRO\nESQUERDA / CENTRO / DIREITA\n(Apud Rodrigo Patto Sá Motta. Jango e o golpe de 1964 na caricatura, 2006.)\nA charge representa o então presidente João Goulart,",
+  "alternativas": [
+   "ironizando sua indefinição político-ideológica.",
+   "destacando sua fé e sua religiosidade.",
+   "satirizando sua complicada vida familiar.",
+   "valorizando sua capacidade de mediação política.",
+   "enfatizando a neutralidade de sua posição partidária."
+  ],
+  "gabarito": "A",
+  "resolucao": "A charge ilustra a dificuldade de João Goulart (Jango) para granjear apoio político a seu governo, já então na fase presidencialista. Historicamente ligado ao populismo de esquerda, Jango sofria forte oposição do centro e sobretudo da direita, representada politicamente pela UDN de Carlos Lacerda, e de outros políticos e seguimentos conservadores. Sua opção pela esquerda resultou no golpe civil e militar de 1964, que o afastou do poder.",
+  "materia": "História",
+  "assunto": "Ditadura militar brasileira",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-31",
+  "enunciado": "A chanceler alemã, Angela Merkel, e o primeiro-ministro húngaro, Viktor Orbán, celebraram o 30.º aniversário do fim da Cortina de Ferro. Convidada por Orbán, Merkel viajou até a cidade fronteiriça de Sopron, na Hungria. Lá, em 19 de agosto de 1989, mais de 600 alemães da parte oriental aproveitaram a abertura de um posto de fronteira com a Áustria, por ocasião de um “piquenique pan-europeu”, para fugir para o lado ocidental. O evento foi uma fissura crucial na Cortina de Ferro. “Eu não poderia ser uma política e não poderia ser chanceler de uma Alemanha reunificada se esses eventos não tivessem acontecido”, declarou Merkel.\n(“Na Hungria, Merkel e Orbán celebram fim da Cortina de Ferro e defendem Europa ‘unida’”. https://internacional.estadao.com.br, 19.08.2019. Adaptado.)\nA comemoração citada no excerto faz referência",
+  "alternativas": [
+   "à adoção da livre circulação como estratégia para tornar os produtos europeus homogêneos e mais competitivos mundialmente.",
+   "à construção de vias de acesso sobre acidentes geográficos, que deram início à União Europeia.",
+   "ao fim das investidas neocolonialistas dos Estados Unidos, que mantinham a Europa fragmentada.",
+   "ao fim das zonas econômicas especiais, que estabeleciam espaços socioeconômicos segregacionistas.",
+   "ao fim da divisão física e ideológica entre a Europa Ocidental e o Leste Europeu durante a Guerra Fria."
+  ],
+  "gabarito": "E",
+  "resolucao": "A “Cortina de Ferro” citada no texto faz referência aos países do leste europeu que pertenciam à ex-URSS ou estavam alinhados ao bloco socialista. Essa situação geopolítica marcou, entre as décadas de 1940 e 1990, a denominada Guerra Fria, que dividiu fisicamente a Europa em Leste e Oeste com preceitos ideológicos (socialistas e capitalistas, respectivamente).",
+  "materia": "História",
+  "assunto": "Segunda Guerra e Guerra Fria",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-32",
+  "enunciado": "Examine a imagem.\n\n(Vinicius Araújo. https://medium.com, 03.11.2017.)\n\nA imagem é uma crítica à",
+  "alternativas": [
+   "automação.",
+   "emancipação.",
+   "transumância.",
+   "bioindústria.",
+   "globalização."
+  ],
+  "gabarito": "E",
+  "resolucao": "A imagem reporta uma crítica à uniformização e à perda das identidades individuais e regionais, promovendo a padronização social. Com a redução das fronteiras e a diminuição das distâncias temporais, a situação reportada na crítica é cada vez mais presente na sociedade devido à intensificação da globalização com o advento das novas tecnologias.",
+  "materia": "Sociologia",
+  "assunto": "Cultura, desigualdade e cidadania",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-33",
+  "enunciado": "De acordo com o último Censo Agropecuário, esse modelo de agricultura é a base da economia de 90% dos municípios brasileiros com até 20 mil habitantes. Além disso, é responsável pela renda de 40% da população economicamente ativa do País e por mais de 70% dos brasileiros ocupados no campo — 84% dos estabelecimentos rurais respondem por essa lógica. “A tendência é esse número crescer cada vez mais, principalmente com a procura por produtos agroecológicos”, afirma o secretário Jefferson Coriteac, do Ministério da Agricultura, Pecuária e Abastecimento.\n\n(www.mda.gov.br, 12.06.2018. Adaptado.)\n\nO modelo de agricultura que reúne as características apresentadas no excerto corresponde",
+  "alternativas": [
+   "à agricultura familiar, que se apresenta restrita em área, mão de obra e capital investidos.",
+   "à agricultura orgânica, que se baseia no uso sustentável da terra e dos insumos utilizados.",
+   "à agricultura patronal, que se baseia na contratação de mão de obra qualificada para seus cultivos.",
+   "ao agronegócio, que se baseia no uso de tecnologia nas diferentes etapas do processo produtivo.",
+   "ao sistema agroflorestal, que se pauta no extrativismo de matérias-primas com alto valor comercial."
+  ],
+  "gabarito": "A",
+  "resolucao": "A estrutura fundiária brasileira está, historicamente, caracterizada pela concentração de terras. Isso porque as grandes propriedades predominam em área agricultável ocupada. Por outro lado, as pequenas propriedades que praticam a agricultura familiar predominam em número de estabelecimentos e empregados. Mas, como a grande propriedade destaca-se por produzir produtos destinado ao mercado, recebe a maior parcela de investimentos.",
+  "materia": "Geografia",
+  "assunto": "Agropecuária no Brasil e no mundo",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-34",
+  "enunciado": "Analise o quadro que compara três modais para o transporte de uma carga com 6 000 toneladas.\n\n| Indicador | Modal 1 | Modal 2 | Modal 3 |\n|---|---|---|---|\n| Consumo médio de combustível para transportar uma tonelada por mil quilômetros | 4,1 litros | 5,7 litros | 15,4 litros |\n| Emissão de gás carbônico (gCO₂/TKU) | 20,0 | 23,3 | 101,2 |\n| Custo médio de transporte, carga geral por 1 000 km (R$/t) | R$ 50,74 | R$ 67,54 | R$ 239,74 |\n\n(Cássio A. N. Teixeira et al. BNDES Setorial, no 47, março de 2018. Adaptado.)\n\nConsiderando os indicadores de eficiência apresentados, o modal",
+  "alternativas": [
+   "2 corresponde ao modelo rodoviário, viável por operar com reduzida emissão de gases de efeito estufa.",
+   "1 corresponde à navegação de cabotagem, eficiente para o transporte em grandes distâncias.",
+   "1 corresponde ao deslocamento aéreo, competitivo no transporte de mercadorias de alto valor agregado.",
+   "3 corresponde ao sistema ferroviário, capaz de absorver os impactos econômicos no transporte de rejeitos industriais.",
+   "2 corresponde ao complexo dutoviário, vantajoso para o transporte de grãos em cinturões agrícolas."
+  ],
+  "gabarito": "B",
+  "resolucao": "O modal 1 refere-se ao transporte marítimo de cabotagem realizado nacionalmente entre portos. Portanto, menos poluente e mais barato para cargas com grandes distâncias. O modal 2 é o ferroviário, que também apresenta baixo custo, mas consome mais combustível do que o modal 2. O último modal 3 é o rodoviário, considerado o mais poluente e custoso entre os apresentados.",
+  "materia": "Geografia",
+  "assunto": "Outro",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-35",
+  "enunciado": "Este grupo tende a crescer no Brasil nas próximas décadas, como aponta a Projeção da População, do IBGE, atualizada em 2018. A consultora em demografia e políticas de saúde, Cristina Guimarães Rodrigues, considera necessário ter políticas públicas voltadas para tratamentos de saúde, alimentação mais saudável e exercícios físicos, além de construções e transportes mais acessíveis. “Há o aumento de doenças crônicas”, cita, “que são doenças mais caras e requerem tratamentos um pouco mais custosos”.\n\n(Camille Perissé e Mônica Marli. Retratos: a revista do IBGE, no 16, fevereiro de 2019. Adaptado.)\n\nO excerto apresenta características relacionadas",
+  "alternativas": [
+   "ao fluxo migratório.",
+   "às políticas antinatalistas.",
+   "às mudanças na população relativa.",
+   "ao adensamento demográfico.",
+   "ao envelhecimento da população."
+  ],
+  "gabarito": "E",
+  "resolucao": "A população brasileira tem ampliado a sua expectativa de vida devido às melhoras socioeconômicas nas últimas décadas. Com isso, nota-se o aumento do número de idosos como resultado do envelhecimento da população e a necessidade de investimentos geriátricos e infraestrutura para essa parcela da população.",
+  "materia": "Geografia",
+  "assunto": "Demografia e migrações",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-36",
+  "enunciado": "Classificação dos estados de criticidade\n• Entre 21 e 30% – Estado de Atenção\n  – Evitar exercícios físicos ao ar livre entre 11 e 15 horas;\n  – Utilizar toalhas molhadas, recipientes com água, irrigar jardins etc.;\n  – Sempre que possível, permanecer em locais protegidos do sol, em áreas vegetadas etc.;\n  – Consumir água à vontade.\n• Entre 12 e 20% – Estado de Alerta\n  – Observar as recomendações do Estado de Atenção;\n  – Suprimir exercícios físicos e trabalhos ao ar livre entre 10 e 16 horas;\n  – Evitar aglomerações em ambientes fechados;\n  – Usar soro fisiológico para olhos e narinas.\n• Abaixo de 12% – Estado de Emergência\n  – Observar as recomendações para os Estados de Atenção e de Alerta;\n  – Determinar a interrupção de qualquer atividade ao ar livre entre 10 e 16 horas, como aulas de educação física, coleta de lixo, entrega de correspondência etc.;\n  – Determinar a suspensão de atividades que exijam aglomerações de pessoas em recintos fechados, como aulas, cinemas etc., entre 10 e 16 horas.\n\n(www.cgesp.org. Adaptado.)\n\nAs recomendações descritas devem ser adotadas quando houver",
+  "alternativas": [
+   "atuação de ventos alísios.",
+   "alta evapotranspiração.",
+   "baixa umidade relativa do ar.",
+   "formação de cumulonimbus.",
+   "variação do gradiente térmico."
+  ],
+  "gabarito": "C",
+  "resolucao": "Os problemas de saúde, como desidratação, dificuldades respiratórias, irritação ocular e fadiga, são mais recorrentes em períodos de baixa umidade.",
+  "materia": "Geografia",
+  "assunto": "Climatologia e fenômenos climáticos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-37",
+  "enunciado": "Analise o climograma.\n\n(James O. Tamdjian. Geografia, 2013. Adaptado.)\n\nAssinale a alternativa que apresenta a vegetação correspondente ao climograma.",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "B",
+  "resolucao": "O climograma representa um ambiente com clima temperado frio, onde se desenvolvem formações abóreas com florestas boreais.",
+  "materia": "Geografia",
+  "assunto": "Biomas e questão ambiental",
+  "segundo_assunto": "Climatologia e fenômenos climáticos",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-38",
+  "enunciado": "Um novo estudo realizado pela Escola Nacional de Saúde Pública Sergio Arouca (ENSP/Fiocruz) na população indígena Yanomami constatou a presença de mercúrio nas amostras de cabelo de 56% das mulheres e crianças da região de Maturacá, no Amazonas, em níveis acima do tolerado pela Organização Mundial da Saúde. “O mercúrio é disseminado pelas águas dos rios e a contaminação de seres humanos se dá, especialmente, por meio da ingestão de peixes contaminados”, afirmou o coordenador da pesquisa, Paulo Basta.\n\n(Filipe Leonel. “Contaminação por mercúrio se alastra na população Yanomami”. www.ensp.fiocruz.br, 16.08.2019. Adaptado.)\n\nA contaminação por mercúrio apresentada no excerto está associada",
+  "alternativas": [
+   "à calagem para eliminar a acidez do solo.",
+   "ao terraceamento sem o controle de erosão.",
+   "ao garimpo ilegal para a extração de ouro.",
+   "à laterização para a extração da canga.",
+   "a aterros sanitários sem a impermeabilização do terreno."
+  ],
+  "gabarito": "C",
+  "resolucao": "A Região Amazônica apresenta economia predominantemente agroextrativa. O uso do mercúrio serve para obtenção do ouro por meio do garimpo praticado ilegalmente. Tal situação contribui para a contaminação das águas que, inclusive, abastece as comunidades locais.",
+  "materia": "Geografia",
+  "assunto": "Biomas e questão ambiental",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-39",
+  "enunciado": "CAPACIDADE HIDRELÉTRICA INSTALADA POR SUB-BACIA HIDROGRÁFICA, 2003\n\n(Agência Nacional de Energia Elétrica. Atlas de energia elétrica do Brasil, 2005. Adaptado.)\n\nConsiderando o mapa e conhecimentos sobre a produção de energia hidráulica brasileira, pode-se afirmar que",
+  "alternativas": [
+   "o relevo de planícies explica o baixo aproveitamento hidráulico da Bacia do Amazonas.",
+   "a grande distância dos centros consumidores explica o alto aproveitamento hidráulico da Bacia do Paraná-Paraguai.",
+   "o relevo de depressões explica o baixo aproveitamento hidráulico da Bacia do Atlântico Leste.",
+   "a grande diversidade biológica explica o alto aproveitamento hidráulico da Bacia do Atlântico Nordeste-Norte.",
+   "a retração da fronteira pioneira explica o alto aproveitamento hidráulico da Bacia do Tocantins."
+  ],
+  "gabarito": "A",
+  "resolucao": "A Bacia Amazônica apresenta o maior potencial hidráulico do país. Porém, a predominância do relevo de terras baixas dificulta a instalação de Usinas Hidrelétricas e resulta num baixo aproveitamento energético.",
+  "materia": "Geografia",
+  "assunto": "Industrialização e matriz energética",
+  "segundo_assunto": "Hidrografia",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-40",
+  "enunciado": "Examine o esquema.\n\n(Paulo A. Duarte. Fundamentos de cartografia, 2008. Adaptado.)\n\nO esquema corresponde",
+  "alternativas": [
+   "à inclinação dos raios solares, ângulo que orienta as quatro estações do ano.",
+   "aos fusos horários, fragmentação que estabelece as coordenadas geográficas na Terra.",
+   "à inclinação dos raios solares, condição que determina os períodos diurno e noturno.",
+   "aos fusos horários, sistema que responde ao movimento de rotação da Terra.",
+   "aos fusos horários, convenção que determina os paralelos que cortam a Terra."
+  ],
+  "gabarito": "D",
+  "resolucao": "A trajetória realizada pela Terra que proporciona os dias e noites é resultado do movimento de rotação. Sua duração é de, aproximadamente, 24 horas e equivale a 360°. Portanto, os intervalos de 15° corresponde a 1 hora e representam fusos horários que estão representados no esquema.",
+  "materia": "Geografia",
+  "assunto": "Cartografia e orientação",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-41",
+  "enunciado": "Um cogumelo apresenta os micélios aderidos ao solo. Um feijoeiro apresenta raízes que crescem entre os sedimentos do solo. Os micélios e as raízes presentes nesses organismos",
+  "alternativas": [
+   "possuem células em constantes meioses.",
+   "apresentam tecidos vasculares.",
+   "reservam glicogênio.",
+   "possuem parede celulósica.",
+   "absorvem água e sais minerais."
+  ],
+  "gabarito": "E",
+  "resolucao": "Tanto raízes, quanto os micélios do cogumelo, absorvem água e nutrientes minerais do solo.",
+  "materia": "Biologia",
+  "assunto": "Fungos e algas",
+  "segundo_assunto": "Fisiologia vegetal",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-42",
+  "enunciado": "Um exame antidoping confirmou que Ben Johnson, corredor dos 100 metros, utilizou, nos Jogos Olímpicos de 1988, a substância estanozolol, um tipo de esteroide proibido em competições por ter efeito anabolizante na musculatura. A substância utilizada pelo atleta é um tipo de",
+  "alternativas": [
+   "proteína, que acelera o metabolismo das fibras musculares.",
+   "lipídio, que estimula a síntese proteica nas fibras musculares.",
+   "lipídio, que aumenta a síntese de LDL e melhora a atividade cardíaca.",
+   "ácido nucleico, que ativa os genes responsáveis pela força muscular.",
+   "proteína, que favorece a retenção de água utilizada no metabolismo muscular."
+  ],
+  "gabarito": "B",
+  "resolucao": "A substância estanozolol é um tipo de lipídio que tem como objetivo elevar a produção de proteínas nas células musculares, em especial actina e miosina. Logo, espera-se um aumento no rendimento da atividade física do atleta.",
+  "materia": "Biologia",
+  "assunto": "Bioquímica celular",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-43",
+  "enunciado": "Não é indicado que mulheres gestantes tomem a vacina tríplice viral, que protege contra sarampo, caxumba e rubéola, porque alguns dos seus componentes poderiam causar malformações ao feto. Caso uma gestante adquira sarampo, existe uma medida excepcional de tratamento, que consiste na aplicação, por via intravenosa e em qualquer fase da gestação, de imunoglobulinas extraídas do sangue de doadores. Essa medida protege o corpo da gestante infectada pelo vírus porque as imunoglobulinas aplicadas",
+  "alternativas": [
+   "desencadeiam a produção de antígenos.",
+   "promovem a imunidade passiva artificial.",
+   "estimulam a imunidade ativa natural.",
+   "reduzem a resposta imunológica humoral.",
+   "atuam de forma inespecífica contra os antígenos."
+  ],
+  "gabarito": "B",
+  "resolucao": "A terapia para gestantes, infectadas pelo vírus do sarampo, com imunoglobulinas extraída de doadores é um processo de imunização passiva e artificial.",
+  "materia": "Biologia",
+  "assunto": "Imunologia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-44",
+  "enunciado": "Na orelha humana encontram-se os ossículos martelo, bigorna e estribo, que são essenciais ao fenômeno da audição. Essas estruturas ficam localizadas na orelha ___________, apresentam células derivadas do tecido ________________ e são ricas em ____________. Assinale a alternativa que preenche as lacunas do texto.",
+  "alternativas": [
+   "interna – ósseo – carbonato de cálcio",
+   "média – ósseo – fosfato de cálcio",
+   "interna – ósseo – iodeto de potássio",
+   "interna – cartilaginoso elástico – fosfato de cálcio",
+   "média – cartilaginoso hialino – iodeto de potássio"
+  ],
+  "gabarito": "B",
+  "resolucao": "Os três menores ossos do organismo, martelo, bigorna e estribo, estão localizados na orelha média, cujas células são derivadas do tecido ósseo, ricas em fosfato de cálcio.",
+  "materia": "Biologia",
+  "assunto": "Sistema nervoso e órgãos dos sentidos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-45",
+  "enunciado": "O gráfico ilustra a variação da taxa metabólica de um animal em relação à variação da temperatura ambiente. [figura] O animal que apresenta a variação da taxa metabólica ilustrada no gráfico",
+  "alternativas": [
+   "depende do calor produzido pelo próprio metabolismo.",
+   "eriça pelos ou penas em dias frios para manter o calor do corpo.",
+   "depende do calor do ambiente para elevar a temperatura corpórea.",
+   "consegue aumentar a atividade metabólica em dias frios.",
+   "elimina suor em dias quentes, reduzindo a temperatura corpórea."
+  ],
+  "gabarito": "C",
+  "resolucao": "O gráfico ilustra uma relação diretamente proporcional entre temperatura ambiente e metabolismo, característica dos animais ectotérmicos. Nesses animais, a termorregulação corpórea depende de fontes ambientais.",
+  "materia": "Biologia",
+  "assunto": "Excreção e homeostase",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-46",
+  "enunciado": "O esterco de galinha contém fezes e excretas nitrogenadas, que podem ser utilizadas para adubar o solo. As plantas cultivadas nesse solo não são diretamente beneficiadas pelo esterco porque as substâncias orgânicas contidas nele passam primeiramente pela",
+  "alternativas": [
+   "nitrificação e depois pela decomposição, gerando o nitrato, que é absorvido pelos vegetais.",
+   "decomposição e depois pela nitrificação, gerando o nitrato, que é absorvido pelos vegetais.",
+   "decomposição e depois pela nitrosação, gerando o nitrito, que é absorvido pelos vegetais.",
+   "nitratação e depois pela nitrosação, gerando o nitrato, que é absorvido pelos vegetais.",
+   "nitrosação e depois pela nitratação, gerando o nitrito, que é absorvido pelos vegetais."
+  ],
+  "gabarito": "B",
+  "resolucao": "O esterco de galinhas é rico em excretas nitrogenadas (ácido úrico) que entram em decomposição gerando amônia ($NH_3$) que, por oxidações sucessivas, produzem nitritos e nitratos. Os nitratos são absorvidos pelas raízes dos vegetais.",
+  "materia": "Biologia",
+  "assunto": "Ecologia: fluxo de energia e ciclos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-47",
+  "enunciado": "Astyanax mexicanus é uma espécie de peixe sem olhos, que vive em águas tropicais de cavernas do México. Heterocephalus glaber é a espécie do rato-toupeira-pelado, um mamífero roedor que também não tem olhos e é encontrado em tocas escavadas no solo africano. A semelhança quanto à ausência da visão nesses animais pode ser considerada uma adaptação aos ambientes em que eles vivem, que selecionaram essas características. O mecanismo evolutivo que promoveu essa semelhança é denominado",
+  "alternativas": [
+   "irradiação adaptativa.",
+   "convergência adaptativa.",
+   "coevolução.",
+   "evolução alopátrica.",
+   "deriva gênica."
+  ],
+  "gabarito": "B",
+  "resolucao": "A ausência de olhos em animais não aparentados que vivem em cavernas aquáticas ou terrestre, é um caso de evolução convergente ou convergência adaptativa.",
+  "materia": "Biologia",
+  "assunto": "Evolução biológica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-48",
+  "enunciado": "A figura ilustra, de forma simplificada, a reprodução de um pinheiro. [figura] Os eventos biológicos que ocorrem nas etapas indicadas por 1, 2, 3, 4 e 5 são, respectivamente,",
+  "alternativas": [
+   "dispersão, mitose, polinização, fecundação e meiose.",
+   "meiose, fecundação, dispersão, polinização e mitose.",
+   "meiose, polinização, fecundação, dispersão e mitose.",
+   "polinização, dispersão, mitose, fecundação e meiose.",
+   "dispersão, polinização, meiose, fecundação e mitose."
+  ],
+  "gabarito": "C",
+  "resolucao": "No ciclo reprodutor do pinheiro observa-se a sequência: Os grãos de pólen são produzidos por meiose (1) e em seguida ocorre a polinização (2) e no óvulo a oosfera será fecundada (3), o óvulo fecundado gera a semente (4) que será dispersada pelo vento e germina formando o embrião (5).",
+  "materia": "Biologia",
+  "assunto": "Botânica: gimnospermas e angiospermas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-49",
+  "enunciado": "A genealogia ilustra uma família em que as pessoas destacadas apresentam uma doença autossômica monogênica. [figura] A análise dessa genealogia permite concluir que a probabilidade de",
+  "alternativas": [
+   "os indivíduos I-2, II-5 e III-1 serem heterozigotos é de 2/3.",
+   "os indivíduos I-1 e II-4 apresentarem o alelo para a doença é de 1/2.",
+   "o próximo filho do casal I-3 e I-4 ser uma criança doente é de 1/6.",
+   "o próximo filho do casal II-3 e II-4 ser uma menina doente é de 1/8.",
+   "os indivíduos II-1 e III-3 apresentarem o alelo para a doença é de 1/4."
+  ],
+  "gabarito": "D",
+  "resolucao": "Alelos: a (doença) e A (normalidade). Pais: ♂ II.3 (Aa) x ♀ II.4 (Aa). $P(\\text{filha}) = 1/2$. $P(aa) = 1/4$. $P(\\text{filha aa}) = 1/2 \\times 1/4 = 1/8$.",
+  "materia": "Biologia",
+  "assunto": "1ª e 2ª leis de Mendel",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-50",
+  "enunciado": "Uma das questões ainda não respondidas pela Ciência é sobre a origem dos vírus, se teriam surgido antes ou depois das primeiras células procariontes. Os pesquisadores apontam evidências e apresentam argumentos em favor de cada uma das hipóteses, mas ainda não há resposta definitiva sobre o tema. Em uma discussão entre dois alunos sobre qual dos micro-organismos surgiu primeiro no mundo, bactérias ou vírus, cinco argumentos foram apresentados. Destes, o mais correto, de acordo com os conhecimentos acerca desses micro-organismos, é:",
+  "alternativas": [
+   "as bactérias surgiram antes dos vírus porque os vírus não possuem enzimas que auxiliem na sua replicação.",
+   "os vírus surgiram antes das bactérias porque eles apresentam poucas estruturas celulares.",
+   "as bactérias surgiram antes dos vírus porque os vírus dependem das células para se reproduzirem.",
+   "os vírus surgiram antes das bactérias porque eles próprios sintetizam energia para se reproduzirem.",
+   "os vírus surgiram antes das bactérias porque todos eles possuem genoma de RNA e capsídeo proteico."
+  ],
+  "gabarito": "C",
+  "resolucao": "As células procariontes de bactérias são evolutivamente mais antigas do que os vírus, porque os vírus são parasitas intracelulares obrigatórios.",
+  "materia": "Biologia",
+  "assunto": "Origem da vida e tempo geológico",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-51",
+  "enunciado": "As fotocélulas são dispositivos utilizados como substitutos de interruptores que acendem as lâmpadas de uma casa ou de postes na rua. Esses dispositivos baseiam seu funcionamento no efeito fotoelétrico, como ilustra a figura. [figura] A equação química que representa o fenômeno ilustrado e a propriedade periódica relacionada a esse efeito são, respectivamente:",
+  "alternativas": [
+   "$X + e^- \\rightarrow X^- + \\text{energia}$; potencial de ionização.",
+   "$X + \\text{energia} \\rightarrow X^+ + e^-$; potencial de ionização.",
+   "$X + e^- \\rightarrow X^- + \\text{energia}$; afinidade eletrônica.",
+   "$X + \\text{energia} \\rightarrow X^+ + e^-$; afinidade eletrônica.",
+   "$X + e^- \\rightarrow X^+ + \\text{energia}$; afinidade eletrônica."
+  ],
+  "gabarito": "B",
+  "resolucao": "Energia ou potencial de ionização é a energia necessária para arrancar o elétron mais frouxamente ligado de um átomo no estado gasoso. $X(g) + \\text{energia} \\rightarrow X^+(g) + e^-$. Afinidade eletrônica é a energia (geralmente liberada) quando um átomo no estado gasoso captura um elétron. $X(g) + e^- \\rightarrow X^-(g) + \\text{energia}$.",
+  "materia": "Química",
+  "assunto": "Tabela periódica e propriedades periódicas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-52",
+  "enunciado": "Um resíduo de 200 mL de solução de ácido sulfúrico ($H_2SO_4$), de concentração 0,1 mol/L, precisava ser neutralizado antes do descarte. Para tanto, foi utilizado bicarbonato de sódio ($NaHCO_3$), conforme a equação a seguir:\n\n$H_2SO_4 + 2NaHCO_3 \\rightarrow Na_2SO_4 + 2H_2O + 2CO_2$\n\nA massa de bicarbonato de sódio necessária para a neutralização completa do ácido sulfúrico contido nessa solução é igual a",
+  "alternativas": [
+   "1,68 g.",
+   "16,8 g.",
+   "8,4 g.",
+   "33,6 g.",
+   "3,36 g."
+  ],
+  "gabarito": "E",
+  "resolucao": "Quantidade em mols de $H_2SO_4$:\n1 L de solução —— 0,1 mol de $H_2SO_4$\n0,200L de solução —— $x$\n$x = 0,02$ mol de $H_2SO_4$\n\nMassa de $NaHCO_3$ ($M = 84$ g/mol):\n1 mol de $H_2SO_4$ —— 2 mol de $NaHCO_3$\n1 mol —— 2 · 84 g\n0,02 mol —— $x$\n$x = 3,36$ g de $NaHCO_3$",
+  "materia": "Química",
+  "assunto": "Cálculo estequiométrico e mol",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-53",
+  "enunciado": "Considere a tabela, que apresenta propriedades físicas das substâncias I, II, III e IV.\n\n| Substância | I | II | III | IV |\n|---|---|---|---|---|\n| Solubilidade em água | imiscível | miscível | miscível | miscível |\n| Condução de eletricidade em solução aquosa | não | sim | sim | não |\n| Condução de eletricidade no estado líquido | sim | sim | não | não |\n\nA natureza iônica é observada somente",
+  "alternativas": [
+   "na substância II.",
+   "nas substâncias III e IV.",
+   "na substância I.",
+   "nas substâncias I e II.",
+   "nas substâncias II e III."
+  ],
+  "gabarito": "A",
+  "resolucao": "A natureza iônica é observada na substância II: solúvel em água, condução de eletricidade em solução aquosa e no estado líquido.\nExemplo: $NaCl$",
+  "materia": "Química",
+  "assunto": "Ligações químicas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-54",
+  "enunciado": "O óxido de propileno é uma substância utilizada na produção de polímeros, como o poliuretano. Sua fórmula estrutural está representada a seguir.\n\n[figura]\n\nA massa molar dessa substância é",
+  "alternativas": [
+   "45 g/mol.",
+   "42 g/mol.",
+   "46 g/mol.",
+   "55 g/mol.",
+   "58 g/mol."
+  ],
+  "gabarito": "E",
+  "resolucao": "Fórmula molecular do óxido de propileno: $C_3H_6O$\n\n$M = (3 \\cdot 12 + 6 \\cdot 1 + 1 \\cdot 16)$ g/mol\n$M = 58$ g/mol",
+  "materia": "Química",
+  "assunto": "Cálculo estequiométrico e mol",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-55",
+  "enunciado": "A tabela apresenta as pressões de vapor, à mesma temperatura, de três substâncias polares I, II e III.\n\n| Substância | Pressão de vapor (mmHg) |\n|---|---|\n| I | 60 |\n| II | 200 |\n| III | 260 |\n\nConsiderando as informações fornecidas, pode-se afirmar que",
+  "alternativas": [
+   "a substância II estará no estado gasoso à temperatura ambiente.",
+   "a substância III apresentará menor pressão de vapor em maior altitude.",
+   "a substância I apresenta a maior intensidade de interações entre suas moléculas.",
+   "a substância I apresentará maior temperatura de ebulição se for adicionada a ela certa quantidade da substância II.",
+   "a substância III apresenta a maior temperatura de ebulição."
+  ],
+  "gabarito": "C",
+  "resolucao": "[figura]\n\nA substância I apresenta a maior intensidade de interações entre suas moléculas, pois apresenta menor pressão de vapor (menos volátil).",
+  "materia": "Química",
+  "assunto": "Forças intermoleculares e propriedades físicas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-56",
+  "enunciado": "Uma solução de hidróxido de sódio (NaOH) apresenta pH igual a 9. Considerando-se o valor de $K_w$ igual a $10^{-14}$, a concentração de íons $OH^-$ nessa solução é igual a",
+  "alternativas": [
+   "$10^{-7}$ mol/L.",
+   "$10^{-8}$ mol/L.",
+   "$10^{-5}$ mol/L.",
+   "$10^{-9}$ mol/L.",
+   "$10^{-6}$ mol/L."
+  ],
+  "gabarito": "C",
+  "resolucao": "pH = 9 ∴ $[H^+] = 1,0 \\cdot 10^{-9}$ mol/L\n$K_w = [H^+][OH^-]$\n$1,0 \\cdot 10^{-14} = 1,0 \\cdot 10^{-9}\\,[OH^-]$\n$[OH^-] = 1,0 \\cdot 10^{-5}$ mol/L",
+  "materia": "Química",
+  "assunto": "Equilíbrio iônico",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-57",
+  "enunciado": "A decomposição térmica do carbonato de zinco ($ZnCO_3$) em seus óxidos tem uma entalpia positiva de 71,5 kJ/mol de $ZnCO_3$. A equação termoquímica que representa essa reação é",
+  "alternativas": [
+   "$ZnCO_3\\,(s) \\rightarrow ZnO\\,(s) + CO\\,(g) + \\frac{1}{2}O_2\\,(g) + 71{,}5$ kJ",
+   "$ZnCO_3\\,(s) + 71{,}5$ kJ $\\rightarrow ZnO\\,(s) + CO\\,(g) + \\frac{1}{2}O_2\\,(g)$",
+   "$ZnCO_3\\,(s) + 71{,}5$ kJ $\\rightarrow ZnO_2\\,(s) + CO\\,(g)$",
+   "$ZnCO_3\\,(s) \\rightarrow ZnO\\,(s) + CO_2\\,(g) + 71{,}5$ kJ",
+   "$ZnCO_3\\,(s) + 71{,}5$ kJ $\\rightarrow ZnO\\,(s) + CO_2\\,(g)$"
+  ],
+  "gabarito": "E",
+  "resolucao": "A equação química que representa essa decomposição térmica:\n$ZnCO_3\\,(s) + 71{,}5$ kJ $\\rightarrow ZnO\\,(s) + CO_2\\,(g)$\n\nAtualmente mais usada:\n$ZnCO_3\\,(s) \\rightarrow ZnO\\,(s) + CO_2\\,(g)$ $\\Delta H = +71{,}5$ kJ",
+  "materia": "Química",
+  "assunto": "Termoquímica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": "Não desatualizada. A notação com o calor como termo da equação é mais antiga, mas a alternativa E continua correta, e a resolução já traz a forma com ΔH."
+ },
+ {
+  "id": "obj-famerp2020-58",
+  "enunciado": "A figura representa uma célula galvânica constituída por um eletrodo padrão de hidrogênio mergulhado em uma solução com $[H^+] = 1,0$ mol/L e por um eletrodo de ouro mergulhado em solução contendo íons $Fe^{2+}$ e íons $Fe^{3+}$.\n\n[figura]\n\n(https://mycourses.aalto.fi. Adaptado.)\n\nConsidere os eletrodos de platina e de ouro inertes e os potenciais de redução das espécies químicas presentes nas soluções:\n\n$2H^+ + 2e^- \\rightarrow H_2$ $\\quad E^0 = 0{,}00$ V\n$Fe^{3+} + e^- \\rightarrow Fe^{2+}$ $\\quad E^0 = +0{,}77$ V\n\nDurante o funcionamento da célula galvânica representada na figura,",
+  "alternativas": [
+   "o gás hidrogênio atuará como agente oxidante.",
+   "os elétrons migrarão pelo fio de cobre no sentido do eletrodo de ouro.",
+   "a ddp da célula será de +1,54 V.",
+   "ocorrerá oxidação no eletrodo de platina.",
+   "ocorrerá aumento da concentração de íons $Fe^{3+}$."
+  ],
+  "gabarito": "B",
+  "resolucao": "A espécie química com o maior potencial de redução sofre redução no catodo. A oxidação ocorre no anodo.\nCatodo: $2Fe^{3+}(aq) + 2e^- \\rightarrow 2Fe^{2+}(aq)$ $\\quad E^0 = +0{,}77$ V\nAnodo: $H_2(g) \\rightarrow 2H^+(aq) + 2e^-$ $\\quad E^0 = 0{,}00$ V\n\n$2Fe^{3+}(aq) + H_2(g) \\rightarrow 2Fe^{2+}(aq) + 2H^+(aq)$ $\\quad \\Delta E^0 = +0{,}77$ V\n\nO $H_2$ sofre oxidação sendo o agente redutor.\nOs elétrons migram pelo fio de cobre do anodo para o catodo (sentido do eletrodo de ouro).\nA concentração de íons $Fe^{3+}$ diminui.\nNo eletrodo de platina (inerte) ocorre a oxidação do $H_2$. A alternativa d pode ter dupla interpretação.\nO gabarito oficial apresentou a alternativa b como resposta.",
+  "materia": "Química",
+  "assunto": "Eletroquímica: pilhas e oxirredução",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": "Não desatualizada. Dúvida de correção: a alternativa d também parece correta (oxidação do H2 no eletrodo de platina), o que a própria resolução aponta; a questão tem dupla interpretação, sem dado desatualizado."
+ },
+ {
+  "id": "obj-famerp2020-59",
+  "enunciado": "O urânio-235, ao ser bombardeado por um nêutron (${}^{1}_{0}n$), forma dois nuclídeos radioativos: o bário-144, que decai emitindo partículas beta (${}^{0}_{-1}\\beta$), e o nuclídeo X. Esse bombardeamento produz também três nêutrons, que colidirão com outros núcleos de urânio, causando uma reação em cadeia. O nuclídeo produzido pelo decaimento do bário-144 e o nuclídeo X são, respectivamente,",
+  "alternativas": [
+   "lantânio-144 e criptônio-91.",
+   "césio-144 e criptônio-89.",
+   "háfnio-144 e criptônio-91.",
+   "césio-144 e criptônio-91.",
+   "lantânio-144 e criptônio-89."
+  ],
+  "gabarito": "E",
+  "resolucao": "${}^{144}_{56}Ba \\rightarrow {}^{0}_{-1}\\beta + {}^{144}_{57}La$ (lantânio)\n\n${}^{235}_{92}U + {}^{1}_{0}n \\rightarrow {}^{144}_{56}Ba + {}^{A}_{Z}X + 3\\,{}^{1}_{0}n$\n\nA: $235 + 1 = 144 + A + 3 \\therefore A = 89$\nZ: $92 = 56 + Z \\therefore Z = 36$\n\n${}^{A}_{Z}X$ : ${}^{89}_{36}X$ : ${}^{89}_{36}Kr$ (criptônio-89)",
+  "materia": "Química",
+  "assunto": "Radioatividade",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-61",
+  "enunciado": "Existem várias versões do Caminho de Santiago, que são trajetos percorridos anualmente por milhares de peregrinos que se dirigem à cidade de Santiago de Compostela, na Espanha, com a finalidade de venerar o apóstolo Santiago Maior. Considere que uma pessoa percorreu um desses caminhos em 32 dias, andando a distância total de 800 km e caminhando com velocidade média de 3,0 km/h. O tempo que essa pessoa caminhou por dia, em média, foi de",
+  "alternativas": [
+   "7 horas e 20 minutos.",
+   "8 horas e 20 minutos.",
+   "7 horas e 40 minutos.",
+   "8 horas e 40 minutos.",
+   "9 horas e 40 minutos."
+  ],
+  "gabarito": "B",
+  "resolucao": "1) $V_m = \\frac{\\Delta s}{\\Delta t} \\Rightarrow 3{,}0 = \\frac{800}{\\Delta t} \\Rightarrow \\Delta t = \\frac{800}{3{,}0}$ h\n\n2) $32$ d ……… $\\frac{800}{3{,}0}$ h\n$1$ d ……… $x$\n$x = \\frac{800}{3{,}0 \\cdot 32}$ h\n$x = \\frac{800}{96}$ h $= \\frac{25}{3}$ h\n$x = 8$ h $+ \\frac{1}{3}$ h\n$x = 8$ h $+ 20$ min",
+  "materia": "Física",
+  "assunto": "Cinemática escalar",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-62",
+  "enunciado": "Em um local em que a aceleração gravitacional vale 10 m/s², uma pessoa eleva um objeto de peso 400 N por meio de uma roldana fixa, conforme mostra a figura, utilizando uma corda que suporta, no máximo, uma tração igual a 520 N.\n\n[figura]\n\n(https://brasilescola.uol.com.br.)\n\nA máxima aceleração que a pessoa pode imprimir ao objeto durante a subida, sem que a corda se rompa, é",
+  "alternativas": [
+   "6,0 m/s².",
+   "13 m/s².",
+   "8,0 m/s².",
+   "2,0 m/s².",
+   "3,0 m/s²."
+  ],
+  "gabarito": "E",
+  "resolucao": "PFD: $T - mg = ma$\n$T_{máx} - mg = m\\,a_{máx}$\n$520 - 400 = 40 \\cdot a_{máx}$\n$120 = 40 \\cdot a_{máx}$\n$a_{máx} = 3{,}0$ m/s²",
+  "materia": "Física",
+  "assunto": "Leis de Newton",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-63",
+  "enunciado": "Um automóvel trafegava com velocidade constante por uma avenida plana e horizontal quando foi atingido na traseira por outro automóvel, que trafegava na mesma direção e sentido, também com velocidade constante. Após a colisão, os automóveis ficaram unidos e passaram a se mover com a mesma velocidade. [figura] Sendo $E_{INICIAL}$ e $E_{FINAL}$, respectivamente, a soma das energias cinéticas dos automóveis imediatamente antes e imediatamente depois da colisão, e $Q_{INICIAL}$ e $Q_{FINAL}$, respectivamente, a soma dos módulos das quantidades de movimento dos automóveis imediatamente antes e imediatamente depois da colisão, pode-se afirmar que:",
+  "alternativas": [
+   "$E_{INICIAL} > E_{FINAL}$ e $Q_{INICIAL} < Q_{FINAL}$",
+   "$E_{INICIAL} > E_{FINAL}$ e $Q_{INICIAL} > Q_{FINAL}$",
+   "$E_{INICIAL} > E_{FINAL}$ e $Q_{INICIAL} = Q_{FINAL}$",
+   "$E_{INICIAL} = E_{FINAL}$ e $Q_{INICIAL} > Q_{FINAL}$",
+   "$E_{INICIAL} = E_{FINAL}$ e $Q_{INICIAL} = Q_{FINAL}$"
+  ],
+  "gabarito": "C",
+  "resolucao": "1) Na colisão os carros formam um sistema isolado e haverá conservação da quantidade de movimento total do sistema: $Q_{final} = Q_{inicial}$ 2) Na colisão perfeitamente inelástica a energia cinética do sistema diminui sendo transformada em energia térmica, energia sonora e trabalho de deformação: $E_{final} < E_{inicial}$ Resposta: C",
+  "materia": "Física",
+  "assunto": "Impulso e quantidade de movimento",
+  "segundo_assunto": "Trabalho, energia e potência",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-64",
+  "enunciado": "Um satélite geoestacionário é aquele que se encontra parado em relação a um ponto sobre a superfície da Terra. Se a Terra fosse perfeitamente esférica, com distribuição homogênea de massa, esses pontos só poderiam estar localizados no plano que contém a Linha do Equador terrestre. Na realidade, os satélites geoestacionários encontram-se sobre pontos ligeiramente fora desse plano. Para colocar um satélite estacionário em órbita ao redor de outro astro, como a Lua ou Marte, considerando-os perfeitamente esféricos e com distribuição homogênea de massa, o raio da órbita do satélite dependerá apenas",
+  "alternativas": [
+   "do período de rotação do astro e da massa do satélite.",
+   "da massa e do raio do astro e da massa do satélite.",
+   "do raio e do período de rotação do astro e da massa do satélite.",
+   "da massa e do período de rotação do astro.",
+   "da massa e do raio do astro."
+  ],
+  "gabarito": "D",
+  "resolucao": "$F_G = F_{cp}$ $\\frac{GMm}{r^2} = m \\omega^2 r$ $\\omega^2 = \\frac{GM}{r^3}$ $\\left(\\frac{2\\pi}{T}\\right)^2 = \\frac{GM}{r^3}$ $\\frac{4\\pi^2}{T^2} = \\frac{GM}{r^3}$ $r^3 = \\frac{GMT^2}{4\\pi^2}$ $r = \\sqrt[3]{\\frac{GMT^2}{4\\pi^2}}$ r depende da massa do astro e do período de translação do satélite $T$ que é igual ao período de rotação do astro. Resposta: D",
+  "materia": "Física",
+  "assunto": "Gravitação",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-65",
+  "enunciado": "A oxigenoterapia hiperbárica é uma modalidade terapêutica na qual o paciente respira oxigênio puro (100%), enquanto é submetido a uma pressão cerca de 2 a 3 vezes a pressão atmosférica ao nível do mar, no interior de uma câmara hiperbárica. Essa terapia provoca um aumento espetacular na quantidade de oxigênio transportado pelo sangue, na ordem de 20 vezes o volume que circula em indivíduos que estão respirando ar ao nível do mar, o que produzirá no paciente uma série de efeitos de interesse terapêutico. A câmara hiperbárica consiste em um equipamento médico fechado, resistente à pressão, geralmente de formato cilíndrico, construído de aço ou acrílico e que pode ser pressurizado com ar comprimido ou oxigênio puro. (https://sbmh.com.br. Adaptado.) Considere que o ar se comporta como um gás ideal, o ar no interior da câmara hiperbárica esteja à pressão atmosférica, que o volume da câmara hiperbárica não se altere e que a temperatura no seu interior não varie. O número de mols de ar que devem ser injetados na câmara, em relação à quantidade existente inicialmente (n$_0$), para produzir no interior da câmara uma pressão igual a 2,8 vezes a pressão atmosférica é",
+  "alternativas": [
+   "$1,8n_0$",
+   "$3,8n_0$",
+   "$1,4n_0$",
+   "$0,9n_0$",
+   "$2,4n_0$"
+  ],
+  "gabarito": "A",
+  "resolucao": "Para a quantidade inicial de ar: $P_0V_0 = n_0 R T_0$ (1) Para a quantidade final de ar: $2,8 P_0V_0 = n_1 R T_0$ (2) Comparando-se a equação (2) com a equação (1), temos: $2,8 n_0 R T_0 = n_1 R T_0$ $n_1 = 2,8n_0$ O número de mols n que devem ser injetados na câmara é dado por: $n = n_1 - n_0$ $n = 2,8n_0 - n_0$ $n = 1,8n_0$ Resposta: A",
+  "materia": "Física",
+  "assunto": "Gases e termodinâmica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-66",
+  "enunciado": "Colocou-se certa massa de água a 80 °C em um recipiente de alumínio de massa 420 g que estava à temperatura de 20 °C. Após certo tempo, a temperatura do conjunto atingiu o equilíbrio em 70 °C. Considerando que a troca de calor ocorreu apenas entre a água e o recipiente, que não houve perda de calor para o ambiente e que os calores específicos do alumínio e da água sejam, respectivamente, iguais a $9,0 \\times 10^2$ J/(kg · °C) e $4,2 \\times 10^3$ J/(kg · °C), a quantidade de água colocada no recipiente foi",
+  "alternativas": [
+   "220 g.",
+   "450 g.",
+   "330 g.",
+   "520 g.",
+   "280 g."
+  ],
+  "gabarito": "B",
+  "resolucao": "Como o sistema é isolado termicamente, temos: $\\sum Q = 0$ $Q_{água} + Q_{Aℓ} = 0$ Para uma temperatura de equilíbrio térmico de 70°C, temos: $m_{água} c_{água} \\Delta\\theta_{água} + m_{Aℓ} c_{Aℓ} \\Delta\\theta_{Aℓ} = 0$ $m_{água} . 4,2 . 10^3 . (70 - 80) + 0,42 . 9,0 . 10^2 . (70 - 20) = 0$ $-4,2 . 10^4 m_{água} + 1,89 . 10^4 = 0$ $m_{água} = 0,450kg = 450g$ Resposta: B",
+  "materia": "Física",
+  "assunto": "Calorimetria e mudanças de fase",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-67",
+  "enunciado": "No dia 20 de junho de 1969, o ser humano caminhou pela primeira vez na superfície lunar. Em uma das fotos registradas nesse dia pode-se ver uma imagem direita e menor formada pela superfície convexa do visor do capacete do astronauta Edwin Aldrin, que funciona como um espelho. [figura] (www.correiobraziliense.com.br.) Essa imagem é",
+  "alternativas": [
+   "real e o objeto se encontra além do centro de curvatura do espelho.",
+   "virtual e independe da localização do objeto.",
+   "virtual e o objeto se encontra entre o espelho e seu foco principal.",
+   "real e o objeto se encontra entre o espelho e seu foco principal.",
+   "real e independe da localização do objeto."
+  ],
+  "gabarito": "B",
+  "resolucao": "A imagem de um objeto real dada por um espelho esférico convexo é sempre virtual, direta e reduzida não importando a localização do objeto. Resposta: B",
+  "materia": "Física",
+  "assunto": "Óptica geométrica: reflexão e espelhos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-68",
+  "enunciado": "Nos equipamentos eletrônicos que emitem ondas sonoras, geralmente, há um dispositivo que permite controlar o volume do som. [figura] (https://cidadeazulnoticias.com.br.) Quando mudamos o volume do som, necessariamente, altera-se, na onda sonora emitida,",
+  "alternativas": [
+   "o período.",
+   "o comprimento de onda.",
+   "a frequência.",
+   "o timbre.",
+   "a amplitude."
+  ],
+  "gabarito": "E",
+  "resolucao": "O volume do som está ligado à sua intensidade que está ligada a sua amplitude. Observação: Na realidade a intensidade I do som depende de sua amplitude a e também de sua frequência f. $I = k a^2 f^2$ Resposta: E",
+  "materia": "Física",
+  "assunto": "Ondas e acústica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-69",
+  "enunciado": "Nas Ciências, muitas vezes, se inicia o estudo de um problema fazendo uma aproximação simplificada. Um desses casos é o estudo do comportamento da membrana celular devido à distribuição do excesso de íons positivos e negativos em torno dela. A figura mostra a visão geral de uma célula e a analogia entre o modelo biológico e o modelo físico, o qual corresponde a duas placas planas e paralelas, eletrizadas com cargas elétricas de tipos opostos. [figura] (http://bioquimica.org.br. Adaptado.) Com base no modelo físico, considera-se que o campo elétrico no interior da membrana celular tem sentido para",
+  "alternativas": [
+   "fora da célula, com intensidade crescente de dentro para fora da célula.",
+   "dentro da célula, com intensidade crescente de fora para dentro da célula.",
+   "dentro da célula, com intensidade crescente de dentro para fora da célula.",
+   "fora da célula, com intensidade constante.",
+   "dentro da célula, com intensidade constante."
+  ],
+  "gabarito": "E",
+  "resolucao": "[figura] O sistema se comporta como um capacitor plano e o campo elétrico em seu interior é uniforme e tem sentido de afastamento das cargas positivas e aproximação das cargas negativas, e, portanto, é dirigido de fora da célula para dentro da célula. Resposta: E",
+  "materia": "Física",
+  "assunto": "Campo e potencial elétrico",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-70",
+  "enunciado": "O gráfico mostra a intensidade da corrente elétrica que percorre o filamento de uma pequena lâmpada incandescente em função da diferença de potencial aplicada entre seus terminais. [figura] A potência elétrica dissipada pelo filamento dessa lâmpada, quando ele é percorrido por uma corrente elétrica de intensidade 0,4 A, é",
+  "alternativas": [
+   "5,00 W.",
+   "0,68 W.",
+   "3,20 W.",
+   "0,20 W.",
+   "0,80 W."
+  ],
+  "gabarito": "E",
+  "resolucao": "De acordo com o gráfico dado: $i = 0,4 \\Leftrightarrow U = 2,0V$ $P = UI = 2,0V . 0,4A$ $P = 0,80W$ Resposta: E",
+  "materia": "Física",
+  "assunto": "Potência elétrica e consumo",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-71",
+  "enunciado": "Observe o padrão da sequência de figuras. [figura] Mantido o padrão, a figura que terá a quantidade de bolas brancas superando a de bolas verdes em 286 será a de número",
+  "alternativas": [
+   "13.",
+   "18.",
+   "14.",
+   "16.",
+   "21."
+  ],
+  "gabarito": "B",
+  "resolucao": "1) O termo geral da sequência (1, 4, 9, 16, ...) é $b_n = n^2$ 2) O termo geral da sequência (4, 6, 8, 10, ...) é $v_n = 2n + 2$ 3) $b_n - v_n = 286 \\Rightarrow n^2 - 2n - 2 = 286 \\Leftrightarrow n^2 - 2n - 288 = 0 \\Leftrightarrow n = \\frac{2 \\pm 34}{2} \\Leftrightarrow n = 18$ pois $n > 0$. Resposta: B",
+  "materia": "Matemática",
+  "assunto": "Progressão aritmética e geométrica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-72",
+  "enunciado": "Dois cubos idênticos, de aresta igual a 1 dm, foram unidos com sobreposição perfeita de duas das suas faces. P é vértice de um dos cubos, Q é vértice do outro cubo e R é vértice compartilhado por ambos os cubos, conforme indica a figura. [figura] A área do triângulo de vértices P, Q e R é igual a",
+  "alternativas": [
+   "$\\frac{\\sqrt{6}}{2}$ dm²",
+   "$\\frac{\\sqrt{6}}{3}$ dm²",
+   "$\\frac{\\sqrt{3}}{2}$ dm²",
+   "$\\frac{\\sqrt{6}}{6}$ dm²",
+   "$\\frac{2\\sqrt{3}}{3}$ dm²"
+  ],
+  "gabarito": "A",
+  "resolucao": "[figura] 1) $PR = \\sqrt{1^2 + 1^2} = \\sqrt{2}$ 2) $RQ = 1 \\cdot \\sqrt{3} = \\sqrt{3}$ 3) $PQ = \\sqrt{1^2 + 2^2} = \\sqrt{5}$ 4) $PQ^2 = PR^2 + RQ^2$ pois $(\\sqrt{5})^2 = (\\sqrt{3})^2 + (\\sqrt{2})^2$ [figura] 5) A área do triângulo PQR, em dm², é $\\frac{1}{2} \\cdot \\sqrt{2} \\cdot \\sqrt{3} = \\frac{\\sqrt{6}}{2}$ Resposta: A",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: poliedros, prismas e pirâmides",
+  "segundo_assunto": "Geometria plana",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-73",
+  "enunciado": "Dado um número real $x$, o símbolo $[x]$ indica o maior número inteiro que é menor ou igual a $x$. Por exemplo, $\\left[\\frac{11}{4}\\right] = 2$, $[\\pi] = 3$ e $[5] = 5$. Utilizando-se essa definição, a soma dos termos da sequência $[-4]+[-3{,}9]+[-3{,}8]+[-3{,}7]+[-3{,}6]+\\ldots+[+2]$ é igual a",
+  "alternativas": [
+   "$-92$",
+   "$-34$",
+   "$-88$",
+   "$-52$",
+   "$-90$"
+  ],
+  "gabarito": "C",
+  "resolucao": "1) $[-4]+[-3{,}9]+[-3{,}8]+\\ldots+[-3{,}1] = 10\\cdot(-4)$\n2) $[-3]+[-2{,}9]+[-2{,}8]+\\ldots+[-2{,}1] = 10\\cdot(-3)$\n3) $[-2]+[-1{,}9]+[-1{,}8]+\\ldots+[-1{,}1] = 10\\cdot(-2)$\n4) $[-1]+[-0{,}9]+[-0{,}8]+\\ldots+[-0{,}1] = 10\\cdot(-1)$\n5) $[0]+[0{,}1]+[0{,}2]+\\ldots+[0{,}9] = 10\\cdot 0$\n6) $[1]+[1{,}1]+[1{,}2]+\\ldots+[1{,}9] = 10\\cdot 1$\n7) $[2] = 2$\n8) A soma dos termos dessa sequência é $10\\cdot[-4-3-2-1+0+1]+2 = -90+2 = -88$. Resposta: C",
+  "materia": "Matemática",
+  "assunto": "Progressão aritmética e geométrica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-74",
+  "enunciado": "Em um plano cartesiano, dois vértices de um triângulo equilátero estão sobre a reta de equação $y = 2x - 2$. O terceiro vértice desse triângulo está sobre a reta de equação $y = 2x + 2$. A altura desse triângulo, na mesma unidade de medida dos eixos cartesianos ortogonais, é igual a",
+  "alternativas": [
+   "$\\frac{4\\sqrt{3}}{5}$",
+   "$\\frac{3\\sqrt{3}}{4}$",
+   "$\\frac{2\\sqrt{5}}{5}$",
+   "$\\frac{4\\sqrt{5}}{5}$",
+   "$\\frac{\\sqrt{3}}{2}$"
+  ],
+  "gabarito": "D",
+  "resolucao": "Como as retas (r) e (s) são paralelas, a altura h de um triângulo equilátero com dois vértices sobre a reta (s) e o terceiro vértice sobre a reta (r), é a distância do ponto P(0; 2) à reta (s). Logo:\n$h = \\frac{|2 \\cdot 0 - 2 - 2|}{\\sqrt{2^2 + (-1)^2}} = \\frac{|-4|}{\\sqrt{5}} = \\frac{4\\sqrt{5}}{5}$. Resposta: D",
+  "materia": "Matemática",
+  "assunto": "Geometria analítica: ponto e reta",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-75",
+  "enunciado": "Admita que cada um dos tons de qualquer uma das três cores primárias seja definido por um número inteiro de 0 a 255. Sobrepondo-se duas cores primárias diferentes, com seus respectivos tons, o resultado sempre será uma cor inédita. Sobrepondo-se uma cor primária a ela mesma, o resultado será uma cor inédita apenas quando a sobreposição for entre cores primárias iguais mas de tons diferentes. Nessas condições, o número de cores inéditas que podemos produzir com a sobreposição de duas cores primárias, sejam elas iguais ou diferentes, é",
+  "alternativas": [
+   "$2^{16} \\cdot 3 + 2^{17} = 327\\,680$",
+   "$2^{15} \\cdot 3 + 2^{17} = 229\\,376$",
+   "$2^{8} \\cdot (2^{8} - 1) \\cdot 3 + 2^{16} \\cdot 3 = 392\\,448$",
+   "$2^{8} \\cdot (2^{8} - 1) \\cdot 3 + 2^{17} = 326\\,912$",
+   "$2^{17} \\cdot 3 = 393\\,216$"
+  ],
+  "gabarito": "C",
+  "resolucao": "1) O número de cores inéditas que podemos produzir com a sobreposição de cores primárias diferentes é $3 \\cdot 256 \\cdot 256 = 2^{16} \\cdot 3$\n2) O número de cores inéditas que podemos produzir com a sobreposição de cores primárias iguais, mas com tons diferentes é $256 \\cdot 255 \\cdot 3 = 2^{8} \\cdot (2^{8} - 1) \\cdot 3$\n3) O total pedido é $2^{8} \\cdot (2^{8} - 1) \\cdot 3 + 2^{16} \\cdot 3 = 392\\,448$. Resposta: C",
+  "materia": "Matemática",
+  "assunto": "Análise combinatória",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-76",
+  "enunciado": "Seja $k$ um número real e $\\begin{cases} y = kx + 14 \\\\ y = x + 28 \\end{cases}$ um sistema de equações nas incógnitas $x$ e $y$. Os valores de $k$ para que a solução gráfica desse sistema pertença ao interior do terceiro quadrante do plano cartesiano são dados pelo intervalo",
+  "alternativas": [
+   "$-1 < k < 0$",
+   "$\\frac{1}{2} < k < 1$",
+   "$-1 < k < -\\frac{1}{2}$",
+   "$k < -\\frac{1}{2}$",
+   "$k < 1$"
+  ],
+  "gabarito": "B",
+  "resolucao": "Resolvendo o sistema $\\begin{cases} y = kx + 14 \\\\ y = x + 28 \\end{cases}$, temos:\nI) $kx + 14 = x + 28 \\Rightarrow (k-1)\\cdot x = 28 - 14 \\Rightarrow x = \\frac{14}{k-1}$\nII) $y = x + 28 \\Rightarrow y = \\frac{14}{k-1} + 28 \\Rightarrow y = \\frac{28k - 14}{k-1}$\nPara que a solução gráfica desse sistema pertença ao interior do terceiro quadrante, devemos ter: $x < 0$ e $y < 0$. Assim,\na) $x < 0 \\Rightarrow \\frac{14}{k-1} < 0 \\Rightarrow k - 1 < 0 \\Rightarrow k < 1$\nb) $y < 0 \\Rightarrow \\frac{28k - 14}{k-1} < 0 \\Rightarrow (28k - 14)\\cdot(k-1) < 0 \\Rightarrow \\frac{1}{2} < k < 1$\nDe (a) e (b), temos: $\\frac{1}{2} < k < 1$. Resposta: B",
+  "materia": "Matemática",
+  "assunto": "Sistemas lineares",
+  "segundo_assunto": "Equações e inequações",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-77",
+  "enunciado": "José deseja fazer uma poupança mensal durante 10 anos, sempre acrescentando $0{,}5\\%$ a mais em relação ao valor poupado no mês anterior. Adotando $1{,}005^{120} = 1{,}819$ em seu cálculo final, se José começar sua poupança depositando R$ 100,00 no primeiro mês, ao final do último mês de depósito ele terá depositado um total de",
+  "alternativas": [
+   "R$ 69.600,00",
+   "R$ 6.645,00",
+   "R$ 32.760,00",
+   "R$ 16.380,00",
+   "R$ 6.500,00"
+  ],
+  "gabarito": "D",
+  "resolucao": "Os depósitos mensais, começando com R$ 100,00 e sempre acrescentando $0{,}5\\%$ a mais em relação ao valor poupado no mês anterior, formam uma progressão geométrica de primeiro termo R$ 100,00 e razão $q = 1{,}005$.\nLogo, ao final de 10 anos, o total depositado, em reais, será:\n$S_n = \\frac{a_1 \\cdot (q^n - 1)}{q - 1} = \\frac{100 \\cdot (1{,}005^{120} - 1)}{1{,}005 - 1} = \\frac{100 \\cdot (0{,}819)}{0{,}005} = 16380$. Resposta: D",
+  "materia": "Matemática",
+  "assunto": "Progressão aritmética e geométrica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-78",
+  "enunciado": "Renato comprou um carro por R$ 19.000,00. Meses depois, vendeu o carro para seu primo por R$ 20.000,00. Passados mais alguns meses, Renato recomprou o carro do seu primo por R$ 20.500,00 e, em seguida, o vendeu para outra pessoa por R$ 22.000,00. Com o saldo de suas negociações, Renato teve um lucro aproximado, sobre o valor do carro inicialmente adquirido por ele, de",
+  "alternativas": [
+   "11%",
+   "15%",
+   "13%",
+   "19%",
+   "17%"
+  ],
+  "gabarito": "C",
+  "resolucao": "Renato teve um lucro de R$ 20.000,00 − R$ 19.000,00 = R$ 1.000,00 na primeira venda e teve um lucro de R$ 22.000,00 − R$ 20.500,00 = R$ 1.500,00 na segunda venda.\nAssim, Renato teve um lucro total de R$ 1.000,00 + R$ 1.500,00 = R$ 2.500,00, que corresponde a $2500 \\div 19.000 \\simeq 13\\%$. Resposta: C",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-79",
+  "enunciado": "A figura indica o retângulo FAME e o losango MERP desenhados, respectivamente, em uma parede e no chão a ela perpendicular. O ângulo $\\widehat{MER}$ mede $120^\\circ$, $ME = 2$ m e a área do retângulo FAME é igual a $12$ m². [figura] Na situação descrita, a medida de $\\overline{RA}$ é",
+  "alternativas": [
+   "$3\\sqrt{3}$ m",
+   "$4\\sqrt{3}$ m",
+   "$5\\sqrt{2}$ m",
+   "$3\\sqrt{2}$ m",
+   "$4\\sqrt{2}$ m"
+  ],
+  "gabarito": "B",
+  "resolucao": "I) Como a área do retângulo FAME é igual a $12\\ \\text{cm}^2$, temos: $(AM)\\cdot 2 = 12 \\Rightarrow AM = 6$ cm\nII) Aplicando a lei dos cossenos no triângulo REM, temos: $(RM)^2 = 2^2 + 2^2 - 2\\cdot 2\\cdot 2\\cdot\\cos 120^\\circ = 4 + 4 + 4 \\Rightarrow RM = 2\\sqrt{3}$ cm\nIII) Como a parede e o chão nos quais estão desenhados o retângulo FAME e o losango MERP, respectivamente, são perpendiculares, podemos concluir que o triângulo AMR é retângulo em M.\nAssim, aplicando o Teorema de Pitágoras no triângulo AMR, temos: $(RA)^2 = (AM)^2 + (RM)^2 = 6^2 + (2\\sqrt{3})^2 \\Rightarrow RA = 4\\sqrt{3}$ cm. Resposta: B",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: poliedros, prismas e pirâmides",
+  "segundo_assunto": "Trigonometria no triângulo e ciclo",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-famerp2020-80",
+  "enunciado": "A figura indica os gráficos de uma reta $r$ e uma senoide $s$, de equações $y = \\frac{5}{2}$ e $y = 1 + 3\\,\\mathrm{sen}(2x)$, em um plano cartesiano de eixos ortogonais. [figura] Sendo $P$ um ponto de intersecção dos gráficos, conforme mostra a figura, sua abscissa, convertida para graus, é igual a",
+  "alternativas": [
+   "275°",
+   "240°",
+   "225°",
+   "210°",
+   "195°"
+  ],
+  "gabarito": "E",
+  "resolucao": "Para obtermos a intersecção entre os gráficos devemos ter:\n$\\begin{cases} y = \\frac{5}{2} \\\\ y = 1 + 3\\cdot\\mathrm{sen}(2x) \\end{cases} \\Leftrightarrow 1 + 3\\cdot\\mathrm{sen}(2x) = \\frac{5}{2} \\Leftrightarrow \\mathrm{sen}(2x) = \\frac{1}{2} \\Leftrightarrow 2x = \\frac{\\pi}{6} + n\\cdot 2\\pi$ ou $2x = \\frac{5\\pi}{6} + n\\cdot 2\\pi \\Leftrightarrow x = \\frac{\\pi}{12} + n\\cdot\\pi$ ou $x = \\frac{5\\pi}{12} + n\\cdot\\pi$, $(n \\in \\mathbb{Z})$\nSendo P a terceira intersecção positiva, sua abscissa $x_p$ é tal que $x_p = \\frac{\\pi}{12} + \\pi = \\frac{13\\pi}{12}$, e convertida em graus, $x_p = 195°$. Resposta: E",
+  "materia": "Matemática",
+  "assunto": "Funções trigonométricas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-fuvest2020_1fase-35",
+  "enunciado": "Para Graciliano Ramos, $Angústia$ não faz concessão ao gosto do público na medida em que compõe uma atmosfera",
+  "alternativas": [
+   "dramática, ao representar as tensões de seu tempo.",
+   "grotesca, ao eliminar a expressão individual.",
+   "satírica, ao reduzir os eventos ao plano do riso.",
+   "ingênua, ao simular o equilíbrio entre sujeito e mundo.",
+   "alegórica, ao exaltar as imagens de sujeira."
+  ],
+  "gabarito": "A",
+  "resolucao": "No excerto de $Angústia$, dado pelo examinador como base para a reflexão, Graciliano Ramos escreve: \"Romance desagradável, abafado, ambiente sujo, povoado de ratos, cheio de podridões, de lixo\". No comando do teste, pergunta-se por que essa obra não faz concessão ao gosto do leitor. A resposta só pode ser a da alternativa e: \"alegórica, ao exaltar as imagens de sujeira\". Essa é a resposta correta, não só pelo jogo de linguagem e de sentido desse livro, mas também pela análise do professor Antônio Cândido, que afirma em ensaio célebre sobre $Angústia$: \"Luís da Silva não segue este rumo lógico, mas vive cercado de animais que simbolizam (grifo nosso) a sua natureza conturbada: cobras, ligadas a recordações infantis, a impulsos de morte e de sexo oprimido; ratos que povoam a sua casa, roem os seus manuscritos e se identificam, em certos trechos, aos movimentos mais torpes, nele e nos outros\" (\"Os bichos do subterrâneo\". In $Tese\\ e\\ antítese$, p. 109). Enfim, Antônio Cândido não concordaria com a resposta oficial, pois considera os ratos e cobras como símbolos, alegoria do estado psíquico e social de Luís da Silva.\nA resposta oficial, alternativa a (\"dramática, ao representar as tensões de seu tempo\") abrange o conteúdo, e não o estilo, ainda que seja indissociável a relação forma/conteúdo. Se a Fuvest desse essa resposta como oficial, não haveria diferença entre $Angústia$, \"romance desagradável\" segundo o próprio Graciliano Ramos, e as obras de Jorge Amado, de leitura mais fácil e agradável e que também abordam atmosfera dramática em relação às tensões do tempo, isto é, da década de 30 do século XX.\nA Fuvest deve rever o gabarito dessa questão e mudá-lo, considerando não só o excerto de Graciliano Ramos, mas também, e principalmente, o sentido do livro e a análise crítica de vários estudiosos, como, por exemplo, Antônio Cândido, emérito professor da USP. Resposta oficial: A. Resposta correta: E",
+  "materia": "Literatura",
+  "assunto": "Pré-Modernismo e Modernismo (1ª e 2ª fase)",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": "Não desatualizada: a questão é contestada (gabarito oficial A; a resolução defende E como resposta correta), mas o conteúdo não mudou com o tempo. Gabarito registrado é o oficial, A."
+ },
+ {
+  "id": "obj-fuvest2020_1fase-50",
+  "enunciado": "Boa parte da floresta amazônica brasileira cresce sobre solos pobres. Sua exuberância, portanto, deve-se ao fato de que uma grande proporção dos nutrientes advindos da própria floresta retorna à vegetação. Quando se derruba a floresta de uma área de dezenas de quilômetros quadrados e, em seguida, ateia-se fogo no local como preparo para o plantio, esse ciclo é interrompido, o que causa uma série de efeitos.\nIdentifique corretamente a relação dos efeitos mencionados em I, II e III com a derrubada e a queima da floresta.",
+  "alternativas": [
+   "I – Diminuição de curto prazo da fertilidade do solo pela queima da vegetação.\nII – Perda de biodiversidade pelo efeito direto do fogo sobre os animais silvestres.\nIII – Diminuição da evaporação da água da chuva que atinge o solo exposto.",
+   "I – Aumento de curto prazo da fertilidade do solo pelo efeito direto do calor do fogo sobre o solo superficial.\nII – Diminuição da diversidade de animais silvestres devido à remoção da vegetação.\nIII – Diminuição da temperatura do solo exposto como efeito direto da remoção da vegetação.",
+   "I – Aumento de curto prazo da fertilidade do solo pela deposição de cinzas.\nII – Perda de biodiversidade devido à remoção da vegetação.\nIII – Aumento temporário da evaporação da água da chuva que atinge o solo exposto.",
+   "I – Aumento de curto prazo da fertilidade do solo pelo efeito direto do calor do fogo sobre o solo superficial.\nII – Perda de biodiversidade pelo efeito direto do fogo sobre a vegetação.\nIII – Diminuição temporária de absorção da água da chuva pelo solo exposto.",
+   "I – Aumento de longo prazo da fertilidade do solo pela deposição de cinzas.\nII – Aumento da diversidade de animais silvestres devido à remoção da vegetação.\nIII – Aumento da erosão do solo exposto devido à remoção da vegetação."
+  ],
+  "gabarito": "C",
+  "resolucao": "Com a derrubada de uma área de dezenas de km² da floresta amazônica e, em seguida, o ateamento do fogo como preparo para o plantio, tem-se o aumento de curto prazo da fertilidade do solo pela deposição de cinzas (I), a perda de biodiversidade devido à remoção da vegetação (II) e o aumento temporário da evaporação da água da chuva que atinge o solo exposto (III). Resposta: C",
+  "materia": "Biologia",
+  "assunto": "Biomas brasileiros e impacto ambiental",
+  "segundo_assunto": "Ecologia: fluxo de energia e ciclos",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
  }
 ]
