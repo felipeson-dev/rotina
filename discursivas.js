@@ -7,7 +7,7 @@
 { const n0 = normalizarImportada; normalizarImportada = function (q, i) {
   if (q && q.tipo === 'disc' && q.modo === 'objetivo' && /^https:/.test(q.img || '') && q.corte > 0)
     return { id: q.id, banca: String(q.banca), tipo: 'disc', ano: +q.ano || 0, area: AREA_DA_MATERIA[q.materia] || '', materia: q.materia || '', assunto: q.assunto || '', dif: '', fig: 0,
-      enunciado: String(q.enunciado || ''), imagens: [], alts: [], gab: '', coment: String(q.coment || ''), fonte: 'Objetivo', modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte,
+      enunciado: String(q.enunciado || ''), imagens: [], alts: [], gab: '', coment: String(q.coment || ''), fonte: String(q.fonte || 'Objetivo'), modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte,
       prev: q.prev || '', num: q.num || '', fase: q.fase || '', v: +q.v || 0 };
   return n0.apply(this, arguments);
 }; }
@@ -33,7 +33,7 @@ function qQuestaoDisc() {
     ${riscavel(recorteObj(q, false))}
     <span class="rotulo">sua resposta (com a caneta)</span>
     ${quadroHtml('disc:' + q.id, 380, 'linhas')}
-    ${q.verRes ? `<div class="coluna" style="gap:6px"><span class="rotulo">padrão de resposta (resolução do Curso Objetivo)</span>${recorteObj(q, true)}</div>
+    ${q.verRes ? `<div class="coluna" style="gap:6px"><span class="rotulo">padrão de resposta (${q.fonte === 'Objetivo' ? 'resolução do Curso Objetivo' : 'critérios da banca'})</span>${recorteObj(q, true)}</div>
       <div class="coluna" style="gap:8px"><span class="rotulo">como foi?</span><div class="linha">${Object.entries(aval).map(([v, t]) => `<button class="chip disc-av ${v}" data-acao="qDiscAval" data-v="${v}" aria-pressed="${q.resp === v}">${t}</button>`).join('')}</div></div>
       <div class="linha"><button class="botao claro" data-acao="discIa" ${ui.carregando ? 'disabled' : ''}>${q.discIa ? 'Corrigir de novo com a IA' : 'Corrigir com a IA (lê a sua letra)'}</button></div>${ia}`
       : '<div class="linha"><button class="botao grande" data-acao="qDiscVer">Ver o padrão de resposta</button></div>'}
