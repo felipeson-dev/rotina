@@ -76853,5 +76853,2285 @@
   "depende_de_outro_texto": false,
   "desatualizada": false,
   "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-109",
+  "enunciado": "O cultivo de células animais transformou-se em uma tecnologia moderna com inúmeras aplicações, dentre elas testes de fármacos visando o desenvolvimento de medicamentos. Apesar de os primeiros estudos datarem de 1907, o cultivo de células animais alcançou sucesso na década de 1950, quando Harry Eagle conseguiu definir os nutrientes necessários para o crescimento celular.\n\n| Componentes básicos para manutenção celular em meio de cultura |\n|---|\n| $H_2O$ |\n| Fonte de carbono |\n| Elementos inorgânicos |\n| Aminoácidos |\n| Vitaminas |\n| Antibióticos |\n| Indicadores de pH |\n| Soro |\n\nCASTILHO, L. *Tecnologia de biofármacos*. São Paulo, 2010.\n\nQual componente garante o suprimento energético para essas células?",
+  "alternativas": [
+   "$H_2O$",
+   "Vitaminas",
+   "Fonte de carbono",
+   "Indicadores de pH",
+   "Elementos inorgânicos"
+  ],
+  "gabarito": "C",
+  "resolucao": "O suprimento energético celular é garantido pelo processo de respiração celular, que utiliza os carboidratos como substância inicial. Dessa forma, o componente básico utilizado é a fonte de carbono.",
+  "materia": "Biologia",
+  "assunto": "Respiração celular e fermentação",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-110",
+  "enunciado": "As populares pilhas zinco-carbono (alcalinas e de Leclanché) são compostas por um invólucro externo de aço (liga de ferro-carbono), um ânodo (zinco metálico), um cátodo (grafita) e um eletrólito (MnO$_2$ mais NH$_4$Cl ou KOH), contido em uma massa úmida com carbono chamada pasta eletrolítica. Os processos de reciclagem, geralmente propostos para essas pilhas usadas, têm como ponto de partida a moagem (trituração). Na sequência, uma das etapas é a separação do aço, presente no invólucro externo, dos demais componentes.\n\nQue processo aplicado à pilha moída permite obter essa separação?",
+  "alternativas": [
+   "Catação manual",
+   "Ação de um eletroímã",
+   "Calcinação em um forno",
+   "Fracionamento por densidade",
+   "Dissolução do eletrólito em água"
+  ],
+  "gabarito": "B",
+  "resolucao": "Para separar o aço, presente no invólucro externo, dos demais componentes, o processo aplicado à pilha moída é ação de um eletroímã, pois o ferro contido no aço tem propriedades magnéticas (atraído por ímã)",
+  "materia": "Química",
+  "assunto": "Matéria, substâncias e separação de misturas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-111",
+  "enunciado": "BTU é a sigla para *British Thermal Unit* (Unidade Térmica Inglesa), que é definida como a quantidade de calor necessária para elevar a temperatura de 1 libra (0,45kg) de água de 59,5°F a 60,5°F sob pressão constante de 1 atmosfera. A unidade BTU é utilizada, de forma errônea, por diversos profissionais como sendo a potência de resfriamento do aparelho.\n\nRODITI, I. *Dicionário Houaiss de Física*. Rio de Janeiro: Objetiva, 2005 (adaptado).\n\nComo se pode representar corretamente a unidade de potência com base na definição de BTU?",
+  "alternativas": [
+   "$\\text{BTU} \\times h^{-1}$",
+   "$\\text{BTU} \\times m^2$",
+   "$\\text{BTU} \\times h^{-1} \\times m^2$",
+   "$\\text{BTU} \\times h$",
+   "$\\text{BTU} \\times m^{-2}$"
+  ],
+  "gabarito": "A",
+  "resolucao": "Potência, por definição, é a razão entre energia e o tempo.\n\nPara a energia, em forma de calor, medida em BTU e o tempo, medido em horas, temos:\n\n$\\text{Pot} = \\dfrac{Q}{\\Delta t} \\Rightarrow u(\\text{Pot}) = \\dfrac{u(Q)}{u(t)} = \\dfrac{\\text{BTU}}{h}$\n\n$u(\\text{Pot}) = \\text{BTU} \\cdot h^{-1}$",
+  "materia": "Física",
+  "assunto": "Trabalho, energia e potência",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-112",
+  "enunciado": "Metais são contaminantes encontrados em efluentes oriundos de diversas atividades antrópicas. Dentre esses, o mercúrio (Hg) é aquele que apresenta a maior toxicidade e o único metal que reconhecidamente causou óbitos em humanos em razão de contaminação pela via ambiental, particularmente pela ingestão de organismos aquáticos contaminados. Considere que, em um ecossistema aquático cujas águas foram contaminadas por mercúrio, esse metal será incorporado pelos organismos integrantes de toda a cadeia alimentar nos diferentes níveis tróficos.\n\nLACERDA, L. D.; MALM, O. Contaminação por mercúrio em ecossistemas aquáticos: uma análise das áreas críticas. *Estudos Avançados*, n. 63, 2008 (adaptado).\n\nNa situação apresentada, as concentrações relativas de mercúrio encontradas nos organismos serão",
+  "alternativas": [
+   "mais altas nos produtores do que nos decompositores.",
+   "iguais para todos os diferentes níveis tróficos da cadeia alimentar.",
+   "mais baixas nos consumidores secundários e terciários do que nos produtores.",
+   "mais altas nos consumidores primários do que nos consumidores de maior ordem.",
+   "mais baixas nos de níveis tróficos de menor ordem do que nos de níveis tróficos mais altos."
+  ],
+  "gabarito": "E",
+  "resolucao": "O mercúrio é um metal bioacumulativo, tendo sua concentração nos organismos crescente dentro da cadeia alimentar, logo apresentará maior taxa no nível mais alto da cadeia trófica.",
+  "materia": "Biologia",
+  "assunto": "Ecologia: fluxo de energia e ciclos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-113",
+  "enunciado": "A perfuração de poços para a extração de petróleo causa soterramento do leito submarino, contaminação química e aumento da turbidez da água. Além disso, o vazamento desses hidrocarbonetos gera efeitos adversos, em especial no metabolismo de organismos aquáticos, influenciando as cadeias alimentares de ecossistemas marinhos. Essas consequências negativas advêm das propriedades do petróleo, uma mistura oleosa de substâncias orgânicas, de coloração escura e menos densa que a água.\n\nA consequência do vazamento dessa mistura na produtividade primária do ecossistema é o(a)",
+  "alternativas": [
+   "redução da atividade do fitoplâncton, em decorrência da alteração na zona fótica.",
+   "intoxicação dos animais filtradores, em decorrência da absorção de óleo.",
+   "bioacumulação do óleo no zooplâncton, por causa da sua agregação.",
+   "mortandade dos peixes, causada pela obstrução das suas brânquias.",
+   "dizimação da população de bentônicos, pelo seu soterramento."
+  ],
+  "gabarito": "A",
+  "resolucao": "O vazamento de petróleo cria uma camada de óleo que impede a entrada da luz na chamada zona fótica. Sem a entrada de luz, os organismos fotossintetizantes irão apresentar redução na produtividade primária bruta.",
+  "materia": "Biologia",
+  "assunto": "Ecologia: fluxo de energia e ciclos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-114",
+  "enunciado": "O custo de implantação de redes de transmissão aumenta linearmente com a distância da hidroelétrica, de modo que a partir de uma certa distância, o uso de energia solar fotovoltaica, que não depende da distância, é favorecido. Assim, em regiões isoladas da Amazônia, como é muito caro levar energia elétrica produzida por hidrelétricas através de redes de transmissão, o uso da energia solar fotovoltaica torna-se uma alternativa viável.\n\nDessa forma, o gráfico que representa qualitativamente os custos do uso de energia solar fotovoltaica (ESF) e da implantação de redes de transmissão (RT) em função da distância é",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "B",
+  "resolucao": "Para as redes de transmissão (RT) o custo de implantação aumenta linearmente com a distância da hidroelétrica ao centro de consumo. Seu gráfico é: [figura]\n\nPara as redes com o uso de energia solar (ESF) o custo é fixo, pois não depende da distância. Seu gráfico é: [figura]",
+  "materia": "Matemática",
+  "assunto": "Conceito de função e função afim (1º grau)",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-115",
+  "enunciado": "Em uma das etapas do processo de produção de iogurte, esquematizado na figura, ocorre a mudança da consistência característica do leite, líquido para gel.\n\nFluxograma (texto equivalente): Leite → Pasteurização → Resfriamento → Fermentação → Adição de polpa de frutas com pH neutro (4) → Envase (5). Açúcar entra na Pasteurização; Leite em pó entra no Resfriamento; Fermento lático entra na Fermentação. Os números 1, 2, 3, 4 e 5 identificam, nesta ordem, Pasteurização, Resfriamento, Fermentação, Adição de polpa de frutas com pH neutro e Envase.\n\nROBERT, N. R. Disponível em: www.respostatecnica.org.br. Acesso em: 26 fev. 2012 (adaptado).\n\nEm qual etapa ocorre essa mudança de consistência?",
+  "alternativas": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "gabarito": "C",
+  "resolucao": "Para que ocorra a formação do iogurte (transformação de um coloide sol (líquido) em coloide gel), é necessária a presença de micro-organismos num processo chamado fermentação láctica no sistema que produz coágulos (coagulação).",
+  "materia": "Biologia",
+  "assunto": "Respiração celular e fermentação",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-116",
+  "enunciado": "A resolução de um instrumento de medição é definida como a menor variação de uma grandeza que pode ser medida. O paquímetro é um instrumento de medição de grandezas de comprimento linear. Um fabricante de componentes para portões eletrônicos produz eixos com diâmetros diferentes e possui paquímetros com resoluções de 0,02 mm (paquímetro A) e 0,05mm (paquímetro B). Um funcionário dessa empresa mediu um eixo com diâmetro nominal de 11,0 mm com uso do paquímetro A, e outro eixo com diâmetro nominal de 12,5 mm com o paquímetro B.\n\nQuais são as possíveis leituras obtidas com o uso dos paquímetros A e B, em milímetro, respectivamente?",
+  "alternativas": [
+   "11,01 e 12,50",
+   "11,02 e 12,51",
+   "11,04 e 12,55",
+   "11,05 e 12,50",
+   "11,06 e 12,54"
+  ],
+  "gabarito": "C",
+  "resolucao": "O paquímetro A pode indicar variações mínimas de comprimento de 0,02mm. Usando esse instrumento para medir o diâmetro do primeiro eixo, de diâmetro nominal de 11,0mm, são possíveis então as medidas de 11,02mm; 11,04mm; 11,06mm, sucessivamente. O paquímetro B pode indicar variações mínimas de comprimento de 0,05mm. Usando-se esse segundo instrumento para medir o diâmetro do segundo eixo, de diâmetro nominal 12,5mm, são possíveis medidas de 12,50mm; 12,55mm; 12,60mm, sucessivamente. Das alternativas apresentadas, temos como combinação possível para as duas medidas 12,04mm com o paquímetro A e 12,55mm com o paquímetro B.",
+  "materia": "Física",
+  "assunto": "Outro",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-117",
+  "enunciado": "Os materiais são classificados pela sua natureza química e estrutural, e as diferentes aplicações requerem características específicas, como a condutibilidade térmica, quando são utilizados, por exemplo, em utensílios de cozinha. Assim, os alimentos são acondicionados em recipientes que podem manter a temperatura após o preparo. Considere a tabela, que apresenta a condutibilidade térmica ($\\kappa$) de diferentes materiais utilizados na confecção de panelas.\n\n**Condutibilidade térmica de materiais utilizados na confecção de panelas**\n\n| | Material | $\\kappa$ (kcal h$^{-1}$ m$^{-1}$ °C$^{-1}$) |\n|---|---|---|\n| I | Cobre | 332,0 |\n| II | Alumínio | 175,0 |\n| III | Ferro | 40,0 |\n| IV | Vidro | 0,65 |\n| V | Cerâmica | 0,40 |\n\nQual dos materiais é o recomendado para manter um alimento aquecido por um maior intervalo de tempo?",
+  "alternativas": [
+   "I",
+   "II",
+   "III",
+   "IV",
+   "V"
+  ],
+  "gabarito": "E",
+  "resolucao": "Para que o alimento se mantenha aquecido, trocando o mínimo de energia térmica com o ambiente externo, em geral mais frio, ele deve ser acondicionado em um recipiente isolante. Isso vai ocorrer com panelas fabricadas de materiais de baixo coeficiente de condutibilidade térmica (K). Dentre os materiais citados nas alternativas, a cerâmica é o melhor isolante térmico, isto é, aquele com menor valor de K.",
+  "materia": "Física",
+  "assunto": "Termometria, dilatação e propagação de calor",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-118",
+  "enunciado": "As células fotovoltaicas (placas semicondutoras compostas de silício) são os componentes principais dos painéis solares e são capazes de converter, com certa eficiência, parte da energia dos raios solares em energia elétrica. Essa conversão é causada pelo fenômeno físico denominado “efeito fotoelétrico”, que pode ocorrer em uma variedade de materiais, incluindo metais e semicondutores.\n\nNa superfície dos metais, a sequência de eventos que caracteriza esse efeito, de forma simplificada, é a",
+  "alternativas": [
+   "absorção de fótons e a emissão de elétrons.",
+   "absorção de elétrons e a emissão de fótons.",
+   "emissão de fótons e a absorção de elétrons.",
+   "absorção e a emissão de elétrons.",
+   "absorção e a emissão de fótons."
+  ],
+  "gabarito": "A",
+  "resolucao": "No átomo, o elétron se prende ao núcleo por uma energia de ligação chamada função trabalho, que é característica do metal.\n\nAinda a eletromagnética incide no metal na forma de fótons. Quando a energia do fóton for maior que a função trabalho, então o elétron absorve o fóton e se projeta para fora do metal com uma energia cinética $E_c$ dada por:\n\n$E_c = hf - \\tau$\n\nonde: $hf$ = energia do fóton; $\\tau$ = função trabalho",
+  "materia": "Física",
+  "assunto": "Física moderna",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-119",
+  "enunciado": "Os objetos de prata tendem a escurecer com o tempo, em contato com compostos de enxofre, por causa da formação de uma película superficial de sulfeto de prata ($\\text{Ag}_2\\text{S}$), que é escuro. Um método muito simples para restaurar a superfície original desses objetos é mergulhá-los em uma solução diluída aquecida de hidróxido de sódio ($\\text{NaOH}$), contida em uma panela comum de alumínio. A equação química que ilustra esse processo é: $3\\,\\text{Ag}_2\\text{S}\\,(s) + 2\\,\\text{Al}\\,(s) + 8\\,\\text{NaOH}\\,(aq) \\rightarrow 6\\,\\text{Ag}\\,(s) + 3\\,\\text{Na}_2\\text{S}\\,(aq) + 2\\,\\text{NaAlO}_2\\,(aq) + 4\\,\\text{H}_2\\text{O}\\,(l)$. A restauração do objeto de prata ocorre por causa do(a)",
+  "alternativas": [
+   "prata, que reduz o enxofre.",
+   "íon sulfeto, que sofre oxidação.",
+   "íon hidróxido, que atua como agente oxidante.",
+   "alumínio, que atua como agente redutor no processo.",
+   "variação do pH do meio reacional, que aumenta durante a reação."
+  ],
+  "gabarito": "D",
+  "resolucao": "Diagrama de números de oxidação: redução indicada sob o Ag e oxidação indicada sob o Al. $\\text{Ag}_2\\text{S}$: agente oxidante. $\\text{Al}$: agente redutor. A restauração do objeto de prata ocorre por causa do alumínio, que atua como agente redutor no processo.",
+  "materia": "Química",
+  "assunto": "Eletroquímica: pilhas e oxirredução",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-120",
+  "enunciado": "Diversos brinquedos são constituídos por pilhas ligadas a um motor elétrico. A figura mostra uma pilha e um motor acoplados, em que $\\varepsilon$ representa a força eletromotriz (FEM) da pilha, $\\varepsilon'$ representa a força contraeletromotriz (FCEM) do motor e $r$ e $r'$ são resistências internas. Um problema comum que danifica esses brinquedos é o travamento do eixo do motor. [figura] O que ocorre com a FCEM e com a energia fornecida pelas pilhas, que ocasiona danos ao motor, quando seu eixo de rotação é travado?",
+  "alternativas": [
+   "A FCEM igualar-se com a FEM e toda a energia fornecida pela pilha fica armazenada no circuito.",
+   "A FCEM sofre grande aumento e toda a energia fornecida pela pilha passa a ser dissipada na forma de calor.",
+   "A FCEM inverte a polaridade e toda a energia fornecida pela pilha é devolvida para ela na forma de energia potencial.",
+   "A FCEM reduz-se a zero e toda a energia fornecida pela pilha passa a ser dissipada na resistência interna do motor.",
+   "A FCEM mantém-se constante e toda a energia fornecida pela pilha continua sendo transformada em energia mecânica."
+  ],
+  "gabarito": "D",
+  "resolucao": "No circuito formado por um gerador e um motor, a intensidade da corrente elétrica é dada por: $i = \\frac{E - E'}{\\sum R}$. Ao travarmos o eixo de rotação do motor a força contraeletromotriz (FCEM) reduz-se a zero e a intensidade de corrente elétrica aumenta de valor. Nessa situação, o motor atua como um resistor de resistência elétrica $r'$ dissipando a energia fornecida pela pilha.",
+  "materia": "Física",
+  "assunto": "Corrente, resistores e circuitos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-121",
+  "enunciado": "As pilhas recarregáveis, bastante utilizadas atualmente, são formadas por sistemas que atuam como uma célula galvânica, enquanto estão sendo descarregadas, e como célula eletrolítica, quando estão sendo recarregadas. Uma pilha é formada pelos elementos níquel e cádmio e seu carregador deve fornecer uma diferença de potencial mínima para promover a recarga. Quanto maior a diferença de potencial gerada pelo carregador, maior será o seu custo. Considere os valores de potencial padrão de redução dessas espécies: $\\text{Ni}^{2+}(aq) + 2e^- \\rightleftharpoons \\text{Ni}(s)$ $\\quad E^0 = -0,230\\,V$; $\\text{Cd}^{2+}(aq) + 2e^- \\rightleftharpoons \\text{Cd}(s)$ $\\quad E^0 = -0,402\\,V$. Teoricamente, para que um carregador seja ao mesmo tempo eficiente e tenha o menor preço, a diferença de potencial mínima, em volt, que ele deve superar é de",
+  "alternativas": [
+   "0,086.",
+   "0,172.",
+   "0,316.",
+   "0,632.",
+   "1,264."
+  ],
+  "gabarito": "B",
+  "resolucao": "O íon $\\text{Ni}^{2+}(aq)$ apresenta maior potencial padrão de redução que o íon $\\text{Cd}^{2+}(aq)$, portanto, concluímos que, na célula galvânica, o eletrodo de Ni será o catodo e o eletrodo de cádmio será o anodo. O potencial padrão da pilha formada será: $\\Delta E^0 = E^0_{catodo} - E^0_{anodo}$ $\\Delta E^0 = -0,230V - (-0,402V)$ $\\Delta E^0 = 0,172V$. Teoricamente, para que um carregador seja ao mesmo tempo eficiente e tenha o menor preço, a diferença de potencial mínima, em volt, que ele deve superar é de $0,172$.",
+  "materia": "Química",
+  "assunto": "Eletroquímica: pilhas e oxirredução",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-122",
+  "enunciado": "Um produtor de morangos notou, no início da manhã, em alguns pontos das extremidades das folhas dos morangueiros ocorriam gotículas de água. Procurando informação a respeito do fenômeno, o agricultor descobre que isso é também observado em outras plantas herbáceas de pequeno porte. Esse fenômeno fisiológico ocorre em condições de elevada umidade do ar e",
+  "alternativas": [
+   "escassez de sais minerais.",
+   "abundante suprimento hídrico.",
+   "abundante período de transpiração.",
+   "ausência de resistência estomática.",
+   "ausência de substâncias impermeabilizantes."
+  ],
+  "gabarito": "B",
+  "resolucao": "O fenômeno observado pelo produtor de morangos foi a gutação (sudação), que consiste na perda de água líquida pelo vegetal, através de hidatódios, quando a transpiração é reduzida ou ausente, a umidade do ar é elevada e o solo tem excesso de água.",
+  "materia": "Biologia",
+  "assunto": "Fisiologia vegetal",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-123",
+  "enunciado": "É possível identificar adulterantes do leite de vaca por meio da adição do indicador azul de bromofenol. A presença de agentes oxidantes provoca a descoloração do indicador, mantendo a cor branca na amostra, característica do leite. Substâncias redutoras presentes no leite reagem com o azul de bromofenol, gerando a cor verde. A diminuição do valor de pH do leite torna o indicador amarelo. Em pH mais elevado, o indicador adquire a cor violeta e, em meio neutro, a cor azul. Considere que um lote industrial de leite em embalagem longa vida foi adulterado com excesso de soda cáustica. Em uma inspeção sanitária do lote adulterado, qual será a cor apresentada pelo leite após adição do indicador azul de bromofenol?",
+  "alternativas": [
+   "Azul",
+   "Verde",
+   "Violeta",
+   "Branco",
+   "Amarelo"
+  ],
+  "gabarito": "C",
+  "resolucao": "A soda cáustica ($\\text{NaOH}$) é uma base forte que aumenta o pH do meio. Quando adicionamos o indicador azul de bromofenol nesse lote industrial de leite que foi adulterado com excesso de soda cáustica, o sistema irá adquirir cor violeta (meio básico).",
+  "materia": "Química",
+  "assunto": "Equilíbrio iônico",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-124",
+  "enunciado": "Entre os materiais mais usados no nosso dia a dia destacam-se os plásticos, constituídos por polímeros. A consequência de seu amplo uso é a geração de resíduos, que necessitam de um destino final adequado em termos ambientais. Uma das alternativas tem sido a reciclagem, que deve respeitar as características dos polímeros que compõem o material. Esse processo envolve algumas etapas, como: separação do resíduo (catação), moagem, hidrólise, lavagem, secagem, pirólise e aquecimento (fusão). SPINACÉ, M. A. S., PAOLI, M. A. D. Tecnologia de reciclagem de polímeros. Química Nova, n.1, 2005 (adaptado). Quais das etapas citadas do processo de reciclagem são classificadas como métodos químicos?",
+  "alternativas": [
+   "Hidrólise e pirólise",
+   "Secagem e pirólise",
+   "Moagem e lavagem",
+   "Separação e hidrólise",
+   "Secagem e aquecimento"
+  ],
+  "gabarito": "A",
+  "resolucao": "Num processo físico, não ocorre alteração da natureza do material (exemplos: catação, moagem, lavagem, secagem e fusão). Num processo químico, ocorre transformação do material em outras substâncias. São processos químicos: 1) hidrólise (quebra de moléculas pela ação da água). 2) pirólise (quebra de moléculas por aquecimento).",
+  "materia": "Química",
+  "assunto": "Química ambiental e energia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-125",
+  "enunciado": "A composição de um dos refrigerantes mais ácidos mundialmente consumido é mantida em segredo pelos seus produtores. Existe uma grande especulação em torno da \"fórmula\" dessa bebida, a qual envolve algumas das seguintes substâncias: [figura] A substância presente nesse refrigerante, responsável pelo seu acentuado caráter ácido, é a",
+  "alternativas": [
+   "I",
+   "II",
+   "III",
+   "IV",
+   "V"
+  ],
+  "gabarito": "D",
+  "resolucao": "A substância presente nesse refrigerante, responsável pelo seu acentuado caráter ácido, é o composto IV, o ácido fosfórico, de fórmula $H_3PO_4$. O composto I possui a função fenol, que possui caráter ácido, mas é um ácido muito fraco.",
+  "materia": "Química",
+  "assunto": "Funções inorgânicas",
+  "segundo_assunto": "Funções orgânicas oxigenadas e nitrogenadas",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-126",
+  "enunciado": "O desfibrilador salva vidas de pessoas que são acometidas por ataques cardíacos ou arritmias. Ele dispõe de um capacitor que pode ser carregado por uma fonte com uma alta tensão. Usando o desfibrilador, pode-se fornecer energia ao coração, por meio de um choque elétrico, para que ele volte a pulsar novamente em seu ritmo normal. Um socorrista dispõe de um desfibrilador com capacitor de 70 microfarads que pode armazenar cerca de 220J de energia, quando conectado a uma tensão de 2 500V. O valor da carga armazenada por esse desfibrilador, em coulomb, é de",
+  "alternativas": [
+   "0,015.",
+   "0,088.",
+   "0,175.",
+   "3,15.",
+   "11,4."
+  ],
+  "gabarito": "C",
+  "resolucao": "Do enunciado, temos: $C = 70\\,\\mu F = 70 \\cdot 10^{-6}\\,F$; $U = 2500V = 2,5 \\cdot 10^3\\,V$. Assim, a carga armazenada será dada por: $Q = CU$; $Q = 70 \\cdot 10^{-6} \\cdot 2,5 \\cdot 10^3\\,(C)$; $Q = 175 \\cdot 10^{-3}\\,C$; $Q = 0,175\\,C$.",
+  "materia": "Física",
+  "assunto": "Eletrostática",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-127",
+  "enunciado": "Reflorestamento é uma ação ambiental que visa repovoar áreas que tiveram a vegetação removida. Uma empresa deseja fazer um replantio de árvores e dispõe de cinco produtos que podem ser utilizados para corrigir o pH do solo que se encontra básico. As substâncias presentes nos produtos disponíveis são: $CH_3COONa$, $NH_4Cl$, $NaBr$, $NaOH$ e $KCl$. A substância a ser adicionada ao solo para neutralizá-lo é",
+  "alternativas": [
+   "$CH_3COONa$",
+   "$NH_4Cl$",
+   "$NaBr$",
+   "$NaOH$",
+   "$KCl$"
+  ],
+  "gabarito": "B",
+  "resolucao": "Se o pH do solo é básico, para neutralizá-lo, devemos adicionar uma substância de caráter ácido. $CH_3COONa$ → sal de ácido fraco e base forte (sofre hidrólise provocando um meio básico). $NH_4Cl$ → sal de ácido forte e base fraca (sofre hidrólise produzindo um meio ácido). $NaBr$ e $KCl$ → são sais de caráter neutro que não sofrem hidrólise. $NaOH$ → é uma base forte.",
+  "materia": "Química",
+  "assunto": "Equilíbrio iônico",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-128",
+  "enunciado": "O reagente conhecido como Kastle-Meyer é muito utilizado por investigadores criminais para detectar presença de sangue. Trata-se de uma solução aquosa incolor, preparada com zinco metálico, hidróxido de sódio (Reação 1) e indicador (Reação 2). Essa solução, quando em contato com o sangue e na presença de água oxigenada (Reação 3), passa de incolor para vermelha, indicando a presença de sangue no local, conforme as reações descritas. Reação 1: $\\text{Zn}(s) + 2\\,\\text{NaOH}(aq) + 2\\,\\text{H}_2\\text{O}(l) \\xrightarrow{\\Delta} \\text{Na}_2[\\text{Zn(OH)}_4](s) + \\text{H}_2(g)$. Reação 2: [figura]. Reação 3: $2\\,\\text{H}_2\\text{O}_2(aq) \\xrightarrow{\\text{Hemoglobina}} 2\\,\\text{H}_2\\text{O}(l) + \\text{O}_2(g)$. DIAS FILHO, C. R.; ANTEDOMENICO, E. A. A perícia criminal e a interdisciplinaridade no ensino de ciências naturais. Química Nova na Escola, n. 2, maio 2010 (adaptado). A mudança de coloração que indica a presença de sangue ocorre por causa da reação do indicador com o(a)",
+  "alternativas": [
+   "sal de $\\text{Na}_2[\\text{Zn(OH)}_4]$ na presença de hemoglobina.",
+   "água produzida na decomposição da água oxigenada.",
+   "hemoglobina presente na reação com a água oxigenada.",
+   "gás oxigênio produzido pela decomposição da água oxigenada.",
+   "gás hidrogênio produzido na reação do zinco com hidróxido de sódio."
+  ],
+  "gabarito": "D",
+  "resolucao": "Verificando-se a reação 2, para deslocar o equilíbrio no sentido da forma oxidada (vermelha), deve-se adicionar $\\text{O}_2$. O gás oxigênio é produzido na decomposição da água oxigenada (reação 3).",
+  "materia": "Química",
+  "assunto": "Equilíbrio químico",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-129",
+  "enunciado": "Os frutos da pupunha têm cerca de 1g em populações silvestres no Acre, mas chegam a 70g em plantas domesticadas por populações indígenas. No princípio, porém, a domesticação não era intencional. Os grupos humanos apenas identificavam vegetais mais saborosos ou úteis, e sua propagação se dava pelo descarte de sementes para perto dos sítios habitados.\n\nDÓRIA, C. A.; VIEIRA, I. C. G. Iguarias da floresta.\nCiência Hoje, n. 310, dez. 2013.\n\nA mudança de fenótipo (tamanho dos frutos) nas populações domesticadas de pupunha deu-se porque houve",
+  "alternativas": [
+   "introdução de novos genes.",
+   "redução da pressão de mutação.",
+   "diminuição da uniformidade genética.",
+   "aumento da frequência de alelos de interesse.",
+   "expressão de genes de resistência a patógenos."
+  ],
+  "gabarito": "D",
+  "resolucao": "O texto mostra um exemplo de seleção artificial antrópica, na qual houve um aumento da frequência de alelos de interesse na pupunha.",
+  "materia": "Biologia",
+  "assunto": "Evolução biológica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-130",
+  "enunciado": "Alterações no genoma podem ser ocasionadas por falhas nos mecanismos de cópia e manutenção do DNA, que ocorrem aleatoriamente. Assim, a cada ciclo de replicação do DNA, existe uma taxa de erro mais ou menos constante de troca de nucleotídeos, independente da espécie. Partindo-se desses pressupostos, foi construída uma árvore filogenética de alguns mamíferos, conforme a figura, na qual o comprimento da linha horizontal é proporcional ao tempo de surgimento da espécie a partir de seu ancestral mais próximo.\n\n[figura]\n\nALBERTS, B. et al. Biologia molecular da célula. Nova York: Garland Publisher, 2008.\n\nQual espécie é geneticamente mais semelhante ao seu ancestral mais próximo?",
+  "alternativas": [
+   "Cavalo",
+   "Ovelha",
+   "Veado",
+   "Porco",
+   "Vaca"
+  ],
+  "gabarito": "E",
+  "resolucao": "Como o comprimento da linha horizontal é proporcional ao tempo de surgimento da espécie, a partir de seu ancestral mais próximo, a espécie que é geneticamente mais semelhante ao seu ancestral mais próximo terá a linha horizontal com menor comprimento. Portanto, a vaca corresponde a essa espécie.",
+  "materia": "Biologia",
+  "assunto": "Evolução biológica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-131",
+  "enunciado": "Nas últimas décadas vários países, inclusive o Brasil, têm testemunhado uma grande proliferação de bactérias patogênicas, envolvidas em uma variedade de doenças e que apresentam resistência a múltiplos antibióticos. Atualmente têm se destacado as superbactérias que acumularam vários genes determinantes de resistência, a ponto de se tornarem resistentes a praticamente todos os antimicrobianos.\n\nFERREIRA, F. A.; CRUZ, R. S.; FIGUEIREDO, A. M. S. O problema da resistência a antibióticos.\nCiência Hoje, v.48, n.287, 2011 (adaptado).\n\nEssa resistência tem ocorrido porque os(as)",
+  "alternativas": [
+   "bactérias patogênicas se multiplicam de maneira acelerada.",
+   "antibióticos são utilizados pela população de maneira indiscriminada.",
+   "bactérias possuem plasmídeos que contêm genes relacionados à virulência.",
+   "bactérias podem ser transmitidas para um indivíduo utilizando várias estratégias.",
+   "serviços de saúde precários constituem importantes focos de bactérias patogênicas."
+  ],
+  "gabarito": "B",
+  "resolucao": "O uso indiscriminado de antibióticos por parte da população foi o responsável pela seleção de bactérias naturalmente resistentes, as quais, ao se reproduzirem, transmitiram essa resistência à descendência.",
+  "materia": "Biologia",
+  "assunto": "Bactérias, protozoários e doenças",
+  "segundo_assunto": "Evolução biológica",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-132",
+  "enunciado": "No final do século XIX, muitos cientistas estavam interessados nos intrigantes fenômenos observados nas ampolas de raios catódicos, que são tubos sob vácuo em que se ligam duas placas a uma fonte de alta tensão. Os raios catódicos passam através de um orifício no ânodo e continuam o percurso até a outra extremidade do tubo, onde são detectados pela fluorescência produzida ao chocarem-se com um revestimento especial, como pode ser observado na figura. Medições da razão entre a carga e a massa dos constituintes dos raios catódicos mostram que a sua identidade independe do material do cátodo ou do gás dentro das ampolas.\n\nCHANG, R.; GOLDSBY, K. A. Química. Porto Alegre: Bookman, 2013 (adaptado).\n\n[figura]\n\nEssa radiação invisível detectada nas ampolas é constituída por",
+  "alternativas": [
+   "ânions.",
+   "cátions.",
+   "prótons.",
+   "elétrons.",
+   "partículas alfa."
+  ],
+  "gabarito": "D",
+  "resolucao": "Essa radiação invisível é emitida pelo catodo (polo negativo) e é atraído por uma placa positiva (anodo). Os raios catódicos são elétrons.",
+  "materia": "Química",
+  "assunto": "Modelos atômicos e distribuição eletrônica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-133",
+  "enunciado": "Em um ecossistema é observada a seguinte teia alimentar:\n\n[figura]\n\nO menor nível trófico ocupado pelas aves é aquele do qual elas participam como consumidores de",
+  "alternativas": [
+   "primeira ordem.",
+   "segunda ordem.",
+   "terceira ordem.",
+   "quarta ordem.",
+   "quinta ordem."
+  ],
+  "gabarito": "B",
+  "resolucao": "De acordo com a teia alimentar apresentada, as aves participam como consumidores secundários (algas → moluscos → aves), terciários (algas → insetos → peixes → aves) e quaternários (algas → insetos → copépodes → peixes → aves). Assim, o menor nível trófico ocupado por estes animais será consumidor de segunda ordem.",
+  "materia": "Biologia",
+  "assunto": "Ecologia: fluxo de energia e ciclos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-134",
+  "enunciado": "Um pesquisador colocou a mesma quantidade de solução aquosa da enzima digestiva pepsina em cinco tubos de ensaio. Em seguida, adicionou massas iguais dos alimentos descritos no quadro. Os alimentos foram deixados em contato com a solução digestiva durante o mesmo intervalo de tempo.\n\n| Tubo de ensaio | Alimento | Água (%) | Proteínas (%) | Lipídios (%) | Carboidratos (%) |\n|---|---|---|---|---|---|\n| I | Leite em pó | 3,6 | 26,5 | 24,8 | 40,1 |\n| II | Manteiga | 15,1 | 0,6 | 82,3 | 0,91 |\n| III | Aveia em flocos | 12,3 | 12,7 | 4,8 | 68,4 |\n| IV | Alface | 96,3 | 0,9 | 0,1 | 2,1 |\n| V | Fubá de milho cozido | 74,7 | 2,0 | 1,1 | 21,9 |\n\nA maior quantidade de produtos metabolizados ao final do teste foi obtida no tubo",
+  "alternativas": [
+   "I",
+   "II",
+   "III",
+   "IV",
+   "V"
+  ],
+  "gabarito": "A",
+  "resolucao": "A enzima pepsina digere moléculas de proteína, sendo assim o alimento que contém maior quantidade de proteínas apresentará maior quantidade de produtos metabolizados.",
+  "materia": "Biologia",
+  "assunto": "Proteínas e enzimas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-135",
+  "enunciado": "Os feromônios de insetos são substâncias responsáveis pela comunicação química entre esses indivíduos. A extração de feromônios para uso agronômico no lugar de pesticidas convencionais geralmente é inviável, pois são encontrados em baixa concentração nas glândulas de armazenamento. Uma das formas de solucionar essa limitação é a síntese em laboratório dos próprios feromônios ou de isômeros que apresentem a mesma atividade. Suponha que o composto apresentado seja um feromônio natural e que seu tautômero seja um potencial substituto.\n\n[figura]\n\nCom base na estrutura química desse feromônio, seu potencial substituto é representado pela substância:",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "C",
+  "resolucao": "O isômero de um feromônio natural, que pode ser utilizado como seu potencial substituto é o seu tautômero:\n\n[figura]",
+  "materia": "Química",
+  "assunto": "Isomeria plana e espacial",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-136",
+  "enunciado": "É comum as cooperativas venderem seus produtos a diversos estabelecimentos. Uma cooperativa láctea destinou 4 m³ de leite, do total produzido, para análise em um laboratório da região, separados igualmente em 4 000 embalagens de mesma capacidade.\n\nQual o volume de leite, em mililitro, contido em cada embalagem?",
+  "alternativas": [
+   "0,1",
+   "1,0",
+   "10,0",
+   "100,0",
+   "1 000,0"
+  ],
+  "gabarito": "E",
+  "resolucao": "1) $4\\ \\mathrm{m}^3 = 4 \\cdot 10^3\\ \\mathrm{dm}^3 = 4\\,000\\ \\mathrm{dm}^3 = 4\\,000\\ \\ell$\n2) O volume de leite, em litros, contido em cada embalagem é $(4\\,000\\ \\ell) \\div 4000 = 1\\ \\ell$\n3) $1\\ \\ell = 1000\\ \\mathrm{m}\\ell$",
+  "materia": "Matemática",
+  "assunto": "Outro",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-137",
+  "enunciado": "Com a crise dos alimentos em 2008, governantes e empresários de várias partes do mundo relacionaram a expansão dos biocombustíveis com a alta do preço da comida. Em 2006, a produção mundial de etanol foi de 40 bilhões de litros e a de biodiesel, de 6,5 bilhões. Os EUA defendem seu etanol de milho ao afirmar que só 3% da inflação dos cereais é causada pelos biocombustíveis. Para a Organização das Nações Unidas (ONU), os biocombustíveis respondem por 10% da alta do preço da comida e, para o Banco Mundial, por 75%. Ao lado dessa polêmica, cresce o consenso de que biocombustível não é sempre igual. O impacto sobre o preço dos alimentos é bem diferente quando se considera o álcool combustível brasileiro, feito da cana; o etanol norte-americano, fabricado com milho; e o biodiesel europeu, feito de grãos como o trigo, por exemplo. Nessa disputa, o Brasil está bem posicionado. O mapa seguinte mostra a distribuição percentual de etanol fabricado no mundo em 2007.\n\n[figura]\n\nDisponível em: planetasustentavel.abril.com.br. Acesso em: 29 mar. 2009.\n\nDe acordo com o texto e o mapa de percentuais de fabricação de etanol fabricado no mundo, podemos concluir que a quantidade de etanol feito de milho, nos Estados Unidos, representa",
+  "alternativas": [
+   "16,25% da produção mundial.",
+   "43,70% da produção mundial.",
+   "46,00% da produção mundial.",
+   "75,00% da produção mundial.",
+   "95,00% da produção mundial."
+  ],
+  "gabarito": "B",
+  "resolucao": "A produção de etanol dos Estados Unidos corresponde a 46% da produção mundial. Desta produção, o ingrediente milho corresponde a 95% (9,5 em cada 10 litros). Tem-se, portanto, que a quantidade de etanol feito de milho, nos Estados Unidos, representa, do total mundial: $95\\% \\cdot 46\\% = 0{,}95 \\cdot 0{,}46 = 43{,}70\\%$",
+  "materia": "Geografia",
+  "assunto": "Industrialização e matriz energética",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-138",
+  "enunciado": "O isopor é um material composto por um polímero chamado poliestireno. Todos os produtos de isopor são 100% recicláveis, assim como os plásticos em sua totalidade. O gráfico mostra a quantidade de isopor, em tonelada, que foi reciclada no Brasil nos anos de 2007, 2008 e 2009. Considere que o aumento da quantidade de isopor reciclado ocorrida de 2008 para 2009 repita-se ano a ano de 2009 até 2013 e, a partir daí, a quantidade total reciclada anualmente permaneça inalterada por um período de 10 anos.\n\n[figura]\n\nDisponível em: www.plastivida.org.br. Acesso em: 31 jul. 2012 (adaptado).\n\nQual é a quantidade prevista para reciclagem de isopor, em tonelada, para o ano de 2020?",
+  "alternativas": [
+   "21 840",
+   "21 600",
+   "13 440",
+   "13 200",
+   "9 800"
+  ],
+  "gabarito": "D",
+  "resolucao": "Considerando a produção por ano, em toneladas:\n2008: 7200\n2009: 8400\n2010: 9600\n2011: 10800\n2012: 12000\n2013: 13200\nComo a quantidade será mantida nos próximos 10 anos, em 2020 ela será de 13 200 toneladas.",
+  "materia": "Matemática",
+  "assunto": "Progressão aritmética e geométrica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-139",
+  "enunciado": "Em um país, as infrações de trânsito são classificadas de acordo com sua gravidade. Infrações dos tipos leves e médias acrescentam, respectivamente, 3 e 4 pontos na carteira de habilitação do infrator, além de multas a serem pagas. Um motorista cometeu 5 infrações de trânsito. Em consequência teve 17 pontos acrescentados em sua carteira de habilitação.\n\nQual é a razão entre o número de infrações do tipo leve e o número de infrações do tipo média cometidas por esse motorista?",
+  "alternativas": [
+   "$\\frac{1}{4}$",
+   "$\\frac{2}{3}$",
+   "$\\frac{3}{4}$",
+   "$\\frac{5}{17}$",
+   "$\\frac{7}{17}$"
+  ],
+  "gabarito": "B",
+  "resolucao": "Se $\\ell$ for o número de infrações leves e $m$ o número de infrações médias, então:\n\n$\\begin{cases} \\ell + m = 5 \\\\ 3\\ell + 4m = 17 \\end{cases} \\Leftrightarrow \\begin{cases} -3\\ell - 3m = -15 \\\\ 3\\ell + 4m = 17 \\end{cases} \\Leftrightarrow \\begin{cases} \\ell + m = 5 \\\\ m = 2 \\end{cases} \\Leftrightarrow \\begin{cases} \\ell = 3 \\\\ m = 2 \\end{cases} \\Rightarrow \\frac{\\ell}{m} = \\frac{3}{2}$",
+  "materia": "Matemática",
+  "assunto": "Sistemas lineares",
+  "segundo_assunto": "Razão, proporção e regra de três",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-140",
+  "enunciado": "O gráfico mostra o início da trajetória de um robô que parte do ponto A (2 ; 0), movimentando-se para cima ou para a direita, com velocidade de uma unidade de comprimento por segundo, no plano cartesiano.\n\nO gráfico exemplifica uma trajetória desse robô, durante 6 segundos.\n\n[figura]\n\nSupondo que esse robô continue essa mesma trajetória, qual será sua coordenada, após 18 segundos de caminhada, contando o tempo a partir do ponto A?",
+  "alternativas": [
+   "(0 ; 18)",
+   "(18 ; 2)",
+   "(18 ; 0)",
+   "(14 ; 6)",
+   "(6 ; 14)"
+  ],
+  "gabarito": "D",
+  "resolucao": "1) A cada 6s o robô se movimenta “4 vezes para direita” e “2 vezes para cima”.\n2) A posição inicial, no ponto A, é (2; 0).\n3) Após 6s a posição será (6; 2).\n4) Após 12s a posição será (10; 4).\n5) Após 18s a posição será (14; 6).\n6) Interpretando “a sua coordenada” como “as suas coordenadas” a resposta é d.",
+  "materia": "Matemática",
+  "assunto": "Geometria analítica: ponto e reta",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-141",
+  "enunciado": "Segundo indicação de um veterinário, um cão de pequeno porte, nos dois primeiros meses de vida, deverá ser alimentado diariamente com 50 g de suplemento e tomar banho quatro vezes por mês. O dono de um cão de pequeno porte, seguindo orientações desse veterinário, utilizou no primeiro mês os produtos/serviços de um determinado pet shop, em que os preços estão apresentados no quadro.\n\n| Produtos/Serviços | Valor |\n|---|---|\n| Suplemento | R$ 8,00 (pacote de 500g) |\n| Banho | R$ 30,00 (preço unitário) |\n\nNo mês subsequente, o fabricante reajustou o preço do suplemento, que, nesse pet shop, passou a custar R$ 9,00 cada pacote de 500 g. Visando manter o mesmo gasto mensal para o dono do cão, o gerente do pet shop decidiu reduzir o preço unitário do banho. Para efeito de cálculos, considere o mês comercial de 30 dias.\n\nDisponível em: http://carodinheiro.blogfolha.uol.com.br.\nAcesso em: 20 jan. 2015 (adaptado).\n\nNessas condições, o valor unitário do banho, em real, passou a ser",
+  "alternativas": [
+   "27,00.",
+   "29,00.",
+   "29,25.",
+   "29,50.",
+   "29,75."
+  ],
+  "gabarito": "C",
+  "resolucao": "I) Como são 50g de suplemento por dia e um pacote tem 500 g, um pacote é suficiente para $\\frac{500}{50} = 10$ dias.\n\nII) Para um mês, são necessários: $\\frac{30}{10} = 3$ pacotes.\n\nIII) O gasto no 1º mês com suplemento e banho, em reais, é dado por: $3 \\cdot 8{,}00 + 4 \\cdot 30{,}00 = 144{,}00$\n\nIV) Considerando x o gasto, em reais, com banho no 2º mês e que o gasto final deve ser o mesmo do 1º mês, temos: $3 \\cdot 9{,}00 + 4 \\cdot x = 144{,}00 \\Leftrightarrow 27{,}00 + 4 \\cdot x = 144{,}00 \\Leftrightarrow x = 29{,}25$",
+  "materia": "Matemática",
+  "assunto": "Equações e inequações",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-142",
+  "enunciado": "“1, 2, 3, GOL, 5, 6, 7, GOL, 9, 10, 11, GOL, 13, GOL, 15, GOL, 17, 18, 19, GOL, 21, 22, 23, GOL, 25, ...”\n\nPara a Copa do Mundo de Futebol de 2014, um bar onde se reuniam amigos para assistir aos jogos criou uma brincadeira. Um dos presentes era escolhido e tinha que dizer, numa sequência em ordem crescente, os números naturais não nulos, trocando os múltiplos de 4 e os números terminados em 4 pela palavra GOL. A brincadeira acabava quando o participante errava um termo da sequência.\n\nUm dos participantes conseguiu falar até o número 103, respeitando as regras da brincadeira.\n\nO total de vezes em que esse participante disse a palavra GOL foi",
+  "alternativas": [
+   "20.",
+   "28.",
+   "30.",
+   "35.",
+   "40."
+  ],
+  "gabarito": "C",
+  "resolucao": "I) Existem 25 múltiplos de 4 do número 1 até o número 103, pois $103 = 25 \\cdot 4 + 3$.\n\nII) Além de dizer “gol” no lugar dos múltiplos de 4, ele também disse “gol” no lugar dos números 14, 34, 54, 74 e 94, que não são múltiplos de 4, mas que terminam em 4. Logo, ele disse a palavra “gol”: $25 + 5 = 30$ vezes.",
+  "materia": "Matemática",
+  "assunto": "Conjuntos e conjuntos numéricos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-143",
+  "enunciado": "Um marceneiro visitou 5 madeireiras para comprar tábuas que lhe permitissem construir 5 prateleiras de formato retangular, de dimensões iguais a 30 cm de largura por 120 cm de comprimento cada, tendo como objetivo minimizar a sobra de madeira, podendo, para isso, fazer qualquer tipo de emenda. As dimensões das tábuas encontradas nas madeireiras estão descritas no quadro.\n\n| Madeireira | Largura (cm) | Comprimento (cm) |\n|---|---|---|\n| I | 40 | 100 |\n| II | 30 | 110 |\n| III | 35 | 120 |\n| IV | 25 | 150 |\n| V | 20 | 200 |\n\nEm qual madeireira o marceneiro deve comprar as tábuas para atingir seu objetivo?",
+  "alternativas": [
+   "I",
+   "II",
+   "III",
+   "IV",
+   "V"
+  ],
+  "gabarito": "D",
+  "resolucao": "Como a área de cada tábua que o marceneiro precisa é igual a $30 \\text{ cm} \\cdot 120 \\text{ cm} = 3600 \\text{ cm}^2$ e ele deve comprar 5 tábuas, a área total a ser comprada é de $5 \\cdot 3600 \\text{ cm}^2 = 18\\,000 \\text{ cm}^2$.\n\na) Na madeireira (I), ele teria que comprar 5 tábuas de 40 cm por 100 cm, que totalizariam $5 \\cdot 40 \\text{ cm} \\cdot 100 \\text{ cm} = 20\\,000 \\text{ cm}^2$ e sobrariam $2\\,000 \\text{ cm}^2$.\n\nb) Na madeireira (II), ele teria que comprar 6 tábuas de 30 cm por 110 cm, que totalizariam $6 \\cdot 30 \\text{ cm} \\cdot 110 \\text{ cm} = 19800 \\text{ cm}^2$ e sobrariam $1\\,800 \\text{ cm}^2$.\n\nc) Na madeireira (III), ele teria que comprar 5 tábuas de 35 cm por 120 cm, que totalizariam $5 \\cdot 35 \\text{ cm} \\cdot 120 \\text{ cm} = 21\\,000 \\text{ cm}^2$ e sobrariam $3\\,000 \\text{ cm}^2$.\n\nd) Na madeireira (IV), ele teria que comprar 5 tábuas de 25 cm por 150 cm, que totalizariam $5 \\cdot 25 \\text{ cm} \\cdot 150 \\text{ cm} = 18\\,750 \\text{ cm}^2$ e sobrariam $750 \\text{ cm}^2$.\n\ne) Na madeireira (V), ele teria que comprar 5 tábuas de 20 cm por 200 cm, que totalizariam $5 \\cdot 20 \\text{ cm} \\cdot 200 \\text{ cm} = 20\\,000 \\text{ cm}^2$ e sobrariam $2\\,000 \\text{ cm}^2$.\n\nLogo, ele deve comprar as tábuas na madeireira IV.",
+  "materia": "Matemática",
+  "assunto": "Geometria plana",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-144",
+  "enunciado": "Na central nuclear de Angra dos Reis, os resíduos produzidos em duas décadas de operações somam quase 446 toneladas de combustível usado, que permanecerá radioativo durante milhares de anos. O Ibama condicionou o início da operação de Angra 3, previsto para 2014, à aprovação de um projeto de depósito definitivo. A Comissão Nacional de Energia Nuclear (CNEN) se comprometeu a apresentar, até 2010, um modelo de depósito para armazenar o lixo radioativo por 500 anos, em vez de milhares de anos.\n\nÉpoca, 8 set. 2008 (adaptado).\n\nSupondo que a taxa de produção de combustível permaneça constante e que seja necessário certo volume $V$ para o armazenamento das 446 toneladas já produzidas, qual é o volume mínimo aproximado que um depósito deve ter para armazenar o lixo radioativo produzido em 500 anos?",
+  "alternativas": [
+   "$25 V$",
+   "$149 V$",
+   "$1\\,340 V$",
+   "$11\\,150 V$",
+   "$14\\,887 V$"
+  ],
+  "gabarito": "A",
+  "resolucao": "Supondo que a taxa de produção de combustível permaneça constante e que para cada 20 anos seja necessário um certo volume $V$, o volume mínimo aproximado que um depósito deve ter para armazenar o lixo radioativo produzido em 500 anos é $\\frac{500}{20} V = 25V$.",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-145",
+  "enunciado": "O gráfico mostra as receitas e as despesas de uma empresa nos meses de julho a novembro de um ano. O resultado financeiro, obtido pela diferença entre receita e despesa, pode ser positivo (lucro) ou negativo (prejuízo).\n\n[figura]\n\nSabendo que o mês de dezembro é, em geral, de melhores vendas, o dono da empresa faz uma previsão de que a receita naquele mês terá um aumento, em relação ao mês anterior, com a mesma taxa de crescimento ocorrida de setembro para outubro, e que a despesa irá se manter a mesma de novembro.\n\nSe confirmadas as previsões do dono da empresa, o resultado financeiro a ser obtido no semestre de julho a dezembro será um",
+  "alternativas": [
+   "prejuízo de R$ 2 650,00.",
+   "prejuízo de R$ 850,00.",
+   "lucro de R$ 7 150,00.",
+   "lucro de R$ 5 950,00.",
+   "lucro de R$ 350,00."
+  ],
+  "gabarito": "E",
+  "resolucao": "1) Se $r$ for a receita no mês de dezembro, em reais, então: $\\frac{3500}{1400} = \\frac{r}{2000} \\Leftrightarrow r = 5000$.\n\n2) A receita de julho a dezembro, em reais, será: $1200 + 2300 + 1400 + 3500 + 2000 + 5000 = 15400$.\n\n3) A despesa de julho a dezembro, em reais, será: $700 + 3900 + 1350 + 1500 + 3800 + 3800 = 15050$.\n\n4) O resultado financeiro do semestre, em reais, será $15400 - 15050 = 350$.",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-146",
+  "enunciado": "Considere o guindaste mostrado nas figuras, em duas posições (1 e 2). Na posição 1, o braço de movimentação forma um ângulo reto com o cabo de aço CB que sustenta uma esfera metálica na sua extremidade inferior.\n\nNa posição 2, o guindaste elevou seu braço de movimentação e o novo ângulo formado entre o braço e o cabo de aço ED, que sustenta a bola metálica, é agora igual a 60°.\n\n[figura]\n\n[figura]\n\nAssuma que os pontos A, B e C, na posição 1, formam o triângulo T$_1$ e que os pontos A, D e E, na posição 2, formam o triângulo T$_2$, os quais podem ser classificados em obtusângulo, retângulo ou acutângulo, e também em equilátero, isósceles ou escaleno.\n\nSegundo as classificações citadas, os triângulos T$_1$ e T$_2$ são identificados, respectivamente, como",
+  "alternativas": [
+   "retângulo escaleno e retângulo isósceles.",
+   "acutângulo escaleno e retângulo isósceles.",
+   "retângulo escaleno e acutângulo escaleno.",
+   "acutângulo escaleno e acutângulo equilátero.",
+   "retângulo escaleno e acutângulo equilátero."
+  ],
+  "gabarito": "E",
+  "resolucao": "Considere os triângulos T$_1$ e T$_2$ na figura abaixo:\n\n[figura]\n\n1) O triângulo T$_1$ é triângulo retângulo pois o ângulo $A\\hat{C}B = 90°$. Como $\\overline{AB}$ é hipotenusa, que é maior que os catetos, os 3 lados do triângulo T$_1$ têm medidas distintas. Assim, T$_1$ é retângulo escaleno.\n\n2) No triângulo T$_2$, AE = ED. Logo $E\\hat{A}D \\cong E\\hat{D}A = 60°$ e o triângulo T$_2$ é equilátero. Assim, como seus ângulos são agudos, T$_2$ é acutângulo equilátero.",
+  "materia": "Matemática",
+  "assunto": "Geometria plana",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-147",
+  "enunciado": "Um fazendeiro possui uma cisterna com capacidade de 10 000 litros para coletar a água da chuva. Ele resolveu ampliar a área de captação da água da chuva e consultou um engenheiro que lhe deu a seguinte explicação: “Nesta região, o índice pluviométrico anual médio é de 400 milímetros. Como a área de captação da água da chuva de sua casa é um retângulo de 3 m de largura por 7 m de comprimento, sugiro que aumente essa área para que, em um ano, com esse índice pluviométrico, o senhor consiga encher a cisterna, estando ela inicialmente vazia”.\n\nSabe-se que o índice pluviométrico de um milímetro corresponde a um litro de água por metro quadrado. Considere que as previsões pluviométricas são cumpridas e que não há perda, por nenhum meio, no armazenamento da água.\n\nEm quantos metros quadrados, no mínimo, o fazendeiro deve aumentar a área de captação para encher a cisterna em um ano?",
+  "alternativas": [
+   "1,6",
+   "2,0",
+   "4,0",
+   "15,0",
+   "25,0"
+  ],
+  "gabarito": "C",
+  "resolucao": "1) Área de captação de chuva da casa do fazendeiro $7\\text{ m} \\times 3\\text{ m} = 21\\text{ m}^2$.\n\n2) Volume anual de água captada dado que a capacidade da cisterna é de $10\\,000\\ \\ell$ e o índice pluviométrico anual é de $400\\ \\frac{\\ell}{\\text{m}^2}$: $\\frac{10\\,000\\ \\ell}{400\\ \\frac{\\ell}{\\text{m}^2}} = 25\\ \\text{m}^2$.\n\n3) Assim, o fazendeiro deve aumentar, no mínimo, a área de captação para encher a cisterna em um ano em: $(25 - 21)\\text{ m}^2 = 4\\text{ m}^2$.",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "Geometria plana",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-148",
+  "enunciado": "O gráfico mostra o resultado do balanço financeiro mensal de uma empresa ao longo de um ano.\n\n[figura]\n\nEm quantos meses o resultado do balanço financeiro da empresa ficou abaixo da média mensal nesse ano?",
+  "alternativas": [
+   "6",
+   "7",
+   "8",
+   "9",
+   "10"
+  ],
+  "gabarito": "B",
+  "resolucao": "Seja a média mensal dada por:\n\n$\\frac{-0{,}6 + 0{,}2 + 0{,}8 + 0{,}4 + (-0{,}2) + (-0{,}3) + (-0{,}1) + (-0{,}4) + (-0{,}1) + 0{,}9 + 1{,}1 + 2{,}6}{12} = \\frac{4{,}3}{12} \\approx 0{,}36$\n\nDessa forma, temos que durante sete meses o balanço financeiro ficou abaixo da média. São eles: janeiro, fevereiro, maio, junho, julho, agosto e setembro.",
+  "materia": "Matemática",
+  "assunto": "Estatística",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-149",
+  "enunciado": "Uma empresa deseja construir um edifício residencial de 12 pavimentos, num lote retangular de lados medindo 22 e 26 m. Em 3 dos lados do lote serão construídos muros. A frente do prédio será sobre o lado do lote de menor comprimento. Sabe-se que em cada pavimento 32 m² serão destinados à área comum (hall de entrada, elevadores e escada), e o restante da área será destinado às unidades habitacionais. A legislação vigente exige que prédios sejam construídos mantendo distâncias mínimas dos limites dos lotes onde se encontram. Em obediência à legislação, o prédio ficará 5 m afastado da rua onde terá sua entrada, 3 m de distância do muro no fundo do lote e 4 m de distância dos muros nas laterais do lote, como mostra a figura. [figura] A área total, em metro quadrado, destinada às unidades habitacionais desse edifício será de",
+  "alternativas": [
+   "2 640.",
+   "3 024.",
+   "3 840.",
+   "6 480.",
+   "6 864."
+  ],
+  "gabarito": "A",
+  "resolucao": "[figura] I) Em obediência à legislação, cada pavimento terá uma área total, em metros quadrados, de $18 \\cdot 14 = 252$. II) Excluindo os 32 m² destinados à área comum, a área total, em metros quadrados, destinada às unidades habitacionais dos 12 pavimentos será: $12 \\cdot (252 - 32) = 2640$",
+  "materia": "Matemática",
+  "assunto": "Geometria plana",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-150",
+  "enunciado": "Os tempos gastos por três alunos para resolver um mesmo exercício de matemática foram: 3,25 minutos; 3,4 minutos e 191 segundos. O tempo gasto a mais, em segundo, pelo aluno que concluiu por último a resolução do exercício, em relação ao primeiro que o finalizou, foi igual a",
+  "alternativas": [
+   "13.",
+   "14.",
+   "15.",
+   "21.",
+   "29."
+  ],
+  "gabarito": "A",
+  "resolucao": "Os tempos gastos, em segundo, pelos três alunos são: $3{,}25 \\cdot 60\\ s = 195\\ s$; $3{,}4 \\cdot 60\\ s = 204\\ s$; $191\\ s$. Assim, a diferença de tempo entre o aluno que concluiu por último e o aluno que finalizou primeiro é dada por $204\\ s - 191\\ s = 13\\ s$",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-151",
+  "enunciado": "Um agricultor sabe que a colheita da safra de soja será concluída em 120 dias caso utilize, durante 10 horas por dia, 20 máquinas de um modelo antigo, que colhem 2 hectares por hora. Com o objetivo de diminuir o tempo de colheita, esse agricultor optou por utilizar máquinas de um novo modelo, que operam 12 horas por dia e colhem 4 hectares por hora. Quantas máquinas do novo modelo ele necessita adquirir para que consiga efetuar a colheita da safra em 100 dias?",
+  "alternativas": [
+   "7",
+   "10",
+   "15",
+   "40",
+   "58"
+  ],
+  "gabarito": "B",
+  "resolucao": "| Máquinas | Dias | Horas/dia | Hectares/hora |\n|---|---|---|---|\n| 20 | 120 | 10 | 2 |\n| x | 100 | 12 | 4 |\n\nSendo x o número de máquinas do novo modelo inversamente proporcional ao número de dias, ao número de horas por dia e ao número de hectares colhidos por hora, temos: $\\frac{x}{20} = \\frac{120}{100} \\cdot \\frac{10}{12} \\cdot \\frac{2}{4} \\Leftrightarrow x = 10$",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-152",
+  "enunciado": "Em um ano, uma prefeitura apresentou o relatório de gastos públicos realizados pelo município. O documento mostra que foram gastos 72 mil reais no mês de janeiro (mês 1), que o maior gasto mensal ocorreu no mês de agosto (mês 8) e que a prefeitura gastou 105 mil reais no mês de dezembro (mês 12). A curva que modela esses gastos é a parábola $y = T(x)$, com $x$ sendo o número correspondente ao mês e $T(x)$, em milhar de real. A expressão da função cujo gráfico é o da parábola descrita é",
+  "alternativas": [
+   "$T(x) = -x^2 + 16x + 57$",
+   "$T(x) = -\\frac{11}{16}x^2 + 11x + 72$",
+   "$T(x) = \\frac{3}{5}x^2 - \\frac{24}{5}x + \\frac{381}{5}$",
+   "$T(x) = -x^2 - 16x + 87$",
+   "$T(x) = \\frac{11}{16}x^2 - \\frac{11}{2}x + 72$"
+  ],
+  "gabarito": "A",
+  "resolucao": "Seja a função quadrática $T(x) = ax^2 + bx + c$. Do enunciado, temos que a abscissa do vértice é igual a 8, assim: $x_v = -\\frac{b}{2a} \\Leftrightarrow 8 = -\\frac{b}{2a} \\Leftrightarrow b = -16a$ (I). Também do enunciado, temos que $T(1) = 72$ e $T(12) = 105$. Dessa forma, $\\begin{cases} 1 \\cdot a + 1 \\cdot b + c = 72 \\\\ 144 \\cdot a + 12 \\cdot b + c = 105 \\end{cases} \\Leftrightarrow 143 \\cdot a + 11 \\cdot b = 33$ (II). Substituindo I em II, temos $143 \\cdot a + 11 \\cdot (-16 \\cdot a) = 33 \\Leftrightarrow 143a - 176a = 33 \\Leftrightarrow -33a = 33 \\Leftrightarrow a = -1$. Como $a = -1$, de (I), temos que $b = 16$. Como $T(1) = 72$, $a + b + c = 72 \\Leftrightarrow -1 + 16 + c = 72 \\Leftrightarrow c = 57$. Portanto, $T(x) = -x^2 + 16x + 57$",
+  "materia": "Matemática",
+  "assunto": "Função quadrática",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-153",
+  "enunciado": "Por muitos anos, o Brasil tem figurado no cenário mundial entre os maiores produtores e exportadores de soja. Entre os anos de 2010 e 2014, houve uma forte tendência de aumento da produtividade, porém, um aspecto dificultou esse avanço: o alto custo do imposto ao produtor associado ao baixo preço de venda do produto. Em média, um produtor gastava R$ 1200,00 por hectare plantado, e vendia por R$ 50,00 cada saca de 60 kg. Ciente desses valores, um produtor pode, em certo ano, determinar uma relação do lucro L que obteve em função das sacas de 60 kg vendidas. Suponha que ele plantou 10 hectares de soja em sua propriedade, na qual colheu x sacas de 60 kg e todas as sacas foram vendidas. Disponível em: www.cnpso.embrapa.br. Acesso em: 27 fev. 2012 (adaptado). Qual é a expressão que determinou o lucro L em função de x obtido por esse produtor nesse ano?",
+  "alternativas": [
+   "$L(x) = 50x - 1\\,200$",
+   "$L(x) = 50x - 12\\,000$",
+   "$L(x) = 50x + 12\\,000$",
+   "$L(x) = 500x - 1\\,200$",
+   "$L(x) = 1\\,200x - 500$"
+  ],
+  "gabarito": "B",
+  "resolucao": "Sendo R$ 1.200,00 o custo por hectare plantado e R$ 50,00 o preço de venda de cada saca de soja de 60 kg, o lucro L, em reais, que se obtém na venda de x sacas em uma área plantada de 10 hectares será: $L(x) = 50 \\cdot x - 10 \\cdot 1200$; $L(x) = 50 \\cdot x - 12000$",
+  "materia": "Matemática",
+  "assunto": "Conceito de função e função afim (1º grau)",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-154",
+  "enunciado": "Uma editora pretende fazer uma reimpressão de um de seus livros. A direção da editora sabe que o gasto com papel representa 60% do custo de reimpressão, e que as despesas com a gráfica representam os 40% restantes. Dentro da programação da editora, no momento em que ela realizar a reimpressão, o preço do papel e os custos com a gráfica terão sofrido reajustes de 25,9% e 32,5%, respectivamente. O custo para a reimpressão de cada livro, nos preços atuais, é de R$ 100,00. Qual será o custo, em real, para a reimpressão de cada livro com os reajustes estimados de custo de papel e despesas com a gráfica?",
+  "alternativas": [
+   "128,54",
+   "129,20",
+   "129,86",
+   "158,40",
+   "166,82"
+  ],
+  "gabarito": "A",
+  "resolucao": "1) O custo para a reimpressão de cada livro, nos preços atuais, é R$ 100,00, dos quais R$ 60,00 referem-se aos gastos com papel (60%) e R$ 40,00 aos gastos restantes (40%). 2) Após as reimpressões de cada livro com os reajustes estimados, o custo, em reais, será igual $60 \\cdot 1{,}259 + 40 \\cdot 1{,}325 = 75{,}54 + 53 = 128{,}54$",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-155",
+  "enunciado": "Uma microempresa especializou-se em produzir um tipo de chaveiro personalizado para brindes. O custo de produção de cada unidade é de R$ 0,42 e são comercializados em pacotes com 400 chaveiros, que são vendidos por R$ 280,00. Além disso, essa empresa tem um custo mensal fixo de R$ 12 800,00 que não depende do número de chaveiros produzidos. Qual é o número mínimo de pacotes de chaveiros que devem ser vendidos mensalmente para que essa microempresa não tenha prejuízo no mês?",
+  "alternativas": [
+   "26",
+   "46",
+   "109",
+   "114",
+   "115"
+  ],
+  "gabarito": "E",
+  "resolucao": "Seja x o número de pacotes a serem vendidos mensalmente para que essa microempresa não tenha prejuízo no mês. 1) O valor das vendas, em reais, em cada mês é $280x$. 2) O custo mensal, em reais, para produzir um pacote é $168x + 12\\,800$. 3) E para que não haja prejuízo nesse mês, devemos ter: $280x - (168x + 12\\,800) > 0 \\Leftrightarrow 112x > 12\\,800 \\Leftrightarrow x > \\frac{12\\,800}{112}$. 4) Como $\\frac{12\\,800}{112} \\approx 114{,}28$, o número mínimo de pacotes é 115",
+  "materia": "Matemática",
+  "assunto": "Equações e inequações",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-156",
+  "enunciado": "Uma empresa de chocolates consultou o gerente de produção e verificou que existem cinco tipos diferentes de barras de chocolate que podem ser produzidas, com os seguintes preços no mercado: • Barra I: R$ 2,00; • Barra II: R$ 3,50; • Barra III: R$ 4,00; • Barra IV: R$ 7,00; • Barra V: R$ 8,00. Analisando as tendências do mercado, que incluem a quantidade vendida e a procura pelos consumidores, o gerente de vendas da empresa verificou que o lucro L com a venda de barras de chocolate é expresso pela função $L(x) = -x^2 + 14x - 45$, em que x representa o preço da barra de chocolate. A empresa decide investir na fabricação da barra de chocolate cujo preço praticado no mercado renderá o maior lucro. Nessas condições, a empresa deverá investir na produção da barra",
+  "alternativas": [
+   "I.",
+   "II.",
+   "III.",
+   "IV.",
+   "V."
+  ],
+  "gabarito": "D",
+  "resolucao": "1) O maior lucro ocorre para x igual a $\\frac{-14}{2(-1)} = 7$, já que o lucro em função de x é dado por $L(x) = -x^2 + 14x + 45$. 2) Assim, a empresa deverá investir na produção da barra IV, cujo preço no mercado é R$ 7,00",
+  "materia": "Matemática",
+  "assunto": "Função quadrática",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-157",
+  "enunciado": "A gerência de uma loja de eletrônicos organizou em um quadro os dados de venda (quantidade e preço unitário) de celulares, impressoras e notebooks de um ano.\n\n| Produto | Quantidade | Preço unitário (R$) |\n|---|---|---|\n| Celular | 300 | 300 |\n| Impressora | 300 | 200 |\n| Notebook | 200 | 900 |\n\nPara o ano seguinte, deseja arrecadar 10% a mais do que foi arrecadado naquele ano anterior, vendendo as mesmas quantidades de cada um desses três produtos, mas reajustando apenas o preço do notebook. O preço de venda para um notebook, para o ano seguinte, em real, deverá ser igual a",
+  "alternativas": [
+   "975,00.",
+   "990,00.",
+   "1 040,00.",
+   "1 065,00.",
+   "1 540,00."
+  ],
+  "gabarito": "D",
+  "resolucao": "1) O valor arrecadado, em reais, neste ano foi igual a: $300 \\cdot 300 + 300 \\cdot 200 + 200 \\cdot 900 = 90000 + 60000 + 180000 = 330\\,000$. 2) O valor arrecadado, em reais, no ano seguinte é igual a $1{,}10 \\cdot 330\\,000 = 363\\,000$. 3) O preço de venda, em reais, para um notebook para o ano seguinte será: $\\frac{363\\,000 - 330\\,000}{200} + 900 = 1065$",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-158",
+  "enunciado": "O gráfico apresenta a evolução do crescimento de uma determinada árvore, plantada a partir de uma muda com 1 metro de altura. Nessa evolução, a altura da árvore, em metro, é descrita em função do tempo, medido em ano. [figura] No período de 1 ano, contado a partir do instante em que a árvore tinha dois anos e meio de plantio, a variação da altura dessa árvore, em metro, teve valor compreendido entre",
+  "alternativas": [
+   "0,55 e 0,65.",
+   "0,65 e 0,75.",
+   "1,05 e 1,15.",
+   "1,25 e 1,35.",
+   "1,45 e 1,55."
+  ],
+  "gabarito": "E",
+  "resolucao": "[figura] I) De acordo com o gráfico, observamos que a variação da altura da árvore é: $3{,}5 - 2 = 1{,}5$ m. II) Logo, esta variação está entre: 1,45 m e 1,55 m",
+  "materia": "Matemática",
+  "assunto": "Conceito de função e função afim (1º grau)",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-159",
+  "enunciado": "Uma empresa avaliou os cinco aparelhos de celulares ($T_1$, $T_2$, $T_3$, $T_4$ e $T_5$) mais vendidos no último ano, nos itens: câmera, custo-benefício, design, desempenho da bateria e tela, representado por $I_1$, $I_2$, $I_3$, $I_4$ e $I_5$, respectivamente. A empresa atribuiu notas de 0 a 10 para cada item avaliado e organizou essas notas em uma matriz $A$, em que cada elemento $a_{ij}$ significa a nota dada pela empresa ao aparelho $T_i$ no item $I_j$. A empresa considera que o melhor aparelho de celular é aquele que obtém a maior soma das notas obtidas nos cinco itens avaliados.\n\n$A = \\begin{pmatrix} 6 & 9 & 9 & 9 & 8 \\\\ 9 & 6 & 7 & 8 & 10 \\\\ 7 & 10 & 10 & 7 & 10 \\\\ 8 & 8 & 10 & 10 & 9 \\\\ 8 & 8 & 8 & 9 & 9 \\end{pmatrix}$\n\nCom base nessas informações, o aparelho de celular que a empresa avaliou como sendo o melhor é o",
+  "alternativas": [
+   "$T_1$",
+   "$T_2$",
+   "$T_3$",
+   "$T_4$",
+   "$T_5$"
+  ],
+  "gabarito": "D",
+  "resolucao": "$a_{ij}$: $\\begin{cases} i \\text{ (linha)} \\rightarrow \\text{tipo } (T_i) \\\\ j \\text{ (coluna)} \\rightarrow \\text{item } (I_j) \\end{cases}$\n\nMelhor celular $\\rightarrow$ melhor soma nos cinco itens\n\n$L_1 = 6 + 9 + 9 + 9 + 8 = 41$\n\n$L_2 = 9 + 6 + 7 + 8 + 10 = 40$\n\n$L_3 = 7 + 10 + 10 + 7 + 10 = 44$\n\n$L_4 = 8 + 8 + 10 + 10 + 9 = 45$ ($T_4$)\n\n$L_4 = 8 + 8 + 8 + 9 + 9 = 42$\n\nLogo, o aparelho celular avaliado como melhor é o $T_4$.\n\nResposta: D",
+  "materia": "Matemática",
+  "assunto": "Matrizes e determinantes",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-160",
+  "enunciado": "Com base na Lei Universal da Gravitação, proposta por Isaac Newton, o peso de um objeto na superfície de um planeta aproximadamente esférico é diretamente proporcional à massa do planeta e inversamente proporcional ao quadrado do raio desse planeta. A massa do planeta Mercúrio é, aproximadamente, $\\frac{1}{20}$ da massa da Terra e seu raio é, aproximadamente, $\\frac{2}{5}$ do raio da Terra. Considere um objeto que, na superfície da Terra, tenha peso $P$.\n\nO peso desse objeto na superfície de Mercúrio será igual a",
+  "alternativas": [
+   "$\\frac{5P}{16}$",
+   "$\\frac{5P}{2}$",
+   "$\\frac{25P}{4}$",
+   "$\\frac{P}{8}$",
+   "$\\frac{P}{20}$"
+  ],
+  "gabarito": "A",
+  "resolucao": "Sendo $m$ e $r$, respectivamente, a massa e o raio da Terra, sendo $P$ o peso do objeto na Terra e $x$ o peso do objeto em Mercúrio, tem-se:\n\n| | peso | massa | raio |\n|---|---|---|---|\n| Mercúrio | $x$ | $\\frac{1}{20} m$ | $\\left(\\frac{2}{5} r\\right)^2$ |\n| Terra | $P$ | $m$ | $r^2$ |\n\n$\\frac{x}{P} = \\frac{\\frac{1}{20} m}{m} \\cdot \\frac{r^2}{\\frac{4}{25} r^2}$\n\n$\\frac{x}{P} = \\frac{1}{20} \\cdot \\frac{25}{4}$\n\n$x = \\frac{5}{16} \\cdot P$\n\nResposta: A",
+  "materia": "Física",
+  "assunto": "Gravitação",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-161",
+  "enunciado": "No projeto de uma nova máquina, um engenheiro encomendou a um torneiro mecânico a fabricação de uma peça, obtida a partir do recorte em um cubo, como ilustrado na figura. Para isso, o torneiro forneceu, juntamente com o desenho tridimensional da peça, suas vistas frontal, lateral e superior, a partir das posições indicadas na figura. Para facilitar o trabalho do torneiro, as arestas dos cortes que ficam ocultos nas três vistas devem ser representadas por segmentos tracejados, quando for o caso.\n\n[figura]\n\nAs vistas frontal, lateral e superior que melhor representam o desenho entregue ao torneiro são",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "E",
+  "resolucao": "Com relação à peça a seguir, temos:\n\n[figura]\n\nResposta: E",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: poliedros, prismas e pirâmides",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-162",
+  "enunciado": "Uma pessoa possuía um lote com área de 300 m². Nele construiu sua casa, utilizando 70% do lote para construção da residência e o restante para área de lazer. Posteriormente, adquiriu um novo lote ao lado de sua casa e, com isso, passou a dispor de um terreno formado pelos dois lotes, cuja área mede 420 m². Decidiu então ampliar a casa, de tal forma que ela ocupasse no mínimo 60% da área do terreno, sendo o restante destinado à área de lazer.\n\nO acréscimo máximo que a região a ser destinada à área de lazer no terreno poderá ter, em relação à área que fora utilizada para lazer no lote original, em metro quadrado, é",
+  "alternativas": [
+   "12",
+   "48",
+   "78",
+   "138",
+   "168"
+  ],
+  "gabarito": "C",
+  "resolucao": "Se, inicialmente, 70% do lote cuja área é 300 m² foi destinado à construção da residência, então\n\n$\\frac{30}{100} \\cdot 300 \\text{ m}^2 = 90 \\text{ m}^2$\n\né a área destinada ao espaço de lazer.\n\nApós a compra do novo lote, a área total passou a ser 420 m², sendo no mínimo 60% dessa nova área destinada à residência após a ampliação. Com isso, a área de lazer poderá ser no máximo:\n\n$\\frac{40}{100} \\cdot 420 \\text{ m}^2 = 168 \\text{ m}^2$\n\nPortanto, o acréscimo máximo que a região a ser destinada à área de lazer do terreno poderá ter é\n\n$168 \\text{ m}^2 - 90 \\text{ m}^2 = 78 \\text{ m}^2$\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-163",
+  "enunciado": "Um modelo de telefone celular oferece a opção de desbloquear a tela usando um padrão de toques como senha.\n\n[figura]\n\nOs toques podem ser feitos livremente nas 4 regiões numeradas da tela, sendo que o usuário pode escolher entre 3, 4 ou 5 toques ao todo.\n\nQual expressão representa o número total de códigos existentes?",
+  "alternativas": [
+   "$4^5 - 4^4 - 4^3$",
+   "$4^5 + 4^4 + 4^3$",
+   "$4^5 \\times 4^4 \\times 4^3$",
+   "$(4!)^5$",
+   "$4^5$"
+  ],
+  "gabarito": "B",
+  "resolucao": "I) O número de códigos, com 3 toques, é igual a $4 \\cdot 4 \\cdot 4 = 4^3$\n\nII) O número de códigos, com 4 toques, é igual a $4 \\cdot 4 \\cdot 4 \\cdot 4 = 4^4$\n\nIII) O número de códigos, com 5 toques, é igual a $4 \\cdot 4 \\cdot 4 \\cdot 4 \\cdot 4 = 4^5$\n\nIV) De I, II e III, concluímos que o número total de códigos existentes é dado por $4^5 + 4^4 + 4^3$.\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Análise combinatória",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-164",
+  "enunciado": "Um apostador deve escolher uma entre cinco moedas ao acaso e lançá-la sobre uma mesa, tentando acertar qual resultado (cara ou coroa) sairá na face superior da moeda.\n\nSuponha que as cinco moedas que ele pode escolher sejam diferentes:\n- duas delas têm \"cara\" nas duas faces;\n- uma delas tem \"coroa\" nas duas faces;\n- duas delas são normais (cara em uma face e coroa na outra).\n\nNesse jogo, qual é a probabilidade de o apostador obter uma face \"cara\" no lado superior da moeda lançada por ele?",
+  "alternativas": [
+   "$\\frac{1}{8}$",
+   "$\\frac{2}{5}$",
+   "$\\frac{3}{5}$",
+   "$\\frac{3}{4}$",
+   "$\\frac{4}{5}$"
+  ],
+  "gabarito": "C",
+  "resolucao": "O apostador pode obter uma face \"cara\", no lado superior da moeda lançada por ele, em duas situações:\n\nI) Ele escolhe uma das duas moedas com duas caras e, nesse caso, a probabilidade $P_1$ de ter sucesso é tal que:\n\n$P_1 = \\frac{2}{5} \\cdot 1 = \\frac{2}{5}$\n\nII) Ele escolhe uma das duas moedas normais (cara em uma face e coroa na outra) e, nesse caso, a probabilidade $P_2$, de ter suceso é tal que:\n\n$P_2 = \\frac{2}{5} \\cdot \\frac{1}{2} = \\frac{1}{5}$\n\nIII) De I e II, a probabilidade de o apostador obter uma face \"cara\" no lado superior da moeda lançada por ele é:\n\n$P_1 + P_2 = \\frac{2}{5} + \\frac{1}{5} = \\frac{3}{5}$\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Probabilidade",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-165",
+  "enunciado": "Três pessoas, X, Y e Z, compraram plantas ornamentais de uma mesma espécie que serão cultivadas em vasos de diferentes tamanhos.\n\nO vaso escolhido pela pessoa X tem capacidade de 4 dm³. O vaso da pessoa Y tem capacidade de 7 000 cm³ e o de Z tem capacidade igual a 20 L.\n\nApós um tempo do plantio das mudas, um botânico que acompanha o desenvolvimento delas realizou algumas medições e registrou que a planta que está no vaso da pessoa X tem 0,6 m de altura. Já as plantas que estão nos vasos de Y e Z têm, respectivamente, alturas medindo 120 cm e 900 mm.\n\nO vaso de maior capacidade e a planta de maior altura são, respectivamente, os de",
+  "alternativas": [
+   "Y e X.",
+   "Y e Z.",
+   "Z e X.",
+   "Z e Y.",
+   "Z e Z."
+  ],
+  "gabarito": "D",
+  "resolucao": "| Vaso | Capacidade | Altura |\n|---|---|---|\n| X | 4 dm³ = 4 L | 0,6 m = 60 cm |\n| Y | 7 000 cm³ = 7 L | 120 cm |\n| Z | 20 L | 900 mm = 90 cm |\n\nO vaso de maior capacidade e a planta de maior altura são, respectivamente, Z e Y.\n\nResposta: D",
+  "materia": "Matemática",
+  "assunto": "Outro",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-166",
+  "enunciado": "De acordo com pesquisas recentes, a expectativa de vida do brasileiro subiu de 74,6 anos, em 2012, para 74,9 anos, em 2015. Dentre os possíveis fatores para esse aumento estão a melhoria do sistema de saúde, o aumento da renda familiar e a prática de exercícios físicos.\n\nPara tornar essa notícia do aumento da expectativa de vida do brasileiro mais expressiva, converteu-se aumento para a quantidade de dias. Considere que para esta conversão o número de dias em cada mês foi fixado em 30.\n\nCom base nas informações, que cálculo correspondeu a essa conversão?",
+  "alternativas": [
+   "$0,3 = 3 \\text{ meses} = 3 \\times 30 \\text{ dias}$",
+   "$0,3 \\times 1 \\text{ ano} = 0,3 \\times 365 \\text{ dias}$",
+   "$0,3 \\times 1 \\text{ ano} = 0,3 \\times 12 \\text{ meses} = 3,6 \\times 30 \\text{ dias}$",
+   "$0,3 \\times 1 \\text{ ano} = \\frac{1}{3} \\times 12 \\times 30 \\text{ dias} = \\frac{1}{3} \\times 360 \\text{ dias}$",
+   "$0,3 \\times 1 \\text{ ano} = 0,3 \\times 12 \\text{ meses} = 3,6 \\text{ meses} = 3 \\times 30 \\text{ dias} + 6 \\text{ dias}$"
+  ],
+  "gabarito": "C",
+  "resolucao": "De 2012 a 2015, o aumento da expectativa de vida do brasileiro foi de $(74,9 - 74,6)$ anos = 0,3 anos.\n\nLembrando que 1 ano possui 12 meses e, considerando que cada mês possui 30 dias, temos:\n\n$0,3 \\times 1 \\text{ ano} = 0,3 \\times 12 \\text{ meses} = 3,6 \\times 30 \\text{ dias}$\n\nResposta: C",
+  "materia": "Matemática",
+  "assunto": "Outro",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-167",
+  "enunciado": "Um investidor deseja aplicar R$ 10 000,00 durante um mês em um dos fundos de investimento de um banco. O agente de investimentos desse banco apresentou dois tipos de aplicações financeiras: a aplicação Básica e a aplicação Pessoal, cujas informações de rendimentos e descontos de taxas administrativas mensais são apresentadas no quadro.\n\n| Aplicação | Taxa de rendimento mensal | Taxa administrativa mensal |\n|---|---|---|\n| Básica | 0,542% | R$ 0,30 |\n| Pessoal | 0,560% | 3,8% sobre o rendimento mensal |\n\nConsideradas as taxas de rendimento e administrativa, qual aplicação fornecerá maior valor de rendimento líquido a esse investidor e qual será esse valor?",
+  "alternativas": [
+   "Básica, com rendimento líquido de R$ 53,90.",
+   "Básica, com rendimento líquido de R$ 54,50.",
+   "Pessoal, com rendimento líquido de R$ 56,00.",
+   "Pessoal, com rendimento líquido de R$ 58,12.",
+   "Pessoal, com rendimento líquido de R$ 59,80."
+  ],
+  "gabarito": "A",
+  "resolucao": "O rendimento da aplicação Básica será dado por:\n\n$10\\,000 \\cdot 0,542\\% - 0,3 = 54,2 - 0,3 = 53,9$\n\nO rendimento da aplicação Pessoal será dado por:\n\n$10\\,000 \\cdot 0,560\\% (1 - 3,8\\%) = 10\\,000 \\cdot \\frac{0,560}{100} \\cdot \\frac{96,2}{100} = 53,872$\n\nPortanto, a aplicação que fornecerá maior valor de rendimento líquido é a Básica, com rendimento líquido de R$ 53,90.\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-168",
+  "enunciado": "Eduardo deseja criar um e-mail utilizando um anagrama exclusivamente com as sete letras que compõem o seu nome, antes do símbolo @. O e-mail terá a forma *******@site.com.br e será de tal modo que as três letras \"edu\" apareçam sempre juntas e exatamente nessa ordem. Ele sabe que o e-mail eduardo@site.com.br já foi criado por outro usuário e que qualquer outro agrupamento das letras do seu nome forma um e-mail que ainda não foi cadastrado.\n\nDe quantas maneiras Eduardo pode criar um e-mail desejado?",
+  "alternativas": [
+   "59",
+   "60",
+   "118",
+   "119",
+   "120"
+  ],
+  "gabarito": "D",
+  "resolucao": "Considerando as letras EDU juntas e nessa ordem, temos:\n\n$\\boxed{EDU}$ A R D O\n\n$P_5 = 5! = 120$\n\nRetirando o caso EDUARDO, temos 120 – 1 = 119 e-mails possíveis.\n\nResposta: D",
+  "materia": "Matemática",
+  "assunto": "Análise combinatória",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-169",
+  "enunciado": "Uma casa lotérica oferece cinco opções de jogos. Em cada opção, o apostador escolhe um grupo de $K$ números distintos em um cartão que contém um total de $N$ números disponíveis, gerando, dessa forma, um total de $C$ combinações possíveis para se fazer a marcação do cartão. Ganha o prêmio o cartão que apresentar os $K$ números sorteados. Os valores desses jogos variam de R$ 1,00 a R$ 2,00, conforme descrito no quadro.\n\n| Jogo | Valor do jogo (R$) | Números a serem escolhidos | Números disponíveis | Combinações possíveis ($C$) |\n|---|---|---|---|---|\n| I | 1,50 | 6 | 45 | 8 145 060 |\n| II | 1,00 | 6 | 50 | 15 890 700 |\n| III | 2,00 | 5 | 60 | 5 461 512 |\n| IV | 1,00 | 6 | 60 | 50 063 860 |\n| V | 2,00 | 5 | 50 | 2 118 760 |\n\nUm apostador dispõe de R$ 2,00 para gastar em uma das cinco opções de jogos disponíveis.\n\nSegundo o valor disponível para ser gasto, o jogo que oferece ao apostador maior probabilidade de ganhar prêmio é o",
+  "alternativas": [
+   "I.",
+   "II.",
+   "III.",
+   "IV.",
+   "V."
+  ],
+  "gabarito": "E",
+  "resolucao": "De acordo com os dados do enunciado, as probabilidades de se ganhar em cada um dos jogos será:\n\nI) $\\frac{1}{8\\,145\\,060}$\n\nII) $\\frac{2}{15\\,890\\,700} = \\frac{1}{7\\,945\\,350}$\n\nIII) $\\frac{1}{5\\,461\\,512}$\n\nIV) $\\frac{2}{50\\,063\\,860} = \\frac{1}{25\\,031\\,930}$\n\nV) $\\frac{1}{2\\,118\\,760}$\n\nPortanto, a maior probabilidade de ganhar o prêmio ocorre no jogo V.\n\nResposta: E",
+  "materia": "Matemática",
+  "assunto": "Probabilidade",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-170",
+  "enunciado": "O Índice de Desenvolvimento da Educação Básica (Ideb), criado para medir a qualidade do aprendizado do ensino básico no Brasil, é calculado a cada dois anos. No seu cálculo são combinados dois indicadores: o aprendizado e o fluxo escolar, obtidos a partir do Censo Escolar e das avaliações oficiais promovidas pelo Inep.\n\nO Ideb de uma escola numa dada série escolar pode ser calculado pela expressão\n\n$Ideb = N \\times P$,\n\nem que $N$ é a média da proficiência em língua portuguesa e matemática, obtida a partir do Sistema de Avaliação da Educação Básica (Saeb), e variando de 0 a 10. O indicador $P$, que varia de 0 a 1, por sua vez, refere-se ao fluxo escolar, pois considera as taxas de aprovação e reprovação da instituição, sendo calculado por\n\n$P = \\frac{1}{T}$,\n\nem que $T$ é o tempo médio de permanência dos alunos na série.\n\nDisponível em: www.inep.gov.br. Acesso em: 2 ago. 2012.\n\nUma escola apresentou no 9.º ano do ensino fundamental, em 2017, um Ideb diferente daquele que havia apresentado nessa mesma série em 2015, pois o tempo médio de permanência dos alunos no 9.º ano diminuiu 2%, enquanto a média de proficiência em língua portuguesa e matemática, nessa série, aumentou em 2%.\n\nDessa forma, o Ideb do 9.º ano do ensino fundamental dessa escola em 2017, em relação ao calculado em 2015, ...",
+  "alternativas": [
+   "permaneceu inalterado, pois o aumento e a diminuição de 2% nos dois parâmetros anulam-se.",
+   "aumentou em 4%, pois o aumento de 2% na média da proficiência soma-se à diminuição de 2% no tempo médio de permanência dos alunos na série.",
+   "diminuiu em 4,04%, pois tanto o decrescimento do tempo médio de permanência dos alunos na série em 2% quanto o crescimento da média da proficiência em 2% implicam dois decrescimos consecutivos de 2% no valor do Ideb.",
+   "aumentou em 4,04%, pois tanto o decrescimento do tempo médio de permanência dos alunos na série em 2% quanto o crescimento da média da proficiência em 2% implicam dois acréscimos consecutivos de 2% no valor do Ideb.",
+   "aumentou em 4,08%, pois houve um acréscimo de 2% num parâmetro que é diretamente proporcional e um decréscimo de 2% num parâmetro que é inversamente proporcional ao Ideb."
+  ],
+  "gabarito": "E",
+  "resolucao": "Em 2015, o Ideb foi dado por:\n\n$Ideb_1 = N_1 \\cdot \\frac{1}{T_1}$\n\nEm 2017, o Ideb foi dado por:\n\n$Ideb_2 = N_1 \\cdot 1,02 \\cdot \\frac{1}{T_1 \\cdot 0,98}$\n\n$Ideb_2 = 1,0408 \\cdot Ideb_1$\n\nResposta: E",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-171",
+  "enunciado": "Na última eleição para a presidência de um clube, duas chapas se inscreveram (I e II). Há dois tipos de sócio: patrimoniais e contribuintes. Votos de sócios patrimoniais têm peso 0,6 e de sócios contribuintes têm peso 0,4. A chapa I recebeu 850 votos de sócios patrimoniais e 4300 de sócios contribuintes; a chapa II recebeu 1 300 votos de sócios patrimoniais e 2 120 de sócios contribuintes. Não houve abstenções, votos em branco ou nulos, e a chapa I foi vencedora. Haverá uma nova eleição para a presidência do clube, com o mesmo número e tipos de sócios, e as mesmas chapas da eleição anterior. Uma consulta feita pela chapa II mostrou que os sócios patrimoniais não mudarão seus votos, e que pode contar com os votos dos sócios contribuintes da última eleição. Para que vença, será necessária uma campanha junto aos sócios contribuintes com o objetivo de que mudem seus votos para a chapa II.\n\nA menor quantidade de sócios contribuintes que precisam trocar seu voto da chapa I para a chapa II para que esta seja vencedora é",
+  "alternativas": [
+   "449.",
+   "753.",
+   "866.",
+   "941.",
+   "1 091."
+  ],
+  "gabarito": "B",
+  "resolucao": "Sendo $x$ o número de sócios contribuintes que precisam trocar o voto, temos:\n\n$850 \\cdot 0,6 + (4300 - x) \\cdot 0,4 < 1300 \\cdot 0,6 + (2120 + x) \\cdot 0,4 \\Leftrightarrow 510 + 1720 - 0,4 x < 780 + 848 + 0,4 x \\Leftrightarrow 602 < 0,8 x \\Leftrightarrow 752,5 < x$\n\nAssim, a menor quantidade de sócios contribuintes que precisam trocar de voto é 753.\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Equações e inequações",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-172",
+  "enunciado": "Prever a dinâmica populacional de um país é de extrema importância, pois com esse conhecimento as políticas públicas em saúde, educação, habitação e infraestrutura poderão ser executadas sem atraso e de forma eficiente. A linha cheia no gráfico mostra a evolução da população brasileira desde 1950 até 2010, e a extrapolação (previsão) até o ano 2050, representada pela linha tracejada, foi feita com base nos censos demográficos realizados até 2010.\n\n[figura]\n\nFonte: IBGE. Projeção da população do Brasil, 2010.\n\nPelo gráfico apresentado, o intervalo em que se observa aumento da população é",
+  "alternativas": [
+   "1950 a 2010.",
+   "1950 a 2040.",
+   "1950 a 2050.",
+   "2010 a 2040.",
+   "2040 a 2050."
+  ],
+  "gabarito": "B",
+  "resolucao": "De acordo com o gráfico, observa-se que o período de crescimento encontra-se entre os anos de 1950 e 2040.\n\nResposta: B",
+  "materia": "Geografia",
+  "assunto": "Demografia e migrações",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-173",
+  "enunciado": "Uma fatura mensal de água é composta por uma taxa fixa, independentemente do gasto, mais uma parte relativa ao consumo de água, em metro cúbico. O gráfico relaciona o valor da fatura com o volume de água gasto em uma residência no mês de novembro, representando uma semirreta.\n\n[figura]\n\nObserva-se que, nesse mês, houve um consumo de 7 m³ de água. Sabe-se que, em dezembro, o consumo de água nessa residência, em metro cúbico, dobrou em relação ao mês anterior. O valor da fatura referente ao consumo no mês de dezembro nessa residência foi",
+  "alternativas": [
+   "superior a R$ 65,00 e inferior a R$ 70,00.",
+   "superior a R$ 80,00 e inferior a R$ 85,00.",
+   "superior a R$ 90,00 e inferior a R$ 95,00.",
+   "superior a R$ 95,00.",
+   "inferior a R$ 55,00."
+  ],
+  "gabarito": "A",
+  "resolucao": "O valor da fatura em relação ao volume de água gasto é uma função polinomial do 1º grau do tipo $f(x) = ax + b$, em que $x$ é o volume em m³.\n\nComo $f(0) = 17$, temos que $b = 17$, sendo $f(7) = 42,20$, temos que $a = 3,6$.\n\nAssim, $f(x) = 3,6 \\cdot x + 17$\n\nSabendo que, em dezembro, o consumo de água dobra com relação ao mês anterior, temos que o consumo, nesse mês, é de 14 m³.\n\nDessa forma, o valor da fatura em dezembro é dado por $f(14) = 3,6 \\cdot 14 + 17 \\Leftrightarrow f(14) = 67,40$\n\nPortanto, R$ 67,40.\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Conceito de função e função afim (1º grau)",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-174",
+  "enunciado": "Realizou-se um estudo sobre a violência no Brasil. As taxas obtidas para os homicídios de mulheres de 1980 a 2010 estão registradas no gráfico.\n\n[figura]\n\nDisponível em: http://g1.globo.com. Acesso em: 15 ago. 2013 (adaptado).\n\nDe acordo com os dados apresentados, o aumento percentual relativo da taxa de 2007 para 2010 foi mais próximo de",
+  "alternativas": [
+   "11%.",
+   "13%.",
+   "17%.",
+   "50%.",
+   "89%."
+  ],
+  "gabarito": "B",
+  "resolucao": "I) Observando o gráfico, temos que em 2007 a taxa de homicídios para o grupo de 100 mulheres foi de 3,9; já em 2010, foi de 4,4.\n\nAssim, temos um aumento dado por:\n\n$\\frac{4,4 - 3,9}{4,4} = 0,128$ o que equivale a 12,8%.\n\nO valor mais próximo é 13%.\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-175",
+  "enunciado": "Uma associação desportiva contratou uma empresa especializada para construir um campo de futebol, em formato retangular, com 250 metros de perímetro. Foi elaborada uma planta para esse campo na escala 1 : 2 000.\n\nNa planta, a medida do perímetro do campo de futebol, em metro, é",
+  "alternativas": [
+   "0,0005.",
+   "0,125.",
+   "8.",
+   "250.",
+   "500 000."
+  ],
+  "gabarito": "B",
+  "resolucao": "De acordo com a escala apresentada, tem-se que\n\n$\\frac{1}{2000} = \\frac{x}{25000} \\Rightarrow 2000 x = 25000 \\Leftrightarrow x = \\frac{25000}{2000} \\Leftrightarrow x = 12,5 \\text{ cm} = 0,125 \\text{ m}$\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-176",
+  "enunciado": "Um investidor pretende aplicar R$ 100 000,00 no mercado financeiro. Para isso pesquisou cinco investimentos distintos, aferindo os rendimentos mensais, em real, de cada um deles. Para decidir em qual aplicar seu dinheiro, considerou também a incidência mensal de Imposto de Renda (IR) sobre o respectivo rendimento. Avaliou que o maior retorno financeiro virá da aplicação em um único investimento: aquele em que a diferença entre o rendimento mensal e o imposto que incidir sobre ele seja a maior possível. Os dados levantados pelo investidor sobre rendimento e imposto referentes à aplicação encontram-se a seguir.\n\n[figura]\n\n| Investimento | Incidência de IR sobre o rendimento (por mês) |\n|---|---|\n| I | 12% |\n| II | 9% |\n| III | 20% |\n| IV | 10% |\n| V | 22% |\n\nO investidor decidiu fazer a aplicação no investimento",
+  "alternativas": [
+   "I.",
+   "II.",
+   "III.",
+   "IV.",
+   "V."
+  ],
+  "gabarito": "A",
+  "resolucao": "Para realizar a análise sobre os investimentos, basta organizar uma tabela que relacione o investimento.\n\n| Investimento | IR em Reais | Diferença em Reais |\n|---|---|---|\n| I | $\\frac{12}{100} \\cdot 900 = 108,00$ | 792,00 |\n| II | $\\frac{9}{100} \\cdot 700 = 63,00$ | 637,00 |\n| III | $\\frac{20}{100} \\cdot 300 = 60,00$ | 240,00 |\n| IV | $\\frac{10}{100} \\cdot 500 = 50,00$ | 450,00 |\n| V | $\\frac{22}{100} \\cdot 1000 = 220,00$ | 780,00 |\n\nAssim, o investimento escolhido foi o I.\n\nResposta: A",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-177",
+  "enunciado": "A figura ilustra a vista superior de um brinquedo gira-gira em um parque de diversões, no qual a linha contínua, em formato circular tendo $O$ como seu centro, indica o assento onde as crianças se posicionam no brinquedo. O ponto $P$ indica a posição ocupada por uma criança, em um instante de tempo $T$, quando o brinquedo está girando continuamente no sentido anti-horário (com $O$ fixo), e velocidade constante por várias voltas.\n\n[figura]\n\nO brinquedo está situado nas proximidades de duas paredes verticais e perpendiculares entre si. Seja $D$ a distância de $P$ até a parede I.\n\nO gráfico que melhor representa, em função do tempo $t$ a partir do instante $T$, a distância $D$ é",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "C",
+  "resolucao": "Considerando as informações dadas no enunciado, podem-se construir os segmentos $\\overline{CP}$, $\\overline{EF}$, $\\overline{GH}$, $\\overline{IJ}$, $\\overline{KL}$, $\\overline{MN}$ e $\\overline{AB}$, que representam as distâncias que o assento estaria em relação à Parede I, conforme a figura a seguir:\n\n[figura]\n\nOrganizando as medidas desses segmentos em um plano cartesiano, de acordo com a posição durante o movimento do brinquedo, obtém-se como gráfico uma senoide, cujo gráfico é dado na alternativa c.\n\nResposta: C",
+  "materia": "Física",
+  "assunto": "Lançamentos e movimento circular",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-178",
+  "enunciado": "Para sua festa de 17 anos, o aniversariante convidará 132 pessoas. Ele convidará 26 mulheres a mais do que o número de homens. A empresa contratada para realizar a festa cobrará R$ 50,00 por convidado do sexo masculino e R$ 45,00 por convidado do sexo feminino.\n\nQuanto esse aniversariante terá que pagar, em real, à empresa contratada, pela quantidade de homens convidados para sua festa?",
+  "alternativas": [
+   "2 385,00",
+   "2 650,00",
+   "3 300,00",
+   "3 950,00",
+   "5 300,00"
+  ],
+  "gabarito": "B",
+  "resolucao": "Seja $x$ o número de homens convidados. Então, serão convidadas $x + 26$ mulheres. Do enunciado, tem-se:\n\n$x + x + 26 = 132 \\Leftrightarrow 2x = 106 \\Leftrightarrow x = 53$\n\nComo o custo por convidado homem é de R$ 50,00, o total gasto pelo aniversariante será de $53 \\cdot 50 = 2650$ reais, para convidar os homens.\n\nResposta: B",
+  "materia": "Matemática",
+  "assunto": "Equações e inequações",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-179",
+  "enunciado": "O ganho real de um salário, $r$, é a taxa de crescimento do poder de compra desse salário. Ele é calculado a partir do percentual de aumento dos salários e da taxa de inflação, referidos a um mesmo período. Algebricamente, pode-se calcular o ganho real pela fórmula $1 + r = \\frac{1+i}{1+f}$, em que $i$ é o percentual de aumento no valor dos salários e $f$ é a taxa de inflação, ambos referidos a um mesmo período.\n\nConsidere que uma categoria de trabalhadores recebeu uma proposta de aumento salarial de 10%, e que a taxa de inflação do período correspondente tenha sido 5%. Para avaliar a proposta, os trabalhadores criaram uma classificação em função dos ganhos reais conforme o quadro.\n\n| Ganho Real | Classificação |\n|---|---|\n| Igual ou superior a 5% | Boa |\n| Maior ou igual a 1,5 % e menor do que 5% | Regular |\n| Maior do que 0% e menor do que 1,5% | Ruim |\n| Igual ou menor do que 0% | Inaceitável (ganho real negativo significa perda do poder de compra dos salários) |\n\nEles classificaram a proposta de aumento e justificaram essa classificação apresentando o valor do ganho real que obteriam. A classificação, com sua respectiva justificativa, foi",
+  "alternativas": [
+   "inaceitável, porque o ganho real seria mais próximo de −5%.",
+   "ruim, porque o ganho real seria mais próximo de 1,05%.",
+   "regular, porque o ganho real seria mais próximo de 4,7%.",
+   "boa, porque o ganho real seria mais próximo de 9,5%.",
+   "boa, porque o ganho real seria mais próximo de 5%."
+  ],
+  "gabarito": "C",
+  "resolucao": "Para i = 10% e f = 5%, tem-se um ganho real de aproximadamente 4,7%, pois: $1 + r = \\frac{1 + 10\\%}{1 + 5\\%} \\Leftrightarrow r = \\frac{1{,}10}{1{,}05} - 1 \\Leftrightarrow r \\cong 0{,}047 \\Leftrightarrow r \\cong 4{,}7\\%$. Pela tabela, um ganho real de 4,7 % é classificado como regular.",
+  "materia": "Matemática",
+  "assunto": "Porcentagem e juros",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_digital-180",
+  "enunciado": "Um jogo pedagógico é formado por cartas nas quais está impressa uma fração em uma de suas faces. Cada jogador recebe quatro cartas e vence aquele que primeiro consegue ordenar crescentemente suas cartas pelas respectivas frações impressas. O vencedor foi o aluno que recebeu as cartas com as frações: $\\frac{3}{5}$, $\\frac{1}{4}$, $\\frac{2}{3}$ e $\\frac{5}{9}$.\n\nA ordem que esse aluno apresentou foi",
+  "alternativas": [
+   "$\\frac{1}{4}$; $\\frac{5}{9}$; $\\frac{3}{5}$; $\\frac{2}{3}$",
+   "$\\frac{1}{4}$; $\\frac{2}{3}$; $\\frac{3}{5}$; $\\frac{5}{9}$",
+   "$\\frac{2}{3}$; $\\frac{1}{4}$; $\\frac{3}{5}$; $\\frac{5}{9}$",
+   "$\\frac{5}{9}$; $\\frac{1}{4}$; $\\frac{3}{5}$; $\\frac{2}{3}$",
+   "$\\frac{2}{3}$; $\\frac{3}{5}$; $\\frac{1}{4}$; $\\frac{5}{9}$"
+  ],
+  "gabarito": "A",
+  "resolucao": "As frações recebidas pelo aluno vencedor expressas em forma decimal são: $\\frac{3}{5} = 0{,}6$; $\\frac{1}{4} = 0{,}25$; $\\frac{2}{3} = 0{,}666\\ldots$ e $\\frac{5}{9} = 0{,}555\\ldots$ Assim, a ordem crescente das cartas recebidas deve ser: $\\frac{1}{4}; \\frac{5}{9}; \\frac{3}{5}; \\frac{2}{3}$.",
+  "materia": "Matemática",
+  "assunto": "Conjuntos e conjuntos numéricos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-091",
+  "enunciado": "“Na indústria farmacêutica, é muito comum o emprego de substâncias de revestimento em medicamentos de uso oral, pois trazem uma série de benefícios como alteração de sabor em medicamentos que tenham gosto ruim, melhoria da assimilação do composto, entre outras ações. Alguns compostos poliméricos à base do polissacarídeo celulose são utilizados para garantir que o fármaco somente seja liberado quando em contato com soluções aquosas cujo pH se encontre próximo da faixa da neutralidade.”\n\n(BORTOLINI, K. et al. Análise de perfil de dissolução de cápsulas gastrorresistentes utilizando polímeros industriais com aplicação em farmácias magistrais, Revista da Unifebe, n. 12, 2013. Adaptado.)\n\nQual é a finalidade do uso desse revestimento à base de celulose?",
+  "alternativas": [
+   "Diminuir a absorção do princípio ativo no intestino.",
+   "Impedir que o fármaco seja solubilizado no intestino.",
+   "Garantir que o fármaco não seja afetado pelas secreções gástricas.",
+   "Permitir a liberação do princípio ativo pela ação das amilases salivares.",
+   "Facilitar a liberação do fármaco pela ação dos sais biliares sobre o revestimento."
+  ],
+  "gabarito": "C",
+  "resolucao": "De acordo com o enunciado, o revestimento à base de celulose (polissacarídeo) garante que o fármaco só seja liberado em soluções aquosas com o pH próximo à neutralidade (intestino delgado). No trato digestório humano, tal característica protege o fármaco das secreções gástricas (pH ácido).",
+  "materia": "Química",
+  "assunto": "Polímeros, lipídios, carboidratos e proteínas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-092",
+  "enunciado": "As panelas de pressão reduzem o tempo de cozimento dos alimentos por elevar a temperatura de ebulição da água. Os usuários conhecedores do utensílio normalmente abaixam a intensidade do fogo em panelas de pressão após estas iniciarem a saída dos vapores.\n\nAo abaixar o fogo, reduz-se a chama, pois assim evita-se o(a)",
+  "alternativas": [
+   "aumento da pressão interna e os riscos de explosão.",
+   "dilatação da panela e a desconexão com sua tampa.",
+   "perda da qualidade nutritiva do alimento.",
+   "deformação da borracha de vedação.",
+   "consumo de gás desnecessário."
+  ],
+  "gabarito": "E",
+  "resolucao": "O início da saída de vapores pela válvula da panela é um indicador de que a água entrou em ebulição no interior da mesma, o que geralmente ocorre acima de 100°C devido à maior pressão sobre a água. Durante a ebulição, a temperatura da água permanece constante. Por isso, é recomendável abaixar a intensidade da chama, evitando-se com isso o consumo desnecessário de gás. A manutenção da chama do fogão com maior intensidade faz apenas com que a água vaporize mais rapidamente dentro da panela.",
+  "materia": "Física",
+  "assunto": "Calorimetria e mudanças de fase",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-093",
+  "enunciado": "A nanotecnologia pode ser caracterizada quando os compostos estão na ordem de milionésimos de milímetros, como na utilização de nanomateriais catalíticos nos processos industriais. O uso desses materiais aumenta a eficiência da produção, consome menos energia e gera menores quantidades de resíduos. O sucesso dessa aplicação tecnológica muitas vezes está relacionado ao aumento da velocidade da reação química envolvida. O êxito da aplicação dessa tecnologia é por causa da realização de reações químicas que ocorrem em condições de",
+  "alternativas": [
+   "alta pressão.",
+   "alta temperatura.",
+   "excesso de reagentes.",
+   "maior superfície de contato.",
+   "elevada energia de ativação."
+  ],
+  "gabarito": "D",
+  "resolucao": "O aumento da velocidade da reação envolvida é devido à maior superfície de contato entre as nanopartículas catalíticas com os reagentes, diminuindo a energia de ativação.",
+  "materia": "Química",
+  "assunto": "Cinética química",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-094",
+  "enunciado": "Os fones de ouvido tradicionais transmitem a música diretamente para os nossos ouvidos. Já os modelos dotados de tecnologia redutora de ruído — Cancelamento de Ruído (CR) — além de transmitirem música, também reduzem todo ruído inconsistente à nossa volta, como o barulho de turbinas de avião e aspiradores de pó. Os fones de ouvido CR não reduzem realmente barulhos irregulares como discursos e choros de bebês. Mesmo assim, a supressão do ronco das turbinas do avião contribui para reduzir a “fadiga de ruído”, um cansaço persistente provocado pela exposição a um barulho alto por horas a fio. Esses aparelhos também permitem que nós ouçamos músicas ou assistamos a vídeos no trem ou no avião a um volume muito menor (e mais seguro).\n\nDisponível em: http://tecnologia.uol.com.br, Acesso em: 21 abr, 2015 (adaptado).\n\nA tecnologia redutora de ruído CR utilizada na produção de fones de ouvido baseia-se em qual fenômeno ondulatório?",
+  "alternativas": [
+   "Absorção.",
+   "Interferência.",
+   "Polarização.",
+   "Reflexão.",
+   "Difração."
+  ],
+  "gabarito": "B",
+  "resolucao": "Um circuito próprio do fone de ouvido identifica o sinal do ruído externo e gera no equipamento uma onda invertida – em oposição de fase – em relação à onda do ruído. Ocorre, então, o fenômeno de interferência destrutiva e o ruído externo é anulado, não perturbando o usuário do fone.",
+  "materia": "Física",
+  "assunto": "Ondas e acústica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-095",
+  "enunciado": "Para garantir que produtos eletrônicos estejam armazenados de forma adequada antes da venda, algumas empresas utilizam cartões indicadores de umidade nas embalagens desses produtos. Alguns desses cartões contêm um sal de cobalto que muda de cor em presença de água, de acordo com a equação química:\n\n$\\mathrm{CoCl_2(s) + 6\\,H_2O(g) \\rightleftharpoons CoCl_2 \\cdot 6\\,H_2O(s)} \\qquad \\Delta H < 0$\n\n(azul) sob o reagente e (rosa) sob o produto.\n\nComo você procederia para reutilizar, num curto intervalo de tempo, um cartão que já estivesse com a coloração rosa?",
+  "alternativas": [
+   "Resfriaria no congelador.",
+   "Borrifaria com spray de água.",
+   "Envolveria com papel alumínio.",
+   "Aqueceria com secador de cabelos.",
+   "Embrulharia em guardanapo de papel."
+  ],
+  "gabarito": "D",
+  "resolucao": "Para reutilizar esse cartão, o equilíbrio deveria ser deslocado para a esquerda, aumentando a tonalidade da cor azul.\n\n$\\mathrm{CoCl_2(s) + 6\\,H_2O(g) \\overset{\\text{exot.}}{\\underset{\\text{endo.}}{\\rightleftharpoons}} CoCl_2 \\cdot 6\\,H_2O(s)}$\n\n(azul) e (rosa). $\\Delta H < 0$ – reação exotérmica.\n\nPara deslocar o equilíbrio para a esquerda no sentido da reação endotérmica, devemos aumentar a temperatura usando, por exemplo, um secador de cabelos.",
+  "materia": "Química",
+  "assunto": "Equilíbrio químico",
+  "segundo_assunto": "Termoquímica",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-096",
+  "enunciado": "Um estudante tem uma fonte de tensão com corrente contínua que opera em tensão fixa de $12\\,\\text{V}$. Como precisa alimentar equipamentos que operam em tensões menores, ele emprega quatro resistores de $100\\,\\Omega$ para construir um divisor de tensão. Obtém-se este divisor associando os resistores, como exibido na figura.\n\n[figura]\n\nOs aparelhos podem ser ligados entre os pontos A, B, C, D e E, dependendo da tensão especificada.\n\nEle tem um equipamento que opera em $9{,}0\\,\\text{V}$ com uma resistência interna de $10\\,\\text{k}\\Omega$. Entre quais pontos do divisor de tensão esse equipamento deve ser ligado para funcionar corretamente e qual será o valor da intensidade da corrente nele estabelecida?",
+  "alternativas": [
+   "Entre A e C; 30 mA.",
+   "Entre B e E; 30 mA.",
+   "Entre A e D; 1,2 mA.",
+   "Entre B e E; 0,9 mA.",
+   "Entre A e E; 0,9 mA."
+  ],
+  "gabarito": "D",
+  "resolucao": "Antes de ligar o equipamento, os quatro resistores idênticos receberão do gerador, cada um, uma tensão elétrica: $U_1 = \\frac{12\\,\\text{V}}{4} = 3{,}0\\,\\text{V}$. Assim, para se obter os $9{,}0\\,\\text{V}$ necessários para o funcionamento do seu equipamento, basta usar 3 resistores consecutivos. Podem-se usar os terminais (A e D) ou (B e E). Ao se ligar o equipamento, cuja resistência elétrica vale $R = 10\\,\\text{k}\\Omega$, ele será percorrido por uma corrente elétrica de intensidade:\n\n[figura]\n\n$i_2 = \\frac{U}{R} \\Rightarrow i_2 = \\frac{9{,}0\\,\\text{V}}{10\\,\\text{k}\\Omega} = \\frac{9{,}0\\,\\text{V}}{10 \\cdot 10^3\\,\\Omega}$\n\n$i_2 = 0{,}9 \\cdot 10^{-3}\\,\\text{A} \\Rightarrow i_2 = 0{,}9\\ \\text{mA}$\n\nNota: A rigor, a tensão elétrica entre B e E é aproximadamente de $9{,}0\\,\\text{V}$. Há um desvio de corrente $i_2$ para o equipamento, mas seu valor é muito pequeno, em comparação à intensidade da corrente $i$ fornecida pelo gerador.",
+  "materia": "Física",
+  "assunto": "Corrente, resistores e circuitos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-097",
+  "enunciado": "“Pesquisadores dos Estados Unidos desenvolveram uma nova técnica, que utiliza raios de luz infravermelha (invisíveis a olho nu) para destruir tumores. Primeiramente, o paciente recebe uma injeção com versões modificadas de anticorpos que têm a capacidade de “grudar” apenas nas células cancerosas. Sozinhos, eles não fazem nada contra o tumor. Entretanto, esses anticorpos estão ligados a uma molécula, denominada IR700, que funcionará como uma “microbomba”, que irá destruir o câncer. Em seguida, o paciente recebe raios infravermelhos. Esses raios penetram no corpo e chegam até a molécula IR700, que é ativada e libera uma substância que ataca a célula cancerosa.”\n\n(Disponível em: http://super.abril.com.br. Acesso em: 13 dez. 2012. Adaptado.)\n\nCom base nas etapas de desenvolvimento, o nome apropriado para a técnica descrita é:",
+  "alternativas": [
+   "Radioterapia.",
+   "Cromoterapia.",
+   "Quimioterapia.",
+   "Fotoimunoterapia.",
+   "Terapia magnética."
+  ],
+  "gabarito": "D",
+  "resolucao": "A utilização de anticorpos para tratamentos de doenças é chamada de imunoterapia. Com a utilização da luz infravermelha para liberação da molécula, podemos denominar a técnica como fototerapia. A união das duas técnicas será a fotoimunoterapia.",
+  "materia": "Biologia",
+  "assunto": "Imunologia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-098",
+  "enunciado": "Aranhas, escorpiões, carrapatos e ácaros são representantes da classe dos Aracnídeos. Esses animais são terrestres em sua grande maioria e ocupam os mais variados hábitats, tais como montanhas altas, pântanos, desertos e solos arenosos. Podem ter sido os primeiros representantes do filo Arthropoda a habitar a terra seca.\n\nA característica que justifica o sucesso adaptativo desse grupo na ocupação do ambiente terrestre é a presença de",
+  "alternativas": [
+   "quelíceras e pedipalpos que coordenam o movimento corporal.",
+   "excreção de ácido úrico que confere estabilidade ao pH corporal.",
+   "exoesqueleto constituído de quitina que auxilia no controle hídrico corporal.",
+   "circulação sanguínea aberta que impede a desidratação dos tecidos corporais.",
+   "sistema nervoso ganglionar que promove a coordenação central do movimento corporal."
+  ],
+  "gabarito": "C",
+  "resolucao": "O exoesqueleto dos artrópodes é constituído de quitina (um polissacarídeo) e desempenha importantes funções, incluindo a proteção contra a dessecação excessiva em ambiente terrestre.",
+  "materia": "Biologia",
+  "assunto": "Zoologia: invertebrados",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-099",
+  "enunciado": "Embora a energia nuclear possa ser utilizada para fins pacíficos, recentes conflitos geopolíticos têm trazido preocupações em várias partes do planeta e estimulado discussões visando o combate ao uso de armas de destruição em massa. Além do potencial destrutivo da bomba atômica, uma grande preocupação associada ao emprego desse artefato bélico é a poeira radioativa deixada após a bomba ser detonada.\n\nQual é o processo envolvido na detonação dessa bomba?",
+  "alternativas": [
+   "Fissão nuclear do urânio, provocada por nêutrons.",
+   "Fusão nuclear do hidrogênio, provocada por prótons.",
+   "Desintegração nuclear do plutônio, provocada por elétrons.",
+   "Associação em cadeia de chumbo, provocada por pósitrons.",
+   "Decaimento radioativo do carbono, provocado por partículas beta."
+  ],
+  "gabarito": "A",
+  "resolucao": "O processo envolvido na bomba atômica é a fissão nuclear, que ocorre com bombardeamento de nêutrons em um núcleo fissionável, e este se rompe formando dois núcleos menores e mais nêutrons (reação em cadeia).",
+  "materia": "Física",
+  "assunto": "Física moderna",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-100",
+  "enunciado": "“Plantas pioneiras são as que iniciam o processo natural de cicatrização de uma área desprovida de vegetação. Em geral, têm pequeno porte e crescem muito rápido, desenvolvem-se a pleno sol e são pouco exigentes quanto às condições do solo. Produzem grande quantidade de sementes e possuem ciclo de vida curto.” (BLUM, C. T. Lista preliminar de espécies vegetais pioneiras nativas do Paraná – versão 2005. Disponível em: www.chaua.org.br. Acesso em: 10 fev. 2015.)\n\nEssas plantas são importantes em um projeto de restauração ambiental, pois promovem, no solo,",
+  "alternativas": [
+   "aumento da incidência de luz solar.",
+   "diminuição da absorção de água.",
+   "estabilização da umidade.",
+   "elevação de temperatura.",
+   "liberação de oxigênio."
+  ],
+  "gabarito": "C",
+  "resolucao": "No processo de sucessão ecológica, as plantas pioneiras, presentes em maior quantidade na fase ecese, permitem o estabelecimento de outras espécies por diminuir a temperatura, aumentar a quantidade de matéria orgânica e umidade do solo.",
+  "materia": "Biologia",
+  "assunto": "Relações ecológicas e sucessão",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-101",
+  "enunciado": "Mesmo para peixes de aquário, como o peixe arco-íris, a temperatura da água fora da faixa ideal (26°C a 28°C), bem como sua variação brusca, pode afetar a saúde do animal. Para manter a temperatura da água dentro do aquário na média desejada, utilizam-se dispositivos de aquecimento com termostato. Por exemplo, para um aquário de 50 L, pode-se utilizar um sistema de aquecimento de 50 W otimizado para suprir sua taxa de resfriamento. Essa taxa pode ser considerada praticamente constante, já que a temperatura externa ao aquário é mantida pelas estufas. Utilize para a água o calor específico 4,0 kJ kg⁻¹ K⁻¹ e a densidade 1 kg L⁻¹.\n\nSe o sistema de aquecimento for desligado por 1 h, qual o valor mais próximo para a redução da temperatura da água do aquário?",
+  "alternativas": [
+   "4,0°C",
+   "3,6°C",
+   "0,9°C",
+   "0,6°C",
+   "0,3°C"
+  ],
+  "gabarito": "C",
+  "resolucao": "Dados e ajustes das unidades:\n\n$Pot = 50\\ \\text{W}$\n$\\Delta t = 1{,}0\\ \\text{h} = 3600\\ \\text{s}$\n$\\mu = \\frac{m}{V}$\n$m = \\mu \\cdot V$\n$m = (1{,}0\\ \\text{kg L}^{-1}) \\cdot (50\\ \\text{L})$\n$m = 50\\ \\text{kg}$\n$c = 4{,}0\\ \\text{kJ kg}^{-1}\\ \\text{K}^{-1} = 4000\\ \\text{J kg}^{-1}\\ \\text{K}^{-1}$\n\nA partir da potência da fonte térmica, calculamos a variação de temperatura:\n\n$Pot = \\frac{Q}{\\Delta t}$\n$Pot = \\frac{m \\cdot c \\cdot \\Delta\\theta}{\\Delta t}$\n$\\Delta\\theta = \\frac{Pot \\cdot \\Delta t}{m \\cdot c}$\n$\\Delta\\theta = \\frac{50 \\cdot 3600}{50 \\cdot 4000}\\ \\text{(K)}$\n$\\Delta\\theta = 0{,}9\\ \\text{K} \\Rightarrow \\Delta\\theta = 0{,}9\\ \\text{°C}$",
+  "materia": "Física",
+  "assunto": "Calorimetria e mudanças de fase",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-102",
+  "enunciado": "Em uma pesquisa estão sendo testados cinco quimioterápicos quanto à sua capacidade antitumoral. No entanto, para o tratamento de pacientes, sabe-se que é necessário verificar também o quanto cada composto agride células normais. Para o experimento, partiu-se de cultivos de células tumorais (colunas escuras na figura) e células normais (colunas claras) com o mesmo número de células iniciais. Dois grupos-controle não receberam quimioterápicos: controle de células tumorais (CT) e de células normais (CN). As colunas I, II, III, IV e V correspondem aos grupos tratados com os cinco compostos. O número de células viáveis após os tratamentos está representado pelas colunas.\n\n[figura]\n\nQual quimioterápico deve ser escolhido desse tipo de tumor?",
+  "alternativas": [
+   "I",
+   "II",
+   "III",
+   "IV",
+   "V"
+  ],
+  "gabarito": "B",
+  "resolucao": "O quimioterápico que deve ser escolhido para o tratamento desse tipo de tumor é aquele que, após o tratamento, leve a um menor número de células tumorais viáveis e, ao mesmo tempo, a um maior número de células normais viáveis. O fármaco que apresenta esses resultados é o II.",
+  "materia": "Biologia",
+  "assunto": "Outro",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-103",
+  "enunciado": "A obtenção de óleos vegetais, de maneira geral, passa pelas etapas descritas no quadro.\n\n| Etapa | Subetapa | O que ocorre |\n|---|---|---|\n| Preparação da matéria-prima | Seleção dos grãos | Separação das sujidades mais grossas |\n| Preparação da matéria-prima | Descascamento | Separação de polpa e casca |\n| Preparação da matéria-prima | Trituração | Rompimento dos tecidos e das paredes das células |\n| Preparação da matéria-prima | Cozimento | Aumento da permeabilidade das membranas celulares |\n| Extração do óleo bruto | Prensagem | Remoção parcial do óleo |\n| Extração do óleo bruto | Extração | Obtenção do óleo bruto com hexano |\n| Extração do óleo bruto | Destilação | Separação do óleo e do solvente |\n\nQual das subetapas do processo é realizada em função apenas da polaridade das substâncias?",
+  "alternativas": [
+   "Trituração.",
+   "Cozimento.",
+   "Prensagem.",
+   "Extração.",
+   "Destilação."
+  ],
+  "gabarito": "D",
+  "resolucao": "O hexano é um líquido apolar (hidrocarboneto) que dissolve o óleo bruto (apolar), portanto, esse processo (extração) envolve o conceito de polaridade das substâncias.",
+  "materia": "Química",
+  "assunto": "Geometria molecular e polaridade",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-104",
+  "enunciado": "O dióxido de carbono passa para o estado sólido (gelo seco) a –78 °C e retorna ao estado gasoso à temperatura ambiente. O gás é facilmente solubilizado em água, capaz de absorver radiação infravermelha da superfície da terra e não conduz eletricidade. Ele é utilizado como matéria-prima para a fotossíntese até o limite de saturação. Após a fixação pelos organismos autotróficos, o gás retorna ao meio ambiente pela respiração aeróbica, fermentação, decomposição ou por resíduos industriais, queima de combustíveis fósseis e queimadas. Apesar da sua importância ecológica, seu excesso causa perturbações no equilíbrio ambiental.\n\nConsiderando as propriedades descritas, o aumento atmosférico da substância afetará os organismos aquáticos em razão da",
+  "alternativas": [
+   "redução do potencial hidrogeniônico da água.",
+   "restrição da aerobiose pelo excesso de poluentes.",
+   "diminuição da emissão de oxigênio pelos autotrofos.",
+   "limitação de transferência de energia entre os seres vivos.",
+   "retração dos oceanos pelo congelamento do gás nos polos."
+  ],
+  "gabarito": "A",
+  "resolucao": "O aumento do dióxido de carbono ($CO_2$) na atmosfera leva ao aumento da concentração de ácido carbônico ($H_2CO_3$) em ambientes aquáticos. Com o aumento da concentração de ácido na água, há aumento da liberação de íons $H^+$, que levam à redução do potencial de hidrogênio (pH) dela.",
+  "materia": "Química",
+  "assunto": "Química ambiental e energia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-105",
+  "enunciado": "Grupos de proteção ao meio ambiente conseguem resgatar muitas aves aquáticas vítimas de vazamentos de petróleo. Essas aves são lavadas com água e detergente neutro para a retirada completa do óleo de seu corpo e, posteriormente, são aquecidas, medicadas, desintoxicadas e alimentadas. Mesmo após esses cuidados, o retorno ao ambiente não pode ser imediato, pois elas precisam recuperar a capacidade de flutuação.\n\nPara flutuar, essas aves precisam",
+  "alternativas": [
+   "recuperar o tônus muscular.",
+   "restaurar a massa corporal.",
+   "substituir as penas danificadas.",
+   "restabelecer a capacidade de homeotermia.",
+   "refazer a camada de cera impermeabilizante das penas."
+  ],
+  "gabarito": "E",
+  "resolucao": "Aves aquáticas precisam manter as penas impermeabilizadas para garantir a flutuabilidade. Essa impermeabilização é feita utilizando a secreção da glândula uropigiana. Essa secreção é de natureza lipídica, sendo removida pelo detergente utilizado para remoção do óleo.",
+  "materia": "Biologia",
+  "assunto": "Zoologia: cordados",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-106",
+  "enunciado": "Uma pessoa percebe que a bateria de seu veículo fica descarregada após cinco dias sem uso. No início desse período, a bateria funcionava normalmente e estava com o total de sua carga nominal, de 60 Ah. Pensando na possibilidade de haver uma corrente de fuga, que se estabelece mesmo com os dispositivos elétricos do veículo desligados, ele associa um amperímetro digital ao circuito do veículo.\n\nQual dos esquemas indica a maneira com que o amperímetro deve ser ligado e a leitura por ele realizada?",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "B",
+  "resolucao": "O amperímetro deve ser ligado em série com o circuito do veículo e sua leitura pode ser determinada por:\n\n$i = \\frac{Q}{\\Delta t}$\n\nDo enunciado, temos:\n\n$Q = 60\\ \\text{Ah}$\n$\\Delta t = 5\\ \\text{dias} = 5 \\cdot 24\\ \\text{h} = 120\\ \\text{h}$\n\nAssim: $i = \\frac{60\\ \\text{Ah}}{120\\ \\text{h}}$\n\n$i = 0{,}50\\ \\text{A}$",
+  "materia": "Física",
+  "assunto": "Corrente, resistores e circuitos",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-107",
+  "enunciado": "Um microempresário do ramo de cosméticos utiliza óleos essenciais e quer produzir um creme com fragrância de rosas. O principal componente do óleo de rosas tem cadeia poli-insaturada e hidroxila em carbono terminal. O catálogo dos óleos essenciais apresenta, para escolha da essência, estas estruturas químicas:\n\n[figura]\n\nQual substância o empresário deverá utilizar?",
+  "alternativas": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "gabarito": "A",
+  "resolucao": "O principal componente do óleo de rosas tem cadeia poli-insaturada, ou seja, duas ou mais ligações duplas entre átomos de carbono. E possui hidroxila (grupo $-OH$) em carbono terminal.\n\nA substância citada é a 1.\n\n[figura]",
+  "materia": "Química",
+  "assunto": "Funções orgânicas oxigenadas e nitrogenadas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-108",
+  "enunciado": "Nos desenhos animados, com frequência se vê um personagem correndo na direção de um abismo, mas, ao invés de cair, ele continua andando no vazio e só quando percebe que não há nada sob seus pés é que ele para de andar e cai verticalmente. No entanto, para observar uma trajetória de queda num experimento real, pode-se lançar uma bolinha, com velocidade constante ($V_0$), sobre a superfície de uma mesa e verificar o seu movimento de queda até o chão.\n\nQual figura melhor representa a trajetória de queda da bolinha?",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "D",
+  "resolucao": "Após se destacar da mesa, desprezando-se o efeito do ar, a bolinha fica sob ação exclusiva de seu peso e terá uma trajetória parabólica que resulta da composição de um movimento horizontal uniforme com um movimento vertical uniformemente variado.",
+  "materia": "Física",
+  "assunto": "Lançamentos e movimento circular",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-109",
+  "enunciado": "Dois engenheiros estão verificando se uma cavidade perfurada no solo está de acordo com o planejamento de uma obra, cuja profundidade requerida é de 30 m. O teste é feito por um dispositivo denominado oscilador de áudio de frequência variável, que permite relacionar a profundidade com os valores da frequência de duas ressonâncias consecutivas, assim como em um tubo sonoro fechado. A menor frequência de ressonância que o aparelho mediu foi 135 Hz. Considere que a velocidade do som dentro da cavidade perfurada é de $360\\ \\text{m s}^{-1}$. Se a profundidade estiver de acordo com o projeto, qual será o valor da próxima frequência de ressonância que será medida?",
+  "alternativas": [
+   "137Hz.",
+   "138Hz.",
+   "141 Hz.",
+   "144Hz.",
+   "159Hz."
+  ],
+  "gabarito": "C",
+  "resolucao": "Para os tubos sonoros fechados, que emitem em situações de ressonância, exclusivamente harmônicos de ordem ímpar, a frequência f é dada por: $f = (2n - 1) \\frac{V}{4L}$ em que n é o número de nós da onda estacionária presente no tubo, V é a intensidade da velocidade do som e L é o comprimento útil do tubo.\n\n1.º caso: $135 = (2n - 1) \\frac{360}{4 \\cdot 30}$\n\n$2n - 1 = \\frac{16\\,200}{360} \\Rightarrow 2n - 1 = 45$\n\n$2n = 46 \\Rightarrow n = 23$\n\nNesse caso, trata-se do 45.º harmônico.\n\n2.º caso:\n\n$n = 23 + 1 = 24$ nós ou 47.º harmônico.\n\n$f = (2 \\cdot 24 - 1) \\frac{360}{4 \\cdot 30}$ (Hz)\n\n$f = 47 \\cdot \\frac{360}{120}$ (Hz) $\\Rightarrow f = 141$ Hz",
+  "materia": "Física",
+  "assunto": "Ondas e acústica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-110",
+  "enunciado": "“Instituições acadêmicas e de pesquisa do mundo estão inserindo genes em genomas de plantas que possam codificar produtos de interesse farmacológico. No Brasil, está sendo desenvolvida uma variedade de soja com um viricida ou microbicida capaz de prevenir a contaminação pelo vírus causador da aids. Essa leguminosa está sendo induzida a produzir a enzima cianovirina-N, que tem eficiência comprovada contra o vírus.” (OLIVEIRA, M. Remédio na planta. Pesquisa Fapesp, n. 206, abr. 2013.)\n\nA técnica para gerar essa leguminosa é um exemplo de",
+  "alternativas": [
+   "hibridismo.",
+   "transgenia.",
+   "conjugação.",
+   "terapia gênica.",
+   "melhoramento genético."
+  ],
+  "gabarito": "B",
+  "resolucao": "O processo descreve a inserção de um gene exógeno na soja para que o vegetal seja capaz de produzir a enzima que lhe confere proteção ao vírus. Essa técnica é denominada *transgenia*.",
+  "materia": "Biologia",
+  "assunto": "Biotecnologia e engenharia genética",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-111",
+  "enunciado": "“Megaespetáculos com queima de grande quantidade de fogos de artifício em festas de final de ano são muito comuns no Brasil. Após a queima, grande quantidade de material particulado permanece suspensa no ar. Entre os resíduos, encontram-se compostos de sódio, potássio, bário, cálcio, chumbo, antimônio, cromo, além de percloratos e gases, como os dióxidos de nitrogênio e enxofre.” (BRUNNING, A. *The Chemistry of Firework Pollution*. Disponível em: www.compoundchem.com. Acesso em: 1 dez. 2017. Adaptado.)\n\nEsses espetáculos promovem riscos ambientais, porque",
+  "alternativas": [
+   "as substâncias resultantes da queima de fogos de artifício são inflamáveis.",
+   "os resíduos produzidos na queima de fogos de artifício ainda são explosivos.",
+   "o sódio e o potássio são os principais responsáveis pela toxicidade do produto da queima.",
+   "os produtos da queima contêm metais pesados e gases tóxicos que resultam em poluição atmosférica.",
+   "o material particulado gerado se deposita na superfície das folhas das plantas impedindo os processos de respiração celular."
+  ],
+  "gabarito": "D",
+  "resolucao": "Como citado no enunciado, a queima de fogos de artifício libera produtos que contêm metais pesados (chumbo, antimônio, cromo etc.) e gases tóxicos (dióxidos de nitrogênio e enxofre). Esses produtos resultam na poluição atmosférica.",
+  "materia": "Química",
+  "assunto": "Química ambiental e energia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-112",
+  "enunciado": "Há muitos mitos em relação a como se proteger de raios, cobrir espelhos e não pegar em facas, garfos e outros objetos metálicos, por exemplo. Mas, de fato, se houver uma tempestade com raios, alguns cuidados são importantes, como evitar ambientes abertos. Um bom abrigo para proteção é o interior de um automóvel, desde que este não seja conversível.\n\n(OLIVEIRA, A. *Raios nas tempestades de verão*. Disponível em: http://cienciahoje.uol.com.br. Acesso em: 10 dez, 2014 (adaptado).)\n\nQual o motivo físico da proteção fornecida pelos automóveis, conforme citado no texto?",
+  "alternativas": [
+   "Isolamento elétrico dos pneus.",
+   "Efeito de para-raios da antena.",
+   "Blindagem pela carcaça metálica.",
+   "Escoamento da água pela lataria.",
+   "Aterramento pelo fio terra da bateria."
+  ],
+  "gabarito": "C",
+  "resolucao": "A carcaça do automóvel promove uma blindagem eletrostática.\n\nAs cargas elétricas em excesso distribuem-se na superfície externa dessa carcaça e o campo elétrico em seu interior é nulo.\n\nEsse tipo de blindagem eletrostática é conhecido como gaiola de Faraday.",
+  "materia": "Física",
+  "assunto": "Eletrostática",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-113",
+  "enunciado": "As moedas despertam o interesse de colecionadores, numismatas e investidores há bastante tempo. Uma moeda de 100% cobre, circulante no período do Brasil Colônia, pode ser bastante valiosa. O elevado valor gera a necessidade de realização de testes que validem a procedência da moeda, bem como a veracidade de sua composição. Sabendo que a densidade do cobre metálico é próxima de $9\\ \\text{g cm}^{-3}$, um investidor negocia a aquisição de um lote de quatro moedas A, B, C e D fabricadas supostamente de 100% cobre e massas 26 g, 27 g, 10 g e 36 g, respectivamente. Com o objetivo de testar a densidade das moedas, foi realizado um procedimento em que elas foram sequencialmente inseridas em uma proveta contendo 5 mL de água, conforme esquematizado.\n\n[figura]\n\nCom base nos dados obtidos, o investidor adquiriu as moedas",
+  "alternativas": [
+   "A e B.",
+   "A e C.",
+   "B e C.",
+   "B e D.",
+   "C e D."
+  ],
+  "gabarito": "D",
+  "resolucao": "$d_{cobre} = 9\\ \\text{g/mL}$\n\n**Densidade da moeda A (26 g)**\n\n$V_{inicial} = 5\\ \\text{mL}$; $V_{final} = 7\\ \\text{mL}$; $\\Delta V = 2\\ \\text{mL}$\n\n$d = \\frac{26\\ \\text{g}}{2\\ \\text{mL}} \\therefore d = 13\\ \\text{g/mL}$\n\n**Densidade da moeda B (27 g)**\n\n$V_{inicial} = 7\\ \\text{mL}$; $V_{final} = 10\\ \\text{mL}$; $\\Delta V = 3\\ \\text{mL}$\n\n$d = \\frac{27\\ \\text{g}}{3\\ \\text{mL}} \\therefore d = 9\\ \\text{g/mL}$\n\n**Densidade da moeda C (10 g)**\n\n$V_{inicial} = 10\\ \\text{mL}$; $V_{final} = 12\\ \\text{mL}$; $\\Delta V = 2\\ \\text{mL}$\n\n$d = \\frac{10\\ \\text{g}}{2\\ \\text{mL}} \\therefore d = 5\\ \\text{g/mL}$\n\n**Densidade da moeda D (36 g)**\n\n$V_{inicial} = 12\\ \\text{mL}$; $V_{final} = 16\\ \\text{mL}$; $\\Delta V = 4\\ \\text{mL}$\n\n$d = \\frac{36\\ \\text{g}}{4\\ \\text{mL}} \\therefore d = 9\\ \\text{g/mL}$\n\nO investidor adquiriu as moedas B e D.",
+  "materia": "Química",
+  "assunto": "Matéria, substâncias e separação de misturas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-115",
+  "enunciado": "Pesquisadores coletaram amostras de água de um rio em pontos diferentes, distantes alguns quilômetros um do outro. Ao longo do rio, há locais de águas limpas, como também locais que recebem descarga de esgoto de área urbana, e locais onde há decomposição ativa com ausência de peixes. Os pesquisadores analisaram dois parâmetros: oxigênio dissolvido (OD) e demanda bioquímica de oxigênio (DBO) em cada ponto de coleta de água, obtendo o gráfico:\n\n[figura]\n\nValores limites permitidos para águas doces destinadas ao abastecimento para consumo humano após tratamento convencional, segundo Resolução Conama n. 357/2005: $OD \\geq 5\\ \\text{mg L}^{-1}$ e $DBO \\leq 5\\ \\text{mg L}^{-1}$.\n\nO OD é proveniente da atmosfera e da fotossíntese que ocorre no curso-d'água e sua concentração é função das variáveis físicas, químicas e bioquímicas locais. A DBO é a quantidade de oxigênio consumido por microrganismos em condições aeróbicas para degradar uma determinada quantidade de matéria orgânica, durante um período de tempo, numa temperatura de incubação específica.\n\n(Disponível em: www.programaaguaazul.rn.gov.br. Acesso em: 16 ago. 2014 (adaptado).)\n\nQual ponto de amostragem da água do rio está mais próximo ao local em que o rio recebe despejo de esgoto?",
+  "alternativas": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "gabarito": "A",
+  "resolucao": "Quanto maior a DBO, maior a poluição, portanto o ponto mais próximo ao local em que o rio recebe despejo de esgoto é o ponto 1.",
+  "materia": "Química",
+  "assunto": "Química ambiental e energia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-116",
+  "enunciado": "O crescimento da frota de veículos em circulação no mundo tem levado à busca e desenvolvimento de tecnologias que permitam minimizar emissões de poluentes atmosféricos. O uso de veículos elétricos é uma das propostas mais propagandeadas por serem de emissão zero. Podemos comparar a emissão de carbono na forma de $CO_2$ (massa molar igual a $44\\ \\text{g mol}^{-1}$) para os dois tipos de carros (a combustão e elétrico). Considere que os veículos tradicionais a combustão, movidos a etanol (massa molar igual a $46\\ \\text{g mol}^{-1}$), emitem uma média de 2,6 mol de $CO_2$ por quilômetro rodado, e os elétricos emitem o equivalente a 0,45 mol de $CO_2$ por quilômetro rodado (considerando as emissões na geração e transmissão da eletricidade). A reação de combustão do etanol pode ser representada pela equação química:\n\n$C_2H_5OH\\ (l) + 3\\ O_2\\ (g) \\rightarrow 2\\ CO_2\\ (g) + 3\\ H_2O\\ (g)$\n\nForam analisadas as emissões de $CO_2$ envolvidas em dois veículos, um movido a etanol e outro elétrico, em um mesmo trajeto de 1 000 km.\n\n(CHIARADIA, C. A. *Estudo da viabilidade da implantação de frotas de veículos elétricos e híbridos elétricos no atual cenário econômico, político, energético e ambiental brasileiro*. Guaratinguetá: Unesp, 2015 (adaptado).)\n\nA quantidade equivalente de etanol economizada, em quilograma, com o uso do veículo elétrico nesse trajeto, é mais próxima de",
+  "alternativas": [
+   "50.",
+   "60.",
+   "95.",
+   "99.",
+   "120."
+  ],
+  "gabarito": "A",
+  "resolucao": "**Veículo movido a etanol:**\n\n$2{,}6\\ \\text{mol de } CO_2 \\text{ —— } 1\\ \\text{km}$\n\n$x \\text{ —— } 1\\,000\\ \\text{km}$\n\n$x = 2\\,600\\ \\text{mol de } CO_2$\n\n**Veículo elétrico:**\n\n$0{,}45\\ \\text{mol de } CO_2 \\text{ —— } 1\\ \\text{km}$\n\n$y \\text{ —— } 1\\,000\\ \\text{km}$\n\n$y = 450\\ \\text{mol de } CO_2$\n\nQuantidade de $CO_2$ emitido a menos pelo veículo elétrico:\n\n$(2\\,600 - 450)\\ \\text{mol} = 2\\,150\\ \\text{mol}$\n\n$C_2H_5OH\\ (l) + 3\\ O_2\\ (g) \\rightarrow 2\\ CO_2\\ (g) + 3\\ H_2O\\ (g)$\n\n$1\\ \\text{mol}$: $46\\ \\text{g de } C_2H_5OH \\text{ —— } 2\\ \\text{mol de } CO_2$\n\n$z \\text{ —— } 2150\\ \\text{mol de } CO_2$\n\n$z = 49 . 450\\ \\text{g de } C_2H_5OH \\cong 50\\ \\text{kg de } C_2H_5OH$",
+  "materia": "Química",
+  "assunto": "Cálculo estequiométrico e mol",
+  "segundo_assunto": "Química ambiental e energia",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-117",
+  "enunciado": "Em uma aula sobre metabolismo energético, foi apresentado um experimento clássico realizado por Engelmann. Um recipiente contendo bactérias aeróbias e uma alga verde filamentosa foi submetido à iluminação de uma fonte de luz, representada pelo microespectro. Após a explicação, um aluno esquematizou na lousa o resultado do referido experimento.\n\n[figura]\n\nConsiderando a figura, a faixa do microespectro em que a alga possui maior taxa de realização fotossintética é a do:",
+  "alternativas": [
+   "Anil.",
+   "Verde.",
+   "Violeta.",
+   "Amarelo.",
+   "Vermelho."
+  ],
+  "gabarito": "E",
+  "resolucao": "A região onde a alga apresenta maior taxa fotossintética é aquela onde haverá maior liberação de gás oxigênio e, portanto, maior aglomeração de bactérias aeróbicas. No microespectro, a faixa correspondente a esse evento é a vermelha.",
+  "materia": "Biologia",
+  "assunto": "Fotossíntese e quimiossíntese",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-118",
+  "enunciado": "O exame parasitológico de fezes é utilizado para detectar ovos de parasitas. Um dos métodos utilizados, denominado de centrífugo-flutuação, considera a densidade dos ovos em relação a uma solução de densidade 1,15 g mL$^{-1}$. Assim, ovos que flutuam na superfície dessa solução são detectados. Os dados de densidade dos ovos de alguns parasitas estão apresentados na tabela.\n\n| Parasito | Densidade (g mL$^{-1}$) |\n|---|---|\n| Ancylostoma | 1,06 |\n| Ascaris lumbricoides | 1,11 |\n| Ascaris suum | 1,13 |\n| Schistosoma mansoni | 1,18 |\n| Taenia saginata | 1,30 |\n\n(ZERBINI, A. M. *Identificação e análise de viabilidade de ovos de helmintos em um sistema de tratamento de esgotos domésticos constituídos de reatores anaeróbios e rampas de escoamento superficial*. Belo Horizonte: Prosab, 2001. Adaptado.)\n\nConsiderando-se a densidade dos ovos e da solução, ovos de quais parasitas podem ser detectados por esse método?",
+  "alternativas": [
+   "A. lumbricoides, A. suum e S. mansoni.",
+   "S. mansoni, T. saginata e Ancylostoma.",
+   "Ancylostoma, A. lumbricoides e A. suum.",
+   "T. saginata, S. mansoni e A. lumbricoides.",
+   "A. lumbricoides, A. suum e T. saginata."
+  ],
+  "gabarito": "C",
+  "resolucao": "Os ovos que flutuam são detectados, portanto devem ter densidades menores que a da solução (1,15 g mL$^{-1}$). São eles: *Ancylostoma*, *Ascaris lumbricoides* e *Ascaris suum*.",
+  "materia": "Biologia",
+  "assunto": "Zoologia: invertebrados",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-119",
+  "enunciado": "Em seu laboratório, um técnico em química foi incumbido de tratar um resíduo, evitando seu descarte direto no meio ambiente. Ao encontrar o frasco, observou a seguinte informação: “Resíduo: mistura de acetato de etila e água”.\n\nConsidere os dados do acetato de etila:\n\n- Baixa solubilidade em água;\n- Massa específica = $0{,}9\\ \\text{g cm}^{-3}$;\n- Temperatura de fusão = $-83\\ ^{\\circ}\\text{C}$;\n- Pressão de vapor maior que a da água.\n\nA fim de tratar o resíduo, recuperando o acetato de etila, o técnico deve",
+  "alternativas": [
+   "evaporar o acetato de etila sem alterar o conteúdo de água.",
+   "filtrar a mistura utilizando um funil comum e um papel de filtro.",
+   "realizar uma destilação simples para separar a água do acetato de etila.",
+   "proceder a uma centrifugação da mistura para remover o acetato de etila.",
+   "decantar a mistura separando os dois componentes em um funil adequado."
+  ],
+  "gabarito": "E",
+  "resolucao": "A mistura de acetato de etila (pouco solúvel em água e líquido menos denso que a água) tem o seguinte aspecto:\n\n[figura]\n\nPara recuperar o acetato de etila, devemos decantar a mistura separando os dois componentes em um funil adequado (funil de separação).",
+  "materia": "Química",
+  "assunto": "Matéria, substâncias e separação de misturas",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-121",
+  "enunciado": "Uma população encontra-se em equilíbrio genético quanto ao sistema ABO, em que 25% dos indivíduos pertencem ao grupo O e 16%, ao grupo A homozigotos. Considerando que: $p$ = frequência de $1^A$; $q$ = frequência de $1^B$; $r$ = frequência de $i$, espera-se encontrar:\n\n| Grupo | Genótipos | Frequências |\n|---|---|---|\n| A | $I^AI^A$ e $I^Ai$ | $p^2 + 2pr$ |\n| B | $I^BI^B$ e $I^Bi$ | $q^2 + 2pr$ |\n| AB | $I^AI^B$ | $2pq$ |\n| O | $ii$ | $r^2$ |\n\nA porcentagem de doadores compatíveis para alguém do grupo B nessa população deve ser de",
+  "alternativas": [
+   "11%.",
+   "19%.",
+   "26%.",
+   "36%.",
+   "60%."
+  ],
+  "gabarito": "D",
+  "resolucao": "Os possíveis doadores para um indivíduo do grupo B são sangue O e B. Assim, a frequência de doadores é de 36%, como demonstram os cálculos:\n\nFrequência do grupo A ($I^AI^A$) = 16% ou 0,16\nf alelo $1^A$ = $\\sqrt{0,16}$ = 0,4 (p)\n\nFrequência do grupo O (ii) = 25% ou 0,25\nf alelo $i$ = $\\sqrt{0,25}$ = 0,5 (r)\n\nEntão:\np + q + r = 1\n0,4 + q + 0,5 = 1\nq = 0,1\n\nAssim a frequência de doadores será:\n$q^2 + 2qr + r^2$\nsangue $B(I^BI^B)$ + sangue $B(I^Bi)$ + sangue $O(ii)$\n$(0,1)^2 + (2 \\cdot 0,1 \\cdot 0,5) + (0,5)^2$\n0,01 + 0,10 + 0,25\n0,36 ou 36%\n\nResposta: D",
+  "materia": "Biologia",
+  "assunto": "Alelos múltiplos, sistema ABO/Rh e herança sexual",
+  "segundo_assunto": "Ligação gênica, interação gênica e genética de populações",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-122",
+  "enunciado": "Você foi contratado para sincronizar os quatro semáforos de uma avenida, indicados pelas letras O, A, B e C, conforme a figura.\n\n[figura]\n\nOs semáforos estão separados por uma distância de 500m. Segundo os dados estatísticos da companhia controladora de trânsito, um veículo, que está inicialmente parado no semáforo O, tipicamente parte com aceleração constante de $1 \\text{ m s}^{-2}$ até atingir a velocidade de $72 \\text{ km h}^{-1}$ e, a partir daí, prossegue com velocidade constante. Você deve ajustar os semáforos A, B e C de modo que eles mudem para a cor verde quando o veículo estiver a 100 m de cruzá-los, para que ele não tenha que reduzir a velocidade em nenhum momento.\n\nConsiderando essas condições, aproximadamente quanto tempo depois da abertura do semáforo O os semáforos A, B e C devem abrir, respectivamente?",
+  "alternativas": [
+   "20s, 45s e 70s.",
+   "25s, 50s e 75s.",
+   "28s, 42s e 53s.",
+   "30s, 55s e 80s.",
+   "35s, 60s e 85s."
+  ],
+  "gabarito": "D",
+  "resolucao": "1) Tempo para atingir a velocidade escalar de 72 km/h = 20 m/s.\n$V = V_0 + \\gamma t \\Rightarrow 20 = 0 + 1{,}0\\, t_1 \\Rightarrow t_1 = 20\\ \\text{s}$\n\n2) Distância percorrida até o instante $t_1$\n$\\Delta s = V_0 t + \\dfrac{\\gamma}{2} t^2 \\Rightarrow d_1 = 0 + \\dfrac{1{,}0}{2}(20)^2\\ \\text{(m)}$\n$d_1 = 200\\ \\text{m}$\n\n3) Tempo para percorrer 200 m com velocidade escalar de 20 m/s:\n$\\Delta s = V t \\Rightarrow 200 = 20 \\cdot t_2 \\Rightarrow t_2 = 10\\ \\text{s}$\n\n4) O semáforo A é acionado quando o carro tiver percorrido 400 m, isto é:\n$T_A = t_1 + t_2 = 30\\ \\text{s}$\n\n5) Para a abertura dos semáforos B e C o carro deverá percorrer 500 m (B) e 1000 m (C) e o tempo gasto será:\n$\\Delta s = V t \\Rightarrow 500 = 20 \\cdot t_3 \\Rightarrow t_3 = 25\\ \\text{s}$\n$1000 = 20 \\cdot t_4 \\Rightarrow t_4 = 50\\ \\text{s}$\n\n6) Semáforo B: $T_B = T_A + t_3 = 55\\ \\text{s}$\nSemáforo C: $T_C = T_A + t_4 = 80\\ \\text{s}$\n\nResposta: D",
+  "materia": "Física",
+  "assunto": "Cinemática escalar",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-123",
+  "enunciado": "Nos dias atuais, o amplo uso de objetos de plástico gera bastante lixo, que muitas vezes é eliminado pela população por meio da queima. Esse procedimento é prejudicial ao meio ambiente por lançar substâncias poluentes. Para constatar esse problema, um estudante analisou a decomposição térmica do policloreto de vinila (PVC), um tipo de plástico, cuja estrutura é representada na figura.\n\n[figura]\npolicloreto de vinila (PVC)\n\nPara realizar esse experimento, o estudante colocou uma amostra de filme de PVC em um tubo de ensaio e o aqueceu, promovendo a decomposição térmica. Houve a liberação majoritária de um gás diatômico heteronuclear que foi recolhido em um recipiente acoplado ao tubo de ensaio. Esse gás, quando borbulhado em solução alcalina diluída contendo indicador ácido-base, alterou a cor da solução. Além disso, em contato com uma solução aquosa de carbonato de sódio ($Na_2CO_3$), liberou gás carbônico.\n\nQual foi o gás liberado majoritariamente na decomposição térmica desse tipo de plástico?",
+  "alternativas": [
+   "$H_2$",
+   "$Cl_2$",
+   "$CO$",
+   "$CO_2$",
+   "$HCl$"
+  ],
+  "gabarito": "E",
+  "resolucao": "Na decomposição térmica do PVC houve a liberação majoritária de um gás diatômico heteronuclear, ou seja, que possui 2 átomos de 2 elementos químicos.\nEsse gás tem caráter ácido, é o HCl, pois, quando borbulhado em solução alcalina diluída contendo indicador ácido-base, alterou a cor da solução. Ocorreu uma reação de neutralização.\nEm contato com uma solução aquosa de carbonato de sódio, liberou gás carbônico, segundo a equação:\n$2HCl + Na_2CO_3 \\rightarrow 2NaCl + H_2O + CO_2$\n\nResposta: E",
+  "materia": "Química",
+  "assunto": "Funções inorgânicas",
+  "segundo_assunto": "Química ambiental e energia",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-124",
+  "enunciado": "Uma população (momento A) sofre isolamento em duas subpopulações (momento B) por um fator de isolamento (I). Passado um tempo, essas subpopulações apresentam características fenotípicas e genotípicas que as distinguem (momento C), representadas na figura pelas tonalidades de cor. O posterior desaparecimento do fator de isolamento I pode levar, no momento D, às situações D1 e D2.\n\n[figura]\n\nA representação indica que, no momento D, na situação",
+  "alternativas": [
+   "D1 ocorre um novo fator de isolamento geográfico.",
+   "D1 existe uma única população distribuída em gradiente.",
+   "D1 ocorrem duas populações separadas por isolamento reprodutivo.",
+   "D2 coexistem duas populações com características fenotípicas distintas.",
+   "D2 foram preservadas as mesmas características fenotípicas da população original A."
+  ],
+  "gabarito": "C",
+  "resolucao": "O esquema apresenta duas possibilidades do que pode vir a ocorrer com uma população que sofreu isolamento geográfico e voltou a se encontrar após muitas gerações. Caso as duas subpopulações apresentem diferenças genotípicas e fenotípicas suficientes para levar ao isolamento reprodutivo, falamos em especiação alopátrica (situação D1). Se não houver isolamento reprodutivo, os indivíduos das duas subpopulações cruzam entre si (situação D2).\n\nResposta: C",
+  "materia": "Biologia",
+  "assunto": "Evolução biológica",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-125",
+  "enunciado": "[figura]\n\nDAVIS, J. Disponível em: http://garfield.com. Acesso em: 10 fev. 2015.\n\nPor qual motivo ocorre a eletrização ilustrada na tirinha?",
+  "alternativas": [
+   "Troca de átomos entre a calça e os pelos do gato.",
+   "Diminuição do número de prótons nos pelos do gato.",
+   "Criação de novas partículas eletrizadas nos pelos do gato.",
+   "Movimentação de elétrons entre a calça e os pelos do gato.",
+   "Repulsão entre partículas elétricas da calça e dos pelos do gato."
+  ],
+  "gabarito": "D",
+  "resolucao": "O processo ilustrado na tirinha é o da eletrização por atrito. Nesse processo, ocorre a movimentação de elétrons entre a calça e os pelos do gato.\n\nResposta: D",
+  "materia": "Física",
+  "assunto": "Eletrostática",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-126",
+  "enunciado": "A enorme quantidade de resíduos gerados pelo consumo crescente da sociedade traz para a humanidade uma preocupação socioambiental, em especial pela quantidade de lixo produzido. Além da reciclagem e do reúso, pode-se melhorar ainda mais a qualidade de vida, substituindo polímeros convencionais por polímeros biodegradáveis.\n\nEsses polímeros têm grandes vantagens socioambientais em relação aos convencionais porque",
+  "alternativas": [
+   "não são tóxicos.",
+   "não precisam ser reciclados.",
+   "não causam poluição ambiental quando descartados.",
+   "são degradados em um tempo bastante menor que os convencionais.",
+   "apresentam propriedades mecânicas semelhantes aos convencionais."
+  ],
+  "gabarito": "D",
+  "resolucao": "Polímeros convencionais podem demorar muitos anos para se degradar no meio ambiente.\nPolímeros biodegradáveis têm sua permanência no ambiente por um tempo menor, o que diminui as chances de efeitos nocivos como sufocamentos, entrada na cadeia alimentar, contaminação por disruptores endócrinos, entre outros.\n\nResposta: D",
+  "materia": "Química",
+  "assunto": "Química ambiental e energia",
+  "segundo_assunto": "Polímeros, lipídios, carboidratos e proteínas",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-127",
+  "enunciado": "A fragmentação dos hábitats é caracterizada pela formação de ilhas da paisagem original, circundadas por áreas transformadas. Esse tipo de interferência no ambiente ameaça a biodiversidade. Imagine que uma população de onças foi isolada em uma mata pequena. Elas se extinguiriam mesmo sem terem sido abatidas. Diversos componentes da ilha de hábitat, como o tamanho, a heterogeneidade, o seu entorno, a sua conectividade e o efeito de borda são determinantes para a persistência ou não das espécies originais.\n\nUma medida que auxilia na conservação da biodiversidade nas ilhas mencionadas no texto compreende a",
+  "alternativas": [
+   "formação de micro-hábitats.",
+   "ampliação do efeito de borda.",
+   "construção de corredores ecológicos.",
+   "promoção da sucessão ecológica.",
+   "introdução de novas espécies de animais e vegetais."
+  ],
+  "gabarito": "C",
+  "resolucao": "A conservação da biodiversidade pode ser feita através da conexão entre as ilhas de hábitat, o que promove a manutenção do fluxo gênico, e isto pode ser realizado pela construção de corredores ecológicos.\n\nResposta: C",
+  "materia": "Biologia",
+  "assunto": "Biomas brasileiros e impacto ambiental",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-128",
+  "enunciado": "A sacarase (ou invertase) é uma enzima que atua no intestino humano hidrolisando o dissacarídeo sacarose nos seus monossacarídeos glicose e frutose. Em um estudo cinético da reação de hidrólise da sacarose ($C_{12}H_{22}O_{11}$), foram dissolvidos 171 g de sacarose em 500 mL de água. Observou-se que, a cada 100 minutos de reação, a concentração de sacarose foi reduzida à metade, qualquer que fosse o momento escolhido como tempo inicial. As massas molares dos elementos H, C e O são iguais a 1, 12 e 16 g mol$^{-1}$, respectivamente.\n\nQual é a concentração de sacarose depois de 400 minutos do início da reação de hidrólise?",
+  "alternativas": [
+   "$2{,}50 \\times 10^{-3}\\ \\text{mol L}^{-1}$",
+   "$6{,}25 \\times 10^{-2}\\ \\text{mol L}^{-1}$",
+   "$1{,}25 \\times 10^{-1}\\ \\text{mol L}^{-1}$",
+   "$2{,}50 \\times 10^{-1}\\ \\text{mol L}^{-1}$",
+   "$4{,}27 \\times 10^{-1}\\ \\text{mol L}^{-1}$"
+  ],
+  "gabarito": "B",
+  "resolucao": "Cálculo da massa molar da sacarose: $(C_{12}H_{22}O_{11})$\n$M = (12 \\cdot 12 + 22 \\cdot 1 + 11 \\cdot 16)\\ \\text{g/mol} = 342\\ \\text{g/mol}$\n\n$C_{C_{12}H_{22}O_{11}} = \\dfrac{171\\ \\text{g}}{0{,}5\\ \\text{L}} = 342\\ \\text{g/L} \\Rightarrow 1\\ \\text{mol/L}$ (inicial)\n\nConsiderando meia-vida de 100 minutos:\n$1\\ \\text{mol/L} \\xrightarrow{100\\ \\text{min}} 0{,}5\\ \\text{mol/L} \\xrightarrow{100\\ \\text{min}} 0{,}25\\ \\text{mol/L}$\n$0{,}25\\ \\text{mol/L} \\xrightarrow{100\\ \\text{min}} 0{,}125\\ \\text{mol/L} \\xrightarrow{100\\ \\text{min}} 0{,}0625\\ \\text{mol/L}$\n\n$M_{C_{12}H_{22}O_{11}} = 6{,}25 \\cdot 10^{-2}\\ \\text{mol/L}$ (após 400min)\n\nResposta: B",
+  "materia": "Química",
+  "assunto": "Cinética química",
+  "segundo_assunto": "Soluções e concentrações",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-129",
+  "enunciado": "Grandes reservatórios de óleo leve de melhor qualidade e que produz petróleo mais fino foram descobertos no litoral brasileiro numa camada denominada pré-sal, formada há 150 milhões de anos.\n\nA utilização desse recurso energético acarreta para o ambiente um desequilíbrio no ciclo do",
+  "alternativas": [
+   "nitrogênio, devido à nitrificação ambiental transformando amônia em nitrito.",
+   "nitrogênio, devido ao aumento dos compostos nitrogenados no ambiente terrestre.",
+   "carbono, devido ao aumento dos carbonatos dissolvidos no ambiente marinho.",
+   "carbono, devido à liberação das cadeias carbônicas aprisionadas abaixo dos sedimentos.",
+   "fósforo, devido à liberação dos fosfatos acumulados no ambiente marinho."
+  ],
+  "gabarito": "D",
+  "resolucao": "A extração do petróleo (pré-sal) pode provocar desequilíbrio no mar uma vez que libera cadeias carbônicas (matéria orgânica) contida nos segmentos profundos, alterando o ciclo do carbono.\n\nResposta: D",
+  "materia": "Biologia",
+  "assunto": "Ecologia: fluxo de energia e ciclos",
+  "segundo_assunto": "Química ambiental e energia",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": "Verificado e mantido como false: a idade do pré-sal citada no enunciado (150 milhões de anos) parece maior que a datação usual da camada (algo como 100 a 130 milhões de anos), mas isso não afeta a resposta."
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-130",
+  "enunciado": "Em uma usina geradora de energia elétrica, seja através de uma queda-d'água ou através de vapor sob pressão, as pás do gerador são postas a girar. O movimento relativo de um ímã em relação a um conjunto de bobinas produz um fluxo magnético variável através delas, gerando uma diferença de potencial em seus terminais. Durante o funcionamento de um dos geradores, o operador da usina percebeu que houve um aumento inesperado da diferença de potencial elétrico nos terminais das bobinas.\n\nNessa situação, o aumento do módulo da diferença de potencial obtida nos terminais das bobinas resulta do aumento do(a)",
+  "alternativas": [
+   "intervalo de tempo em que as bobinas ficam imersas no campo magnético externo, por meio de uma diminuição de velocidade no eixo de rotação do gerador.",
+   "fluxo magnético através das bobinas, por meio de um aumento em sua área interna exposta ao campo magnético aplicado.",
+   "intensidade do campo magnético no qual as bobinas estão imersas, por meio de aplicação de campos magnéticos mais intensos.",
+   "rapidez com que o fluxo magnético varia através das bobinas, por meio de um aumento em sua velocidade angular.",
+   "resistência interna do condutor que constitui as bobinas, por meio de um aumento na espessura dos terminais."
+  ],
+  "gabarito": "D",
+  "resolucao": "A força eletromotriz gerada nos terminais das bobinas é proporcional à rapidez da variação do fluxo magnético. Pela Lei de Faraday:\n\n$\\varepsilon = \\left|\\dfrac{\\Delta\\Phi}{\\Delta t}\\right|$ módulo da força eletromotriz induzida\n\n$\\Delta\\Phi$ = variação do fluxo magnético nas bobinas\n\nPara ocorrer um aumento da variação do fluxo no tempo, basta aumentar a velocidade angular de rotação das bobinas.\n\nResposta: D",
+  "materia": "Física",
+  "assunto": "Indução eletromagnética",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-131",
+  "enunciado": "Herschel, em 1880, começou a escrever sobre a condensação da luz solar no foco de uma lente e queria verificar de que maneira os raios coloridos contribuem para o aquecimento. Para isso, ele projetou sobre um anteparo o espectro solar obtido com um prisma, colocou termômetros nas diversas faixas de cores e verificou nos dados obtidos que um dos termômetros iluminados indicou um aumento de temperatura maior para uma determinada faixa de frequências.\nSAYURI, M.; GASPAR, M. B. Infravermelho na sala de aula. Disponível em: www.cienciamao.usp.br. Acesso em: 15 ago. 2016 (adaptado).\nPara verificar a hipótese de Herschel, um estudante montou o dispositivo apresentado na figura. Nesse aparato, cinco recipientes contendo água, à mesma temperatura inicial, e separados por um material isolante térmico e refletor são posicionados lado a lado (A, B, C, D e E) no interior de uma caixa de material isolante térmico e opaco. A luz solar, ao entrar na caixa, atravessa o prisma e incide sobre os recipientes. O estudante aguarda até que ocorra o aumento da temperatura e a afere em cada recipiente.\nEm qual dos recipientes a água terá maior temperatura ao final do experimento?",
+  "alternativas": [
+   "A",
+   "B",
+   "C",
+   "D",
+   "E"
+  ],
+  "gabarito": "A",
+  "resolucao": "A luz solar sofre decomposição (dispersão) através do prisma, indo incidir nos recipientes com água.\nA componente infravermelha provocará maior aquecimento da água, já que corpos irradiados nessa faixa de frequências manifestam aumento na agitação de suas partículas.\nAs ondas de infravermelho são denominadas \"ondas de calor\".",
+  "materia": "Física",
+  "assunto": "Termometria, dilatação e propagação de calor",
+  "segundo_assunto": "Óptica geométrica: refração, lentes e visão",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-132",
+  "enunciado": "A Química Verde é um ramo da química que prega o desenvolvimento de processos eficientes, que transformem a maior parte do reagente em produto, de forma mais rápida e seletiva, que utilizem poucos reagentes, que produzam somente o produto desejado, evitando a formação de coprodutos, e que utilizem solventes não agressivos ao meio ambiente. Assim, as indústrias contornariam problemas relacionados à poluição ambiental e ao desperdício de água e energia.\nO perfil de um processo que segue todos os princípios desse ramo da química pode ser representado por:",
+  "alternativas": [
+   "$A + B + C \\rightarrow D$ (a reação ocorre a altas pressões).",
+   "$A + B \\rightarrow C + D$ (a reação é fortemente endotérmica).",
+   "$A +3B \\rightarrow C$ (a reação ocorre com uso de solvente orgânico).",
+   "$3A + 2B \\rightarrow 2C \\rightarrow 3D + 2E$ (a reação ocorrre sob pressão atmosférica).",
+   "$A + \\frac{1}{2} B \\rightarrow C$ (a reação ocorre com o uso de um catalisador contendo um metal não tóxico)."
+  ],
+  "gabarito": "E",
+  "resolucao": "O processo cuja reação ocorre com o uso de um catalisador contendo um metal não tóxico tem o perfil de um processo que segue os princípios da Química Verde.\nNa alternativa a temos um processo que ocorre a altas pressões e na alternativa b temos um processo altamente endotérmico.\nAmbos os processos necessitam de energia, e não são necessariamente rápidos.\nNa alternativa c ocorre o uso do solvente orgânico, muitas vezes, tóxico.\nNa alternativa d há a formação de produto intermediário.",
+  "materia": "Química",
+  "assunto": "Química ambiental e energia",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-133",
+  "enunciado": "Os manuais de refrigerador apresentam a recomendação de que o equipamento não deve ser instalado próximo a fontes de calor, como fogão e aquecedores, ou em local onde incida diretamente a luz do sol. A instalação em local inadequado prejudica o funcionamento do refrigerador e aumenta o consumo de energia.\nO não atendimento dessa recomendação resulta em aumento do consumo de energia porque",
+  "alternativas": [
+   "o fluxo de calor por condução no condensador sofre considerável redução.",
+   "a temperatura da substância refrigerante no condensador diminui mais rapidamente.",
+   "o fluxo de calor promove significativa elevação da temperatura no interior do refrigerador.",
+   "a liquefação da substância refrigerante no condensador exige mais trabalho do compressor.",
+   "as correntes de convecção nas proximidades do condensador ocorrem com maior dificuldade."
+  ],
+  "gabarito": "D",
+  "resolucao": "A função do condensador é diminuir ao máximo a temperatura da substância refrigerante, com a maior transferência de calor, para facilitar sua posterior compressão com o mínimo de consumo de energia.\nA transmissão de energia térmica é dificultada para o ambiente externo, ao instalarmos o refrigerador próximo de um fogão ou aquecedor, onde a temperatura é maior e a liquefação exige mais trabalho do compressor.\nA questão é polêmica, pois a causa do aumento de consumo de energia é a diminuição do fluxo de calor e o efeito é a solicitação maior do compressor e, ambos, estão apresentados nas alternativas. Alternativa A poderia ser considerada correta, também.",
+  "materia": "Física",
+  "assunto": "Termometria, dilatação e propagação de calor",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": "Não desatualizada: a polêmica é de interpretação (a resolução admite que a alternativa A também poderia ser correta), não de dado ou norma atual."
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-134",
+  "enunciado": "Um mergulhador fica preso ao explorar uma caverna no oceano. Dentro da caverna formou-se um bolsão de ar, como mostrado na figura, onde o mergulhador se abrigou.\nDurante o resgate, para evitar danos a seu organismo, foi necessário que o mergulhador passasse por um processo de descompressão antes de retornar à superfície para que seu corpo ficasse novamente sob pressão atmosférica. O gráfico mostra a relação entre os tempos de descompressão recomendados para indivíduos nessa situação e a variação de pressão.\nConsidere que a aceleração da gravidade seja igual a 10 m s$^{-2}$ e que a densidade da água seja de $\\rho = 1\\,000$ kg m$^{-3}$.\nEm minutos, qual é o tempo de descompressão a que o mergulhador deverá ser submetido?",
+  "alternativas": [
+   "100",
+   "80",
+   "60",
+   "40",
+   "20"
+  ],
+  "gabarito": "C",
+  "resolucao": "A variação de pressão do mergulhador é dada por:\n$\\Delta p = \\mu g \\Delta h$\n$\\Delta p = 1{,}0 \\cdot 10^3 \\cdot 10 \\cdot 50$ (Pa)\n$\\Delta p = 500 \\cdot 10^3$ Pa\n$\\Delta p = 500$ kPa\nDo gráfico dado:\n$500$ kPa $\\Leftrightarrow$ $60$ min",
+  "materia": "Física",
+  "assunto": "Estática e hidrostática",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-135",
+  "enunciado": "A Torre Eiffel, com seus 324 metros de altura, feita com treliças de ferro, pesava 7 300 toneladas quando terminou de ser construída em 1889. Um arquiteto resolve construir um protótipo dessa torre em escala 1:100, usando os mesmos materiais (cada dimensão linear em escala de 1:100 do monumento real).\nConsidere que a torre real tenha massa $M_{torre}$ e exerça na fundação sobre a qual foi erguida uma pressão $P_{torre}$. O modelo construído pelo arquiteto terá uma massa $M_{modelo}$ e exercerá uma pressão $P_{modelo}$.\nComo a pressão exercida pela torre se compara com a pressão exercida pelo protótipo? Ou seja, qual é a razão entre as pressões $(P_{torre})/(P_{modelo})$?",
+  "alternativas": [
+   "$10^0$",
+   "$10^1$",
+   "$10^2$",
+   "$10^4$",
+   "$10^6$"
+  ],
+  "gabarito": "C",
+  "resolucao": "1) De acordo com o texto:\n$L_{torre} = 100\\, L_{modelo}$\nA razão das áreas será:\n$A_{torre} = 10^4\\, A_{modelo}$\nA razão dos volumes será:\n$V_{torre} = 10^6\\, V_{modelo}$\n2) A pressão é dada por:\n$P = \\frac{Peso}{Área} = \\frac{densidade \\cdot volume \\cdot g}{Área}$\nComo a densidade é a mesma, e o valor de g é o mesmo, teremos:\n$\\frac{P_{torre}}{P_{modelo}} = \\frac{V_{torre}}{V_{modelo}} \\cdot \\frac{A_{modelo}}{A_{torre}} = 10^6 \\cdot \\frac{1}{10^4}$\n$\\frac{P_{torre}}{P_{modelo}} = 10^2$",
+  "materia": "Física",
+  "assunto": "Estática e hidrostática",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-136",
+  "enunciado": "Um administrador resolve estudar o lucro de sua empresa e, para isso, traça o gráfico da receita e do custo de produção de seus itens, em real, em função da quantidade de itens produzidos.\nO lucro é determinado pela diferença: Receita – Custo. O gráfico que representa o lucro dessa empresa, em função da quantidade de itens produzidos, é",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "A",
+  "resolucao": "De acordo com o enunciado, já que Lucro = Receita – Custo, temos:\n\n| Quantidade de itens produzidos | Lucro |\n|---|---|\n| 5 | Nulo |\n| ]5; 15[ | Negativo |\n| 15 | Nulo |\n| ]15; 30[ | Positivo |",
+  "materia": "Matemática",
+  "assunto": "Conceito de função e função afim (1º grau)",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-137",
+  "enunciado": "Em um jogo desenvolvido para uso no computador, objetos tridimensionais vão descendo do alto da tela até alcançarem o plano da base. O usuário pode mover ou girar cada objeto durante sua descida para posicioná-lo convenientemente no plano horizontal. Um desses objetos é formado pela justaposição de quatro cubos idênticos, formando assim um sólido rígido, como ilustrado na figura.\nPara facilitar a movimentação do objeto pelo usuário, o programa projeta ortogonalmente esse sólido em três planos quadriculados perpendiculares entre si, durante sua descida.\nA figura que apresenta uma possível posição desse sólido, com suas respectivas projeções ortogonais sobre os três planos citados, durante sua descida é",
+  "alternativas": [
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]",
+   "[figura]"
+  ],
+  "gabarito": "E",
+  "resolucao": "A figura que apresenta uma possível posição desse sólido é a da alternativa E como mostra a projeção ortogonal do sólido nos três planos.",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: poliedros, prismas e pirâmides",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-138",
+  "enunciado": "Um clube deseja produzir miniaturas em escala do troféu que ganhou no último campeonato. O troféu está representado na Figura 1 e é composto por uma base em formato de um paralelepípedo reto-retângulo de madeira, sobre a qual estão fixadas três hastes verticais que sustentam uma esfera de 30 cm de diâmetro, que fica centralizada sobre a base de madeira. O troféu tem 100 cm de altura, incluída sua base.\nA miniatura desse troféu deverá ser instalada no interior de uma caixa de vidro, em formato de paralelepípedo reto-retângulo, cujas dimensões internas de sua base estão indicadas na Figura 2, de modo que a base do troféu seja colada na base da caixa e distante das paredes laterais da caixa de vidro em pelo menos 1 cm. Deve ainda haver uma distância de exatos 2 cm entre o topo da esfera e a tampa dessa caixa de vidro. Nessas condições deseja-se fazer a maior miniatura possível.\nA medida da altura, em centímetro, dessa caixa de vidro deverá ser igual a",
+  "alternativas": [
+   "12.",
+   "14.",
+   "16.",
+   "18.",
+   "20."
+  ],
+  "gabarito": "B",
+  "resolucao": "I) Como a base do troféu deve ter distância mínima de 1 cm para cada parede lateral da caixa, o quadrado da base do troféu deve ter no máximo 6 cm de comprimento, equivalente a 8 cm – 2 cm.\nII) Adotando a altura da miniatura como x cm, deve-se ter:\n$\\frac{x}{100} = \\frac{6}{50} \\Rightarrow x = 100 \\cdot \\frac{6}{50} \\Rightarrow x = 12$\nIII) Como a altura da caixa deve ser 2 cm superior à altura da miniatura, esta altura, em cm, é:\n$12 + 2 = 14$ cm\nVisão \"de frente\":",
+  "materia": "Matemática",
+  "assunto": "Geometria espacial: poliedros, prismas e pirâmides",
+  "segundo_assunto": "Razão, proporção e regra de três",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-139",
+  "enunciado": "Uma casa de dois andares está sendo projetada. É necessário incluir no projeto a construção de uma escada para o acesso ao segundo andar. Para o cálculo das dimensões dos degraus utilizam-se as regras:\n$|2h + b - 63{,}5| \\leq 1{,}5$ e $16 \\leq h \\leq 19$,\nnas quais h é a altura do degrau (denominada espelho) e b é a profundidade da pisada, como mostra a figura.\nPor conveniência, escolheu-se a altura do degrau como sendo h = 16. As unidades de h e b estão em centímetro.\nNesse caso, o mais amplo intervalo numérico ao qual a profundidade da pisada (b) deve pertencer, para que as regras sejam satisfeitas é",
+  "alternativas": [
+   "$30 \\leq b$",
+   "$30 \\leq b \\leq 31{,}5$",
+   "$30 \\leq b \\leq 33$",
+   "$31{,}5 \\leq b \\leq 33$",
+   "$b \\leq 33$"
+  ],
+  "gabarito": "C",
+  "resolucao": "$\\left\\{ \\begin{array}{l} |2h + b - 63{,}5| \\leq 1{,}5 \\\\ h = 16 \\end{array} \\right\\} \\Rightarrow |32 + b - 63{,}5| \\leq 1{,}5 \\Leftrightarrow$\n$|b - 31{,}5| \\leq 1{,}5 \\Leftrightarrow -1{,}5 \\leq b - 31{,}5 \\leq 1{,}5 \\Leftrightarrow$\n$30 \\leq b \\leq 33$",
+  "materia": "Matemática",
+  "assunto": "Equações e inequações",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
+ },
+ {
+  "id": "obj-enem2020_2dia_presencial-140",
+  "enunciado": "Muitos modelos atuais de veículos possuem computador de bordo. Os computadores informam em uma tela diversas variações de grandezas associadas ao desempenho do carro, dentre elas o consumo médio de combustível. Um veículo, de um determinado modelo, pode vir munido de um dos dois tipos de computadores de bordo:\n• Tipo A: informa a quantidade X de litro de combustível gasto para percorrer 100 quilômetros;\n• Tipo B: informa a quantidade de quilômetro que o veículo é capaz de percorrer com um litro de combustível.\nUm veículo utiliza o computador do Tipo A, e ao final de uma viagem o condutor viu apresentado na tela a informação \"X/100\".\nCaso o seu veículo utilizasse o computador do Tipo B, o valor informado na tela seria obtido pela operação",
+  "alternativas": [
+   "$X \\cdot 100$",
+   "$\\frac{X}{100}$",
+   "$\\frac{100}{X}$",
+   "$\\frac{1}{X}$",
+   "$1 \\cdot X$"
+  ],
+  "gabarito": "C",
+  "resolucao": "O computador tipo A informa que foram gastos X litros de combustível para percorrer 100 km.\nO computador tipo B informaria que com um litro de combustível é possível percorrer $\\frac{100}{X}$ km.",
+  "materia": "Matemática",
+  "assunto": "Razão, proporção e regra de três",
+  "segundo_assunto": "",
+  "depende_de_outro_texto": false,
+  "desatualizada": false,
+  "motivo_desatualizada": ""
  }
 ]
