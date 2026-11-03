@@ -15,6 +15,7 @@ ui.qIgnAno ||= '2026';
 ui.qIgnAberto ||= false;
 
 function questaoIgnorada(q) {
+  if (/^simulado/i.test(String(q?.b || q?.banca || ''))) return true;   // simulados oficiais/externos só aparecem na aba Simulados
   const l = S.qIgnorar;
   if (!l || !l.length || !q) return false;
   const b = String(q.b || q.banca || '').toLowerCase(), a = String(q.a || q.ano || '');

@@ -69,7 +69,7 @@ function dsProblemas() {
 let dsIncCache = null;
 function dsIncidencia() {
   if (dsIncCache?.n === BANCO.itens.length) return dsIncCache;
-  const provas = BANCO.itens.filter(q => !q.ds && q.t === 'real' && +q.a && DS_PROVAS.test(q.b)), anos = {}, por = {};
+  const provas = BANCO.itens.filter(q => !q.ds && q.t === 'real' && +q.a && DS_PROVAS.test(q.b) && !/^simulado/i.test(q.b)), anos = {}, por = {};
   for (const q of provas) (anos[q.b] ||= new Set()).add(+q.a);
   const ult = {};
   for (const [b, s] of Object.entries(anos)) ult[b] = new Set([...s].sort((x, y) => y - x).slice(0, 5));

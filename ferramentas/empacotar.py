@@ -14,6 +14,7 @@ GRUPOS = [  # mesmos grupos de oficiais.py
     ('7-oficiais-Medicina-SP', ['unifesp', 'santacasa', 'alberteinstein', 'famerp', 'fmabc', 'famema', 'fmj', 'saocamilo', 'siriolibanes', 'unisa']),
     ('8-oficiais-outras-SP-e-exatas', ['pucsp', 'fgvsp', 'ita', 'fatec', 'ufscar', 'ufabc', 'insper', 'mackenzie']),
     ('9-oficiais-ENEM-com-resolucao', ['enem']),
+    ('A-simulados', ['simulados']),   # simulados oficiais (pdf_provas.py); banca "Simulado ...": só aparecem na aba Simulados
 ]
 
 GRUPOS_DISC = [
