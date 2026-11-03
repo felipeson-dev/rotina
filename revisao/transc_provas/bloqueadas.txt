@@ -78,3 +78,13 @@ obj-fmabc2022-04
 obj-fmabc2022-05
 obj-fmabc2022-06
 obj-fmabc2022-07
+obj-santacasa2022-76
+obj-santacasa2022-77
+obj-santacasa2022-78
+obj-santacasa2022-79
+obj-santacasa2022-80
+obj-unifesp2022-01
+obj-unifesp2022-02
+obj-unifesp2022-03
+obj-unifesp2022-04
+obj-unifesp2022-05
