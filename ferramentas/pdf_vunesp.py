@@ -28,6 +28,9 @@ EDICOES = [  # fase, caderno da prova objetiva, arquivo com o gabarito
     ('2025_2', r'2025-2\CUSC2402_prova-II.pdf', r'2025-2\CUSC2402_gabarito-prova-II.pdf'),
     ('2026_1', r'2026-1\CUSC2501_prova-II.pdf', r'2026-1\CUSC2501_gabarito-prova-II.pdf'),
     ('2026_2', r'2026-2\CUSC2601_prova-II.pdf', r'2026-2\CUSC2601_gabarito-prova-II.pdf'),
+    ('2014_1', r'2014-1\CUSC1301_prova-II.pdf', r'2014-1\CUSC1301_gabarito-prova-II.pdf'),
+    ('2015_1', r'2015-1\CUSC1401_prova-II.pdf', r'2015-1\CUSC1401_gabarito-prova-II.pdf'),
+    ('2016_1', r'2016-1\CUSC1501_prova-II.pdf', r'2016-1\CUSC1501_gabarito-prova-II.pdf'),
 ]
 ZOOM = 2.4
 ANCORA = re.compile(r'^QUEST[ÃA]O\s+(\d{1,2})$', re.I)
@@ -38,7 +41,7 @@ PRE_TEXTO = re.compile(r'para responder|^(Leia|Examine|Analise|Observe)\b.*(ques
 def gabarito(arq):
     d = pymupdf.open(arq)
     for pg in reversed(list(d)):   # nos arquivos completos o gabarito é a página depois da prova
-        pares = re.findall(r'\b(\d{1,2})\s*-\s*([A-E]|\*|[Aa]nulada|X)(?![a-zçã])', re.sub(r'\s+', ' ', pg.get_text()))
+        pares = re.findall(r'\b(\d{1,2})\s*[-–]\s*([A-E]|\*|[Aa]nulada|X)(?![a-zçã])', re.sub(r'\s+', ' ', pg.get_text()))
         if len(pares) >= 30:
             return {int(n): l.upper() for n, l in pares}, re.search(r'VERS[ÃA]O\s*\d', pg.get_text() or '', re.I)
     return {}, None
