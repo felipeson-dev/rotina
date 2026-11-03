@@ -20,6 +20,14 @@ EDICOES = [  # fase, caderno da prova objetiva, arquivo com o gabarito
     ('2021_2', r'2021-2\CUSC2101_prova-e-gabarito-completo.pdf', r'2021-2\CUSC2101_prova-e-gabarito-completo.pdf'),
     ('2022_2', r'C:\rotina-banco\pdfs\saocamilo-2022-2\caderno2.pdf', r'C:\rotina-banco\pdfs\saocamilo-2022-2\gabarito.pdf'),
     ('2023_2', r'2023-2\CUSC2201_prova-II-objetiva-e-redacao.pdf', r'2023-2\CUSC2201_gabarito-prova-II.pdf'),
+    ('2018_1', r'2018-1\CUSC1702_prova-II.pdf', r'2018-1\CUSC1702_gabarito-prova-II.pdf'),
+    ('2019_1', r'2019-1\CUSC1802_prova-II.pdf', r'2019-1\CUSC1802_gabarito-prova-II.pdf'),
+    ('2021_1', r'2021-1\CUSC1902_prova-II.pdf', r'2021-1\CUSC1902_gabarito-prova-II.pdf'),
+    ('2022_1', r'2022-1\CUSC2102_prova-II.pdf', r'2022-1\CUSC2102_gabarito-prova-II.pdf'),
+    ('2025_1', r'2025-1\CUSC2401_prova-II.pdf', r'2025-1\CUSC2401_gabarito-prova-II.pdf'),
+    ('2025_2', r'2025-2\CUSC2402_prova-II.pdf', r'2025-2\CUSC2402_gabarito-prova-II.pdf'),
+    ('2026_1', r'2026-1\CUSC2501_prova-II.pdf', r'2026-1\CUSC2501_gabarito-prova-II.pdf'),
+    ('2026_2', r'2026-2\CUSC2601_prova-II.pdf', r'2026-2\CUSC2601_gabarito-prova-II.pdf'),
 ]
 ZOOM = 2.4
 ANCORA = re.compile(r'^QUEST[ÃA]O\s+(\d{1,2})$', re.I)
