@@ -8,6 +8,8 @@ import gzip, json, os, shutil, sys, time
 SAIDA = r'C:\rotina-banco'
 PACOTES_WEB = r'C:\rotina\pacotes'
 TRANSCRITO = sys.argv[1] if len(sys.argv) > 1 else os.path.join(SAIDA, 'transcrito.json')
+ANTES_ARQ = sys.argv[2] if len(sys.argv) > 2 else os.path.join(SAIDA, 'texto-antes.json')   # ids que já estavam em texto no site; se reprovarem agora, voltam para imagem com v=4
+ANTES = set(json.load(open(ANTES_ARQ, encoding='utf-8'))) if os.path.exists(ANTES_ARQ) else set()
 TOPOS = json.load(open(os.path.join(SAIDA, 'topos.json'), encoding='utf-8')) if os.path.exists(os.path.join(SAIDA, 'topos.json')) else {}   # esconder_resposta.py
 GRUPOS = [  # mesmos grupos de oficiais.py
     ('6-oficiais-Fuvest-Unicamp-UNESP', ['fuvest', 'unicamp', 'unesp']),
@@ -50,9 +52,10 @@ def principal():
                 # ainda não lida (ou não deu): fica no modo imagem. "topo" esconde a faixa do número, onde algumas imagens trazem a letra da resposta; v=1 faz o iPad trocar a versão já baixada
                 img = {k: v for k, v in r.items() if k != 'assunto_local'}
                 if r.get('img') in TOPOS: img['topo'] = TOPOS[r['img']]; img['v'] = 1
+                if r['id'] in ANTES: img['v'] = 4   # estava em texto no site e não passou na conferência: v maior troca o texto de volta pela imagem
                 saida.append(img); continue
             q = {k: v for k, v in t.items() if k != 'dep'}
-            q['id'] = r['id']; q['v'] = 3   # v=3: o texto agora leva também a imagem recortada, para ela poder alternar no app
+            q['id'] = r['id']; q['v'] = 4   # v=4: texto conferido contra a imagem (conferir_texto.py); leva também a imagem recortada, para ela poder alternar no app
             for k in ('w', 'h', 'corte'): q[k] = r.get(k) or 0
             if r.get('img') in TOPOS: q['topo'] = TOPOS[r['img']]
             q['prev'] = origem(r['prev']) if r.get('prev') in por_id else ''
