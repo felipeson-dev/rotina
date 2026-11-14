@@ -47,7 +47,11 @@ def principal():
             except Exception as e:
                 print('arquivo ilegível', f, e)
     c = Counter(); motivos = Counter(); finais = dict(antigo); confirmadas = divergentes = 0
+    # questões cujo enunciado depende de um trecho SUBLINHADO na prova (o sublinhado não vai para o texto): ficam como imagem
+    arq_ex = os.path.join(SAIDA, 'claude', 'excluir_sublinhado.json')
+    excluir = set(json.load(open(arq_ex, encoding='utf-8'))) if os.path.exists(arq_ex) else set()
     for i, (origem, x) in novas.items():
+        if i in excluir: c['sublinhado (fica imagem)'] += 1; continue
         q = B.get(i)
         if not q: c['id fora do banco'] += 1; continue
         alts = [{'l': 'ABCDE'[k], 't': limpa(a).strip()} for k, a in enumerate((x.get('alternativas') or [])[:5])]
