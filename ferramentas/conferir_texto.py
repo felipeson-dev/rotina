@@ -71,6 +71,8 @@ def conserta(s):
     s = re.sub(r'\\t([A-Za-z]*)', lambda m: m.group(0) if 't' + m.group(1) in VALIDOS_T else ' ' + m.group(1), s)
     for a, b in TROCAS:
         s = re.sub(a, b, s)
+    # cifrão de moeda ("R$ 5", "US$ 3", também "R\$"): vira $\char36$ (o KaTeX desenha "$" e os "$" ficam em número par); fora de fórmula só
+    s = re.sub(r'\b(R|US)\\?\$(?=\s?\d)', lambda m: m.group(1) + '$\\char36$', s)
     return s
 
 def latex_ruim(s):
