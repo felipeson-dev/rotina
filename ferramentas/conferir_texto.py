@@ -57,7 +57,11 @@ def palavras(s):
 VALIDOS_N = {'nabla', 'ncong', 'ne', 'nearrow', 'neg', 'neq', 'newline', 'nexists', 'ngeq', 'ngtr', 'ni', 'nleftarrow', 'nleftrightarrow', 'nleq', 'nless', 'nmid', 'not', 'notin',
              'nparallel', 'nprec', 'nrightarrow', 'nsim', 'nsubseteq', 'nsucc', 'nsupseteq', 'nu', 'nVDash', 'nvDash', 'nvdash', 'nwarrow', 'nRightarrow', 'nLeftarrow', 'nLeftrightarrow', 'nshortmid'}
 VALIDOS_T = {'tan', 'tanh', 'tau', 'tbinom', 'text', 'textbf', 'textit', 'textrm', 'textsf', 'texttt', 'textnormal', 'textup', 'textmd', 'textstyle', 'tfrac', 'theta', 'therefore',
-             'thickapprox', 'thicksim', 'thinspace', 'tilde', 'times', 'tiny', 'to', 'top', 'triangle', 'triangledown', 'triangleleft', 'triangleright', 'tag'}
+             'thickapprox', 'thicksim', 'thinspace', 'tilde', 'times', 'tiny', 'to', 'top', 'triangle', 'triangledown', 'triangleleft', 'triangleright', 'tag',
+             'textcolor', 'textbackslash', 'textless', 'textgreater', 'textbar', 'textunderscore', 'textsc', 'textsl', 'textellipsis', 'textasciitilde', 'textasciicircum',
+             'textperthousand', 'textdegree', 'textcircled', 'textregistered', 'texttrademark', 'textvisiblespace', 'textminus', 'textquoteleft', 'textquoteright', 'tbinom',
+             'thetasym', 'tilde', 'to'}
+VALIDOS_N |= {'normalsize', 'natural', 'ngeqslant', 'nleqslant', 'nshortmid', 'nshortparallel', 'nsupseteqq', 'nsubseteqq', 'napprox', 'nVdash', 'nsucceq', 'npreceq'}
 # comandos que o KaTeX do app NÃO entende (vermelho na tela); o que não tem troca fica como motivo de reprovação
 BLOQUEADOS = {'CD', 'cline', 'multicolumn', 'abc', 'jpg', 'put', 'Considerando', 'a', 'b', 'n', 't'}
 TROCAS = [(r'\\textdollar(?![a-zA-Z])', r'\\char36'), (r'\\sen(?![a-zA-Z])', r'\\operatorname{sen}'), (r'\\textquotedblleft', '“'), (r'\\textquotedblright', '”'), (r'\\textquotedblideal', '”'),
@@ -67,6 +71,8 @@ def conserta(s):
     if not s:
         return s
     s = ''.join(('\\' + CTRL[c]) if c in CTRL else c for c in s)
+    for a, b in TROCAS:   # primeiro as trocas de comando (\textdollar, \sen...), senão a regra de "\t..." abaixo comeria o "\t" deles
+        s = re.sub(a, b, s)
     s = re.sub(r'\\n([A-Za-z]*)', lambda m: m.group(0) if 'n' + m.group(1) in VALIDOS_N else '\n' + m.group(1), s)
     s = re.sub(r'\\t([A-Za-z]*)', lambda m: m.group(0) if 't' + m.group(1) in VALIDOS_T else ' ' + m.group(1), s)
     for a, b in TROCAS:

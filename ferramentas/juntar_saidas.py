@@ -92,6 +92,56 @@ def principal():
             del finais[i]; reprov_antigo += 1; motivos.update('antigo: ' + re.sub(r' \(.*', '', m) for m in mot); continue
         a.update({'enunciado': y['enunciado'], 'alts': y['alts'], 'coment': y['coment']})
     c['texto antigo que voltou para imagem'] = reprov_antigo
+    # --- auditoria de 15/11 (leitores Sonnet comparando com a imagem) ---
+    # (1) nas leituras divergentes, vale a que o auditor achou mais fiel
+    for f in glob.glob(os.path.join(SAIDA, 'auditoria', 'saida', 'D*.json')):
+        for r in json.load(open(f, encoding='utf-8')):
+            i = r['id'][4:] if r['id'].startswith('obj-') and r['id'] not in antigo else r['id']
+            if r.get('melhor') == 'A' and r['id'] in antigo and r['id'] in finais:
+                finais[r['id']] = antigo[r['id']]; c['auditoria: voltou p/ leitura antiga'] += 1
+    # (2) correções pontuais confirmadas (id -> [(trecho errado, trecho certo)])
+    PATCHES = {
+        'obj-fuvest2022_1fase-68': [('tornando a estrutura mais preenchida e o vidro mais flexível', 'tornando a estrutura menos preenchida e o vidro mais flexível')],
+        'obj-unicamp2018_1fase-37': [('sofred', 'sofrem')],
+        'obj-unicamp2018_1fase-25': [('Considering o texto', 'Considerando o texto')],
+        'obj-saocamilo2020_1-06': [('havia acolhida', 'havia acolhido')],
+        'obj-enem2022_1dia-042': [('ser ter', 'se ter')],
+    }
+    for i, trocas in PATCHES.items():
+        a = finais.get(i)
+        if not a: continue
+        for velho, novo_t in trocas:
+            n = 0
+            for campo in ('enunciado', 'coment'):
+                if velho in (a.get(campo) or ''): a[campo] = a[campo].replace(velho, novo_t); n += 1
+            for alt in a['alts']:
+                if velho in alt['t']: alt['t'] = alt['t'].replace(velho, novo_t); n += 1
+            c['correcao pontual aplicada' if n else 'correcao pontual SEM efeito'] += 1
+    # (3) sem confirmação do auditor ou com id ambíguo: volta para imagem
+    for f in ('excluir_enem_repetidos.json',):
+        p = os.path.join(SAIDA, 'claude', f)
+        if os.path.exists(p):
+            for i in json.load(open(p, encoding='utf-8')):
+                if finais.pop(i, None): c['id repetido do ENEM: texto retirado'] += 1
+    for i in ('obj-unesp2011_2-87', 'obj-fuvest2022_1fase-68x'):
+        if finais.pop(i, None): c['numeros incertos: volta p/ imagem'] += 1
+    for i in excluir:
+        finais.pop(i, None)
+    # (4) LaTeX cru: o app só desenha fórmula entre $...$ (a tela mostraria "-\frac{6}{7}" literal)
+    CMD = re.compile(r'\\(?!char36)[A-Za-z]+')
+    DUPLA = re.compile(r'\\\\([A-Za-z]{2,})')
+    fora = lambda s: re.sub(r'\$[^$\n]+?\$', ' ', re.sub(r'\$\$.*?\$\$', ' ', s or '', flags=re.S))
+    for i in list(finais):
+        a = finais[i]
+        a['enunciado'] = DUPLA.sub(r'\\\1', a['enunciado'] or ''); a['coment'] = DUPLA.sub(r'\\\1', a.get('coment') or '')
+        for alt in a['alts']:
+            alt['t'] = DUPLA.sub(r'\\\1', alt['t'])
+            if '$' not in alt['t'] and CMD.search(alt['t']):
+                alt['t'] = '$' + alt['t'].strip() + '$'; c['alternativa com LaTeX cru embrulhada em $'] += 1
+        if CMD.search(fora(a['enunciado'])) or any(CMD.search(fora(alt['t'])) for alt in a['alts']):
+            del finais[i]; c['LaTeX cru na pergunta: volta p/ imagem'] += 1; continue
+        if CMD.search(fora(a['coment'])):
+            a['coment'] = ''; c['comentario com LaTeX cru: removido'] += 1
     json.dump(list(finais.values()), open(os.path.join(SAIDA, 'transcrito-final2.json'), 'w', encoding='utf-8'), ensure_ascii=False)
     print(dict(c)); print('motivos de reprovação:', dict(motivos.most_common(10)))
     print(f'texto antigo {len(antigo)} -> final {len(finais)} | releituras que bateram com o texto antigo: {confirmadas} | que divergiram: {divergentes}')
