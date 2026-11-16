@@ -106,7 +106,19 @@ def principal():
         'obj-unicamp2018_1fase-25': [('Considering o texto', 'Considerando o texto')],
         'obj-saocamilo2020_1-06': [('havia acolhida', 'havia acolhido')],
         'obj-enem2022_1dia-042': [('ser ter', 'se ter')],
+        # segunda auditoria (15/11)
+        'obj-enem2024_1dia-095': [('Los últimos dias del sitio', 'Los últimos días del sitio')],
+        'obj-fuvest2016_1fase-84': [('coincidiu com o transição', 'coincidiu com a transição')],
+        'obj-unesp2025_1fase-43': [('Européia', 'Europeia')],
+        'obj-unicamp2015_1fase-28': [('gurpos', 'grupos')],
+        'obj-enem2021_2_2dia-146': [('a partir das medidas de uma folha A0 são 595 mm', 'a partir das medidas de uma folha A0. As medidas de uma folha A0 são 595 mm')],
     }
+    # frase final que faltava no enunciado (id -> trecho a acrescentar, se ainda não estiver lá)
+    ACRESCENTAR = {'obj-famerp2018-43': 'Os resultados mostrados no gráfico permitem concluir que:'}
+    for i, frase in ACRESCENTAR.items():
+        a = finais.get(i)
+        if a and frase not in a['enunciado']:
+            a['enunciado'] = a['enunciado'].rstrip() + '\n\n' + frase; c['frase final acrescentada'] += 1
     for i, trocas in PATCHES.items():
         a = finais.get(i)
         if not a: continue
