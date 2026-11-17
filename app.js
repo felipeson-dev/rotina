@@ -506,7 +506,9 @@ const passosPadrao = a => {
   if (/^Simulado/.test(a.titulo)) return ['Fazer cronometrado', 'Corrigir com calma', 'Anotar os erros no caderno'];
   if (a.min) return [];
   const { t, q } = tempoDe(a), mq = minPorQ(a.materia);
-  return [`Teoria: aula ou resumo (~${fmtMin(t)})`, `Fazer ${q} questões (~${fmtMin(Math.round(q * mq))})`, `Corrigir e anotar os erros (~${fmtMin(Math.round(q * mq * 0.25))})`];
+  // plano v4: a teoria é a aula do Ferretto (módulo e números), em 1,25×
+  const teoria = a.ferretto ? `${a.opcional ? 'Aulas de aprofundamento do Ferretto (opcional)' : 'Aulas do Ferretto em 1,25×'}: ${a.ferretto} (~${fmtMin(t)})` : `Teoria: aula ou resumo (~${fmtMin(t)})`;
+  return [teoria, `Fazer ${q} questões (~${fmtMin(Math.round(q * mq))})`, `Corrigir e anotar os erros (~${fmtMin(Math.round(q * mq * 0.25))})`];
 };
 const blocoDe = a => ({ id: uid(), assuntoId: a.id, titulo: a.titulo, materia: a.materia, min: minDe(a), feito: !!a.feito, passos: passosPadrao(a).map(t => ({ t, ok: !!a.feito })) });
 function blocoConcluido(b) {
@@ -992,6 +994,7 @@ function modalAssunto(a) {
   const semanas = [0, 1, 2, 3].map(i => somaDias(w0, i * 7));
   abrirModal(`<div class="entre"><div>${tag(a.materia)}</div><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
     <h2>${esc(a.titulo)}</h2>
+    ${a.ferretto ? `<p style="margin:0;font-size:15px"><b>${a.opcional ? 'Ferretto (aprofundamento, opcional)' : 'Ferretto, em 1,25×'}:</b> ${esc(a.ferretto)}</p>` : ''}
     <span class="fraco">${a.feito ? 'Feito' + (a.feitoEm ? ' em ' + dataLonga(a.feitoEm) : '') : `Previsto para a semana de ${semanaCurta(semDe(a))} (${estadoDe(a) === 'atrasado' ? 'atrasado' : estadoDe(a) === 'futuro' ? 'adiantável' : 'esta semana'})`} · ≈ ${fmtMin(minDe(a))} · ${nomeMes(a.mes)}</span>
     ${ehConteudo(a) ? `<span class="fraco" style="font-size:14px">${a.dens ? `Densidade ${'●'.repeat(a.dens)}${'○'.repeat(5 - a.dens)} · ` : ''}teoria ${fmtMin(tempoDe(a).t)} + ${tempoDe(a).q} questões (~${fmtMin(tempoDe(a).q * minPorQ(a.materia))})${a.calibrado ? ' · calibrado pela IA' : ''}</span>` : ''}
     <span class="rotulo">semana prevista</span>

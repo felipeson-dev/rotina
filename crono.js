@@ -12,10 +12,12 @@ function aplicarCronograma() {
   // pelo nome do assunto e pela fração já estudada (o plano novo pode dividir o mesmo assunto em outro número de partes)
   const velhosArr = S.assuntos.filter(a => a.crono), velhos = new Map(velhosArr.map(a => [a.id, a]));
   const chaveNome = a => a.materia + '|' + (a.nome || String(a.titulo || '').replace(/\s*\(parte \d+ de \d+\)\s*$/, ''));
+  // assunto renomeado no plano novo (ex.: v4 com os módulos do Ferretto) traz o nome antigo em 'ant'
+  const chaveNova = a => a.ant ? a.materia + '|' + a.ant : chaveNome(a);
   const fracao = a => a.parte ? a.parte[0] / a.parte[1] : 1;
   const porNome = new Map(); for (const a of velhosArr) { const k = chaveNome(a); if (!porNome.has(k)) porNome.set(k, []); porNome.get(k).push(a); }
   const equivalente = x => {
-    const l = porNome.get(chaveNome(x)); if (!l) return null;
+    const l = porNome.get(chaveNova(x)) || porNome.get(chaveNome(x)); if (!l) return null;
     const feitas = l.filter(o => o.feito), F = Math.max(0, ...feitas.map(fracao)), fx = fracao(x);
     if (feitas.length && fx <= F + 0.01) return { ...feitas.find(o => fracao(o) === F), rev: fx === 1 ? feitas.find(o => fracao(o) === F).rev : null, feito: true };
     const fraco = l.some(o => o.fraco);
@@ -46,7 +48,7 @@ function aplicarCronograma() {
   S.assuntos = [...S.assuntos.filter(a => a.periodo || (a.feito && !a.crono && a.feitoEm)), ...novos];
   // dias de hoje em diante: bloco de assunto que não existe mais passa para o equivalente novo; se não houver, sai (o dia se completa sozinho)
   const ids = new Set(novos.map(a => a.id));
-  const novoDe = (id, concluido) => { const o = velhos.get(id); if (!o) return null; const l = novos.filter(a => chaveNome(a) === chaveNome(o)); if (!l.length) return null;
+  const novoDe = (id, concluido) => { const o = velhos.get(id); if (!o) return null; const l = novos.filter(a => chaveNova(a) === chaveNome(o) || chaveNome(a) === chaveNome(o)); if (!l.length) return null;
     if (concluido) { const f = l.filter(a => a.feito); return f.length ? f[f.length - 1].id : null; }
     return (l.find(a => !a.feito && fracao(a) >= fracao(o) - 0.01) || l.find(a => !a.feito) || l[l.length - 1]).id; };
   for (const [dia, d] of Object.entries(S.dias || {})) {
@@ -81,7 +83,9 @@ function aplicarCronograma() {
 
 if (typeof CRONOGRAMA !== 'undefined' && (S.cronoV !== CRONOGRAMA.v || (S.cronoV >= 3 && S.cronoCen !== cenarioDe()))) {
   const n = aplicarCronograma();
-  ui.iaMsg = `O cronograma novo (v${CRONOGRAMA.v}) está no app: ${n} itens até setembro, com conteúdo, revisões, hábitos e simulados. O plano antigo ficou guardado em Ajustes > Cópias do plano.`;
+  ui.iaMsg = CRONOGRAMA.v >= 4
+    ? `Plano atualizado com as aulas do Ferretto: em cada assunto aparecem o módulo e as aulas para assistir (em 1,25×). O que você já fez continua marcado. O plano anterior ficou guardado em Ajustes > Cópias do plano.`
+    : `O cronograma novo (v${CRONOGRAMA.v}) está no app: ${n} itens até setembro, com conteúdo, revisões, hábitos e simulados. O plano antigo ficou guardado em Ajustes > Cópias do plano.`;
 }
 
 // Calibração e limpeza não-destrutiva de tópicos e pisos de tempo para dados já carregados
