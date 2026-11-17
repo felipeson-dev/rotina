@@ -157,6 +157,12 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Revisoes: vagas pre-programadas de tempo fixo (Ajustes): 'Revisao do dia' (padrao 20 min, todo dia) e 'Revisao da semana' (padrao 150 min, qua e sab). O tamanho nunca cresce: o excedente espera a proxima vaga. Assuntos escolhidos pelo app (fixacao 24-48 h das exatas, vencidas de 7/30 dias, fracas, mais cobradas) ou por ela ('Escolher eu mesma').
 - Discursivas: objetivo.py --disc (entradas sem letra; corte na primeira 'Resolucao'); ferramentas/baixar_discursivas.py (2015+, bancas dela) -> objetivo-disc-<banca>.json; empacotar.py gera D1/D2. App (discursivas.js): caixa Tipo (objetivas/discursivas), resposta com a caneta (quadro guardado por questao), padrao de resposta do Objetivo, autoavaliacao (acertei/em parte/errei) e correcao pela IA lendo a letra.
 
+## v51 (17/11/2026) - o app se atualiza sozinho
+- Problema: no iPad (app da tela de início) a versão antiga continuava: a página não recarrega sozinha e o service worker usava a cópia do cache HTTP (GitHub Pages: até 10 min).
+- sw.js: busca sempre com cache 'no-cache' (confere com o site; usa a cópia guardada só sem internet) e instala com cache 'reload'.
+- app.js: APP_V (TEM QUE SER IGUAL ao VERSAO do sw.js; subir os dois juntos). Ao abrir e ao voltar para o app, lê o VERSAO do sw.js no site; se for outro, recarrega sozinho quando não atrapalha (sem lista aberta, sem janela, sem digitar, fora do Caderno; no máximo 1 vez a cada 2 min) ou mostra o aviso "Atualizar agora". Ajustes > Versão do app: mostra a versão e tem o botão "Atualizar o app" (apaga só os arquivos do app em cache; dados e banco ficam).
+- Testado no Chrome com service worker: versão nova publicada -> recarregou sozinho; com lista aberta -> aviso; botão -> atualizou sem perder dados; em dia -> sem aviso.
+
 ## v50 (17/11/2026) - PUC-Campinas no banco
 - 140 questões: Medicina 2026 e 2027 (Prova Geral 1-50 + Prova Específica de Química e Biologia, salvas como 51-70), cadernos oficiais baixados do Estratégia (C:\rotina-banco\puc-campinas\pdf). Gabaritos 2027 em texto; 2026 só em imagem, transcritos à mão em puc-campinas\gabaritos-mao.json (conferido: 70 letras).
 - Leitor: ferramentas\pdf_puccamp.py (recorte em imagem, como o pdf_provas). Classificação: puc-campinas\classificar.py (semelhança de texto com o banco, só entre as matérias da seção) + revisão à mão de ~50 (assuntos.json).

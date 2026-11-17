@@ -1,9 +1,9 @@
 // Guarda o app para abrir sem internet. Ao mudar arquivos, subir a VERSAO.
-const VERSAO = 'rotina-50';
+const VERSAO = 'rotina-51';
 const ARQUIVOS = ['./', 'index.html', 'app.css', 'base.js', 'app.js', 'extras.js', 'pencil.js', 'dia.js', 'redacao.js', 'questoes.js', 'banco.js', 'mais.js', 'metas.js', 'planejar.js', 'desempenho.js', 'revisoes.js', 'simulados.js', 'discursivas.js', 'cronograma.js', 'crono.js', 'sync.js', 'nav.js', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSAO).then(c => c.addAll(ARQUIVOS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSAO).then(c => c.addAll(ARQUIVOS.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));   // 'reload': a cópia sem internet já sai da versão nova
 });
 
 self.addEventListener('activate', e => {
@@ -19,8 +19,10 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.hostname === 'generativelanguage.googleapis.com') return;
   if (url.origin === location.origin) {
-    // rede primeiro (pega atualizações), cache se estiver sem internet ou se a rede devolver erro
-    e.respondWith(fetch(e.request)
+    // rede primeiro, SEMPRE conferindo com o site (no-cache: sem isso o iPad usava por até 10 min a cópia do cache HTTP e ficava na versão antiga);
+    // cache do app só sem internet ou se a rede devolver erro
+    const req = e.request.mode === 'navigate' ? new Request(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }) : new Request(e.request, { cache: 'no-cache' });
+    e.respondWith(fetch(req)
       .then(r => r.ok ? guardar(e.request, r) : caches.match(e.request, { ignoreSearch: true }).then(m => m || r))
       .catch(() => caches.match(e.request, { ignoreSearch: true })));
   } else if (url.hostname.endsWith('fonts.googleapis.com') || url.hostname.endsWith('fonts.gstatic.com') || url.hostname === 'cdnjs.cloudflare.com' || url.hostname === 'www.curso-objetivo.br') {

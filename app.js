@@ -960,6 +960,10 @@ function vAjustes() {
       <label class="campo">Começar a estudar em<input type="date" id="base-inicio" value="${hoje() < '2026-11-17' ? '2026-11-17' : hoje()}"></label>
       <div class="linha"><button class="botao claro" data-acao="refazerBase">Refazer o plano base</button></div>
     </section>
+    <section class="cartao"><h2>Versão do app</h2>
+      <p class="fraco" style="margin:0">Esta é a versão <b>${typeof APP_V !== 'undefined' ? APP_V : '?'}</b>. O app se atualiza sozinho quando você volta para ele; se algo parecer desatualizado, toque abaixo. Não apaga nada.</p>
+      <div class="linha"><button class="botao claro" data-acao="atualizarApp">Atualizar o app</button></div>
+    </section>
     <section class="cartao"><h2>Cópia de segurança</h2>
       <p class="fraco" style="margin:0">Os dados ficam neste aparelho. De vez em quando, salve uma cópia.</p>
       ${(() => { let n = 0; try { n = (localStorage.getItem(CHAVE) || '').length; } catch { } const pct = Math.round(n / 2.5e6 * 100);
@@ -981,7 +985,7 @@ function render() {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#FCF4F6';
   $('#menu').innerHTML = menuHtml();
-  $('#tela').innerHTML = subnavHtml() + VIEWS[ui.view]() + (ui.carregando ? `<div class="carregando" role="status">${esc(ui.carregando)}</div>` : '');
+  $('#tela').innerHTML = subnavHtml() + avisoVersao() + VIEWS[ui.view]() + (ui.carregando ? `<div class="carregando" role="status">${esc(ui.carregando)}</div>` : '');
   renderTimer();
 }
 
@@ -1392,3 +1396,34 @@ rolar();
 render();
 try { navigator.storage?.persist?.(); } catch { }
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { });
+
+// ---------- versão do app: o app da tela de início não recarrega sozinho; ao voltar para ele, confere se há versão nova ----------
+// APP_V tem que ser igual ao VERSAO do sw.js (subir os dois juntos)
+const APP_V = 'rotina-51';
+async function versaoNoSite() {
+  try { const t = await (await fetch('sw.js?v=' + Date.now(), { cache: 'no-store' })).text(); return (t.match(/VERSAO = '([^']+)'/) || [])[1] || null; } catch { return null; }
+}
+// recarregar sozinho só quando não atrapalha: sem lista de questões aberta, sem janela aberta e sem ninguém digitando
+const podeRecarregar = () => !ui.qs && $('#modal').hidden && !document.querySelector('textarea:focus, input:focus') && ui.view !== 'caderno';
+async function atualizarApp() {
+  try { sessionStorage.setItem('rotina.atualizou', String(Date.now())); } catch { }
+  ui.carregando = 'Atualizando o app…'; render();
+  try { for (const r of (await navigator.serviceWorker?.getRegistrations?.()) || []) await r.update().catch(() => { }); } catch { }
+  try { for (const k of await caches.keys()) await caches.delete(k); } catch { }   // só os arquivos do app: os dados dela e o banco de questões ficam
+  location.reload();
+}
+async function conferirVersao(auto) {
+  const v = await versaoNoSite();
+  if (!v || v === APP_V) { if (ui.versaoNova) { ui.versaoNova = null; render(); } return; }
+  ui.versaoNova = v;
+  let recente = 0; try { recente = +sessionStorage.getItem('rotina.atualizou') || 0; } catch { }
+  if (auto && podeRecarregar() && Date.now() - recente > 120000) { atualizarApp(); return; }   // no máximo uma vez a cada 2 min (evita ficar recarregando)
+  render();
+}
+function avisoVersao() {
+  if (!ui.versaoNova) return '';
+  return `<div class="aviso-ia"><p>Tem uma versão nova do app. Atualizar leva 2 segundos e não apaga nada.</p><button class="botao" data-acao="atualizarApp">Atualizar agora</button></div>`;
+}
+ACOES.atualizarApp = () => atualizarApp();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) conferirVersao(true); });
+setTimeout(() => conferirVersao(true), 3000);
