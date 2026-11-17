@@ -49,7 +49,7 @@ const icone = n => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
 const VAZIO = {
   perfil: { nome: 'Uany Rebeca', vestibular: 'ENEM e, logo depois, Medicina em SP: USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo e FMABC', dataProva: '', fortes: '', fracas: '', horarios: '',
     jeito: 'Primeiro foco total no ENEM. Cerca de 2 dias depois do ENEM, começar a estudar para as provas de Medicina em SP (USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC).' },
-  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, listasAbertas: {}, qExtras: {}, foco: [], focoAnalise: {}, timer: null, provas: [], semeado: false, resetTesteV: 2, v: 2,
+  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, listasAbertas: {}, qExtras: {}, foco: [], focoAnalise: {}, timer: null, provas: [], semeado: false, resetTesteV: 3, v: 2,
 };
 
 const provasFuturas = () => (S.provas || []).filter(p => okData(p.data) && p.data >= hoje()).sort((a, b) => a.data < b.data ? -1 : 1);
@@ -75,6 +75,25 @@ function zerarDadosTeste(s) {
   }
 }
 
+/* Reset combinado em 17/11/2026 (pedido do Felipe): tudo o que foi feito antes era teste. Apaga TODO o uso (questões, erros, listas,
+   redações, simulados, cartões, caderno à mão, conversas com a IA, pendências, agenda, dias, progresso do plano, metas à mão) e mantém
+   a configuração: perfil e rotina base, plano e provas, cenário, cores, chaves da IA, sincronização, cópias do plano e o banco de questões. */
+const RESET_V = 3;
+function zerarUsoCompleto(s) {
+  zerarDadosTeste(s);
+  s.redacoes = []; s.simulados = []; s.cartoes = []; s.notas = {}; s.chat = []; s.pend = []; s.qExtras = {}; s.qProblemas = {};
+  s.metaQ = {}; s.minQ = {}; s.planoQ = {}; s.focoAnalise = {}; s.uso = {};
+  for (const a of s.assuntos || []) { delete a.fraco; delete a.dia; }
+  s._t = Date.now();   // mais novo que qualquer cópia antiga na sincronização
+  // desenhos, rascunhos, fotos de redação e a lista aberta guardados no IndexedDB (as cópias do plano ficam)
+  setTimeout(() => { try {
+    const r = indexedDB.open('rotina-desenhos', 1);
+    r.onsuccess = () => { try { const db = r.result, st = db.transaction('d', 'readwrite').objectStore('d'), q = st.getAllKeys();
+      q.onsuccess = () => { for (const k of q.result) if (!String(k).startsWith('d:bkp:') && !String(k).startsWith('banco:')) st.delete(k); }; } catch { } };
+  } catch { } }, 0);
+  try { localStorage.removeItem('rotina.nav'); } catch { }
+}
+
 function carregar() {
   let s = null;
   try { s = JSON.parse(localStorage.getItem(CHAVE) || 'null'); } catch { }
@@ -83,7 +102,7 @@ function carregar() {
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
   s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.qIgnorar ||= []; s.qProblemas ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
-  if (s.resetTesteV !== 2) { s.resetTesteV = 2; zerarDadosTeste(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
+  if ((s.resetTesteV || 0) < RESET_V) { s.resetTesteV = RESET_V; zerarUsoCompleto(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
   return s;
 }
 /* Listas em andamento: a questão do banco é guardada só com o que é DELA (resposta, tempo, acerto); o texto e as imagens voltam do banco

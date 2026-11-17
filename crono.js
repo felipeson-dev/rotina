@@ -89,6 +89,8 @@ if (Array.isArray(S?.assuntos)) {
   // semana original de cada assunto (para saber, numa troca de cenário, o que ela mudou de lugar)
   const orig = typeof CRONOGRAMA !== 'undefined' ? new Map(CRONOGRAMA.itens.map(x => [x.id, x.semana])) : new Map();
   for (const a of S.assuntos) if (a.crono && a.semOrig === undefined && orig.has(a.id)) a.semOrig = orig.get(a.id);
+  // "Revisão de base" era conteúdo novo (base de Matemática), não uma revisão do app: nome trocado em 17/11 para não confundir
+  for (const a of S.assuntos) for (const k of ['titulo', 'nome']) if (typeof a[k] === 'string' && a[k].startsWith('Revisão de base:')) a[k] = 'Base de Matemática:' + a[k].slice('Revisão de base:'.length);
   for (const a of S.assuntos) {
     if (window.limparNomeAssunto && a.tag) a.tag = window.limparNomeAssunto(a.tag);
     if (ehConteudo(a)) {

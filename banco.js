@@ -639,7 +639,7 @@ document.addEventListener('change', e => {
 const SUBTOPICOS = {
   // MATEMÁTICA
   'Conjuntos e conjuntos numéricos': [
-    ['Revisão de base: frações, potências, raízes e fatoração', /fracao|potencia|raiz|raize|fatorac|produto notave|racionaliz|dizima|mmc|mdc|divisor|multiplo|primo|algarismo|resto da divisao/],
+    ['Base de Matemática: frações, potências, raízes e fatoração', /fracao|potencia|raiz|raize|fatorac|produto notave|racionaliz|dizima|mmc|mdc|divisor|multiplo|primo|algarismo|resto da divisao/],
     ['Operações com conjuntos e diagramas de Venn', /conjunto|subconjunto|intersec|uniao|pertence|diagrama|venn|elemento|pesquisa|entrevistad/],
     ['Conjuntos numéricos, intervalos e reta real', /naturai|inteiro|racionai|irracionai|reai|intervalo|reta|modulo|desigualdade/],
   ],
