@@ -442,7 +442,10 @@ function subnavHtml() {
 }
 
 function avisoIa() {
-  if (!ui.iaMsg) return '';
+  if (!ui.iaMsg) { ui.msgDe = null; return ''; }
+  // o aviso pertence à tela em que apareceu: ao trocar de tela, some sozinho
+  if (!ui.msgDe || ui.msgDe.t !== ui.iaMsg) ui.msgDe = { t: ui.iaMsg, v: ui.view };
+  else if (ui.msgDe.v !== ui.view) { ui.iaMsg = ''; ui.desfazer = null; ui.msgDe = null; return ''; }
   return `<div class="aviso-ia"><p>${esc(ui.iaMsg)}</p>
     ${ui.desfazer ? '<button class="link" data-acao="desfazer">Desfazer</button>' : ''}
     <button class="x" data-acao="fecharAviso" aria-label="Fechar">×</button></div>`;
@@ -590,7 +593,8 @@ function vHoje() {
       <div class="entre"><strong>${feitosBlocos} de ${d.blocos.length} tarefas concluídas · ${fmtMin(feitoMin)} estudados${feitosBlocos === d.blocos.length || (meta && feitoMin >= meta) ? ' · meta batida! 🎉' : meta ? ` · meta ${fmtMin(meta)}` : ''}</strong><span class="fraco">${d.horas ? `${d.horas}h livres · 20% reservado para pausas` : ''}</span></div>
       <div class="barra grossa"><i style="width:${pct}%"></i></div>${selos.trim() ? `<div class="linha">${selos}</div>` : ''}</section>` : '';
   const planejar = d.blocos.length ? '' : `<section class="cartao"><h2>Como vai ser o seu dia hoje?</h2><p class="fraco" style="margin:0">Escolha quantas horas livres tem hoje para montar rápido, ou conte abaixo seus horários (treino, compromissos, estudo) que eu organizo os assuntos e a programação do dia.</p>
-    <div class="linha">${[2, 3, 4, 6, 8].map(n => `<button class="chip" data-acao="montarRapido" data-h="${n}">Tenho ${n}h hoje</button>`).join('')}</div>
+    <div class="linha">${[2, 3, 4, 6, 8, 10].map(n => `<button class="chip" data-acao="montarRapido" data-h="${n}">Tenho ${n}h hoje</button>`).join('')}</div>
+    <p class="fraco" style="margin:0;font-size:14px">Conte as horas livres de verdade: eu deixo 20% para pausas. Para as <b>8 h de estudo</b> do plano, são cerca de <b>10 h livres</b>.</p>
     <textarea id="hoje-ia-txt" data-ui="diaTexto" rows="2" placeholder="Opcional: conte seus horários de hoje (ex.: treino às 18h, médico às 14h, estudo das 8h às 12h e das 15h30 às 17h30)">${esc(ui.diaTexto || '')}</textarea>
     <div class="linha"><button class="botao grande" data-acao="hojeIaMontar">Montar meu dia (assuntos + horários)</button>
       <button class="botao contorno" data-acao="ir" data-v="meudia">Ver rotina base / amanhã</button></div></section>`;
@@ -1153,7 +1157,7 @@ function exportar() {
 }
 
 const ACOES = {
-  ir: el => { ui.view = el.dataset.v; ui.apagar = false; fecharModal(); window.scrollTo(0, 0); render(); },
+  ir: el => { ui.view = el.dataset.v; ui.apagar = false; ui.iaMsg = ''; fecharModal(); window.scrollTo(0, 0); render(); },
   fechar: () => { ui.chatAberto = false; fecharModal(); },
   fecharAviso: () => { ui.iaMsg = ''; ui.desfazer = null; render(); },
   desfazer: () => {

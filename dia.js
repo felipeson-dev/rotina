@@ -397,7 +397,7 @@ function programacaoHojeHtml(d) {
                 ${b.materia ? `<span class="tag" style="${cor(b.materia)}">${esc(b.materia)}</span>` : ''}
                 <span class="ag-ass-tit">${esc(b.titulo)}</span>
                 ${ehCont ? '<span class="selo flexivel" style="font-size:11px">continuação</span>' : ''}
-                <small class="fraco">(${fmtMin(b.min || 30)})</small>
+                <small class="fraco">(${(() => { const jt = b.janelas?.find(j => j.idx === jIdx); return b.janelas?.length > 1 && jt ? `${fmtMin(jt.min)} de ${fmtMin(b.min || 30)}` : fmtMin(b.min || 30); })()})</small>
               </label>
               <div class="linha" style="gap:2px">
                 <button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="-1" ${pos <= 0 ? 'disabled' : ''} title="Subir na ordem">↑</button>

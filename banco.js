@@ -106,7 +106,7 @@ async function carregarBanco() {
       }
     } catch (e) { BANCO.msg = 'Não consegui abrir o banco: ' + e.message; }
     BANCO.pronto = true; BANCO.carregando = false; BANCO._prom = null; render();
-    sincronizarPacotesBanco(false);
+    BANCO._sync = sincronizarPacotesBanco(false);   // quem precisa das questões na hora (primeiro uso) pode esperar essa promessa
   })();
   return BANCO._prom;
 }
@@ -242,6 +242,7 @@ function ignorarHtml() {
 function qMontar() {
   if (!BANCO.pronto) { carregarBanco(); return '<section class="cartao"><p class="fraco" style="margin:0">Abrindo o banco de questões…</p></section>'; }
   const f = ui.qf, todos = BANCO.itens;
+  if (!todos.length && BANCO.baixando) return `<section class="cartao"><h2>Escolher questões</h2><p style="margin:0">Baixando o banco de questões (só na primeira vez, leva alguns minutos). Pode usar o resto do app enquanto isso.</p><p class="fraco" style="margin:6px 0 0">${esc(BANCO.msg || '')}</p></section>`;
   if (!todos.length) return `<section class="cartao"><h2>Escolher questões</h2><p style="margin:0">O banco está vazio. Importe os arquivos de questões ou baixe o ENEM logo abaixo.</p></section><!--meta-->${cartaoBanco(true)}`;
   const achadas = filtrarBanco();
   // cada caixa mostra quantas questões há em cada opção, já considerando as outras caixas

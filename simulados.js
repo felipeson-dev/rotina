@@ -122,7 +122,7 @@ document.addEventListener('change', e => { const k = e.target.dataset?.uiSim; if
   const l = S.simulados.slice().sort((a, b) => a.dia < b.dia ? -1 : 1).slice(-12);
   if (!l.length) return v0();
   const html = `<section class="cartao"><h2>Simulados e provas</h2><div class="des-barras">${l.map(s => { const p = pctDe(s.acertos, s.total);
-    return `<div class="des-col" title="${esc(s.nome)}: ${p}%"><span class="des-n">${p}%</span><i style="height:${Math.max(4, p)}%;background:${dsCorAc(p)}"></i><small>${diaCurto(s.dia).slice(0, 5)}</small></div>`; }).join('')}</div>
+    return `<div class="des-col" title="${esc(s.nome)}: ${p}%"><span class="des-n">${p}%</span><i style="height:${Math.max(4, p)}%;background:${dsCorAc(p)}"></i><small>${s.dia.slice(8, 10)}/${s.dia.slice(5, 7)}</small></div>`; }).join('')}</div>
     <div class="linha"><button class="botao claro" data-acao="simVer">Ver todos</button></div></section>`;
   return v0().replace('<section class="cartao"><h2>Por matéria</h2>', html + '<section class="cartao"><h2>Por matéria</h2>');
 }; }
