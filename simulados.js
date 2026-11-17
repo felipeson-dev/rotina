@@ -94,8 +94,9 @@ Object.assign(ACOES, {
   simApagar: el => { S.simulados = S.simulados.filter(s => s.id !== el.dataset.id); salvar(); render(); },
   simComecar: async () => {
     const p = provasNoBanco().find(x => x.b === ui.simBanca && String(x.a) === String(ui.simAno)); if (!p) return;
-    await ACOES.qIniciarIds(p.ids);
-    Object.assign(ui.qs, { simulado: true, simNome: `${p.b} ${p.a}`, t0: Date.now() }); window.scrollTo(0, 0); render();
+    // marcada como simulado desde o começo: a prova inteira não entra nas "listas em andamento" (ocupava o armazenamento do aparelho)
+    await ACOES.qIniciarIds(p.ids, { simulado: true, simNome: `${p.b} ${p.a}`, t0: Date.now() });
+    if (ui.qs) Object.assign(ui.qs, { simulado: true, simNome: `${p.b} ${p.a}` }); window.scrollTo(0, 0); render();
   },
   qProxSim: () => { const s = ui.qs; if (s.i + 1 < s.itens.length) { s.i++; window.scrollTo(0, 0); } render(); },
   simEntregar: () => {

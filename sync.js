@@ -22,7 +22,7 @@ function widgetDados() {
 async function syncPush() {
   const c = lerSync(); if (!c.token) return;
   const t = S._t || Date.now();
-  const files = { 'rotina.json': { content: JSON.stringify({ t, S }) }, 'widget.json': { content: JSON.stringify(widgetDados()) } };
+  const files = { 'rotina.json': { content: JSON.stringify({ t, S }, compactarS) }, 'widget.json': { content: JSON.stringify(widgetDados()) } };
   try {
     const r = await fetch(c.id ? `${GH}/${c.id}` : GH, { method: c.id ? 'PATCH' : 'POST', headers: { Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github+json' },
       body: JSON.stringify(c.id ? { files } : { description: 'Rotina (dados do app)', public: false, files }) });

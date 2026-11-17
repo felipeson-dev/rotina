@@ -297,9 +297,15 @@ Object.assign(ACOES, {
     const s = ui.qs, q = s.itens[s.i]; if (q.resp != null || !q.esc) return;
     fecharItem(s); q.resp = q.esc; q.esc = null; q.certo = q.resp === q.gab; registrarHist(q); contabilizarQuestaoRespondida(s, q); render();
   },
-  qContinuarLista: el => {
+  qContinuarLista: async el => {
     const k = el.dataset.k, s = S.listasAbertas?.[k];
     if (!s || !s.itens?.length) return;
+    // questões guardadas enxutas: o texto e as imagens voltam do banco
+    if (s.itens.some(q => q && q._leve)) {
+      const cheias = await Promise.all(s.itens.map(q => typeof qCheia === 'function' ? qCheia(q) : q));
+      s.itens = cheias.filter(Boolean);
+      if (!s.itens.length) { delete S.listasAbertas[k]; salvar(); ui.iaMsg = 'As questões dessa lista não estão mais no banco deste aparelho. Abra Questões para baixar o banco e monte a lista de novo.'; render(); return; }
+    }
     const proxIdx = s.itens.findIndex(q => q.resp == null);
     s.i = proxIdx >= 0 ? proxIdx : Math.max(0, s.itens.length - 1);
     s.tq = Date.now(); s.fim = false;

@@ -159,7 +159,8 @@ async function adicionarQuestoes(lista) {
   if (atual.length) { await BD.put(atual); BANCO.atualizadas = (BANCO.atualizadas || 0) + atual.length; }
   const ja = new Set(BANCO.itens.map(m => m.id)), ks = new Set(BANCO.itens.map(m => m.k).filter(Boolean)), novos = [];
   for (const q of lista) { if (!q || !q.id || ja.has(q.id)) continue; const k = chaveQ(q); if (ks.has(k)) { BANCO.repetidas = (BANCO.repetidas || 0) + 1; continue; } ja.add(q.id); ks.add(k); novos.push(q); }
-  if (novos.length) { await BD.put(novos); BANCO.itens.push(...novos.map(metaDe)); }
+  // em partes: cada parte gravada já fica disponível (no Safari a gravação é lenta, e o 1º uso não precisa esperar o pacote inteiro)
+  for (let i = 0; i < novos.length; i += 400) { const parte = novos.slice(i, i + 400); await BD.put(parte); BANCO.itens.push(...parte.map(metaDe)); }
   if (novos.length || atual.length || teste.size) await BD.setMeta(BANCO.itens);
   return novos.length;
 }

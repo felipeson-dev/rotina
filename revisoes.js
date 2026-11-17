@@ -140,7 +140,15 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
   if (!BANCO.pronto) await carregarBanco();
   fecharModal();
   // primeiro uso: o banco ainda está baixando em segundo plano; espera terminar em vez de dizer que não há questões
-  if (BANCO.itens.length < 5000 && BANCO._sync) { ui.carregando = 'Baixando o banco de questões (só na primeira vez, leva alguns minutos)…'; render(); try { await BANCO._sync; } catch (e) {} ui.carregando = ''; }
+  // só até chegar o primeiro pacote (Fuvest, Unicamp e UNESP, ~5.800 questões): o resto continua baixando enquanto ela estuda
+  if (BANCO.itens.length < 5000 && BANCO._sync) {
+    let acabou = false; BANCO._sync.then(() => { acabou = true; }, () => { acabou = true; });
+    while (!acabou && BANCO.itens.length < 5000) {
+      ui.carregando = `Baixando o banco de questões (só na primeira vez)… ${BANCO.itens.length ? BANCO.itens.length.toLocaleString('pt-BR') + ' prontas' : 'começando'}`; render();
+      await new Promise(r => setTimeout(r, 1000));
+    }
+    ui.carregando = '';
+  }
   const prio = q => !S.qh[q.id] ? 0 : (!S.qh[q.id].ok ? 1 : 2);
   const bancaBoa = q => /fuvest|unicamp|unesp|vunesp|unifesp|santa casa|einstein|fmabc|famerp|famema|sao camilo|são camilo|sirio|sírio|fmj|enem/i.test(q.b || '') ? 0 : 1;
   const naoMilitar = q => !/^(ita|ime)$/i.test(q.b || '');

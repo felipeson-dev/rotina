@@ -86,8 +86,25 @@ function carregar() {
   if (s.resetTesteV !== 2) { s.resetTesteV = 2; zerarDadosTeste(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
   return s;
 }
+/* Listas em andamento: a questão do banco é guardada só com o que é DELA (resposta, tempo, acerto); o texto e as imagens voltam do banco
+   ao continuar a lista. Com a questão inteira (imagens embutidas), poucas listas abertas enchiam os ~5 MB do Safari e o app parava de salvar. */
+const Q_PESADOS = ['enunciado', 'imagens', 'alts', 'coment', 'img', 'res_ia', 'duvidas', 'flashcards', 'prev', 'fig', 'w', 'h', 'corte', 'topo', 'dep', 'discIa'];
+function qLeve(q) { if (!q || !q.id || q._leve) return q; const o = { _leve: 1 }; for (const [k, v] of Object.entries(q)) if (!Q_PESADOS.includes(k)) o[k] = v; return o; }
+function compactarS(k, v) {
+  if (k !== 'listasAbertas' || !v || typeof v !== 'object') return v;
+  const o = {}; for (const [c, s] of Object.entries(v)) o[c] = s && Array.isArray(s.itens) ? { ...s, itens: s.itens.map(qLeve) } : s;
+  return o;
+}
+/** Devolve a questão inteira de uma lista guardada (busca no banco o que foi enxugado); null se ela não está mais no banco. */
+async function qCheia(q) {
+  if (!q || !q._leve) return q;
+  const r = typeof BD !== 'undefined' ? await BD.get(q.id).catch(() => null) : null; if (!r) return null;
+  const ex = S.qExtras?.[q.id] || {}, { _leve, ...meu } = q;
+  return { enunciado: r.enunciado, imagens: r.imagens || [], alts: r.alts, coment: r.coment || '', fig: r.fig, modo: r.modo || '', img: r.img || '', w: r.w, h: r.h, corte: r.corte, topo: r.topo || 0, prev: r.prev || '', dep: r.dep || 0,
+    res_ia: ex.res_ia || r.res_ia || '', duvidas: ex.duvidas || r.duvidas || [], flashcards: ex.flashcards || r.flashcards || [], discIa: ex.discIa || r.discIa || null, gab: r.gab, ...meu };
+}
 function salvar() {
-  try { localStorage.setItem(CHAVE, JSON.stringify(S)); } catch (e) { ui.iaMsg = 'Não consegui salvar neste aparelho: ' + e.message; }
+  try { localStorage.setItem(CHAVE, JSON.stringify(S, compactarS)); } catch (e) { ui.iaMsg = 'Não consegui salvar neste aparelho: ' + e.message; }
 }
 function lerChaves() { try { return JSON.parse(localStorage.getItem(CHAVE_IA) || '[]'); } catch { return []; } }
 function gravarChaves(ks) { try { localStorage.setItem(CHAVE_IA, JSON.stringify(ks)); } catch { } }
@@ -1149,7 +1166,7 @@ function aplicarCores() {
 }
 
 function exportar() {
-  const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(S, compactarS, 1)], { type: 'application/json' });
   const nome = `rotina-copia-${hoje()}.json`;
   const arq = new File([blob], nome, { type: 'application/json' });
   if (navigator.canShare?.({ files: [arq] })) { navigator.share({ files: [arq], title: nome }).catch(() => { }); return; }
