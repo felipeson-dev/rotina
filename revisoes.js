@@ -112,8 +112,11 @@ const fixacao = () => estudados().filter(a => PESADAS_REV.includes(a.materia) &&
     }
     // vaga maior, nos dias de revisão: questões de assuntos já estudados; ~30 min por assunto
     if (c.maior > 0 && diasRev().includes(deIso(hoje()).getDay()) && !ja.some(b => b.vaga === 'semana')) {
-      const fora = [...usados, ...novos.flatMap(b => b.revisao)], l = escolherRevisao(Math.max(1, Math.floor(c.maior / 30)), fora);
-      if (l.length) novos.push(blocoRev('Revisão da semana: questões de assuntos já estudados', l, c.maior, 'semana'));
+      // fora: os que já estão em outra vaga e os estudados há menos de 3 dias (esses têm a fixação e a volta de 7 dias)
+      const recente = somaDias(hoje(), -3), fora = [...usados, ...novos.flatMap(b => b.revisao), ...estudados().filter(a => a.feitoEm && a.feitoEm > recente && !a.fraco).map(a => a.id)];
+      const l = escolherRevisao(Math.max(1, Math.floor(c.maior / 30)), fora);
+      // a vaga tem o tamanho do que há para revisar (~30 min por assunto), nunca mais que o teto
+      if (l.length) novos.push(blocoRev('Revisão da semana: questões de assuntos já estudados', l, Math.min(c.maior, l.length * 30), 'semana'));
     }
   }
   const usado = soma(novos, b => b.min);

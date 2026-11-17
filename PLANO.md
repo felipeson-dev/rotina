@@ -157,6 +157,11 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Revisoes: vagas pre-programadas de tempo fixo (Ajustes): 'Revisao do dia' (padrao 20 min, todo dia) e 'Revisao da semana' (padrao 150 min, qua e sab). O tamanho nunca cresce: o excedente espera a proxima vaga. Assuntos escolhidos pelo app (fixacao 24-48 h das exatas, vencidas de 7/30 dias, fracas, mais cobradas) ou por ela ('Escolher eu mesma').
 - Discursivas: objetivo.py --disc (entradas sem letra; corte na primeira 'Resolucao'); ferramentas/baixar_discursivas.py (2015+, bancas dela) -> objetivo-disc-<banca>.json; empacotar.py gera D1/D2. App (discursivas.js): caixa Tipo (objetivas/discursivas), resposta com a caneta (quadro guardado por questao), padrao de resposta do Objetivo, autoavaliacao (acertei/em parte/errei) e correcao pela IA lendo a letra.
 
+## v44 (17/11/2026) - vaga grande de revisão do tamanho certo
+- A "Revisão da semana" (até 3 h, 2x por semana) reservava as 3 h mesmo com 1 assunto para revisar: agora ~30 min por assunto, até o teto; deixa de fora os estudados há menos de 3 dias (já têm fixação e a volta de 7 dias), salvo os marcados como fracos.
+- Simulação de 9 semanas (17/11 a 18/01, cumprindo 50-100% dos blocos, faltas em 02-03/12, Natal e Ano-Novo): conteúdo em dia (221 h feitas x 220 h previstas), atrasados entre 0 e 6, revisões vencidas param em 4-18 (não explodem). Pontos da semana ficam abaixo da meta quando ela não cumpre o dia inteiro (meta só fecha com ~100% dos blocos).
+- Sem internet (service worker ligado à mão no teste local): abre, monta lista e mostra imagens das questões.
+
 ## v43 (17/11/2026) - revisão geral e simulação de uso
 - Primeiro uso: "Fazer questões" espera o banco baixar (antes dizia "não há questões"); a tela de montar lista mostra "Baixando o banco..." em vez de "O banco está vazio".
 - Montar o dia: botão de 10 h e aviso de que 8 h de estudo pedem ~10 h livres (o app reserva 20% para pausas).
