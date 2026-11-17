@@ -159,7 +159,7 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 
 ## v49 (17/11/2026) - plano v4: aulas do Ferretto
 - Pedido do Felipe: basear nos assuntos e tempos da plataforma dela (Professor Ferretto), 1,25x, sem folga extra (a folga fica no dia: 20% das horas livres; e no plano: 10% da semana, respiro e julho).
-- Lista de aulas tirada pelo Claude no Chrome: C:otina-bancoerrettoerretto_aulas.csv (2.565 aulas; conferida: somas, numeração). Correspondência feita à mão: ferretto\mapa.py (cada assunto do plano -> módulo e aulas). Aulas "Revisão - ..." fora (revisão é por questões no app); aprofundamento só onde o assunto é todo de aprofundamento (marcado como opcional).
+- Lista de aulas tirada pelo Claude no Chrome: C:\rotina-banco\ferretto\ferretto_aulas.csv (2.565 aulas; conferida: somas, numeração). Correspondência feita à mão: ferretto\mapa.py (cada assunto do plano -> módulo e aulas). Aulas "Revisão - ..." fora (revisão é por questões no app); aprofundamento só onde o assunto é todo de aprofundamento (marcado como opcional).
 - Gerador: planejamento\plano_v4.py (usa o plano_v3: classes, ordem, simulação) + gerar_app_v4.py (cada parte leva as aulas do Ferretto que cabem nela, campo 'ferretto'; 'ant' = nome no v3). 4 assuntos novos: Introdução à Biologia, propriedades dos compostos orgânicos, século XIX europeu, História da Arte (matéria Artes, fim de fila).
 - Números (100% de cumprimento): 896 h (aula 481 + questões 414); assuntos que mais caem terminam ~24/07, todos ~14/08; férias em 12/07; revisão geral na semana de 26/07.
 - App: crono.js leva o progresso pelo nome antigo (chaveNova usa 'ant'); etapa de teoria e janela do assunto mostram as aulas do Ferretto; aviso próprio do v4.
