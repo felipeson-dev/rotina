@@ -157,6 +157,12 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Revisoes: vagas pre-programadas de tempo fixo (Ajustes): 'Revisao do dia' (padrao 20 min, todo dia) e 'Revisao da semana' (padrao 150 min, qua e sab). O tamanho nunca cresce: o excedente espera a proxima vaga. Assuntos escolhidos pelo app (fixacao 24-48 h das exatas, vencidas de 7/30 dias, fracas, mais cobradas) ou por ela ('Escolher eu mesma').
 - Discursivas: objetivo.py --disc (entradas sem letra; corte na primeira 'Resolucao'); ferramentas/baixar_discursivas.py (2015+, bancas dela) -> objetivo-disc-<banca>.json; empacotar.py gera D1/D2. App (discursivas.js): caixa Tipo (objetivas/discursivas), resposta com a caneta (quadro guardado por questao), padrao de resposta do Objetivo, autoavaliacao (acertei/em parte/errei) e correcao pela IA lendo a letra.
 
+## v46 (17/11/2026) - troca de plano sem perder nada
+- aplicarCronograma (crono.js) agora leva para o plano novo, por id (troca de cenário) ou por nome + fração estudada (v2 -> v3, partes diferentes): feito, feitoEm, rev, questoes, qdia, fraco, dia, tempos ajustados por ela (manual) e semana que ela mudou (semOrig guarda a semana original; preenchido também nos dados antigos).
+- Blocos de hoje em diante que apontavam para assunto que sumiu passam para o equivalente novo (concluído -> parte feita; não concluído -> próxima parte não feita); sem equivalente e não começado, sai.
+- Datas de prova que ela corrigiu ficam em S.datasDela e sobrevivem à ida e volta entre cenários.
+- Testado: atualização real rotina-41 (v2, usado: assunto feito, 20 questões, fraco, cartão, redação) -> rotina-46 no mesmo navegador; ida e volta capital/Campinas.
+
 ## v45 (17/11/2026) - proteção contra perda de dados
 - Espaço: os dados ficam no localStorage (Safari garante ~5 MB; contamos 2,5 milhões de caracteres como teto seguro). Medido: erro com a questão inteira ~1.000 caracteres, questão respondida (S.qh) ~100, dia ~1.900. Em um ano passaria do limite.
 - Caderno de erros enxuto: erro de questão do banco guarda só trecho (160), gabarito, resposta e texto da certa (120) — ~380 caracteres; a questão completa vem do banco ao abrir o erro (evento toggle) e ao refazer. Erros antigos são enxugados 8 s após abrir o app, só se a questão estiver no banco do aparelho (enxugarErros). Refazer pula erro enxuto cuja questão sumiu do banco.
