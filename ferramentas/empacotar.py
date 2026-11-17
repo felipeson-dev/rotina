@@ -17,6 +17,7 @@ GRUPOS = [  # mesmos grupos de oficiais.py
     ('8-oficiais-outras-SP-e-exatas', ['pucsp', 'fgvsp', 'ita', 'fatec', 'ufscar', 'ufabc', 'insper', 'mackenzie']),
     ('9-oficiais-ENEM-com-resolucao', ['enem']),
     ('A-simulados', ['simulados']),   # simulados oficiais (pdf_provas.py); banca "Simulado ...": só aparecem na aba Simulados
+    ('B-PUC-Campinas', ['puccamp']),  # PUC-Campinas Medicina, cadernos oficiais (pdf_puccamp.py), desde 17/11/2026
 ]
 
 GRUPOS_DISC = [
@@ -91,7 +92,18 @@ def principal():
         shutil.copy2(p, os.path.join(PACOTES_WEB, nome + '.json.gz'))
         arquivos_gerados.append(nome + '.json.gz')
         print(f'{nome}: {len(lista)} discursivas · {os.path.getsize(p) / 1e6:.1f} MB', flush=True)
-    manifesto = {'v': int(time.time()), 'total': total_t + total_i, 'texto': total_t, 'arquivos': arquivos_gerados}
+    # versão POR PACOTE: pacote com o mesmo conteúdo de antes mantém a versão (o iPad não baixa de novo); só o que mudou ganha versão nova
+    agora = int(time.time())
+    ant_man = {}
+    try: ant_man = json.load(open(os.path.join(PACOTES_WEB, 'manifesto.json'), encoding='utf-8'))
+    except Exception: pass
+    ant_hash = ant_man.get('hash', {}); ant_por = ant_man.get('por', {}); por, hashes = {}, {}
+    import hashlib
+    for arq in arquivos_gerados:
+        h = hashlib.sha1(gzip.open(os.path.join(PACOTES_WEB, arq)).read()).hexdigest()[:16]   # conteúdo, não o .gz (o .gz guarda a hora em que foi feito)
+        hashes[arq] = h
+        por[arq] = ant_por.get(arq, ant_man.get('v', agora)) if ant_hash.get(arq) == h else agora
+    manifesto = {'v': agora, 'total': total_t + total_i, 'texto': total_t, 'arquivos': arquivos_gerados, 'por': por, 'hash': hashes}
     with open(os.path.join(PACOTES_WEB, 'manifesto.json'), 'w', encoding='utf-8') as f:
         json.dump(manifesto, f, ensure_ascii=False)
 

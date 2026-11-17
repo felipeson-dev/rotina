@@ -36,8 +36,8 @@ const areaDeQ = q => q.ar || AREA_DA_MATERIA[q.m] || '';
 const rotuloArea = a => (AREAS_Q.find(x => x[0] === a) || [, ''])[1];
 // Grupos de bancas (seleção minha, por nome): São Paulo, Medicina e "provas exigentes parecidas com Fuvest/Vunesp" de outros estados
 const PRESETS_BANCA = {
-  sp: ['Bancas de SP', /fuvest|\busp\b|unicamp|unesp|vunesp|unifesp|famerp|famema|santa casa|fmabc|einstein|puc-?sp|puc campinas|fgv|fatec|etec|mackenzie|unitau|unisa|unimep|\busf\b|uninove|ufscar|ufabc|insper|facere|fmj|fameg|unaerp|unifran|fcmsc|cesumar|esamc/i],
-  med: ['Medicina', /medicina|famerp|famema|santa casa|fmabc|einstein|unifesp|facere|fmj|fameg|fame\b|famevaço|cusc|unieva|famene|fcm\b|uniceplac|famesp|cesmac med/i],
+  sp: ['Bancas de SP', /fuvest|\busp\b|unicamp|unesp|vunesp|unifesp|famerp|famema|santa casa|fmabc|einstein|puc-?sp|puc[- ]?campinas|fgv|fatec|etec|mackenzie|unitau|unisa|unimep|\busf\b|uninove|ufscar|ufabc|insper|facere|fmj|fameg|unaerp|unifran|fcmsc|cesumar|esamc/i],
+  med: ['Medicina', /medicina|puc[- ]?campinas|famerp|famema|santa casa|fmabc|einstein|unifesp|facere|fmj|fameg|fame\b|famevaço|cusc|unieva|famene|fcm\b|uniceplac|famesp|cesmac med/i],
   exigentes: ['Exigentes (parecem Fuvest/Vunesp)', /unicamp|unesp|ufrgs|uerj|ufmg|unb|ufpr|uel\b|ufsc|ufrj|ufpe|ufc\b|ufba|puc|fgv|mackenzie|\bita\b|\bime\b|espcex|enem|uff|ufscar|unifesp|ufu|uem|uepg|ufes|usp|fuvest|vunesp/i],
 };
 
@@ -123,7 +123,13 @@ async function sincronizarPacotesBanco(forcar = false) {
     if (!forcar && BANCO.itens.length >= 20000 && vAtual >= (man.v || 0) && semAssunto < 100) return;
     BANCO.baixando = true; BANCO.repetidas = 0; BANCO.atualizadas = 0;
     let total = 0;
+    // versão por pacote (manifesto.por): só baixa o pacote que é novo ou mudou. Quem já tinha o banco completo conta como tendo a versão
+    // global antiga em todos os pacotes; cada pacote baixado grava a sua (se a internet cair no meio, continua de onde parou)
+    const pv = (await DB.get('banco:pacotespv')) || {};
+    const base = BANCO.itens.length >= 20000 ? vAtual : 0;
     for (const arq of man.arquivos || []) {
+      const vArq = man.por?.[arq];
+      if (!forcar && vArq != null && (pv[arq] ?? base) >= vArq) continue;
       BANCO.msg = `Atualizando pacote ${arq.replace('.json.gz', '')}…`; render();
       const r = await fetch('pacotes/' + arq);
       if (!r.ok) continue;
@@ -131,6 +137,7 @@ async function sincronizarPacotesBanco(forcar = false) {
       const j = JSON.parse(txt), lista = Array.isArray(j) ? j : j.questoes || [];
       const ok = lista.map(normalizarImportada).filter(Boolean);
       total += await adicionarQuestoes(ok);
+      if (vArq != null) { pv[arq] = vArq; await DB.set('banco:pacotespv', pv); }
     }
     await DB.set('banco:pacotesv', man.v || Date.now());
     BANCO.msg = total || BANCO.atualizadas ? `Banco sincronizado: ${BANCO.itens.length.toLocaleString('pt-BR')} questões prontas.` : '';

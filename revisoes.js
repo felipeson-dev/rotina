@@ -150,7 +150,7 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
     ui.carregando = '';
   }
   const prio = q => !S.qh[q.id] ? 0 : (!S.qh[q.id].ok ? 1 : 2);
-  const bancaBoa = q => /fuvest|unicamp|unesp|vunesp|unifesp|santa casa|einstein|fmabc|famerp|famema|sao camilo|são camilo|sirio|sírio|fmj|enem/i.test(q.b || '') ? 0 : 1;
+  const bancaBoa = q => /fuvest|unicamp|unesp|vunesp|unifesp|santa casa|einstein|fmabc|famerp|famema|sao camilo|são camilo|sirio|sírio|fmj|enem|puc[- ]?campinas/i.test(q.b || '') ? 0 : 1;
   const naoMilitar = q => !/^(ita|ime)$/i.test(q.b || '');
   const ids = [];
   for (const a of lista) {
