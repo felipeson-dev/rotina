@@ -158,9 +158,7 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Discursivas: objetivo.py --disc (entradas sem letra; corte na primeira 'Resolucao'); ferramentas/baixar_discursivas.py (2015+, bancas dela) -> objetivo-disc-<banca>.json; empacotar.py gera D1/D2. App (discursivas.js): caixa Tipo (objetivas/discursivas), resposta com a caneta (quadro guardado por questao), padrao de resposta do Objetivo, autoavaliacao (acertei/em parte/errei) e correcao pela IA lendo a letra.
 
 ## v42 (17/11/2026) - plano v3 (cronograma, metas, revisões)
-- cronograma.js v3 gerado por C:
-otina-banco\planejamento\gerar_app.py a partir de plano-v3.json (plano_v3.py: incidência medida, classes A/B/C, cauda cortável, simulador semanal). Documento: C:
-otina-banco\planejamento\plano-v3.md. Itens de conteúdo têm cls ('A'|'B'|'C') e cauda.
+- cronograma.js v3 gerado por C:otina-banco\planejamento\gerar_app.py a partir de plano-v3.json (plano_v3.py: incidência medida, classes A/B/C, cauda cortável, simulador semanal). Documento: C:otina-banco\planejamento\plano-v3.md. Itens de conteúdo têm cls ('A'|'B'|'C') e cauda.
 - crono.js: cenário em S.perfil.cenario ('capital' padrão | 'campinas'), Ajustes > "Onde vou prestar" reaplica o cronograma (provas e, de maio em diante, obras). Sem dias de limpeza (v3 usa semanas de respiro com menos itens).
 - metas.js: com o plano, meta SEMANAL em CRONOGRAMA.pontos; dia montado = tempo de questões dos blocos (bloco − aula) por matéria; sem dia montado = 20 pts por hora livre depois de aula/obra/redação/simulado; piso 40; domingo 0. "Usar esses pontos" vira manual (p.manual) com botão "Voltar à meta do plano". Painel mostra semana e horas de conteúdo contra o previsto.
 - revisoes.js: intervalos 7/30/70 (3ª só A e B, depois prox=null); prioridade A>B>C e exatas; perdão de C vencida há 21 dias; vagas 15 min/dia + 2 × 180 min (225 a partir de março).
