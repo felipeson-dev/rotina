@@ -157,6 +157,15 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Revisoes: vagas pre-programadas de tempo fixo (Ajustes): 'Revisao do dia' (padrao 20 min, todo dia) e 'Revisao da semana' (padrao 150 min, qua e sab). O tamanho nunca cresce: o excedente espera a proxima vaga. Assuntos escolhidos pelo app (fixacao 24-48 h das exatas, vencidas de 7/30 dias, fracas, mais cobradas) ou por ela ('Escolher eu mesma').
 - Discursivas: objetivo.py --disc (entradas sem letra; corte na primeira 'Resolucao'); ferramentas/baixar_discursivas.py (2015+, bancas dela) -> objetivo-disc-<banca>.json; empacotar.py gera D1/D2. App (discursivas.js): caixa Tipo (objetivas/discursivas), resposta com a caneta (quadro guardado por questao), padrao de resposta do Objetivo, autoavaliacao (acertei/em parte/errei) e correcao pela IA lendo a letra.
 
+## v43 (17/11/2026) - revisão geral e simulação de uso
+- Primeiro uso: "Fazer questões" espera o banco baixar (antes dizia "não há questões"); a tela de montar lista mostra "Baixando o banco..." em vez de "O banco está vazio".
+- Montar o dia: botão de 10 h e aviso de que 8 h de estudo pedem ~10 h livres (o app reserva 20% para pausas).
+- Aviso do topo some ao trocar de tela (antes ficava preso).
+- Assunto dividido entre dois turnos mostra o tempo daquele turno ("2h24 de 3h02").
+- Gráfico de simulados no Desempenho: data dd/mm (antes saía cortada, "ter 1").
+- Simulação (Chrome isolado): montar dia, questões do assunto, concluir assunto -> fixação no dia seguinte e volta de 7 dias, semana nova com atrasados, lista do banco, caderno de erros, prova antiga inteira + entrega, discursivas, redação sem chave (mensagem ok), Caderno, Desempenho, Semana/Ano/Planejamento, troca capital/Campinas, voltar e F5. Não testado no iPad.
+- Observação: datas de 2027 são estimadas; Fuvest 1ª fase está 21/11/2027 (em 2026 foi 01/11, antes do ENEM). Corrigir quando sair o edital.
+
 ## v42 (17/11/2026) - plano v3 (cronograma, metas, revisões)
 - cronograma.js v3 gerado por C:\rotina-banco\planejamento\gerar_app.py a partir de plano-v3.json (plano_v3.py: incidência medida, classes A/B/C, cauda cortável, simulador semanal). Documento: C:\rotina-banco\planejamento\plano-v3.md. Itens de conteúdo têm cls ('A'|'B'|'C') e cauda.
 - crono.js: cenário em S.perfil.cenario ('capital' padrão | 'campinas'), Ajustes > "Onde vou prestar" reaplica o cronograma (provas e, de maio em diante, obras). Sem dias de limpeza (v3 usa semanas de respiro com menos itens).
