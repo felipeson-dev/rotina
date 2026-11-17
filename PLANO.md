@@ -157,6 +157,13 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Revisoes: vagas pre-programadas de tempo fixo (Ajustes): 'Revisao do dia' (padrao 20 min, todo dia) e 'Revisao da semana' (padrao 150 min, qua e sab). O tamanho nunca cresce: o excedente espera a proxima vaga. Assuntos escolhidos pelo app (fixacao 24-48 h das exatas, vencidas de 7/30 dias, fracas, mais cobradas) ou por ela ('Escolher eu mesma').
 - Discursivas: objetivo.py --disc (entradas sem letra; corte na primeira 'Resolucao'); ferramentas/baixar_discursivas.py (2015+, bancas dela) -> objetivo-disc-<banca>.json; empacotar.py gera D1/D2. App (discursivas.js): caixa Tipo (objetivas/discursivas), resposta com a caneta (quadro guardado por questao), padrao de resposta do Objetivo, autoavaliacao (acertei/em parte/errei) e correcao pela IA lendo a letra.
 
+## v50 (17/11/2026) - PUC-Campinas no banco
+- 140 questões: Medicina 2026 e 2027 (Prova Geral 1-50 + Prova Específica de Química e Biologia, salvas como 51-70), cadernos oficiais baixados do Estratégia (C:\rotina-banco\puc-campinas\pdf). Gabaritos 2027 em texto; 2026 só em imagem, transcritos à mão em puc-campinas\gabaritos-mao.json (conferido: 70 letras).
+- Leitor: ferramentas\pdf_puccamp.py (recorte em imagem, como o pdf_provas). Classificação: puc-campinas\classificar.py (semelhança de texto com o banco, só entre as matérias da seção) + revisão à mão de ~50 (assuntos.json).
+- Pacote próprio B-PUC-Campinas.json.gz (56 KB) + imagens em pacotes\img\puccamp (7,5 MB). Banca "PUC-Campinas" entra no filtro de SP, no de Medicina e na escolha de questões dos assuntos (bancaBoa). Aba Simulados: provas PUC-Campinas 2026 e 2027.
+- Manifesto com versão POR PACOTE (por, hash do conteúdo): o app só baixa pacote novo ou que mudou (banco:pacotespv); quem já tinha o banco baixou só os 56 KB. empacotar.py mantém a versão de pacote que não mudou.
+- Mais anos da PUC-Campinas: o acervo do prof. Filatte tem 161 PDFs (pede nome, e-mail e WhatsApp: ele baixa). Para entrar: PDF em puc-campinas\pdf, nova linha em EDICOES, gabarito, classificar, gravar.
+
 ## v49 (17/11/2026) - plano v4: aulas do Ferretto
 - Pedido do Felipe: basear nos assuntos e tempos da plataforma dela (Professor Ferretto), 1,25x, sem folga extra (a folga fica no dia: 20% das horas livres; e no plano: 10% da semana, respiro e julho).
 - Lista de aulas tirada pelo Claude no Chrome: C:\rotina-banco\ferretto\ferretto_aulas.csv (2.565 aulas; conferida: somas, numeração). Correspondência feita à mão: ferretto\mapa.py (cada assunto do plano -> módulo e aulas). Aulas "Revisão - ..." fora (revisão é por questões no app); aprofundamento só onde o assunto é todo de aprofundamento (marcado como opcional).
