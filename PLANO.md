@@ -157,6 +157,13 @@ Começado em 27/10/2026, num chat que era do app Ajudante. Este arquivo serve pa
 - Revisoes: vagas pre-programadas de tempo fixo (Ajustes): 'Revisao do dia' (padrao 20 min, todo dia) e 'Revisao da semana' (padrao 150 min, qua e sab). O tamanho nunca cresce: o excedente espera a proxima vaga. Assuntos escolhidos pelo app (fixacao 24-48 h das exatas, vencidas de 7/30 dias, fracas, mais cobradas) ou por ela ('Escolher eu mesma').
 - Discursivas: objetivo.py --disc (entradas sem letra; corte na primeira 'Resolucao'); ferramentas/baixar_discursivas.py (2015+, bancas dela) -> objetivo-disc-<banca>.json; empacotar.py gera D1/D2. App (discursivas.js): caixa Tipo (objetivas/discursivas), resposta com a caneta (quadro guardado por questao), padrao de resposta do Objetivo, autoavaliacao (acertei/em parte/errei) e correcao pela IA lendo a letra.
 
+## v45 (17/11/2026) - proteção contra perda de dados
+- Espaço: os dados ficam no localStorage (Safari garante ~5 MB; contamos 2,5 milhões de caracteres como teto seguro). Medido: erro com a questão inteira ~1.000 caracteres, questão respondida (S.qh) ~100, dia ~1.900. Em um ano passaria do limite.
+- Caderno de erros enxuto: erro de questão do banco guarda só trecho (160), gabarito, resposta e texto da certa (120) — ~380 caracteres; a questão completa vem do banco ao abrir o erro (evento toggle) e ao refazer. Erros antigos são enxugados 8 s após abrir o app, só se a questão estiver no banco do aparelho (enxugarErros). Refazer pula erro enxuto cuja questão sumiu do banco.
+- Ajustes > Cópia de segurança mostra o espaço usado (% de 2,5 milhões) e avisa a partir de 60%.
+- Sincronização: se o outro aparelho grava por cima de mudanças locais que não subiram (ex.: estudou sem internet), o app guarda a versão local (IndexedDB 'd:antesSync') e mostra em Ajustes "voltar ao que estava neste aparelho".
+- Próximo passo se o espaço passar de ~50%: levar S.qh e S.dias antigos para o IndexedDB.
+
 ## v44 (17/11/2026) - vaga grande de revisão do tamanho certo
 - A "Revisão da semana" (até 3 h, 2x por semana) reservava as 3 h mesmo com 1 assunto para revisar: agora ~30 min por assunto, até o teto; deixa de fora os estudados há menos de 3 dias (já têm fixação e a volta de 7 dias), salvo os marcados como fracos.
 - Simulação de 9 semanas (17/11 a 18/01, cumprindo 50-100% dos blocos, faltas em 02-03/12, Natal e Ano-Novo): conteúdo em dia (221 h feitas x 220 h previstas), atrasados entre 0 e 6, revisões vencidas param em 4-18 (não explodem). Pontos da semana ficam abaixo da meta quando ela não cumpre o dia inteiro (meta só fecha com ~100% dos blocos).

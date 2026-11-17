@@ -127,8 +127,8 @@ function qErros() {
   return `<section class="cartao"><div class="entre"><h2>Caderno de erros</h2><span class="fraco">${S.erros.length} questões · ${venc.length} para rever hoje</span></div>
     <div class="linha"><button class="botao" data-acao="qRefazerErros">Refazer ${venc.length || S.erros.length} erros</button></div>
     ${S.erros.slice().reverse().map(e => `<div class="erro-item" style="${cor(e.materia)}"><div class="entre"><span class="tag" style="${cor(e.materia)}">${esc(e.materia)}</span><span class="fraco" style="font-size:13px">${esc(e.fonte)} · ${diaCurto(e.dia)}${e.vezes ? ` · refeita ${e.vezes}x` : ''}</span></div>
-      <details><summary class="link">${esc((e.enunciado || '').replace(/\s+/g, ' ').slice(0, 110))}…</summary>${e.modo === 'objetivo' && e.img && typeof recorteObj === 'function' ? recorteObj(e, false) : `<div class="enunciado">${mdLite(e.enunciado)}</div>`}
-        <p class="fraco" style="margin:6px 0 0">${e.tipo === 'disc' ? `Discursiva: você se avaliou como <b>${e.resp === 'P' ? 'acertei em parte' : 'errei'}</b>.` : `Você marcou <b>${e.resp}</b>; a certa é <b>${e.gab}</b>${e.alts?.find(a => a.l === e.gab) ? `: ${esc(e.alts.find(a => a.l === e.gab).t)}` : ''}.`}</p>${e.coment ? `<div class="resolucao">${mdLite(e.coment)}</div>` : ''}
+      <details${e.leve ? ` data-erro-qid="${esc(e.qid)}"` : ''}><summary class="link">${esc((e.enunciado || '').replace(/\s+/g, ' ').slice(0, 110))}…</summary>${e.leve ? `<div class="erro-cheio"><div class="enunciado">${mdLite(e.enunciado)}…</div></div>` : e.modo === 'objetivo' && e.img && typeof recorteObj === 'function' ? recorteObj(e, false) : `<div class="enunciado">${mdLite(e.enunciado)}</div>`}
+        <p class="fraco" style="margin:6px 0 0">${e.tipo === 'disc' ? `Discursiva: você se avaliou como <b>${e.resp === 'P' ? 'acertei em parte' : 'errei'}</b>.` : `Você marcou <b>${e.resp}</b>; a certa é <b>${e.gab}</b>${e.gabTxt ? `: ${esc(e.gabTxt)}` : e.alts?.find(a => a.l === e.gab) ? `: ${esc(e.alts.find(a => a.l === e.gab).t)}` : ''}.`}</p>${e.coment ? `<div class="resolucao">${mdLite(e.coment)}</div>` : ''}
         <div class="linha"><button class="link" data-acao="qApagarErro" data-id="${e.id}">Apagar</button></div></details></div>`).join('')}</section>`;
 }
 
@@ -175,6 +175,36 @@ function assuntoCorrespondenteHoje(s, q) {
   return null;
 }
 
+/* Caderno de erros enxuto: cada erro com a questão inteira ocupava ~1.000 caracteres no armazenamento do navegador (no Safari, uns 5 MB);
+   em um ano de estudo isso passaria do limite. Erro de questão do banco guarda só um trecho, o gabarito e a resposta; o texto completo vem do banco. */
+function erroLeve(e, q) {
+  const certa = (q.alts || []).find(a => a.l === q.gab);
+  return { ...e, enunciado: String(q.enunciado || '').replace(/\s+/g, ' ').slice(0, 160), gabTxt: certa ? String(certa.t || '').slice(0, 120) : '', leve: 1 };
+}
+// erros antigos (cópia inteira) de questões que estão no banco: enxuga, conferindo uma a uma que a questão está mesmo no aparelho
+async function enxugarErros() {
+  if (typeof BD === 'undefined') return;
+  let n = 0;
+  for (const e of S.erros.slice()) {
+    if (e.leve || !e.qid) continue;
+    let r = null; try { r = await BD.get(e.qid); } catch { }
+    if (!r) continue;
+    const i = S.erros.indexOf(e); if (i < 0) continue;
+    const { enunciado, alts, coment, imagens, modo, img, w, h, corte, prev, dep, ...resto } = e;
+    S.erros[i] = erroLeve(resto, { enunciado, alts, gab: e.gab }); n++;
+  }
+  if (n) salvar();
+}
+setTimeout(() => { enxugarErros().catch(() => { }); }, 8000);
+// ao abrir um erro enxuto na lista, mostra a questão completa vinda do banco
+document.addEventListener('toggle', async ev => {
+  const det = ev.target; if (!det.open || !det.dataset?.erroQid || det.dataset.cheio) return;
+  const r = typeof BD !== 'undefined' ? await BD.get(det.dataset.erroQid).catch(() => null) : null; if (!r) return;
+  det.dataset.cheio = '1';
+  const alvo = det.querySelector('.erro-cheio'); if (!alvo) return;
+  alvo.innerHTML = (r.modo === 'objetivo' && r.img && typeof recorteObj === 'function' ? recorteObj(r, false) : `<div class="enunciado">${mdLite(r.enunciado)}</div>`) + (r.coment ? `<div class="resolucao">${mdLite(r.coment)}</div>` : '');
+}, true);
+
 /** Contabiliza cada questão assim que é respondida: atualiza a meta diária, o assunto de hoje e a lista aberta. */
 function contabilizarQuestaoRespondida(s, q) {
   if (!s || !q || q.resp == null || q.contabilizada) return;
@@ -188,6 +218,8 @@ function contabilizarQuestaoRespondida(s, q) {
   const ja = S.erros.find(e => (q.id && e.qid === q.id) || (q.enunciado && e.enunciado === q.enunciado));
   if (!q.certo) {
     if (ja) { ja.vezes = (ja.vezes || 0) + 1; ja.resp = q.resp; ja.rev = somaDias(h, 3); }
+    // questão do banco: guarda só o essencial (a questão completa já está no banco do aparelho); o resto, cópia inteira
+    else if (q.id && typeof BANCO !== 'undefined' && BANCO.itens.some(x => x.id === q.id)) S.erros.push(erroLeve({ id: uid(), dia: h, rev: somaDias(h, 3), vezes: 0, fonte: q.fonte, materia: q.materia, qid: q.id, resp: q.resp, gab: q.gab, tipo: q.tipo || '' }, q));
     else S.erros.push({ id: uid(), dia: h, rev: somaDias(h, 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment, qid: q.id || '', imagens: (q.imagens || []).filter(u => /^https:/.test(u)), modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, tipo: q.tipo || '' });
   } else if (ja && s.revisao) S.erros = S.erros.filter(e => e !== ja);
 
@@ -246,9 +278,12 @@ Object.assign(ACOES, {
     } catch (e) { ui.carregando = ''; ui.iaMsg = `Não consegui montar a lista (${e.message}). Tente de novo.`; render(); }
   },
   qRefazerErros: async () => {
-    const venc = S.erros.filter(e => e.rev <= hoje()), base = (venc.length ? venc : S.erros).slice(0, 15);
+    const venc = S.erros.filter(e => e.rev <= hoje()), base0 = (venc.length ? venc : S.erros).slice(0, 15);
     // a questão completa vem do banco (figuras recortadas, texto-base, e a versão em texto se ela chegou depois); o erro guardado é só o reserva
-    const recs = await Promise.all(base.map(e => e.qid && typeof BD !== 'undefined' ? BD.get(e.qid) : null));
+    const recs0 = await Promise.all(base0.map(e => e.qid && typeof BD !== 'undefined' ? BD.get(e.qid).catch(() => null) : null));
+    // erro enxuto sem a questão no aparelho (banco apagado): fica de fora até o banco voltar
+    const base = base0.filter((e, i) => recs0[i] || !e.leve), recs = recs0.filter((r, i) => r || !base0[i].leve);
+    if (!base.length) { ui.iaMsg = 'As questões desses erros não estão no banco deste aparelho. Abra Questões para baixar o banco e tente de novo.'; render(); return; }
     iniciarSessao(base.map((e, i) => { const r = recs[i] || {};
       return { fonte: e.fonte + ' · erro anterior', materia: r.materia || e.materia, assunto: r.assunto || '', enunciado: r.enunciado || e.enunciado, imagens: r.imagens || e.imagens || [], alts: r.alts || e.alts, gab: r.gab || e.gab,
         coment: r.coment ?? e.coment, id: e.qid || undefined, modo: r.id ? r.modo || '' : e.modo || '', img: r.img || e.img || '', w: r.w ?? e.w, h: r.h ?? e.h, corte: r.corte ?? e.corte,

@@ -40,6 +40,10 @@ async function syncPull(mostrar) {
     const txt = f.truncated ? await (await fetch(f.raw_url)).text() : f.content, rem = JSON.parse(txt);
     gravarSync({ ...lerSync(), erro: '', quando: Date.now() });
     if (rem.t > (S._t || 0) && rem.t !== c.ult) {           // o outro aparelho gravou depois: traz
+      // rede de segurança: se este aparelho tinha mudanças que não subiram (ex.: estudou sem internet), guarda uma cópia antes de trocar
+      let guardou = false;
+      if ((S._t || 0) > (c.ult || 0) && typeof DB !== 'undefined') { try { await DB.set('d:antesSync', JSON.stringify({ quando: Date.now(), S })); guardou = true; } catch { } }
+      if (guardou) gravarSync({ ...lerSync(), antes: Date.now() });
       syncAplicando = true; S = carregarDe(rem.S); salvar(); syncAplicando = false;
       if (typeof BD !== 'undefined' && S.qExtras) {
         (async () => { for (const [id, ex] of Object.entries(S.qExtras)) { try { const r = await BD.get(id); if (r) await BD.put([{ ...r, ...ex }]); } catch { } } })();
@@ -64,6 +68,12 @@ Object.assign(ACOES, {
     const c = lerSync(); ui.iaMsg = c.erro ? `Não consegui sincronizar (${c.erro}). Confira o token.` : `Sincronização ligada. Código para os outros aparelhos e para o widget: ${c.id}`; render();
   },
   syncAgora: async () => { await syncPull(false); await syncPush(); const c = lerSync(); ui.iaMsg = c.erro ? `Erro: ${c.erro}` : 'Sincronizado.'; render(); },
+  syncVoltarLocal: async () => {
+    const raw = typeof DB !== 'undefined' ? await DB.get('d:antesSync') : null; if (!raw) { ui.iaMsg = 'Não há cópia guardada.'; render(); return; }
+    const velho = JSON.parse(raw).S; syncAplicando = true; S = carregarDe(velho); syncAplicando = false; salvar();   // salvar marca a hora: os outros aparelhos recebem esta versão
+    await DB.del('d:antesSync'); const { antes, ...c } = lerSync(); gravarSync(c);
+    ui.iaMsg = 'Voltei ao que estava neste aparelho antes da sincronização. Os outros aparelhos recebem esta versão na próxima vez.'; render();
+  },
   syncDesligar: () => { gravarSync({}); ui.iaMsg = 'Sincronização desligada neste aparelho.'; render(); },
 });
 { const v0 = VIEWS.ajustes; VIEWS.ajustes = function () {
@@ -71,7 +81,8 @@ Object.assign(ACOES, {
   return v0() + `<section class="cartao"><h2>Sincronizar aparelhos e widget</h2>
     <p class="fraco" style="margin:0">Usa um arquivo secreto no GitHub. No 1º aparelho: cole o token e deixe o código em branco (o app cria). Nos outros: cole o mesmo token e o código. Desenhos à mão e o banco de questões não sincronizam.</p>
     ${c.token ? `<p style="margin:0"><b style="color:${c.erro ? '#C2483D' : '#2E8B57'}">${c.erro ? '✗ Não sincronizado: ' + esc(c.erro) : c.quando ? '✓ Sincronizado' : '… ainda não sincronizou'}</b>${c.quando ? ` · última vez às ${new Date(c.quando).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} de ${diaCurto(iso(new Date(c.quando)))}` : ''}</p><p style="margin:0">Código (use este nos outros aparelhos e no widget): <b style="user-select:all">${esc(c.id || '(ainda não criado)')}</b></p>
-      <div class="linha"><button class="botao" data-acao="syncAgora">Sincronizar agora</button><button class="link" data-acao="syncDesligar">Desligar neste aparelho</button></div>`
+      <div class="linha"><button class="botao" data-acao="syncAgora">Sincronizar agora</button><button class="link" data-acao="syncDesligar">Desligar neste aparelho</button></div>
+      ${c.antes ? `<p class="fraco" style="margin:0">Em ${diaCurto(iso(new Date(c.antes)))}, os dados do outro aparelho entraram por cima de mudanças deste que ainda não tinham subido. Se sumiu alguma coisa: <button class="link" data-acao="syncVoltarLocal">voltar ao que estava neste aparelho</button></p>` : ''}`
     : `<label class="campo">Token do GitHub (só permissão de gist)<input type="password" id="sync-token" autocomplete="off"></label>
       <label class="campo">Código (deixe em branco no 1º aparelho)<input type="text" id="sync-id" autocomplete="off"></label>
       <div class="linha"><button class="botao" data-acao="syncSalvar">Ligar</button></div>`}</section>`;

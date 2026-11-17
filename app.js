@@ -924,6 +924,8 @@ function vAjustes() {
     </section>
     <section class="cartao"><h2>Cópia de segurança</h2>
       <p class="fraco" style="margin:0">Os dados ficam neste aparelho. De vez em quando, salve uma cópia.</p>
+      ${(() => { let n = 0; try { n = (localStorage.getItem(CHAVE) || '').length; } catch { } const pct = Math.round(n / 2.5e6 * 100);
+        return `<p class="fraco" style="margin:0">Espaço usado pelos dados: ${(n / 1e6).toFixed(1).replace('.', ',')} milhão de caracteres (${pct}% do que o navegador garante).${pct >= 60 ? ' <b style="color:#C2483D">Está ficando cheio: salve uma cópia e avise o Felipe.</b>' : ''}</p>`; })()}
       <div class="linha"><button class="botao claro" data-acao="exportar">Salvar cópia</button>
         <label class="botao contorno" style="display:inline-flex;align-items:center">Restaurar cópia<input type="file" accept="application/json,.json" data-acao-arquivo="importar" hidden></label>
         <button class="botao contorno" data-acao="zerarTestes">Zerar questões e marcações de teste</button></div>
