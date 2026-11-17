@@ -4,7 +4,7 @@
    parte do estudo vira "questões de assuntos já estudados", escolhidos pelo app (vencidos, fracos, mais cobrados) ou marcados por ela.
    Também: "Fazer questões no app" direto do assunto (Hoje, janela do assunto e revisões), abatendo o passo de questões do bloco. */
 const diasRev = () => S.perfil.diasRev || [3, 6];   // dias de revisão (0 = domingo … 6 = sábado); padrão: quarta e sábado
-const INTERVALOS_REV = [7, 30, 60];     // dias até a 1ª, 2ª e as próximas voltas
+const INTERVALOS_REV = [7, 30, 70];     // dias até a 1ª, 2ª e 3ª voltas (a 3ª só para assuntos A e B; depois o assunto volta pelos simulados e pela revisão da semana)
 
 /** Quantas questões oficiais desse assunto há no banco (o quanto ele cai nas provas). */
 function cobranca(a) { return BANCO.pronto ? BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.as === tagDe(a)).length : 0; }
@@ -20,9 +20,11 @@ function acertoDe(a) {
 function agendarRev(a, pct = null) {
   const r = a.rev ||= { n: 0, hist: [] };
   if (pct != null) r.hist = [...(r.hist || []), [hoje(), pct]].slice(-8);
+  const fim = r.n >= INTERVALOS_REV.length || (r.n >= 2 && a.cls === 'C');
+  r.teoria = pct != null && pct < 60;
+  if (fim && !r.teoria) { r.prox = null; return; }   // voltas acabaram: segue só pela revisão da semana, pelos simulados e pelo caderno de erros
   const base = INTERVALOS_REV[Math.min(r.n, INTERVALOS_REV.length - 1)];
   const dias = pct == null ? base : pct >= 80 ? Math.round(base * 1.5) : pct >= 60 ? base : 4;
-  r.teoria = pct != null && pct < 60;
   r.prox = somaDias(hoje(), dias);
 }
 
@@ -39,7 +41,11 @@ function revisaoFeita(a, pct = null) {
   if (ok && ehConteudo(a) && (!a.parte || a.parte[0] === a.parte[1])) { a.rev = { n: 0, hist: [] }; agendarRev(a); } else if (!ok) delete a.rev; }; }
 
 const estudados = () => S.assuntos.filter(a => a.feito && ehConteudo(a) && (!a.parte || a.parte[0] === a.parte[1]));   // tópico em partes conta uma vez (a última)
-const vencidas = (dia = hoje()) => estudados().filter(a => a.rev?.prox && a.rev.prox <= dia).sort((x, y) => x.rev.prox < y.rev.prox ? -1 : 1);
+// perdão: revisão de assunto C (cai pouco) vencida há 3 semanas sai da fila; ele volta na revisão geral de julho
+function perdoarRevisoes() { const lim = somaDias(hoje(), -21); for (const a of estudados()) if (a.cls === 'C' && a.rev?.prox && a.rev.prox < lim) { a.rev.prox = null; a.rev.perdoada = hoje(); } }
+// prioridade quando vence mais do que cabe: A antes de B antes de C, exatas antes, depois a mais antiga
+const prioRev = a => ({ A: 3, B: 2, C: 1 }[a.cls] || 2) + (['Matemática', 'Física', 'Química'].includes(a.materia) ? 0.5 : 0);
+const vencidas = (dia = hoje()) => { perdoarRevisoes(); return estudados().filter(a => a.rev?.prox && a.rev.prox <= dia).sort((x, y) => prioRev(y) - prioRev(x) || (x.rev.prox < y.rev.prox ? -1 : 1)); };
 
 /** Os assuntos já estudados que mais precisam de questões agora: vencidos, marcados como fracos, com acerto baixo, mais cobrados, há mais tempo sem ver. */
 function escolherRevisao(n, fora = []) {
@@ -47,7 +53,7 @@ function escolherRevisao(n, fora = []) {
   return estudados().filter(a => !fora.includes(a.id)).map(a => {
     const pct = acertoDe(a), atraso = a.rev?.prox && a.rev.prox <= h ? (deIso(h) - deIso(a.rev.prox)) / 864e5 : -1;
     const semVer = (deIso(h) - deIso(a.rev?.ult || a.feitoEm || h)) / 864e5;
-    const nota = (atraso >= 0 ? 100 + atraso : 0) + (a.fraco ? 40 : 0) + (pct != null && pct < 60 ? 30 : pct != null && pct < 75 ? 12 : 0) + Math.log2(1 + cobranca(a)) * 4 + Math.min(20, semVer / 3);
+    const nota = (atraso >= 0 ? 100 + atraso + 15 * prioRev(a) : 0) + (a.fraco ? 40 : 0) + (pct != null && pct < 60 ? 30 : pct != null && pct < 75 ? 12 : 0) + Math.log2(1 + cobranca(a)) * 4 + Math.min(20, semVer / 3);
     return { a, nota };
   }).sort((x, y) => y.nota - x.nota).slice(0, n).map(x => x.a);
 }
@@ -59,7 +65,8 @@ const blocoRev = (titulo, lista, min, vaga) => ({ id: uid(), assuntoId: null, ti
    O tamanho das vagas nunca cresce: se houver mais revisões vencidas do que cabe, as menos urgentes esperam a próxima vaga.
    O app escolhe os assuntos (24–48 h depois para exatas, vencidos, fracos, mais cobrados) e ela pode trocar. */
 // a partir de março (fase de aprofundamento) as vagas crescem um pouco, se ela não mudou nada em Ajustes
-function cfgRev() { const tarde = hoje() >= '2027-03-01'; return { diario: tarde ? 30 : 20, maior: tarde ? 180 : 150, ...(S.perfil.revCfg || {}) }; }
+// v3: 15 min por dia (fixação das exatas e vencidas urgentes) + 2 vagas grandes por semana; teto de 6 h por semana (7h30 a partir de março)
+function cfgRev() { const tarde = hoje() >= '2027-03-01'; return { diario: 15, maior: tarde ? 225 : 180, ...(S.perfil.revCfg || {}) }; }
 /** Assunto do banco de questões que corresponde ao tópico (o cronograma usa tópicos mais finos que o banco). */
 const tagDe = a => {
   if (!a) return '';
@@ -265,9 +272,9 @@ Object.assign(ACOES, {
   const nomes = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'], c = cfgRev();
   const op = (k, vs) => vs.map(v => `<button class="chip" data-acao="revCfg" data-k="${k}" data-v="${v}" aria-pressed="${c[k] === v}">${v ? fmtMin(v) : 'nenhuma'}</button>`).join('');
   return v0() + `<section class="cartao"><h2>Revisões</h2>
-    <p class="fraco" style="margin:0">As revisões têm hora marcada e tempo fixo: o resto do dia nunca é engolido por elas. O assunto estudado volta em 1 semana, depois em 1 mês (e se adapta ao seu acerto); exatas ganham também uma revisão rápida 1 a 2 dias depois. Se acumular mais do que cabe, as menos urgentes esperam a próxima vaga.</p>
+    <p class="fraco" style="margin:0">As revisões têm hora marcada e tempo fixo: o resto do dia nunca é engolido por elas. O assunto estudado volta em 1 semana, 1 mês e ~70 dias (essa só para os que mais caem), e se adapta ao seu acerto; exatas ganham também uma revisão rápida 1 a 2 dias depois. Se acumular mais do que cabe, os que mais caem entram primeiro e os outros esperam a próxima vaga; revisão de assunto que cai pouco vencida há 3 semanas é perdoada.</p>
     <span class="rotulo">revisão do dia (todo dia)</span><div class="linha">${op('diario', [0, 15, 20, 30, 45])}</div>
-    <span class="rotulo">revisão maior</span><div class="linha">${op('maior', [0, 60, 90, 120, 150, 180])}</div>
+    <span class="rotulo">revisão maior</span><div class="linha">${op('maior', [0, 60, 90, 120, 150, 180, 225])}</div>
     <span class="rotulo">dias da revisão maior</span><div class="linha">${nomes.map((n, i) => `<button class="chip" data-acao="diaRev" data-v="${i}" aria-pressed="${diasRev().includes(i)}">${n}</button>`).join('')}</div>
     <p class="fraco" style="margin:0;font-size:14px">Por semana: ${fmtMin(c.diario * 6 + c.maior * diasRev().length)} de revisão · ${estudados().length} assuntos já estudados · ${vencidas().length} vencidas hoje · ${estudados().filter(a => a.fraco).length} marcados como fracos</p></section>`;
 }; }

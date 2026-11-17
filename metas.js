@@ -15,7 +15,32 @@ const qDia = d => Object.entries(S.qlog[d] || {}).filter(([m]) => m);
 const feitasDia = d => soma(qDia(d), ([, v]) => v.f);
 const acerto = (f, a, s = 0) => (f - s) > 0 ? Math.round(a / (f - s) * 100) : null;
 const fmtT = seg => seg >= 60 ? fmtMin(Math.round(seg / 60)) : seg ? '<1 min' : '—';
-const pontosDia = d => { const p = planoQ(), wd = deIso(d).getDay(); return p.dias?.[wd] ?? p.total; };
+/* Plano v3: a meta vem da SEMANA (CRONOGRAMA.pontos) e o dia se ajusta ao tempo de aula do dia:
+   pontos do dia ≈ 20 × (horas de estudo do dia − horas de aula − horas de redação/obra/simulado), piso 40; domingo livre. Se ela definir pontos à mão, vale o dela. */
+const HABITO_SEM_Q = ['redacao', 'obra', 'simulado', 'autopsia', 'disc'];
+const pontosDaQ = d => soma(qDia(d), ([m, v]) => v.f * custoQ(m));
+const metaSemanaPlano = (w = semAtual()) => (typeof CRONOGRAMA !== 'undefined' && CRONOGRAMA.pontos) ? (CRONOGRAMA.pontos[w] ?? null) : null;
+const pontosSemanaFeitos = (w = semAtual()) => soma(Array.from({ length: 7 }, (_, i) => somaDias(w, i)), pontosDaQ);
+function minAulaDoDia(d) {
+  let aula = 0, fixo = 0;
+  for (const b of S.dias[d]?.blocos || []) {
+    const a = b.assuntoId && achar(b.assuntoId);
+    if (a && ehConteudo(a)) aula += Math.min(b.min || 0, a.teoria || 0);
+    else if (a && HABITO_SEM_Q.includes(a.habito)) fixo += b.min || a.min || 0;
+  }
+  return aula + fixo;
+}
+const usaPlanoQ = () => !planoQ().manual && metaSemanaPlano() != null;
+const pontosDia = d => {
+  const p = planoQ(), wd = deIso(d).getDay();
+  if (!p.manual && metaSemanaPlano(segunda(d)) != null) {
+    if (wd === 0 || metaSemanaPlano(segunda(d)) === 0) return 0;
+    if ((S.dias[d]?.blocos || []).length) { const o = metasDosBlocos(d); if (Object.keys(o).length) return Math.max(40, soma(Object.entries(o), ([m, n]) => n * custoQ(m))); }
+    const cap = S.dias[d]?.cap || 420;   // minutos de estudo que ela disse ter no dia (sem o dia montado: 7 h)
+    return Math.max(40, Math.round(20 * Math.max(0, cap - minAulaDoDia(d)) / 60 / 10) * 10);   // 1 ponto ≈ 3 min
+  }
+  return p.dias?.[wd] ?? p.total;
+};
 
 /** Matérias do dia: as dos assuntos de hoje; sem plano, as da semana (até 3); mais as que já tiveram questões hoje. */
 function materiasDoDia() {
@@ -25,7 +50,21 @@ function materiasDoDia() {
   return [...new Set([...mats, ...feitas])];
 }
 /** Questões de cada matéria: os pontos do dia divididos igualmente entre as matérias, e cada parte dividida pelo custo da matéria. */
+/** Plano v3 com o dia montado: a meta de cada matéria é o tempo de questões dos blocos do dia (bloco de assunto = tempo do bloco − aula). */
+function metasDosBlocos(d = hoje()) {
+  const o = {};
+  for (const b of S.dias[d]?.blocos || []) {
+    if (b.tipo === 'revisao' || !MIN_Q[b.materia]) continue;
+    const a = b.assuntoId && achar(b.assuntoId);
+    if (a && !ehConteudo(a) && HABITO_SEM_Q.includes(a.habito)) continue;
+    const minQ = Math.max(0, (b.min || 0) - (a && ehConteudo(a) ? Math.min(b.min || 0, a.teoria || 0) : 0));
+    o[b.materia] = (o[b.materia] || 0) + minQ / (minPorQ(b.materia) * 1.25);
+  }
+  for (const m in o) o[m] = Math.max(5, Math.round(o[m] / 5) * 5);
+  return o;
+}
 function metasPorMateria() {
+  if (usaPlanoQ() && deIso(hoje()).getDay() !== 0 && (S.dias[hoje()]?.blocos || []).length) { const o = metasDosBlocos(); if (Object.keys(o).length) return o; }
   const mats = materiasDoDia(), pts = pontosDia(hoje()), o = {};
   if (!mats.length || !pts) return o;
   for (const m of mats) o[m] = Math.max(5, Math.round(pts / mats.length / custoQ(m) / 5) * 5);
@@ -115,7 +154,13 @@ function painelQuestoes() {
     <div class="resumo-dia"><div><strong>${r.f}</strong><span>questões feitas</span></div><div><strong>${ac != null ? ac + '%' : '—'}</strong><span>de acerto</span></div><div><strong>${fmtT(r.t)}</strong><span>de tempo anotado</span></div>${r.comMeta ? `<div><strong>${r.batidos}/${r.comMeta}</strong><span>dias com meta batida</span></div>` : ''}</div>
     ${graficoPeriodo(dias, per)}
     ${Object.keys(r.mats).length ? `<div class="coluna" style="gap:6px"><span class="rotulo">por matéria</span>${Object.entries(r.mats).sort((a, b) => b[1].f - a[1].f).map(([m, v]) => `<div class="foco-linha" style="${cor(m)}"><span><i class="ponto"></i> ${esc(m)} <small class="fraco">· ${acerto(v.f, v.a, v.s) ?? '—'}% de acerto${v.t ? ` · ${(v.t / v.f / 60).toFixed(1)} min/questão` : ''}</small></span><span class="fraco">${v.f}</span><div class="barra"><i style="width:${Math.round(v.f / Math.max(1, r.f) * 100)}%;background:var(--c)"></i></div></div>`).join('')}</div>` : ''}`;
-  const plano = `<p class="fraco" style="margin:0;font-size:14px">A meta é um orçamento em pontos: <b>${p.total} pontos</b> por dia. Questão de Biologia, História, Português etc. vale 1 ponto; de Matemática, Física e Química vale 2 (levam mais tempo). Ou seja, ${p.total} questões leves ou ${Math.round(p.total / 2)} pesadas. O app reparte entre as matérias do dia.</p>
+  const marco = (() => { if (typeof CRONOGRAMA === 'undefined' || !CRONOGRAMA.marcos) return '';
+    const hc = a => (tempoDe(a).t + tempoDe(a).q * minPorQ(a.materia) * 1.25) / 60, cont = S.assuntos.filter(a => a.crono && ehConteudo(a));
+    const feitoH = Math.round(soma(cont.filter(a => a.feito), hc)), previsto = Math.round(soma(cont.filter(a => a.semana < semAtual()), hc)), alvo = CRONOGRAMA.marcos[mesDe(hoje())];
+    return `<p style="margin:0;font-size:14px">Conteúdo novo já estudado: <b>${feitoH} h</b> · previsto até a semana passada: <b>${previsto} h</b>${alvo ? ` · marco do fim do mês: ${alvo} h` : ''}.${previsto - feitoH > 80 ? ' <b>Atraso de mais de 3 semanas:</b> hora do plano B (pular os assuntos de cauda).' : previsto - feitoH > 28 ? ' Atraso de mais de 1 semana: use a gordura da semana e a próxima semana de respiro.' : ''}</p>`; })();
+  const plano = (usaPlanoQ() || planoQ().manual) && metaSemanaPlano() != null ? `<p class="fraco" style="margin:0;font-size:14px">${planoQ().manual ? `Você está usando ${p.total} pontos por dia definidos à mão.` : `A meta vem do plano: <b>${metaSemanaPlano()} pontos nesta semana</b>. O dia se ajusta sozinho às aulas: com o dia montado, a meta é o tempo de questões de cada assunto do dia; sem o dia montado, 20 pontos por hora livre depois das aulas. Nunca menos de 40; domingo é livre.`} Questão de Matemática, Física e Química vale 2 pontos; as outras valem 1.</p>
+    ${marco}
+    <div class="linha">${planoQ().manual ? '<button class="botao" data-acao="mqPlano">Voltar à meta do plano</button>' : ''}<span class="fraco">ou defina pontos por dia à mão:</span>${stepperHtml('mq-total', p.total, 0, 400)}<button class="botao claro" data-acao="mqTotal">Usar esses pontos</button></div>` : `<p class="fraco" style="margin:0;font-size:14px">A meta é um orçamento em pontos: <b>${p.total} pontos</b> por dia. Questão de Biologia, História, Português etc. vale 1 ponto; de Matemática, Física e Química vale 2 (levam mais tempo). Ou seja, ${p.total} questões leves ou ${Math.round(p.total / 2)} pesadas. O app reparte entre as matérias do dia.</p>
     <textarea data-ui="mqTexto" id="mq-texto" placeholder="Ou escreva do seu jeito: esta semana quero mais, domingo descanso, estou atrasada em Física…">${esc(ui.mqTexto || '')}</textarea>
     <div class="linha"><button class="botao" data-acao="mqPlanejar">Ajustar com a IA</button><span class="fraco">ou defina:</span>${stepperHtml('mq-total', p.total, 0, 400)}<button class="botao claro" data-acao="mqTotal">Usar esses pontos</button></div>
     <label class="linha" style="gap:8px;cursor:pointer"><input type="checkbox" data-acao="mqComp" ${p.compensar ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--rosa)"> Compensar parte do que faltar ontem (até +25%)</label>
@@ -123,6 +168,7 @@ function painelQuestoes() {
   return `<section class="cartao painel-q"><div class="pq-topo">${anelQ(feito, meta)}
       <div class="coluna" style="gap:6px"><h2>Questões de hoje</h2>
         <p style="margin:0">${descanso ? 'Hoje é dia de descanso de questões.' : meta ? `Meta: <b>${meta} questões</b> (${pts} pontos) · faltam <b>${Math.max(0, meta - feito)}</b>${tempoMeta ? ` · ≈ ${fmtMin(tempoMeta)}` : ''}` : 'Sem meta por enquanto: monte o seu dia.'}</p>
+        ${usaPlanoQ() ? (() => { const ms = metaSemanaPlano(), fs = pontosSemanaFeitos(); return `<p style="margin:0">Semana: <b>${fs} de ${ms} pontos</b> do plano${fs >= ms ? ' ✓' : ` · faltam ${ms - fs}`}</p>`; })() : ''}
         <div class="linha">${linhaMat}</div>
         ${capMin && tempoMeta > capMin ? `<p style="margin:0;color:#9C3D07;font-size:14px">⚠ Passa do tempo de estudo de hoje (${fmtMin(capMin)}).</p>` : ''}
         <div class="linha"><button class="botao" data-acao="qForaRapido">+ Fiz questões fora do app</button>${feito ? `<span class="fraco">${feito} feitas${tq ? ` em ${fmtMin(tq)}` : ''}</span>` : ''}</div></div></div>
@@ -171,13 +217,14 @@ document.addEventListener('toggle', e => { const k = e.target?.dataset?.k; if (k
 document.addEventListener('input', e => {
   if (e.target?.id === 'mq-total') {
     const n = Math.max(0, Math.min(400, Math.round(+e.target.value || 0)));
-    const p = planoQ(); p.total = n; p.dias = {}; salvar();
+    const p = planoQ(); p.total = n; p.dias = {}; p.manual = true; salvar();
   }
 });
 Object.assign(ACOES, {
   mqPer: el => { ui.mqPer = el.dataset.v; ui.ab.ritmo = true; render(); },
   mqComp: el => { planoQ().compensar = el.checked; ui.ab.plano = true; salvar(); render(); },
-  mqTotal: () => { const n = Math.round(+document.getElementById('mq-total')?.value); if (n >= 0) { const p = planoQ(); p.total = n; p.dias = {}; p.resposta = ''; ui.ab.plano = true; salvar(); ui.iaMsg = `Meta diária: ${n} pontos.`; render(); } },
+  mqPlano: () => { planoQ().manual = false; ui.ab.plano = true; salvar(); ui.iaMsg = 'De volta à meta do plano.'; render(); },
+  mqTotal: () => { const n = Math.round(+document.getElementById('mq-total')?.value); if (n >= 0) { const p = planoQ(); p.total = n; p.dias = {}; p.manual = true; p.resposta = ''; ui.ab.plano = true; salvar(); ui.iaMsg = `Meta diária: ${n} pontos.`; render(); } },
   mqPlanejar: async () => {
     const t = ($('#mq-texto')?.value || ui.mqTexto || '').trim(); if (!t) { ui.iaMsg = 'Escreva como você quer fazer as questões.'; render(); return; }
     ui.mqTexto = t; ui.carregando = 'Ajustando a meta…'; ui.ab.plano = true; render();
@@ -189,7 +236,7 @@ Responda SÓ com JSON: {"total":120,"dias":{"dom":0},"resposta":"1 frase objetiv
       const p = planoQ(), tot = Math.round(+r.total);
       if (tot >= 0 && tot <= 400) p.total = tot;
       p.dias = {}; for (const [k, v] of Object.entries(r.dias || {})) { const i = DIAS_NOME.indexOf(String(k).toLowerCase().slice(0, 3)); if (i >= 0 && +v >= 0 && +v !== p.total) p.dias[i] = Math.round(+v); }
-      p.texto = t; p.resposta = String(r.resposta || ''); ui.mqTexto = ''; salvar();
+      p.texto = t; p.manual = true; p.resposta = String(r.resposta || ''); ui.mqTexto = ''; salvar();
     } catch (e) { ui.iaMsg = `Não consegui ajustar agora (${e.message}).`; }
     ui.carregando = ''; render();
   },
