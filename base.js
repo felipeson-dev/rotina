@@ -65,6 +65,7 @@ const CONTEUDO = {
   'Inglês': ['Interpretação de textos em inglês', 'Vocabulário, cognatos e falsos cognatos', 'Tempos verbais e voz passiva', 'Conectivos e pronomes'],
   'Filosofia': ['Filosofia antiga e medieval', 'Filosofia moderna e contemporânea'],
   'Sociologia': ['Clássicos: Durkheim, Marx e Weber', 'Cultura, desigualdade e cidadania'],
+  'Artes': ['História da Arte'],
 };
 
 const TEMAS_REDACAO = ['Desafios da saúde mental', 'Acesso à saúde pública', 'Desinformação e redes sociais', 'Desigualdade social', 'Educação no Brasil', 'Meio ambiente e clima', 'Violência contra a mulher', 'Envelhecimento da população', 'Tecnologia e trabalho', 'Racismo estrutural', 'Fome e segurança alimentar', 'Cultura e identidade'];

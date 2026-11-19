@@ -147,8 +147,8 @@ const ui = { view: 'hoje', mesModo: 'lista', qs: null, mes: mesDe(hoje()), seman
 // ---------- planejamento: o plano é uma fila; cada assunto tem uma semana prevista, mas pode ser feito antes (adiantado) ou depois (atrasado) ----------
 // Tempo de um assunto de conteúdo = teoria + questões × minutos por questão (Matemática custa mais que Biologia) + correção.
 // A IA calibra `teoria` e `q` por assunto (densidade); itens com `min` fixo (redação, simulado, revisão) não mudam.
-const MIN_Q = { 'Matemática': 4.5, 'Física': 4.2, 'Química': 3.5, 'Biologia': 2.8, 'História': 2.6, 'Geografia': 2.7, 'Português': 2.8, 'Literatura': 2.6, 'Inglês': 2.5, 'Filosofia': 2.5, 'Sociologia': 2.5 };
-const Q_PADRAO = { 'Matemática': 25, 'Física': 20, 'Química': 20, 'Biologia': 25, 'História': 20, 'Geografia': 20, 'Português': 15, 'Literatura': 10, 'Inglês': 10, 'Filosofia': 10, 'Sociologia': 10 };
+const MIN_Q = { 'Matemática': 4.5, 'Física': 4.2, 'Química': 3.5, 'Biologia': 2.8, 'História': 2.6, 'Geografia': 2.7, 'Português': 2.8, 'Literatura': 2.6, 'Inglês': 2.5, 'Filosofia': 2.5, 'Sociologia': 2.5, 'Artes': 2.6 };
+const Q_PADRAO = { 'Matemática': 25, 'Física': 20, 'Química': 20, 'Biologia': 25, 'História': 20, 'Geografia': 20, 'Português': 15, 'Literatura': 10, 'Inglês': 10, 'Filosofia': 10, 'Sociologia': 10, 'Artes': 10 };
 const minPorQ = m => { if (S.minQ?.[m] > 0) return S.minQ[m]; const t = S.tq?.[m]; return t && t.n >= 8 ? Math.max(0.8, Math.min(12, t.seg / 60)) : MIN_Q[m] ?? 2.8; }; // aprende com o tempo real das listas de questões
 const tempoDe = a => ({ t: Math.max(25, a.teoria ?? 60), q: Math.max(8, a.q ?? Q_PADRAO[a.materia] ?? 15) });
 const minDe = a => {
@@ -720,7 +720,7 @@ function blocoHtml(b) {
       ${totB > 1 ? `<span class="linha" style="gap:2px"><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="-1" ${posB <= 0 ? 'disabled' : ''} title="Subir na ordem do dia">↑</button><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="1" ${posB < 0 || posB >= totB - 1 ? 'disabled' : ''} title="Descer na ordem do dia">↓</button></span>` : ''}
       <button class="x" data-acao="tirarBloco" data-b="${b.id}" aria-label="Tirar bloco">×</button></div>
     ${detalhes}
-    ${a ? `<div class="linha acoes-bloco">${ehConteudo(a) ? `<button class="link" data-acao="questoes" data-id="${a.id}">${a.questoes ? `Fiz fora (${a.questoes.acertos}/${a.questoes.feitas} certas)` : 'Fiz questões fora'}</button>` : ''}
+    ${a ? `<div class="linha acoes-bloco">${ehConteudo(a) ? `<button class="link" data-acao="questoes" data-id="${a.id}">${a.questoes ? ((a.questoes.semAc || 0) >= a.questoes.feitas ? `Fiz fora (${a.questoes.feitas} feitas)` : `Fiz fora (${a.questoes.acertos}/${a.questoes.feitas - (a.questoes.semAc || 0)} certas${a.questoes.semAc ? ` · +${a.questoes.semAc}` : ''})`) : 'Fiz questões fora'}</button>` : ''}
       <button class="link" data-acao="caderno" data-id="${a.id}">Caderno à mão</button></div>` : ''}
   </article>`;
 }

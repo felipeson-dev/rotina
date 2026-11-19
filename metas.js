@@ -126,12 +126,12 @@ function diasDoPeriodo(per) {
   return Object.keys(S.qlog).sort();
 }
 function resumoPeriodo(dias) {
-  let f = 0, a = 0, s = 0, t = 0, batidos = 0, comMeta = 0; const mats = {};
+  let f = 0, a = 0, s = 0, t = 0, tf = 0, batidos = 0, comMeta = 0; const mats = {};
   for (const d of dias) {
     const meta = d < hoje() ? S.qmeta[d] || 0 : 0; if (meta) { comMeta++; if (feitasDia(d) >= meta) batidos++; }
-    for (const [m, v] of qDia(d)) { f += v.f; a += v.a; s += v.s || 0; t += v.t || 0; const x = (mats[m] ||= { f: 0, a: 0, s: 0, t: 0 }); x.f += v.f; x.a += v.a; x.s += v.s || 0; x.t += v.t || 0; }
+    for (const [m, v] of qDia(d)) { f += v.f; a += v.a; s += v.s || 0; t += v.t || 0; tf += v.tf || (v.t ? v.f : 0); const x = (mats[m] ||= { f: 0, a: 0, s: 0, t: 0, tf: 0 }); x.f += v.f; x.a += v.a; x.s += v.s || 0; x.t += v.t || 0; x.tf += v.tf || (v.t ? v.f : 0); }
   }
-  return { f, a, s, t, batidos, comMeta, mats };
+  return { f, a, s, t, tf, batidos, comMeta, mats };
 }
 function graficoPeriodo(dias, per) {
   const max = Math.max(10, ...dias.map(d => Math.max(feitasDia(d), S.qmeta[d] || 0)));
@@ -144,7 +144,7 @@ function painelQuestoes() {
   const p = planoQ(), metas = metasPorMateria(), meta = metaTotal(), feito = feitasDia(hoje()), mats = Object.keys(metas);
   const tq = Math.round(soma(qDia(hoje()), ([, v]) => v.t || 0) / 60), tempoMeta = minQuestoes(metas), capMin = S.dias[hoje()]?.cap || 0;
   const per = ui.mqPer, dias = diasDoPeriodo(per), r = resumoPeriodo(dias), ac = acerto(r.f, r.a, r.s);
-  const pts = pontosDia(hoje()), descanso = p.dias?.[deIso(hoje()).getDay()] === 0;
+  const pts = pontosDia(hoje()), descanso = usaPlanoQ() ? pts === 0 : p.dias?.[deIso(hoje()).getDay()] === 0;
   const linhaMat = mats.map(m => { const f = feitasHoje(m); return `<span class="chip-q" style="${cor(m)}"><i class="ponto"></i>${esc(m)} <b>${f}/${metas[m]}</b>${f >= metas[m] ? ' ✓' : ''}</span>`; }).join('');
   const porMateria = mats.length ? mats.map(m => { const f = feitasHoje(m), v = (S.qlog[hoje()] || {})[m] || { f: 0, a: 0, s: 0 }, a2 = acerto(v.f, v.a, v.s || 0);
     return `<div class="meta-linha" style="${cor(m)}"><span><i class="ponto"></i>${esc(m)} <small class="fraco">· cada questão vale ${custoQ(m)} ponto${custoQ(m) > 1 ? 's' : ''}${a2 != null ? ` · ${a2}% de acerto` : ''}</small></span><span class="fraco">${f} de ${metas[m]}</span>
@@ -153,7 +153,7 @@ function painelQuestoes() {
   const ritmo = `<div class="alterna" role="group" style="align-self:flex-start">${[['semana', 'Semana'], ['mes', 'Mês'], ['tudo', 'Tudo']].map(([v, t]) => `<button data-acao="mqPer" data-v="${v}" aria-pressed="${per === v}">${t}</button>`).join('')}</div>
     <div class="resumo-dia"><div><strong>${r.f}</strong><span>questões feitas</span></div><div><strong>${ac != null ? ac + '%' : '—'}</strong><span>de acerto</span></div><div><strong>${fmtT(r.t)}</strong><span>de tempo anotado</span></div>${r.comMeta ? `<div><strong>${r.batidos}/${r.comMeta}</strong><span>dias com meta batida</span></div>` : ''}</div>
     ${graficoPeriodo(dias, per)}
-    ${Object.keys(r.mats).length ? `<div class="coluna" style="gap:6px"><span class="rotulo">por matéria</span>${Object.entries(r.mats).sort((a, b) => b[1].f - a[1].f).map(([m, v]) => `<div class="foco-linha" style="${cor(m)}"><span><i class="ponto"></i> ${esc(m)} <small class="fraco">· ${acerto(v.f, v.a, v.s) ?? '—'}% de acerto${v.t ? ` · ${(v.t / v.f / 60).toFixed(1)} min/questão` : ''}</small></span><span class="fraco">${v.f}</span><div class="barra"><i style="width:${Math.round(v.f / Math.max(1, r.f) * 100)}%;background:var(--c)"></i></div></div>`).join('')}</div>` : ''}`;
+    ${Object.keys(r.mats).length ? `<div class="coluna" style="gap:6px"><span class="rotulo">por matéria</span>${Object.entries(r.mats).sort((a, b) => b[1].f - a[1].f).map(([m, v]) => `<div class="foco-linha" style="${cor(m)}"><span><i class="ponto"></i> ${esc(m)} <small class="fraco">· ${acerto(v.f, v.a, v.s) ?? '—'}% de acerto${v.t && (v.tf || v.f) ? ` · ${(v.t / (v.tf || v.f) / 60).toFixed(1)} min/questão` : ''}</small></span><span class="fraco">${v.f}</span><div class="barra"><i style="width:${Math.round(v.f / Math.max(1, r.f) * 100)}%;background:var(--c)"></i></div></div>`).join('')}</div>` : ''}`;
   const marco = (() => { if (typeof CRONOGRAMA === 'undefined' || !CRONOGRAMA.marcos) return '';
     const hc = a => (tempoDe(a).t + tempoDe(a).q * minPorQ(a.materia) * 1.25) / 60, cont = S.assuntos.filter(a => a.crono && ehConteudo(a));
     const feitoH = Math.round(soma(cont.filter(a => a.feito), hc)), previsto = Math.round(soma(cont.filter(a => a.semana < semAtual()), hc)), alvo = CRONOGRAMA.marcos[mesDe(hoje())];
@@ -192,18 +192,18 @@ function ajustesQuestoesHtml() {
 function registrarFora(m, f, ac, min, assuntoId = '') {
   const d = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0, s: 0, t: 0 });
   d.f += f; if (ac == null) d.s = (d.s || 0) + f; else d.a += ac;
-  if (min > 0) { d.t = (d.t || 0) + min * 60; aprenderTempo(m, min * 60, f); }
+  if (min > 0) { d.t = (d.t || 0) + min * 60; d.tf = (d.tf || 0) + f; aprenderTempo(m, min * 60, f); }
   const h = hoje(), dia = S.dias[h];
   const bl = (dia?.blocos || []).find(b => assuntoId ? b.assuntoId === assuntoId : (b.materia === m && b.assuntoId && ehConteudo(achar(b.assuntoId))));
   if (bl) {
     const a = achar(bl.assuntoId);
     if (a) {
-      const ant = a.questoes || { feitas: 0, acertos: 0 };
-      a.questoes = { feitas: ant.feitas + f, acertos: ant.acertos + (ac != null ? ac : f) };
+      const ant = a.questoes || { feitas: 0, acertos: 0, semAc: 0 };
+      a.questoes = { feitas: ant.feitas + f, acertos: ant.acertos + (ac != null ? ac : 0), semAc: (ant.semAc || 0) + (ac == null ? f : 0) };
       a.qdia = h;
       const metaB = questoesDoBloco(bl);
       const p = (bl.passos || []).find(x => !x.ok && /quest/i.test(x.t));
-      if (p && a.questoes.feitas >= Math.min(metaB, f)) {
+      if (p && a.questoes.feitas >= metaB) {
         p.ok = true;
         S.feitos[h] = (S.feitos[h] || 0) + 1;
         if (bl.passos.every(x => x.ok)) setFeito(a, true, false);
