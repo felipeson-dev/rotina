@@ -76,7 +76,7 @@ function metasPorMateria() {
   }
   return o;
 }
-function metaTotal() { const t = soma(Object.values(metasPorMateria()), x => x); S.qmeta[hoje()] = t; return t; }
+function metaTotal() { const t = soma(Object.values(metasPorMateria()), x => x); (S.qmeta ||= {})[hoje()] = t; return t; }
 const feitasHoje = m => (S.qlog[hoje()] || {})[m]?.f || 0;
 const minQuestoes = metas => Math.round(soma(Object.entries(metas), ([m, n]) => n * minPorQ(m)));
 

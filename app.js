@@ -101,7 +101,7 @@ function carregar() {
   s = Object.assign(JSON.parse(JSON.stringify(VAZIO)), s || {});
   s.perfil = Object.assign({}, VAZIO.perfil, s.perfil);
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
-  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.qIgnorar ||= []; s.qProblemas ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
+  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.qmeta ||= {}; s.simulados ||= []; s.planoQ ||= { total: 120, dias: {}, compensar: true, texto: '', resposta: '' }; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.qIgnorar ||= []; s.qProblemas ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
   if ((s.resetTesteV || 0) < RESET_V) { s.resetTesteV = RESET_V; zerarUsoCompleto(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
   return s;
@@ -1362,7 +1362,7 @@ const ACOES = {
   exportar: () => exportar(),
   apagar: () => { ui.apagar = true; render(); },
   apagarNao: () => { ui.apagar = false; render(); },
-  apagarSim: () => { S = JSON.parse(JSON.stringify(VAZIO)); salvar(); ui.apagar = false; ui.view = 'ajustes'; render(); },
+  apagarSim: () => { try { localStorage.removeItem(CHAVE); } catch { } S = carregar(); salvar(); ui.apagar = false; ui.view = 'ajustes'; render(); },
   abrirIa: () => modalIa(),
   sugestaoIa: el => { const t = $('#ia-texto'); ui.iaTexto = el.dataset.v; if (t) t.value = el.dataset.v; },
   enviarIa: () => { const t = ($('#ia-texto')?.value || '').trim(); if (!t || ui.carregando) return; ui.iaTexto = ''; pedirIa(t, 'Pensando…', t); },

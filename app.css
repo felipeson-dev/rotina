@@ -614,7 +614,7 @@ input[type="search"]:focus { border-color: var(--acento); }
 .q-hist .h-meio { color: #A66F00; }
 
 /* tarefa única no bloco + etapas discretas expansíveis */
-.bloco-check { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; flex: 1; min-width: 0; }
+.bloco-check { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; flex: 1 1 240px; min-width: 0; }
 .check-bloco { width: 24px; height: 24px; margin-top: 2px; accent-color: var(--acento); flex: none; cursor: pointer; }
 .bloco.feito .bloco-check strong, .bloco.feito .bloco-check h3 { text-decoration: line-through; color: var(--fraco); }
 .etapas-bloco { border-top: 1px dashed var(--linha); padding-top: 8px; }
