@@ -93,7 +93,7 @@ function qQuestaoSimulado() {
       <div class="alts ${verImagem(q) ? 'so-letras' : ''}">${q.alts.map(a => `<button class="alt ${q.resp === a.l ? 'sel' : ''}" data-acao="qResp" data-v="${a.l}"><b>${a.l}</b><span>${mdLite(a.t)}</span></button>`).join('')}</div>
       <div class="q-nav"><button class="botao contorno" data-acao="qAnt" ${s.i ? '' : 'disabled'}>‹ Anterior</button><button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar rascunho' : 'Rascunho'}</button>
         <button class="botao claro" data-acao="qProxSim" ${s.i + 1 < s.itens.length ? '' : 'disabled'}>Próxima ›</button></div>
-      ${ui.qRasc ? quadroHtml('qtmp' + s.i, 420, 'quadriculado') : ''}</section>`;
+      ${ui.qRasc ? quadroHtml(qChaveRasc(s, 'qtmp'), 420, 'quadriculado') : ''}</section>`;
 }
 setInterval(() => { const el = document.getElementById('sim-relogio'); if (el && ui.qs?.simulado) el.textContent = fmtMin(Math.round((Date.now() - ui.qs.t0) / 60000)); }, 30000);
 

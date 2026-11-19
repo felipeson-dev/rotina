@@ -6,7 +6,7 @@
 // importar: as discursivas vêm no modo imagem, sem alternativas nem gabarito
 { const n0 = normalizarImportada; normalizarImportada = function (q, i) {
   if (q && q.tipo === 'disc' && q.modo === 'objetivo' && /^https:/.test(q.img || '') && q.corte > 0)
-    return { id: q.id, banca: String(q.banca), tipo: 'disc', ano: +q.ano || 0, area: AREA_DA_MATERIA[q.materia] || '', materia: q.materia || '', assunto: q.assunto || '', dif: '', fig: 0,
+    return { id: q.id, banca: String(q.banca), tipo: 'disc', ano: +q.ano || 0, area: AREA_DA_MATERIA[q.materia] || '', materia: q.materia || '', assunto: limAss(q.assunto), dif: '', fig: 0,
       enunciado: String(q.enunciado || ''), imagens: [], alts: [], gab: '', coment: String(q.coment || ''), fonte: String(q.fonte || 'Objetivo'), modo: 'objetivo', img: q.img, w: +q.w, h: +q.h, corte: +q.corte,
       prev: q.prev || '', num: q.num || '', fase: q.fase || '', v: +q.v || 0 };
   return n0.apply(this, arguments);
@@ -47,15 +47,36 @@ function qQuestaoDisc() {
 // o caderno de erros sabe que era discursiva
 { const f0 = finalizarSessao; finalizarSessao = function () {
   const s = ui.qs, disc = new Set((s?.itens || []).filter(q => q.tipo === 'disc').map(q => q.id)); f0.apply(this, arguments);
-  if (disc.size) for (const e of S.erros) if (disc.has(e.qid)) e.tipo = 'disc';
+  if (disc.size) { for (const e of S.erros) if (disc.has(e.qid)) e.tipo = 'disc'; salvar(); }
 }; }
 
 Object.assign(ACOES, {
   qDiscVer: () => { const s = ui.qs, q = s.itens[s.i]; q.verRes = true; if (q.resp == null) fecharItem(s); render(); },
   qDiscAval: el => {
-    const s = ui.qs, q = s.itens[s.i], primeira = q.resp == null;
+    const s = ui.qs, q = s.itens[s.i], primeira = q.resp == null, antesCerto = !!q.certo;
     q.resp = el.dataset.v; q.certo = q.resp === 'C';
-    if (primeira) { registrarHist(q); if (typeof contabilizarQuestaoRespondida === 'function') contabilizarQuestaoRespondida(s, q); } else if (S.qh[q.id]) { const h = S.qh[q.id]; h.ok = q.certo; if (h.h?.length) { h.h[h.h.length - 1][1] = q.certo ? 1 : 0; h.h[h.h.length - 1][2] = q.resp; } salvar(); }
+    if (primeira) {
+      registrarHist(q);
+      if (typeof contabilizarQuestaoRespondida === 'function') contabilizarQuestaoRespondida(s, q);
+    } else {
+      if (S.qh[q.id]) {
+        const h = S.qh[q.id]; h.ok = q.certo;
+        if (antesCerto !== q.certo) {
+          h.ac = Math.max(0, (h.ac || 0) + (q.certo ? 1 : -1));
+          h.er = Math.max(0, (h.er || 0) + (q.certo ? -1 : 1));
+        }
+        if (h.h?.length) { h.h[h.h.length - 1][1] = q.certo ? 1 : 0; h.h[h.h.length - 1][2] = q.resp; }
+      }
+      if (antesCerto !== q.certo && q.materia && S.qlog[hoje()]?.[q.materia]) {
+        const d = S.qlog[hoje()][q.materia];
+        d.a = Math.max(0, Math.min(d.f || 0, (d.a || 0) + (q.certo ? 1 : -1)));
+      }
+      const idx = S.erros.findIndex(e => q.id && e.qid === q.id);
+      if (q.certo && idx >= 0) S.erros.splice(idx, 1);
+      else if (!q.certo && idx < 0 && q.id) S.erros.push(erroLeve({ id: uid(), dia: hoje(), rev: somaDias(hoje(), 3), vezes: 0, fonte: q.fonte, materia: q.materia, qid: q.id, resp: q.resp, gab: q.gab, tipo: 'disc' }, q));
+      else if (!q.certo && idx >= 0) S.erros[idx].resp = q.resp;
+      salvar();
+    }
     render();
   },
   discIa: async () => {

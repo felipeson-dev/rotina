@@ -356,7 +356,7 @@ function mapaSessao(s) {
 const prevHtml = r => `<div class="coluna" style="gap:6px"><span class="rotulo">questão ${esc(r.num || '')} (anterior)</span>${r.modo === 'objetivo' ? recorteObj(r, false) : `<div class="enunciado q-prev">${mdLite(r.enunciado)}${(r.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>`}
   ${r.prev ? '<button class="link" data-acao="qPrevMais" style="align-self:flex-start">‹ O texto não está aqui? Ver a questão antes desta</button>' : ''}</div>`;
 /** Enunciado com a camada para riscar por cima com a caneta (o dedo continua rolando a página). */
-const riscavel = html => `<div class="q-riscavel">${ui.qRiscar ? `<div class="quadro-vaga sobre" data-chave="qrisc${ui.qs.i}" data-altura="0" data-fundo="transparente"></div>` : ''}<div class="q-riscavel-alvo">${html}</div></div>`;
+const riscavel = html => `<div class="q-riscavel">${ui.qRiscar ? `<div class="quadro-vaga sobre" data-chave="${qChaveRasc(ui.qs, 'qrisc')}" data-altura="0" data-fundo="transparente"></div>` : ''}<div class="q-riscavel-alvo">${html}</div></div>`;
 function ajudaIaHtml(q, resp) {
   const ia = q.res_ia ? `<div class="res-ia"><span class="rotulo">resolução pela IA</span><div class="enunciado">${mdLite(q.res_ia)}</div></div>` : '';
   const duv = (q.duvidas || []).map(d => `<div class="msg u">${esc(d.p)}</div><div class="msg ia">${mdLite(d.r)}</div>`).join('');
@@ -421,7 +421,7 @@ function qQuestao() {
       ${verImagem(q) && q.h > q.corte ? `<div class="coluna" style="gap:6px"><span class="rotulo">resolução comentada (Curso Objetivo)</span>${recorteObj(q, true)}</div>` : ''}` : ''}
     ${nav}
     ${problemaHtml(q)}
-    ${ui.qRasc ? quadroHtml('qtmp' + s.i, 520, 'quadriculado') : ''}
+    ${ui.qRasc ? quadroHtml(qChaveRasc(s, 'qtmp'), 520, 'quadriculado') : ''}
     ${ajudaIaHtml(q, resp)}</section>`;
 }
 
@@ -1336,11 +1336,12 @@ function listaQuestoes(achadas) {
 
 // fórmulas (LaTeX das provas)
 // fórmulas (LaTeX das provas) viram matemática de verdade quando o KaTeX carrega (precisa de internet na primeira vez)
-function tipografarMath() {
+function tipografarMath(alvo) {
   if (!window.renderMathInElement) return;
-  const el = document.getElementById('tela'); if (!el) return;
-  try { window.renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '\\[', right: '\\]', display: true }, { left: '\\(', right: '\\)', display: false }, { left: '$', right: '$', display: false }], throwOnError: false }); } catch { }
+  const el = alvo || document.getElementById('tela'); if (!el) return;
+  try { window.renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '\\[', right: '\\]', display: true }, { left: '\\(', right: '\\)', display: false }, { left: '$', right: '$', display: false }], ignoredClasses: ['no-math'], throwOnError: false }); } catch { }
 }
+window.tipografarMath = tipografarMath;
 { const r1 = render; render = function () { r1.apply(this, arguments); tipografarMath(); }; }
 window.addEventListener('load', () => setTimeout(() => render(), 300));
 render();

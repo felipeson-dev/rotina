@@ -22,11 +22,13 @@ function tabelasMd(s) {
 function mdLite(s) {
   if (/^\s*\|.*\|\s*$/m.test(s || '')) { const partes = tabelasMd(s).split(/(\u0001.*?\u0002)/s); return partes.map(p => p.startsWith('\u0001') ? p.slice(1, -1) : mdLite(p)).join(''); }
   const math = [];
-  const semMath = String(s || '').replace(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$[^$\n]+?\$/g, m => { math.push(esc(m)); return `\u0003${math.length - 1}\u0003`; });
+  const semMoeda = String(s || '').replace(/\b(R|US)\$(?=\s*[\d,.])/g, '\u0004$1\u0004');
+  const semMath = semMoeda.replace(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$[^$\n]+?\$/g, m => { math.push(esc(m)); return `\u0003${math.length - 1}\u0003`; });
   return esc(semMath).replace(/!\[[^\]]*\]\((https:\/\/[^)\s]+)\)/g, (_, u) => /broken-image/.test(u) ? '' : `<img class="q-img" src="${u}" alt="figura" loading="lazy">`)
     .replace(/\[([^\]]+)\]\(https?:[^)\s]+\)/g, '$1').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|[^*\w$])\*([^*\n]+?)\*(?![*\w])/g, '$1<em>$2</em>')
     .replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>')
-    .replace(/\u0003(\d+)\u0003/g, (_, i) => math[+i]);
+    .replace(/\u0003(\d+)\u0003/g, (_, i) => math[+i])
+    .replace(/\u0004(R|US)\u0004/g, '<span class="no-math">$1$</span>');
 }
 
 // ---------- montar listas ----------
@@ -59,14 +61,23 @@ async function listaIa(banca, materia, tema, n, dif) {
       gab: String(q.gabarito).toUpperCase().trim(), coment: String(q.comentario || '') }));
 }
 
+const qChaveRasc = (s, pref = 'qtmp') => s?.sid ? `${pref}:${s.sid}:${s.i}` : `${pref}${s?.i ?? 0}`;
+function limparRascSessao(s) {
+  if (!s?.sid || typeof DB === 'undefined') return;
+  const n = s.itens?.length || 0;
+  for (let i = 0; i < n; i++) { DB.del(`d:qtmp:${s.sid}:${i}`); DB.del(`d:qrisc:${s.sid}:${i}`); }
+}
+
 function iniciarSessao(itens, extra = {}) {
   const chaveLista = extra.chaveLista || (extra.assuntoId ? 'a:' + extra.assuntoId : extra.blocoId ? 'rev:' + extra.blocoId : 'avulsa');
-  ui.qs = { itens: itens.map(q => ({ ...q, resp: q.resp ?? null, seg: q.seg || 0, certo: q.certo ?? null, contabilizada: !!q.contabilizada })), i: 0, t0: Date.now(), ver: false, fim: false, chaveLista, ...extra };
+  const sid = extra.sid || uid();
+  ui.qs = { itens: itens.map(q => ({ ...q, resp: q.resp ?? null, seg: q.seg || 0, certo: q.certo ?? null, contabilizada: !!q.contabilizada })), i: 0, t0: Date.now(), ver: false, fim: false, chaveLista, sid, ...extra };
   S.listasAbertas ||= {};
-  if (!ui.qs.simulado) { S.listasAbertas[chaveLista] = ui.qs; salvar(); }
-  // rascunho à mão: um por questão da lista (qtmp0, qtmp1…); os da lista anterior são apagados ao começar outra
-  for (let i = 0; i < Math.max(60, ui.qsN || 0); i++) { DB.del('d:qtmp' + i); DB.del('d:qrisc' + i); }
-  DB.del('d:qtmp'); ui.qsN = ui.qs.itens.length; ui.qs.tq = Date.now(); render();
+  if (!ui.qs.simulado) {
+    if (S.listasAbertas[chaveLista]?.sid && S.listasAbertas[chaveLista].sid !== sid) limparRascSessao(S.listasAbertas[chaveLista]);
+    S.listasAbertas[chaveLista] = ui.qs; salvar();
+  }
+  ui.qsN = ui.qs.itens.length; ui.qs.tq = Date.now(); render();
 }
 
 // ---------- telas ----------
@@ -108,7 +119,7 @@ function qQuestao() {
     <div class="linha"><button class="botao contorno" data-acao="qRasc">${ui.qRasc ? 'Fechar o rascunho' : 'Rascunho à mão'}</button>
       ${resp ? `<button class="botao grande" data-acao="qProx">${s.i + 1 < s.itens.length ? 'Próxima' : 'Ver o resultado'}</button>` : `<button class="botao claro" data-acao="qPular">Pular</button>`}
       <button class="link" data-acao="qSair">Sair da lista</button></div>
-    ${ui.qRasc ? quadroHtml('qtmp' + s.i, 420, 'quadriculado') : ''}</section>`;
+    ${ui.qRasc ? quadroHtml(qChaveRasc(s, 'qtmp'), 420, 'quadriculado') : ''}</section>`;
 }
 
 function qResultado() {
@@ -202,7 +213,11 @@ document.addEventListener('toggle', async ev => {
   const r = typeof BD !== 'undefined' ? await BD.get(det.dataset.erroQid).catch(() => null) : null; if (!r) return;
   det.dataset.cheio = '1';
   const alvo = det.querySelector('.erro-cheio'); if (!alvo) return;
-  alvo.innerHTML = (r.modo === 'objetivo' && r.img && typeof recorteObj === 'function' ? recorteObj(r, false) : `<div class="enunciado">${mdLite(r.enunciado)}</div>`) + (r.coment ? `<div class="resolucao">${mdLite(r.coment)}</div>` : '');
+  alvo.innerHTML = (r.modo === 'objetivo' && r.img && typeof recorteObj === 'function'
+    ? recorteObj(r, false)
+    : `<div class="enunciado">${mdLite(r.enunciado)}${(r.imagens || []).map(u => `<img class="q-img" src="${u}" alt="figura" loading="lazy">`).join('')}</div>${r.alts?.length ? `<div class="coluna" style="gap:4px;margin:8px 0">${r.alts.map(a => `<div style="font-size:14px"><b>${esc(a.l)})</b> ${mdLite(a.t)}${a.img && /^https:/.test(a.img) ? `<img class="q-img" src="${a.img}" alt="">` : ''}</div>`).join('')}</div>` : ''}`)
+    + (r.coment ? `<div class="resolucao">${mdLite(r.coment)}</div>` : '');
+  window.tipografarMath?.(alvo);
 }, true);
 
 /** Contabiliza cada questão assim que é respondida: atualiza a meta diária, o assunto de hoje e a lista aberta. */
@@ -248,14 +263,14 @@ function finalizarSessao() {
   s.fim = true; ui.qRasc = false;
   for (const q of s.itens) if (q.resp != null && !q.contabilizada) contabilizarQuestaoRespondida(s, q);
   if (s.chaveLista && S.listasAbertas) delete S.listasAbertas[s.chaveLista];
+  limparRascSessao(s);
   const feitas = s.itens.filter(q => q.resp != null), ac = feitas.filter(q => q.certo).length;
   const a = s.assuntoId && achar(s.assuntoId);
   if (a && feitas.length >= 3) {
     let msg = `Anotado em ${a.titulo}: ${ac} de ${feitas.length} certas (${Math.round(ac / feitas.length * 100)}%).`;
-    if (feitas.length >= 10 && ac / feitas.length < 0.7 && !a.revisao) {
-      a.revisao = true;
-      S.assuntos.push({ id: uid(), mes: mesDe(somaDias(semAtual(), 7)), materia: a.materia, titulo: `Refazer os erros: ${a.titulo}`, semana: somaDias(semAtual(), 7), ord: 0.5, min: 45, feito: false });
-      msg += ' Abaixo de 70%: agendei uma revisão dos erros para a próxima semana.';
+    if (feitas.length >= 10 && ac / feitas.length < 0.7) {
+      a.fraco = true;
+      msg += ' Abaixo de 70%: marquei como assunto fraco para voltar com prioridade nas revisões.';
     } else if (feitas.length >= 10 && ac / feitas.length >= 0.9) msg += ' Excelente!';
     s.msg = msg;
   }
@@ -284,10 +299,10 @@ Object.assign(ACOES, {
     // erro enxuto sem a questão no aparelho (banco apagado): fica de fora até o banco voltar
     const base = base0.filter((e, i) => recs0[i] || !e.leve), recs = recs0.filter((r, i) => r || !base0[i].leve);
     if (!base.length) { ui.iaMsg = 'As questões desses erros não estão no banco deste aparelho. Abra Questões para baixar o banco e tente de novo.'; render(); return; }
-    iniciarSessao(base.map((e, i) => { const r = recs[i] || {};
+    iniciarSessao(base.map((e, i) => { const r = recs[i] || {}, ex = (e.qid && S.qExtras?.[e.qid]) || {};
       return { fonte: e.fonte + ' · erro anterior', materia: r.materia || e.materia, assunto: r.assunto || '', enunciado: r.enunciado || e.enunciado, imagens: r.imagens || e.imagens || [], alts: r.alts || e.alts, gab: r.gab || e.gab,
-        coment: r.coment ?? e.coment, id: e.qid || undefined, modo: r.id ? r.modo || '' : e.modo || '', img: r.img || e.img || '', w: r.w ?? e.w, h: r.h ?? e.h, corte: r.corte ?? e.corte,
-        prev: r.prev ?? e.prev ?? '', dep: r.dep ?? e.dep ?? 0, num: r.num || '', res_ia: r.res_ia || '', duvidas: r.duvidas || [], tipo: r.tipo || e.tipo || '', discIa: r.discIa || null }; }), { revisao: true });
+        coment: r.coment ?? e.coment, id: e.qid || undefined, modo: r.id ? r.modo || '' : e.modo || '', img: r.img || e.img || '', w: r.w ?? e.w, h: r.h ?? e.h, corte: r.corte ?? e.corte, topo: r.topo ?? e.topo ?? 0,
+        prev: r.prev ?? e.prev ?? '', dep: r.dep ?? e.dep ?? 0, num: r.num || '', res_ia: ex.res_ia || r.res_ia || '', duvidas: ex.duvidas || r.duvidas || [], flashcards: ex.flashcards || r.flashcards || [], tipo: r.tipo || e.tipo || '', discIa: ex.discIa || r.discIa || null }; }), { revisao: true });
   },
   qResp: el => {
     const q = ui.qs.itens[ui.qs.i]; if (q.resp != null) return;
@@ -314,7 +329,7 @@ Object.assign(ACOES, {
   },
   qDescartarLista: el => {
     const k = el.dataset.k;
-    if (k && S.listasAbertas?.[k]) { delete S.listasAbertas[k]; salvar(); render(); }
+    if (k && S.listasAbertas?.[k]) { limparRascSessao(S.listasAbertas[k]); delete S.listasAbertas[k]; salvar(); render(); }
   },
   qPular: () => { const s = ui.qs; fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; } else finalizarSessao(); render(); },
   qProx: () => { const s = ui.qs; if (s.itens[s.i].resp == null) fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); window.scrollTo(0, 0); } else finalizarSessao(); render(); },
