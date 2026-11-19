@@ -135,8 +135,8 @@ function qResultado() {
 function qErros() {
   if (!S.erros.length) return `<section class="cartao"><p style="margin:0">Nenhum erro guardado. Quando você errar uma questão, ela aparece aqui para refazer depois.</p></section>`;
   const venc = S.erros.filter(e => e.rev <= hoje());
-  return `<section class="cartao"><div class="entre"><h2>Caderno de erros</h2><span class="fraco">${S.erros.length} questões · ${venc.length} para rever hoje</span></div>
-    <div class="linha"><button class="botao" data-acao="qRefazerErros">Refazer ${venc.length || S.erros.length} erros</button></div>
+  return `<section class="cartao"><div class="entre"><h2>Caderno de erros</h2><span class="fraco">${S.erros.length} ${S.erros.length === 1 ? 'questão' : 'questões'} · ${venc.length} para rever hoje</span></div>
+    <div class="linha"><button class="botao" data-acao="qRefazerErros">Refazer ${venc.length || S.erros.length} ${(venc.length || S.erros.length) === 1 ? 'erro' : 'erros'}</button></div>
     ${S.erros.slice().reverse().map(e => `<div class="erro-item" style="${cor(e.materia)}"><div class="entre"><span class="tag" style="${cor(e.materia)}">${esc(e.materia)}</span><span class="fraco" style="font-size:13px">${esc(e.fonte)} · ${diaCurto(e.dia)}${e.vezes ? ` · refeita ${e.vezes}x` : ''}</span></div>
       <details${e.leve ? ` data-erro-qid="${esc(e.qid)}"` : ''}><summary class="link">${esc((e.enunciado || '').replace(/\s+/g, ' ').slice(0, 110))}…</summary>${e.leve ? `<div class="erro-cheio"><div class="enunciado">${mdLite(e.enunciado)}…</div></div>` : e.modo === 'objetivo' && e.img && typeof recorteObj === 'function' ? recorteObj(e, false) : `<div class="enunciado">${mdLite(e.enunciado)}</div>`}
         <p class="fraco" style="margin:6px 0 0">${e.tipo === 'disc' ? `Discursiva: você se avaliou como <b>${e.resp === 'P' ? 'acertei em parte' : 'errei'}</b>.` : `Você marcou <b>${e.resp}</b>; a certa é <b>${e.gab}</b>${e.gabTxt ? `: ${esc(e.gabTxt)}` : e.alts?.find(a => a.l === e.gab) ? `: ${esc(e.alts.find(a => a.l === e.gab).t)}` : ''}.`}</p>${e.coment ? `<div class="resolucao">${mdLite(e.coment)}</div>` : ''}

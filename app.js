@@ -681,7 +681,7 @@ function vHoje() {
         : d.blocos.length ? `<span class="rotulo">hoje</span><h2>Tudo feito por hoje. Orgulho! 🎉</h2><span class="fraco" style="color:inherit;opacity:.8">Se quiser estudar mais um pouco no seu ritmo:</span>${controlesTimer}` : `<span class="rotulo">hoje</span><h2>Diga quanto tempo tem e eu encho o dia.</h2>`}
     </div>
     ${window.metaQHtml?.() ?? ''}${window.pendHojeHtml?.() ?? ''}
-    <div class="cartao ia-cartao"><strong>${seq ? `${seq} ${seq === 1 ? 'dia' : 'dias'} seguidos estudando` : 'Um passo hoje já conta'}</strong>
+    <div class="cartao ia-cartao"><strong>${seq ? `${seq} ${seq === 1 ? 'dia seguido' : 'dias seguidos'} estudando` : 'Um passo hoje já conta'}</strong>
       <span>${esc(faseAtual()?.objetivo || S.meses[mesDe(h)]?.foco || 'Comece pelo passo mais fácil. O resto vem.')}</span></div>
     ${d.blocos.length ? `<div class="linha">
       <button class="botao contorno" data-acao="ir" data-v="meudia">Agenda do dia</button>

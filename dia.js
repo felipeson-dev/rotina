@@ -444,7 +444,7 @@ function programacaoHojeHtml(d) {
   return `<details class="cartao prog-hoje" data-k="prog-hoje" ${aberto ? 'open' : ''}>
     <summary><div class="entre" style="flex:1;flex-wrap:wrap;gap:8px">
       <div class="linha" style="gap:8px"><strong>🗓 Programação do seu dia</strong><span class="selo flexivel">tudo editável e flexível</span></div>
-      <span class="fraco" style="font-size:13px">${(d.agenda || []).length} blocos no dia · toque para ver ou mudar</span>
+      <span class="fraco" style="font-size:13px">${(d.agenda || []).length} ${(d.agenda || []).length === 1 ? 'bloco' : 'blocos'} no dia · toque para ver ou mudar</span>
     </div></summary>
     <div class="prog-hoje-corpo">
       <div class="entre" style="flex-wrap:wrap;gap:8px">
