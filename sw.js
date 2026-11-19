@@ -19,6 +19,8 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.hostname === 'generativelanguage.googleapis.com') return;
   if (url.origin === location.origin) {
+    // pacotes .json.gz (~114 MB) já ficam no IndexedDB; nunca duplicar no Cache Storage do iPad
+    if (/\.json\.gz$/i.test(url.pathname) || /\/pacotes\/manifesto\.json$/i.test(url.pathname)) return;
     // rede primeiro, SEMPRE conferindo com o site (no-cache: sem isso o iPad usava por até 10 min a cópia do cache HTTP e ficava na versão antiga);
     // cache do app só sem internet ou se a rede devolver erro
     const req = e.request.mode === 'navigate' ? new Request(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }) : new Request(e.request, { cache: 'no-cache' });

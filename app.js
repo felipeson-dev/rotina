@@ -1406,6 +1406,11 @@ async function versaoNoSite() {
 // recarregar sozinho só quando não atrapalha: sem lista de questões aberta, sem janela aberta e sem ninguém digitando
 const podeRecarregar = () => !ui.qs && $('#modal').hidden && !document.querySelector('textarea:focus, input:focus') && ui.view !== 'caderno';
 async function atualizarApp() {
+  if (!navigator.onLine || !(await versaoNoSite())) {
+    ui.iaMsg = 'Sem conexão com o site agora: seus arquivos locais foram mantidos. Tente de novo quando estiver online.';
+    render();
+    return;
+  }
   try { sessionStorage.setItem('rotina.atualizou', String(Date.now())); } catch { }
   ui.carregando = 'Atualizando o app…'; render();
   try { for (const r of (await navigator.serviceWorker?.getRegistrations?.()) || []) await r.update().catch(() => { }); } catch { }
