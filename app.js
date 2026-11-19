@@ -124,6 +124,7 @@ async function qCheia(q) {
     res_ia: ex.res_ia || r.res_ia || '', duvidas: ex.duvidas || r.duvidas || [], flashcards: ex.flashcards || r.flashcards || [], discIa: ex.discIa || r.discIa || null, gab: r.gab, ...meu };
 }
 function salvar() {
+  if (ui.desfazer && !ui._desfazerGuard) ui.desfazer = null;
   try { localStorage.setItem(CHAVE, JSON.stringify(S, compactarS)); } catch (e) { ui.iaMsg = 'Não consegui salvar neste aparelho: ' + e.message; }
 }
 function lerChaves() { try { return JSON.parse(localStorage.getItem(CHAVE_IA) || '[]'); } catch { return []; } }
@@ -186,8 +187,16 @@ function setFeito(a, ok, sincronizar = true) {
     b.feito = ok;
     (b.passos || []).forEach(p => { if (p.ok !== ok) p.ok = ok; });
   }
-  if (ok) { a.feitoEm = hoje(); S.estudo[hoje()] = (S.estudo[hoje()] || 0) + minDe(a); }
-  else { const d = a.feitoEm; if (d && S.estudo[d]) S.estudo[d] = Math.max(0, S.estudo[d] - minDe(a)); a.feitoEm = null; }
+  if (ok) {
+    a.feitoEm = hoje();
+    const jaTimer = a.timerMin || 0, add = Math.max(0, minDe(a) - jaTimer);
+    a.estudoAdd = add;
+    if (add > 0) S.estudo[hoje()] = (S.estudo[hoje()] || 0) + add;
+  } else {
+    const d = a.feitoEm, rem = a.estudoAdd ?? minDe(a);
+    if (d && S.estudo[d] && rem > 0) S.estudo[d] = Math.max(0, S.estudo[d] - rem);
+    a.feitoEm = null; delete a.estudoAdd;
+  }
 }
 
 /** Dá uma semana prevista aos assuntos que ainda não têm, repartindo o mês em partes iguais e misturando as matérias. */
@@ -419,6 +428,7 @@ function aplicar(acoes) {
       }
     } catch { }
   }
+  if (n > 0 && S.assuntos.some(a => !a.feito && !a.semana)) distribuirSemanas();
   return n;
 }
 
@@ -448,7 +458,7 @@ async function pedirIa(pedido, rotulo = 'Pensando…', falaDela = null) {
     ui.desfazer = null;
   }
   S.chat = S.chat.slice(-40);
-  salvar();
+  ui._desfazerGuard = true; salvar(); ui._desfazerGuard = false;
   ui.carregando = '';
   if (ui.chatAberto) { ui.iaMsg = ''; desenharChat(); } else render();
 }
@@ -1079,7 +1089,11 @@ function guardarMinutosTimer(t) {
     t.salvoMin = totMin;
     const b = t.b && (S.dias[hoje()]?.blocos || []).find(x => x.id === t.b);
     const a = b?.assuntoId && achar(b.assuntoId);
-    if (!a?.feito && !b?.feito) S.estudo[hoje()] = (S.estudo[hoje()] || 0) + novo;
+    if (!a?.feito && !b?.feito) {
+      S.estudo[hoje()] = (S.estudo[hoje()] || 0) + novo;
+      if (b) b.timerMin = (b.timerMin || 0) + novo;
+      if (a) a.timerMin = (a.timerMin || 0) + novo;
+    }
   }
   return novo;
 }
@@ -1302,7 +1316,7 @@ const ACOES = {
   timerPausa: () => { const t = S.timer; if (t) guardarMinutosTimer(t); iniciarTimer(5, t?.b, t?.i, 'pausa'); },
   timerParar: () => { const t = S.timer; if (t) guardarMinutosTimer(t); S.timer = null; salvar(); renderTimer(); render(); },
   timerFeito: () => { const t = S.timer; if (t) { guardarMinutosTimer(t); if (t.b && t.i >= 0) marcarPasso(t.b, t.i, true); } S.timer = null; salvar(); render(); },
-  timerBlocoFeito: () => { const t = S.timer; if (t?.b) marcarBloco(t.b, true); S.timer = null; salvar(); render(); },
+  timerBlocoFeito: () => { const t = S.timer; if (t) guardarMinutosTimer(t); if (t?.b) marcarBloco(t.b, true); S.timer = null; salvar(); render(); },
   zerarTestes: () => {
     zerarDadosTeste(S); ui.qs = null; try { DB.del('d:qs'); } catch { }
     salvar(); ui.iaMsg = 'Questões e marcações de teste foram zeradas.'; render();
@@ -1314,7 +1328,7 @@ const ACOES = {
   },
   assunto: el => { const a = achar(el.dataset.id); if (a) modalAssunto(a); },
   feitoAssunto: el => { const a = achar(el.dataset.id); if (a) { setFeito(a, !a.feito); salvar(); } fecharModal(); render(); },
-  proxMes: el => { const a = achar(el.dataset.id); if (a) { a.mes = somaMes(a.mes, 1); a.semana = null; salvar(); } fecharModal(); render(); },
+  proxMes: el => { const a = achar(el.dataset.id); if (a) { a.mes = somaMes(a.mes, 1); a.semana = null; distribuirSemanas(); salvar(); } fecharModal(); render(); },
   removerAssunto: el => { S.assuntos = S.assuntos.filter(a => a.id !== el.dataset.id); salvar(); fecharModal(); render(); },
   mes: el => { ui.mes = somaMes(ui.mes, +el.dataset.v); render(); },
   mesFiltro: el => { ui.mesFiltro = el.dataset.v || 'todos'; render(); },
