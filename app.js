@@ -3,6 +3,9 @@
 
 const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
+// Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
+// declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
+const APP_V = 'rotina-52';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -972,7 +975,7 @@ function vAjustes() {
       <div class="linha"><button class="botao claro" data-acao="refazerBase">Refazer o plano base</button></div>
     </section>
     <section class="cartao"><h2>Versão do app</h2>
-      <p class="fraco" style="margin:0">Esta é a versão <b>${typeof APP_V !== 'undefined' ? APP_V : '?'}</b>. O app se atualiza sozinho quando você volta para ele; se algo parecer desatualizado, toque abaixo. Não apaga nada.</p>
+      <p class="fraco" style="margin:0">Esta é a versão <b>${APP_V}</b>. O app se atualiza sozinho quando você volta para ele; se algo parecer desatualizado, toque abaixo. Não apaga nada.</p>
       <div class="linha"><button class="botao claro" data-acao="atualizarApp">Atualizar o app</button></div>
     </section>
     <section class="cartao"><h2>Cópia de segurança</h2>
@@ -1421,8 +1424,7 @@ try { navigator.storage?.persist?.(); } catch { }
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { });
 
 // ---------- versão do app: o app da tela de início não recarrega sozinho; ao voltar para ele, confere se há versão nova ----------
-// APP_V tem que ser igual ao VERSAO do sw.js (subir os dois juntos)
-const APP_V = 'rotina-52';
+// APP_V (declarada no topo deste arquivo) tem que ser igual ao VERSAO do sw.js (subir os dois juntos)
 async function versaoNoSite() {
   try { const t = await (await fetch('sw.js?v=' + Date.now(), { cache: 'no-store' })).text(); return (t.match(/VERSAO = '([^']+)'/) || [])[1] || null; } catch { return null; }
 }

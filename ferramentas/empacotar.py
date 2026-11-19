@@ -99,6 +99,9 @@ def principal():
     except Exception: pass
     ant_hash = ant_man.get('hash', {}); ant_por = ant_man.get('por', {}); por, hashes = {}, {}
     import hashlib
+    # pacotes feitos à mão (não gerados aqui), como C-recuperadas.json.gz: continuam no manifesto
+    for extra in ant_man.get('arquivos', []):
+        if extra not in arquivos_gerados and os.path.exists(os.path.join(PACOTES_WEB, extra)): arquivos_gerados.append(extra)
     for arq in arquivos_gerados:
         h = hashlib.sha1(gzip.open(os.path.join(PACOTES_WEB, arq)).read()).hexdigest()[:16]   # conteúdo, não o .gz (o .gz guarda a hora em que foi feito)
         hashes[arq] = h
