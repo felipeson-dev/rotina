@@ -15,7 +15,7 @@ ui.qIgnAno ||= '2026';
 ui.qIgnAberto ||= false;
 
 function questaoIgnorada(q) {
-  if (/^simulado/i.test(String(q?.b || q?.banca || ''))) return true;   // simulados oficiais/externos só aparecem na aba Simulados
+  if (/^simulado/i.test(String(q?.b || q?.banca || '')) || /_simulado[-_]/i.test(String(q?.id || ''))) return true;   // simulados oficiais/externos só aparecem na aba Simulados
   const l = S.qIgnorar;
   if (!l || !l.length || !q) return false;
   const b = String(q.b || q.banca || '').toLowerCase(), a = String(q.a || q.ano || '');
@@ -31,7 +31,7 @@ function questaoIgnorada(q) {
 window.questaoIgnorada = questaoIgnorada;
 
 const AREAS_Q = [['', 'Todas'], ['ciencias-natureza', 'Natureza'], ['matematica', 'Matemática'], ['ciencias-humanas', 'Humanas'], ['linguagens', 'Linguagens']];
-const AREA_DA_MATERIA = { 'Biologia': 'ciencias-natureza', 'Química': 'ciencias-natureza', 'Física': 'ciencias-natureza', 'Matemática': 'matematica', 'História': 'ciencias-humanas', 'Geografia': 'ciencias-humanas', 'Filosofia': 'ciencias-humanas', 'Sociologia': 'ciencias-humanas', 'Português': 'linguagens', 'Literatura': 'linguagens', 'Inglês': 'linguagens' };
+const AREA_DA_MATERIA = { 'Biologia': 'ciencias-natureza', 'Química': 'ciencias-natureza', 'Física': 'ciencias-natureza', 'Matemática': 'matematica', 'História': 'ciencias-humanas', 'Geografia': 'ciencias-humanas', 'Filosofia': 'ciencias-humanas', 'Sociologia': 'ciencias-humanas', 'Português': 'linguagens', 'Literatura': 'linguagens', 'Inglês': 'linguagens', 'Artes': 'linguagens' };
 const areaDeQ = q => q.ar || AREA_DA_MATERIA[q.m] || '';
 const rotuloArea = a => (AREAS_Q.find(x => x[0] === a) || [, ''])[1];
 // Grupos de bancas (seleção minha, por nome): São Paulo, Medicina e "provas exigentes parecidas com Fuvest/Vunesp" de outros estados
@@ -63,8 +63,17 @@ const BD = {
   async cada(fn) { const db = await this.abrir(); return new Promise(ok => { const r = db.transaction('q').objectStore('q').openCursor(); r.onsuccess = () => { const c = r.result; if (!c) return ok(); fn(c.value); c.continue(); }; r.onerror = () => ok(); }); },
   async setMeta(l) { const db = await this.abrir(); return new Promise(ok => { const t = db.transaction('m', 'readwrite'); t.objectStore('m').put(l, 'lista'); t.oncomplete = ok; t.onerror = ok; }); },
 };
-/** Chave do conteúdo (começo do enunciado + gabarito): o mesmo texto vindo de duas fontes não entra duas vezes. */
-function chaveQ(q) { const t = String(q.enunciado || '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '').slice(0, 120) + (q.gab || ''); let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length; }
+/** Chave do conteúdo (começo + fim do enunciado + 1ª alternativa + gabarito; discursivas e modo imagem incluem o id): evita duplicar a mesma questão de duas fontes sem descartar questões distintas que compartilham texto-base. */
+function chaveQ(q) {
+  const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '');
+  const t = norm(q.enunciado);
+  const corpo = t.length > 240 ? t.slice(0, 120) + '|' + t.slice(-120) + '|' + t.length : t;
+  const a0 = q.alts?.[0] ? norm(typeof q.alts[0] === 'string' ? q.alts[0] : q.alts[0].t).slice(0, 60) : '';
+  const extra = (q.gab || '') + '|' + a0 + (q.tipo === 'disc' || q.modo === 'objetivo' || !t ? '|' + (q.id || '') : '');
+  const s = corpo + '|' + extra;
+  let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36) + s.length;
+}
 const normTxt = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 /** Texto para busca: sem acento, "2º" vira "2", plural vira singular (funções = função), para achar "funções de segundo grau". */
 const normBusca = s => normTxt(s).replace(/(\d)\s*[º°ª]/g, '$1').replace(/oes\b/g, 'ao').replace(/s\b/g, '');
@@ -79,7 +88,7 @@ function tokensBusca(q) {
 /** Começo do enunciado para a lista (sem fórmulas nem marcações). */
 const previa = s => String(s || '').replace(/\$\$?[^$]*\$\$?/g, ' [fórmula] ').replace(/[*_#|>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 130);
 const txtBusca = s => { const t = normBusca(s); return t.length <= 700 ? t : t.slice(0, 350) + ' ' + t.slice(-350); };
-const META_V = 4;   // muda quando a ficha leve ganha campos: refaz as fichas a partir das questões guardadas
+const META_V = 5;   // muda quando a ficha leve ganha campos ou chaveQ muda: refaz as fichas a partir das questões guardadas
 const limAss = s => (typeof limparNomeAssunto === 'function' ? limparNomeAssunto(s) : s) || '';
 const metaDe = q => { const as = limAss(q.assunto); return { id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(as).slice(0, 140), as, x: txtBusca(q.enunciado), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: (q.modo === 'objetivo' && q.h > q.corte) || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0 }; };
 
@@ -252,15 +261,32 @@ function qMontar() {
   const f = ui.qf, todos = BANCO.itens;
   if (!todos.length && BANCO.baixando) return `<section class="cartao"><h2>Escolher questões</h2><p style="margin:0">Baixando o banco de questões (só na primeira vez, leva alguns minutos). Pode usar o resto do app enquanto isso.</p><p class="fraco" style="margin:6px 0 0">${esc(BANCO.msg || '')}</p></section>`;
   if (!todos.length) return `<section class="cartao"><h2>Escolher questões</h2><p style="margin:0">O banco está vazio. Importe os arquivos de questões ou baixe o ENEM logo abaixo.</p></section><!--meta-->${cartaoBanco(true)}`;
-  const achadas = filtrarBanco();
-  // cada caixa mostra quantas questões há em cada opção, já considerando as outras caixas
-  const semMat = filtrarBanco({ mat: '', assunto: '', sub: '' }), semAssunto = filtrarBanco({ assunto: '', sub: '' }), semSub = filtrarBanco({ sub: '' }), semSt = filtrarBanco({ st: 'todas' }), semBanca = filtrarBanco({ banca: '' }), semAno = filtrarBanco({ ano: '' });
+  // uma única varredura sobre a base já filtrada por busca/tipo/ignoradas para montar todos os contadores dos seletores
+  const base = filtrarBanco({ mat: '', assunto: '', sub: '', banca: '', ano: '', st: 'todas' });
+  const bs = f.banca || '', pre = bs.startsWith('p:') ? PRESETS_BANCA[bs.slice(2)]?.[1] : null, b1 = bs.startsWith('b:') ? bs.slice(2) : '';
+  const an = f.ano || '', desde = an.startsWith('d:') ? +an.slice(2) : 0, so = an.startsWith('a:') ? +an.slice(2) : 0;
+  const achadas = [], semMat = [], semAssunto = [], semSub = [], semSt = [], semBanca = [], semAno = [];
+  for (const q of base) {
+    const okB = (!b1 || q.b === b1) && (!pre || pre.test(q.b));
+    const okA = (!desde || q.a >= desde) && (!so || q.a === so);
+    const okM = !f.mat || q.m === f.mat;
+    const okAs = !f.assunto || q.as === f.assunto;
+    const okSub = !f.sub || bateSubtopico(q, f.assunto, f.sub);
+    const okSt = situacaoOk(f.st, q.id);
+    if (okB && okA && okSt) semMat.push(q);
+    if (okB && okA && okM && okSt) semAssunto.push(q);
+    if (okB && okA && okM && okAs && okSt) semSub.push(q);
+    if (okB && okA && okM && okAs && okSub) semSt.push(q);
+    if (okA && okM && okAs && okSub && okSt) semBanca.push(q);
+    if (okB && okM && okAs && okSub && okSt) semAno.push(q);
+    if (okB && okA && okM && okAs && okSub && okSt) achadas.push(q);
+  }
   const porMat = contar(semMat, 'm'), porBanca = contar(semBanca, 'b'), porAno = contar(semAno, 'a');
   const anos = Object.keys(porAno).map(Number).filter(Boolean).sort((a, b) => b - a);
   const caixa = (rot, id, html, ativo, extra = '') => `<label class="filtro ${ativo ? 'ativo' : ''}"><span>${rot}</span><select data-qf="${id}" ${extra}>${html}</select></label>`;
   const nSt = v => semSt.filter(q => situacaoOk(v, q.id)).length;
   const nAno = d => semAno.filter(q => q.a >= d).length;
-  const algum = f.mat || f.assunto || f.sub || f.banca || f.ano || (f.st && f.st !== 'novas') || f.tag || f.res;
+  const algum = f.mat || f.assunto || f.sub || f.banca || f.ano || (f.st && f.st !== 'novas') || f.tag || f.res || !f.semFig;
   const subHtml = !f.mat ? opcao('', 'Escolha a matéria antes', '') : subassuntosHtml(f.mat, f.assunto, f.sub, f.assunto ? semSub : semAssunto);
   return `${listasAbertasHtml()}<section class="cartao escolher"><div class="entre"><h2>Escolher questões</h2>${algum ? '<button class="link" data-acao="qfLimpar">Limpar filtros</button>' : ''}</div>
     <div class="filtros">
@@ -275,6 +301,7 @@ function qMontar() {
       ${caixa('Ordem', 'ordem', [['sorteio', 'Sorteadas'], ['novas', 'Mais recentes primeiro'], ['antigas', 'Mais antigas primeiro']].map(([v, t]) => opcao(v, t, f.ordem)).join(''), false)}
     </div>
     <label class="filtro busca"><span>Procurar no texto</span><input type="search" data-qf="tag" value="${esc(f.tag)}" placeholder="Ex.: função quadrática, Segundo Reinado, mitose"></label>
+    <label class="linha" style="gap:8px;cursor:pointer;font-size:14px"><input type="checkbox" data-qf-marca="semFig" ${f.semFig ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--rosa)"> Ocultar questões que dependem de figura faltando</label>
     ${ignorarHtml()}
     <div class="acao-q"><div class="coluna" style="gap:0"><strong class="n-achadas">${milhar(achadas.length)}</strong><span class="fraco">${achadas.length === 1 ? 'questão encontrada' : 'questões encontradas'}</span></div>
       <label class="filtro quantas"><span>Quantas</span><select data-qf="n">${[5, 10, 15, 20, 30, 50].map(n => opcao(n, String(n), f.n)).join('')}${opcao(9999, 'Todas', f.n >= 9999 ? 9999 : f.n)}</select></label>
@@ -486,7 +513,7 @@ Object.assign(ACOES, {
     const r = ui.qPrevImg?.prev && await BD.get(ui.qPrevImg.prev);
     if (r) ui.qPrevImg = r; else ui.iaMsg = 'Não há questão antes desta no banco.'; render();
   },
-  qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', sub: '', banca: '', ano: '', st: 'novas', tag: '', res: false }; ui.qPag = 0; render(); },
+  qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', sub: '', banca: '', ano: '', st: 'novas', tag: '', semFig: true, res: false }; ui.qPag = 0; render(); },
   qIgnorarToggle: () => { ui.qIgnAberto = !ui.qIgnAberto; render(); },
   qIgnorarAdd: () => {
     const b = $('#q-ign-banca')?.value || ui.qIgnBanca || 'Albert Einstein', a = $('#q-ign-ano')?.value || ui.qIgnAno || '2026';

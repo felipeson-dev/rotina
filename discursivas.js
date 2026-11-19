@@ -16,9 +16,10 @@
 { const f0 = filtrarBanco; filtrarBanco = function (troca = {}) { const tq = ({ ...ui.qf, ...troca }).tipoQ || ''; return f0.call(this, troca).filter(q => tq === 'disc' ? q.ds : !q.ds); }; }
 { const m0 = qMontar; qMontar = function () {
   const h = m0.apply(this, arguments); if (!BANCO.pronto || !BANCO.itens.length) return h;
-  const nd = BANCO.itens.filter(q => q.ds).length, tq = ui.qf.tipoQ || '';
+  const vis = BANCO.itens.filter(q => !questaoIgnorada(q) && (!ui.qf.semFig || !q.f));
+  const nd = vis.filter(q => q.ds).length, tq = ui.qf.tipoQ || '';
   if (!nd && !tq) return h;
-  const caixa = `<label class="filtro ${tq ? 'ativo' : ''}"><span>Tipo</span><select data-qf="tipoQ">${opcao('', `Objetivas (${milhar(BANCO.itens.length - nd)})`, tq)}${opcao('disc', `Discursivas (${milhar(nd)})`, tq)}</select></label>`;
+  const caixa = `<label class="filtro ${tq ? 'ativo' : ''}"><span>Tipo</span><select data-qf="tipoQ">${opcao('', `Objetivas (${milhar(vis.length - nd)})`, tq)}${opcao('disc', `Discursivas (${milhar(nd)})`, tq)}</select></label>`;
   return h.replace('<div class="filtros">', '<div class="filtros">' + caixa);
 }; }
 
