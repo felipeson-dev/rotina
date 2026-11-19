@@ -4,21 +4,56 @@
    ("Entregar prova"), nota por matéria e depois a revisão questão por questão. Tudo fica em S.simulados e aparece no Desempenho. */
 S.simulados ||= [];
 ui.simForm = false; ui.simBanca = ''; ui.simAno = '';
-const MATS_SIM = ['Biologia', 'Química', 'Física', 'Matemática', 'Português', 'Literatura', 'Inglês', 'História', 'Geografia', 'Filosofia', 'Sociologia'];
+const MATS_SIM = ['Biologia', 'Química', 'Física', 'Matemática', 'Português', 'Literatura', 'Inglês', 'História', 'Geografia', 'Filosofia', 'Sociologia', 'Artes'];
 const pctDe = (a, t) => t ? Math.round(a / t * 100) : 0;
+
+function prefProva(q) {
+  const m = String(q.id || '').match(/^(.+?)-(\d+[a-z]?)$/i);
+  if (m && /^obj-/i.test(m[1])) return m[1];
+  return `${q.b}|${q.a}`;
+}
+function rotuloEdicao(banca, ano, pref, temVarios) {
+  if (!/^obj-/i.test(pref)) return String(ano);
+  const idx = pref.indexOf(String(ano));
+  const suf = idx >= 0 ? pref.slice(idx + String(ano).length).replace(/^[_-]+/, '') : '';
+  if (!suf) return temVarios ? `${ano} · 1ª aplic.` : String(ano);
+  const mapa = { '1': '1º sem.', '2': /enem/i.test(banca) ? '2ª aplic.' : '2º sem.', '1dia': '1º dia', '2dia': '2º dia', '3dia': '3º dia', '4dia': '4º dia', '1fase': '1ª fase', '2fase': '2ª fase', simulado: 'Simulado', digital: 'Digital', presencial: 'Presencial', cop30: 'COP30', tarde: 'Tarde', administracao: 'Administração', economia: 'Economia', direito: 'Direito', unificado: 'Unificado' };
+  const partes = suf.split(/[_-]+/).filter(Boolean).map(t => mapa[t.toLowerCase()] || t);
+  return partes.length ? `${ano} · ${partes.join(' · ')}` : String(ano);
+}
+function numQuestao(q) {
+  const n = parseInt(q.n, 10);
+  if (!isNaN(n)) return n;
+  const m = String(q.id || '').match(/-(\d+)[a-z]?$/i);
+  return m ? parseInt(m[1], 10) : 99999;
+}
 
 function provasNoBanco() {
   const g = {};
-  for (const q of BANCO.itens) if (q.t === 'real' && !q.ds && q.a && q.b) { const k = q.b + '|' + q.a; (g[k] ||= { b: q.b, a: q.a, ids: [] }).ids.push(q.id); }
-  return Object.values(g).filter(x => x.ids.length >= 10);
+  for (const q of BANCO.itens) {
+    if (q.t !== 'real' || q.ds || !q.a || !q.b) continue;
+    const pref = prefProva(q), k = `${q.b}|${q.a}|${pref}`;
+    (g[k] ||= { k, b: q.b, a: q.a, pref, qs: [] }).qs.push(q);
+  }
+  const lista = Object.values(g).filter(x => x.qs.length >= 10);
+  const porBA = {};
+  for (const x of lista) { const ba = `${x.b}|${x.a}`; porBA[ba] = (porBA[ba] || 0) + 1; }
+  for (const x of lista) {
+    x.qs.sort((p, q) => numQuestao(p) - numQuestao(q) || String(p.id).localeCompare(String(q.id)));
+    x.ids = x.qs.map(q => q.id);
+    x.rotulo = rotuloEdicao(x.b, x.a, x.pref, porBA[`${x.b}|${x.a}`] > 1);
+    delete x.qs;
+  }
+  return lista.sort((x, y) => y.a - x.a || x.rotulo.localeCompare(y.rotulo));
 }
 
 function vSimulados() {
   if (!BANCO.pronto) { carregarBanco(); }
   const provas = BANCO.pronto ? provasNoBanco() : [], bancas = [...new Set(provas.map(p => p.b))].sort();
-  const anos = provas.filter(p => p.b === ui.simBanca).map(p => p.a).sort((x, y) => y - x);
-  const escolhida = provas.find(p => p.b === ui.simBanca && String(p.a) === String(ui.simAno));
+  const edicoes = provas.filter(p => p.b === ui.simBanca);
+  const escolhida = edicoes.find(p => p.k === ui.simAno) || edicoes.find(p => String(p.a) === String(ui.simAno));
   const l = S.simulados.slice().sort((x, y) => x.dia < y.dia ? 1 : -1);
+  const reservada = p => (S.qIgnorar || []).length > 0 && window.questaoIgnorada?.({ b: p.b, a: p.a });
   const form = ui.simForm ? `<div class="sim-form">
       <div class="linha"><label class="campo" style="flex:2 1 220px">Nome<input type="text" id="sim-nome" placeholder="Ex.: Simulado Fuvest 3, Santa Casa 2024"></label>
         <label class="campo" style="flex:1 1 150px">Dia<input type="date" id="sim-dia" value="${hoje()}"></label>
@@ -34,7 +69,7 @@ function vSimulados() {
   return `<section class="cartao"><div class="entre"><h2>Fazer uma prova antiga no app</h2></div>
       <p class="fraco" style="margin:0">A prova inteira, na ordem, com cronômetro. O gabarito só aparece quando você entregar; depois dá para revisar questão por questão.</p>
       ${provas.length ? `<div class="filtros"><label class="filtro"><span>Prova</span><select data-ui-sim="simBanca">${opcao('', 'Escolha', ui.simBanca)}${bancas.map(b => opcao(b, b, ui.simBanca)).join('')}</select></label>
-        <label class="filtro"><span>Ano</span><select data-ui-sim="simAno" ${ui.simBanca ? '' : 'disabled'}>${opcao('', ui.simBanca ? 'Escolha' : 'Escolha a prova antes', ui.simAno)}${anos.map(a => opcao(a, `${a}${window.questaoIgnorada?.({ b: ui.simBanca, a }) ? ' (🔒 guardada p/ simulado)' : ''}`, ui.simAno)).join('')}</select></label></div>
+        <label class="filtro"><span>Ano / Edição</span><select data-ui-sim="simAno" ${ui.simBanca ? '' : 'disabled'}>${opcao('', ui.simBanca ? 'Escolha' : 'Escolha a prova antes', ui.simAno)}${edicoes.map(p => opcao(p.k, `${p.rotulo} (${p.ids.length}q)${reservada(p) ? ' · 🔒 guardada' : ''}`, escolhida?.k || ui.simAno)).join('')}</select></label></div>
         <div class="linha"><button class="botao grande" data-acao="simComecar" ${escolhida ? '' : 'disabled'}>${escolhida ? `Começar (${escolhida.ids.length} questões)` : 'Começar'}</button></div>`
         : '<p class="fraco" style="margin:0">Importe as provas oficiais em Questões para fazer uma prova inteira aqui.</p>'}</section>
     <section class="cartao"><div class="entre"><h2>Meus simulados e provas</h2>${ui.simForm ? '' : '<button class="botao claro" data-acao="simForm">+ Registrar um feito fora do app</button>'}</div>
@@ -91,12 +126,27 @@ Object.assign(ACOES, {
     S.simulados.push({ id: uid(), dia, nome: v('sim-nome') || 'Simulado', tipo: v('sim-tipo') || 'simulado', total, acertos: ac, tempo: Math.round(+v('sim-tempo')) || 0, nota: v('sim-nota').slice(0, 12), porMat, obs: v('sim-obs').slice(0, 200), origem: 'manual' });
     ui.simForm = false; ui.iaMsg = 'Simulado registrado.'; salvar(); render();
   },
-  simApagar: el => { S.simulados = S.simulados.filter(s => s.id !== el.dataset.id); salvar(); render(); },
+  simApagar: el => {
+    const alvo = S.simulados.find(s => s.id === el.dataset.id);
+    if (!alvo || !confirm(`Apagar "${alvo.nome}"?`)) return;
+    if (alvo.origem === 'manual' && alvo.porMat && S.qlog[alvo.dia]) {
+      for (const [m, x] of Object.entries(alvo.porMat)) {
+        const d = S.qlog[alvo.dia][m]; if (!d) continue;
+        d.f = Math.max(0, (d.f || 0) - (x.f || 0));
+        d.a = Math.max(0, Math.min(d.f, (d.a || 0) - (x.a || 0)));
+        if (!d.f) delete S.qlog[alvo.dia][m];
+      }
+      if (!Object.keys(S.qlog[alvo.dia]).length) delete S.qlog[alvo.dia];
+    }
+    S.simulados = S.simulados.filter(s => s.id !== el.dataset.id); salvar(); render();
+  },
   simComecar: async () => {
-    const p = provasNoBanco().find(x => x.b === ui.simBanca && String(x.a) === String(ui.simAno)); if (!p) return;
+    const lista = provasNoBanco();
+    const p = lista.find(x => x.k === ui.simAno) || lista.find(x => x.b === ui.simBanca && String(x.a) === String(ui.simAno)); if (!p) return;
+    const simNome = `${p.b} ${p.rotulo}`;
     // marcada como simulado desde o começo: a prova inteira não entra nas "listas em andamento" (ocupava o armazenamento do aparelho)
-    await ACOES.qIniciarIds(p.ids, { simulado: true, simNome: `${p.b} ${p.a}`, t0: Date.now() });
-    if (ui.qs) Object.assign(ui.qs, { simulado: true, simNome: `${p.b} ${p.a}` }); window.scrollTo(0, 0); render();
+    await ACOES.qIniciarIds(p.ids, { simulado: true, simNome, t0: Date.now() });
+    if (ui.qs) Object.assign(ui.qs, { simulado: true, simNome }); window.scrollTo(0, 0); render();
   },
   qProxSim: () => { const s = ui.qs; if (s.i + 1 < s.itens.length) { s.i++; window.scrollTo(0, 0); } render(); },
   simEntregar: () => {
@@ -108,7 +158,7 @@ Object.assign(ACOES, {
       if (q.resp != null) { q.certo = q.resp === q.gab; if (q.certo) { x.a++; ac++; } registrarHist(q); }
     }
     const tempo = Math.round((Date.now() - s.t0) / 60000);
-    s.simulado = false; finalizarSessao();
+    s.eraSimulado = true; s.simulado = false; finalizarSessao();
     s.simRes = { nome: s.simNome, acertos: ac, total: s.itens.length, respondidas: s.itens.filter(q => q.resp != null).length, porMat, tempo };
     S.simulados.push({ id: uid(), dia: hoje(), nome: s.simNome, tipo: 'prova', total: s.itens.length, acertos: ac, tempo, nota: '', porMat, obs: '', origem: 'app' });
     salvar(); window.scrollTo(0, 0); render();

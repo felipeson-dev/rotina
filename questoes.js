@@ -212,8 +212,8 @@ function contabilizarQuestaoRespondida(s, q) {
   const h = hoje(), m = q.materia;
   if (m) {
     const d = ((S.qlog[h] ||= {})[m] ||= { f: 0, a: 0, t: 0 });
-    d.f += 1; d.a += q.certo ? 1 : 0; d.t = (d.t || 0) + Math.round(q.seg || 0);
-    aprenderTempo(m, q.seg || 0, 1);
+    const seg = Math.round(q.seg || 0);
+    d.f += 1; d.a += q.certo ? 1 : 0; if (seg > 0) { d.t = (d.t || 0) + seg; d.tf = (d.tf || 0) + 1; aprenderTempo(m, seg, 1); }
   }
   const ja = S.erros.find(e => (q.id && e.qid === q.id) || (q.enunciado && e.enunciado === q.enunciado));
   if (!q.certo) {
@@ -223,7 +223,7 @@ function contabilizarQuestaoRespondida(s, q) {
     else S.erros.push({ id: uid(), dia: h, rev: somaDias(h, 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment, qid: q.id || '', imagens: (q.imagens || []).filter(u => /^https:/.test(u)), modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, tipo: q.tipo || '' });
   } else if (ja && s.revisao) S.erros = S.erros.filter(e => e !== ja);
 
-  const a = assuntoCorrespondenteHoje(s, q);
+  const a = (s.simulado || s.eraSimulado) ? null : assuntoCorrespondenteHoje(s, q);
   if (a) {
     const ant = a.questoes || { feitas: 0, acertos: 0 };
     a.questoes = { feitas: ant.feitas + 1, acertos: ant.acertos + (q.certo ? 1 : 0) };
@@ -264,7 +264,7 @@ function finalizarSessao() {
 
 Object.assign(VIEWS, { questoes: vQuestoes });
 Object.assign(ACOES, {
-  qAba: el => { ui.qAba = el.dataset.v; ui.qs = null; render(); },
+  qAba: el => { if (ui.qs && !navSairSessao()) return; ui.qAba = el.dataset.v; render(); },
   qFonte: el => { ui.qFonte = el.dataset.v; render(); },
   qN: el => { ui.qN = +el.dataset.v; render(); },
   qAssunto: el => { const a = achar(el.dataset.id); if (a) { ui.qTema = a.titulo; ui.qMat = MIN_Q[a.materia] ? a.materia : ui.qMat; ui.qAssuntoId = a.id; render(); } },
@@ -319,7 +319,7 @@ Object.assign(ACOES, {
   qPular: () => { const s = ui.qs; fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; } else finalizarSessao(); render(); },
   qProx: () => { const s = ui.qs; if (s.itens[s.i].resp == null) fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); window.scrollTo(0, 0); } else finalizarSessao(); render(); },
   qRasc: () => { ui.qRasc = !ui.qRasc; render(); },
-  qSair: () => { navSairSessao(); ui.view = 'questoes'; ui.qAba = 'listas'; render(); window.scrollTo(0, 0); },
+  qSair: () => { if (!navSairSessao()) return; ui.view = 'questoes'; ui.qAba = 'listas'; render(); window.scrollTo(0, 0); },
   qAnt: () => { const s = ui.qs; if (s.i > 0) { if (s.itens[s.i].resp == null) fecharItem(s); s.i--; s.tq = Date.now(); window.scrollTo(0, 0); } render(); },
   qNova: () => { ui.qs = null; ui.view = 'questoes'; ui.qAba = 'listas'; render(); window.scrollTo(0, 0); },
   qApagarErro: el => { S.erros = S.erros.filter(e => e.id !== el.dataset.id); salvar(); render(); },

@@ -38,12 +38,14 @@ function navSync() {
 }
 
 function navSairSessao() {
-  const s = ui.qs; if (!s) return;
+  const s = ui.qs; if (!s) return true;
   if (!s.fim) {
     const feitas = s.itens.filter(q => q.resp != null), f = feitas.length, tot = s.itens.length;
-    if (f >= tot && tot > 0) {
+    if (s.simulado) {
+      if (f > 0 && !confirm(`Sair da prova agora? Você já respondeu ${f} de ${tot} questões e vai perder o andamento.`)) return false;
+    } else if (f >= tot && tot > 0) {
       finalizarSessao();
-    } else if (!s.simulado) {
+    } else {
       for (const q of feitas) if (typeof contabilizarQuestaoRespondida === 'function' && !q.contabilizada) contabilizarQuestaoRespondida(s, q);
       S.listasAbertas ||= {};
       S.listasAbertas[s.chaveLista || 'avulsa'] = s;
@@ -52,6 +54,7 @@ function navSairSessao() {
     }
   }
   ui.qs = null; ui.qRasc = false; DB.del('d:qs');
+  return true;
 }
 
 addEventListener('popstate', e => {
@@ -61,7 +64,9 @@ addEventListener('popstate', e => {
   NAV.suspenso = true;
   try {
     if (!k.m && navModal()) { ui.chatAberto = false; fecharModal(); }
-    if (!k.q && ui.qs) navSairSessao();
+    if (!k.q && ui.qs) {
+      if (!navSairSessao()) { history.pushState({ k: navChave() }, '', navUrl()); return; }
+    }
     if (VIEWS[k.v]) ui.view = k.v;
     if (k.v === 'questoes' && k.a) ui.qAba = k.a;
     ui.apagar = false;
