@@ -73,34 +73,42 @@ window.garantirAgendaPadrao = garantirAgendaPadrao;
 /** Parser local para montar a agenda mesmo sem chave de IA ou se ela quiser resposta imediata ao digitar horários. */
 function parsearDiaLocal(texto, horas, agoraMin, ehHoje = true) {
   const ag = [], txt = String(texto || '');
-  const Partes = txt.split(/[,.;\n]+|(?:\s+e\s+(?=[a-zà-ú]+\s+(?:às|as|das|de|\d)))/i);
+  // divide por vírgula/ponto/quebra ou " e " quando começa outra atividade (mas preserva "das X às Y e das Z às W" juntos)
+  const Partes = txt.split(/[,.;\n]+|(?:\s+e\s+(?!(?:das?|de)\s*\d)(?=[a-zà-ú]+\s+(?:às|as|das|de|\d)))/i);
   const parseH = (h, m) => (+h < 24 && +(m || 0) < 60 ? +h * 60 + +(m || 0) : null);
+  const reIntG = /(?:das?|de)?\s*(\d{1,2})(?:h|:)?(\d{2})?\s*(?:às|as|a|até|[-–—])\s*(\d{1,2})(?:h|:)?(\d{2})?/ig;
+  let ultTipo = '';
   for (const p of Partes) {
     const s = p.trim(); if (!s) continue;
-    const mInt = /(?:das?|de)?\s*(\d{1,2})(?:h|:)?(\d{2})?\s*(?:às|as|a|até|[-–—])\s*(\d{1,2})(?:h|:)?(\d{2})?/i.exec(s);
-    const mHora = /(?:às|as|a partir das?|das?|de)?\s*(\d{1,2})(?:h|:)(\d{2})?/i.exec(s);
-    let ini = null, fim = null;
-    if (mInt) { ini = parseH(mInt[1], mInt[2]); fim = parseH(mInt[3], mInt[4]); }
-    else if (mHora) { ini = parseH(mHora[1], mHora[2]); if (ini != null) fim = Math.min(1439, ini + (/estudo|estudar/i.test(s) ? 120 : 60)); }
-    if (ini == null || fim == null || fim <= ini) continue;
-    let tipo = 'compromisso', tit = s.replace(/(?:das?|de)?\s*\d{1,2}(?:h|:)?\d{0,2}\s*(?:às|as|a|até|[-–—])\s*\d{1,2}(?:h|:)?\d{0,2}/ig, '').replace(/(?:às|as|a partir das?|das?|de)?\s*\d{1,2}(?:h|:)?\d{0,2}/ig, '').replace(/^[\s,:-]+|[\s,:-]+$/g, '');
+    const ints = [...s.matchAll(reIntG)].map(m => [parseH(m[1], m[2]), parseH(m[3], m[4])]).filter(([i, f]) => i != null && f != null && f > i);
+    const faixas = ints.length ? ints : (() => {
+      const mHora = /(?:às|as|a partir das?|das?|de)?\s*(\d{1,2})(?:h|:)(\d{2})?/i.exec(s);
+      if (!mHora) return [];
+      const ini = parseH(mHora[1], mHora[2]);
+      return ini != null ? [[ini, Math.min(1439, ini + (/estudo|estudar/i.test(s) ? 120 : 60))]] : [];
+    })();
+    if (!faixas.length) continue;
+    let tipo = 'compromisso';
+    let tit = s.replace(reIntG, '').replace(/(?:às|as|a partir das?|das?|de)?\s*\d{1,2}(?:h|:)?\d{0,2}/ig, '').replace(/^(?:e\s+|vou\s+)+/i, '').replace(/^[\s,:-]+|[\s,:-]+$/g, '');
     if (/dormir|sono|deitar/i.test(s)) { tipo = 'outro'; tit = 'Dormir'; }
     else if (/treino|academia|corrida|pilates|natac|musculac|exerc|esporte|caminhada/i.test(s)) { tipo = 'exercicio'; tit = tit || 'Treino'; }
-    else if (/estud/i.test(s)) { tipo = 'estudo'; tit = tit || 'Bloco de estudo'; }
+    else if (/estud/i.test(s)) { tipo = 'estudo'; tit = 'Bloco de estudo'; }
     else if (/almoc|janta|cafe|lanche|refeic/i.test(s)) { tipo = 'refeicao'; tit = tit || 'Refeição'; }
     else if (/aula|cursinho|faculdade|trabalh|plantao/i.test(s)) { tipo = 'trabalho'; tit = tit || 'Aula / compromisso'; }
     else if (/descans|pausa|cochilo/i.test(s)) { tipo = 'pausa'; tit = tit || 'Pausa'; }
     else if (/lazer|filme|sair|namorad/i.test(s)) { tipo = 'lazer'; tit = tit || 'Lazer'; }
+    else if (!tit && ultTipo === 'estudo') { tipo = 'estudo'; tit = 'Bloco de estudo'; }
+    ultTipo = tipo;
     tit = tit ? tit[0].toUpperCase() + tit.slice(1) : TIPOS_DIA[tipo];
-    ag.push({ inicio: hmStr(ini), fim: hmStr(fim), titulo: tit.slice(0, 80), tipo });
+    for (const [ini, fim] of faixas) ag.push({ inicio: hmStr(ini), fim: hmStr(fim), titulo: tit.slice(0, 80), tipo });
   }
   return tratarAgenda(ag, agoraMin, texto, ehHoje, horas);
 }
 
 /** Higieniza e completa a agenda:
    1. Detecta horário de dormir para ser o encerramento do dia (remove bloco de 'dormir' como tarefa).
-   2. Remove falsos blocos de lazer ou descanso longo inventados se ela não pediu.
-   3. Preenche 100% de todo tempo vago até dormir com estudo (com pausas de 10 min se o bloco for longo). */
+   2. Se a usuária informou janelas explícitas de estudo, respeita exatamente essas janelas (subtraindo compromissos).
+   3. Caso contrário, preenche os intervalos vagos respeitando `horasLivres` (se informado), com pausas de 10 min em blocos longos. */
 function tratarAgenda(lista, agoraMin, textoUsuario = '', ehHoje = true, horasLivres = 0) {
   const ag = [];
   const txt = String(textoUsuario || '');
@@ -120,22 +128,20 @@ function tratarAgenda(lista, agoraMin, textoUsuario = '', ehHoje = true, horasLi
   }
 
   const pediuLazer = /lazer|descans|folga|filme|sair|namorad|livre/i.test(txt);
+  const pisoInicio = ehHoje ? agoraMin : 480;
 
-  // 2. Extrai compromissos reais (refeição, treino, aula, compromissos ou pausas expressas)
-  const fixos = [];
+  // 2. Separa compromissos reais e janelas explícitas de estudo
+  const fixos = [], estudosExplic = [];
   for (const x of Array.isArray(lista) ? lista : []) {
     let i = hm(x.inicio), f = hm(x.fim); if (i == null || f == null) continue;
     if (f <= i) f = Math.min(1439, f + 1440);
     const tipo = TIPOS_DIA[x.tipo] ? x.tipo : 'outro';
     if (/dormir|sono|deitar/i.test(x.titulo || '')) continue;
     if (ehHoje && f <= agoraMin) continue; // já passou
-    if (!pediuLazer && (tipo === 'lazer' || /tempo livre|descanso|prepara[cç][aã]o/i.test(x.titulo || ''))) {
-      // Ignora "lazer" ou "tempo livre" inventado pela IA quando o usuário não pediu; esse intervalo será estudo
-      continue;
-    }
-    if (tipo === 'estudo') continue; // os blocos de estudo serão reconstruídos nos intervalos
+    if (!pediuLazer && (tipo === 'lazer' || /tempo livre|descanso|prepara[cç][aã]o/i.test(x.titulo || ''))) continue;
     if (ehHoje && i < agoraMin) i = agoraMin;
     if (f <= i) continue;
+    if (tipo === 'estudo') { estudosExplic.push([i, Math.min(f, fimDia)]); continue; }
     fixos.push({ inicio: hmStr(i), fim: hmStr(f), titulo: String(x.titulo || TIPOS_DIA[tipo]).slice(0, 80), tipo });
   }
 
@@ -145,35 +151,59 @@ function tratarAgenda(lista, agoraMin, textoUsuario = '', ehHoje = true, horasLi
     if (ultFim != null && ultFim > fimDia) fimDia = Math.min(1439, ultFim + 30);
   }
 
-  // 3. Preenche 100% de todos os intervalos vagos com estudo (e pausas curtas de 10 min se o bloco for longo)
-  let cur = ehHoje ? agoraMin : 480; // se hoje, começa em agoraMin; se amanhã, começa às 08:00
   let blocoIdx = 1;
+  let restaMin = horasLivres > 0 ? Math.round(horasLivres * 60) : Infinity;
 
   const inserirEstudo = (de, ate) => {
-    const gap = ate - de;
-    if (gap < 20) return;
-    if (gap <= 100) {
-      ag.push({ inicio: hmStr(de), fim: hmStr(ate), titulo: `Estudo - Bloco ${blocoIdx++}`, tipo: 'estudo' });
-    } else {
-      // Gap longo: divide com uma pausa rápida de 10 min
-      const m1 = Math.min(85, Math.max(45, Math.round((gap - 10) / 2)));
-      ag.push({ inicio: hmStr(de), fim: hmStr(de + m1), titulo: `Estudo - Bloco ${blocoIdx++}`, tipo: 'estudo' });
-      ag.push({ inicio: hmStr(de + m1), fim: hmStr(de + m1 + 10), titulo: 'Pausa rápida', tipo: 'pausa' });
-      ag.push({ inicio: hmStr(de + m1 + 10), fim: hmStr(ate), titulo: `Estudo - Bloco ${blocoIdx++}`, tipo: 'estudo' });
+    let pos = de;
+    while (ate - pos >= 20 && restaMin >= 20) {
+      const disp = Math.min(ate - pos, restaMin);
+      if (disp <= 100) {
+        ag.push({ inicio: hmStr(pos), fim: hmStr(pos + disp), titulo: `Estudo - Bloco ${blocoIdx++}`, tipo: 'estudo' });
+        restaMin -= disp;
+        pos += disp;
+        break;
+      }
+      const nBlocos = Math.ceil((disp + 10) / 95);
+      const tam = Math.min(85, Math.max(45, Math.floor((disp - 10 * (nBlocos - 1)) / nBlocos)));
+      ag.push({ inicio: hmStr(pos), fim: hmStr(pos + tam), titulo: `Estudo - Bloco ${blocoIdx++}`, tipo: 'estudo' });
+      restaMin -= tam;
+      pos += tam;
+      if (ate - pos >= 30 && restaMin >= 20) {
+        ag.push({ inicio: hmStr(pos), fim: hmStr(pos + 10), titulo: 'Pausa rápida', tipo: 'pausa' });
+        pos += 10;
+      }
     }
   };
 
-  for (const c of fixos) {
-    const ci = hm(c.inicio), cf = hm(c.fim);
-    if (ci > cur) {
-      inserirEstudo(cur, ci);
+  // Subtrai compromissos de uma lista de janelas [i, f]
+  const subtrairFixos = janelas => {
+    let res = janelas.filter(([i, f]) => f > i).sort((a, b) => a[0] - b[0]);
+    for (const c of fixos) {
+      const ci = hm(c.inicio), cf = hm(c.fim), prox = [];
+      for (const [i, f] of res) {
+        if (cf <= i || ci >= f) { prox.push([i, f]); continue; }
+        if (ci > i) prox.push([i, ci]);
+        if (cf < f) prox.push([cf, f]);
+      }
+      res = prox;
     }
-    ag.push(c);
-    cur = Math.max(cur, cf);
-  }
+    return res;
+  };
 
-  if (fimDia > cur) {
-    inserirEstudo(cur, fimDia);
+  for (const c of fixos) ag.push(c);
+
+  if (estudosExplic.length) {
+    // usuária pediu janelas específicas de estudo: respeita exatamente essas janelas (sem encher até 23h)
+    restaMin = Infinity;
+    for (const [i, f] of subtrairFixos(estudosExplic)) inserirEstudo(i, f);
+  } else {
+    // sem janelas explícitas: preenche intervalos vagos até o teto de horasLivres (ou fimDia se não informado)
+    const ini = Math.max(pisoInicio, ehHoje ? agoraMin : 480);
+    for (const [i, f] of subtrairFixos([[ini, fimDia]])) {
+      if (restaMin < 20) break;
+      inserirEstudo(i, f);
+    }
   }
 
   return ag.sort((a, b) => hm(a.inicio) - hm(b.inicio));
