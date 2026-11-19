@@ -481,9 +481,13 @@ Se a letra estiver difícil de ler, diga isso nos comentários. Responda SÓ com
     <div class="linha"><button class="botao" data-acao="rascunhoTarefas">Virar tarefas com a IA</button></div>`); },
 });
 
-// a cópia de segurança leva os desenhos junto
+// a cópia de segurança leva os desenhos junto (compactada e sem chaves internas/caches)
 exportar = async function () {
-  const blob = new Blob([JSON.stringify({ ...S, desenhos: await DB.todos() })], { type: 'application/json' });
+  const todos = await DB.todos(), desenhos = {};
+  for (const [k, v] of Object.entries(todos)) {
+    if (!k.startsWith('d:bkp:') && !k.startsWith('banco:') && k !== 'd:qs' && k !== 'd:antesSync') desenhos[k] = v;
+  }
+  const blob = new Blob([JSON.stringify({ ...S, desenhos }, compactarS)], { type: 'application/json' });
   const nome = `rotina-copia-${hoje()}.json`, arq = new File([blob], nome, { type: 'application/json' });
   if (navigator.canShare?.({ files: [arq] })) { navigator.share({ files: [arq], title: nome }).catch(() => { }); return; }
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; a.click();

@@ -88,7 +88,8 @@ function zerarUsoCompleto(s) {
   // desenhos, rascunhos, fotos de redação e a lista aberta guardados no IndexedDB (as cópias do plano ficam)
   setTimeout(() => { try {
     const r = indexedDB.open('rotina-desenhos', 1);
-    r.onsuccess = () => { try { const db = r.result, st = db.transaction('d', 'readwrite').objectStore('d'), q = st.getAllKeys();
+    r.onupgradeneeded = () => { if (!r.result.objectStoreNames.contains('d')) r.result.createObjectStore('d'); };
+    r.onsuccess = () => { try { const db = r.result; if (!db.objectStoreNames.contains('d')) return; const st = db.transaction('d', 'readwrite').objectStore('d'), q = st.getAllKeys();
       q.onsuccess = () => { for (const k of q.result) if (!String(k).startsWith('d:bkp:') && !String(k).startsWith('banco:')) st.delete(k); }; } catch { } };
   } catch { } }, 0);
   try { localStorage.removeItem('rotina.nav'); } catch { }
@@ -1374,8 +1375,16 @@ document.addEventListener('change', e => {
     el.files[0].text().then(t => {
       const novo = JSON.parse(t); const desenhos = novo.desenhos; delete novo.desenhos;
       if (!novo || !Array.isArray(novo.assuntos)) throw new Error('arquivo não é uma cópia da Rotina');
-      S = Object.assign(JSON.parse(JSON.stringify(VAZIO)), novo); salvar(); if (desenhos && window.restaurarDesenhos) restaurarDesenhos(desenhos); ui.iaMsg = 'Cópia restaurada.'; render();
-    }).catch(err => { ui.iaMsg = 'Não consegui restaurar: ' + err.message; render(); });
+      // garante resetTesteV >= RESET_V para nunca acionar zerarUsoCompleto ao restaurar uma cópia antiga
+      novo.resetTesteV = Math.max(novo.resetTesteV || 0, RESET_V);
+      novo._t = Date.now();
+      localStorage.setItem(CHAVE, JSON.stringify(novo, compactarS));
+      S = carregar();
+      if (typeof aplicarCronograma === 'function' && typeof CRONOGRAMA !== 'undefined' && S.cronoV !== CRONOGRAMA.v) aplicarCronograma(S.cenario || 'capital');
+      salvar();
+      if (desenhos && window.restaurarDesenhos) restaurarDesenhos(desenhos);
+      ui.iaMsg = 'Cópia restaurada.'; render();
+    }).catch(err => { ui.iaMsg = 'Não consegui restaurar: ' + err.message; render(); }).finally(() => { el.value = ''; });
   }
 });
 document.addEventListener('keydown', e => {

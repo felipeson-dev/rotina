@@ -6,8 +6,8 @@ const SYNC_K = 'rotina.sync';
 const lerSync = () => { try { return JSON.parse(localStorage.getItem(SYNC_K) || '{}'); } catch { return {}; } };
 const gravarSync = c => { try { localStorage.setItem(SYNC_K, JSON.stringify(c)); } catch { } };
 const GH = 'https://api.github.com/gists';
-let syncTimer = 0, syncAplicando = false, syncBoot = true;
-setTimeout(() => { syncBoot = false; }, 1000);
+let syncTimer = 0, syncAplicando = false, syncBoot = true, syncSujo = false;
+queueMicrotask(() => { syncBoot = false; });
 
 function widgetDados() {
   const d = S.dias[hoje()] || { blocos: [], agenda: [] }, agora = new Date().getHours() * 60 + new Date().getMinutes();
@@ -27,7 +27,7 @@ async function syncPush() {
     const r = await fetch(c.id ? `${GH}/${c.id}` : GH, { method: c.id ? 'PATCH' : 'POST', headers: { Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github+json' },
       body: JSON.stringify(c.id ? { files } : { description: 'Rotina (dados do app)', public: false, files }) });
     if (!r.ok) throw new Error('GitHub ' + r.status);
-    const j = await r.json(); gravarSync({ ...c, id: j.id, ult: t, erro: '', quando: Date.now() });
+    const j = await r.json(); syncSujo = false; gravarSync({ ...c, id: j.id, ult: t, erro: '', quando: Date.now() });
   } catch (e) { gravarSync({ ...lerSync(), erro: /load failed|failed to fetch|network/i.test(e.message) ? 'sem conexão com o GitHub' : e.message }); }
 }
 
@@ -44,7 +44,10 @@ async function syncPull(mostrar) {
       let guardou = false;
       if ((S._t || 0) > (c.ult || 0) && typeof DB !== 'undefined') { try { await DB.set('d:antesSync', JSON.stringify({ quando: Date.now(), S })); guardou = true; } catch { } }
       if (guardou) gravarSync({ ...lerSync(), antes: Date.now() });
-      syncAplicando = true; S = carregarDe(rem.S); salvar(); syncAplicando = false;
+      syncAplicando = true;
+      S = carregarDe(rem.S);
+      if (typeof aplicarCronograma === 'function' && typeof CRONOGRAMA !== 'undefined' && S.cronoV !== CRONOGRAMA.v) aplicarCronograma(S.cenario || 'capital');
+      salvar(); syncAplicando = false; syncSujo = false;
       if (typeof BD !== 'undefined' && S.qExtras) {
         (async () => { for (const [id, ex] of Object.entries(S.qExtras)) { try { const r = await BD.get(id); if (r) await BD.put([{ ...r, ...ex }]); } catch { } } })();
       }
@@ -55,8 +58,11 @@ async function syncPull(mostrar) {
 // mesma normalização do carregar() do app, a partir de um objeto
 function carregarDe(obj) { try { localStorage.setItem(CHAVE, JSON.stringify(obj)); } catch { } return carregar(); }
 
-{ const s0 = salvar; salvar = function () { if (!syncAplicando && !syncBoot) S._t = Date.now(); s0.apply(this, arguments); if (!syncAplicando && !syncBoot && lerSync().token) { clearTimeout(syncTimer); syncTimer = setTimeout(syncPush, 4000); } }; }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) syncPull(); else if (lerSync().token) syncPush(); });
+{ const s0 = salvar; salvar = function () { if (!syncAplicando && !syncBoot) { S._t = Date.now(); syncSujo = true; } s0.apply(this, arguments); if (!syncAplicando && !syncBoot && lerSync().token) { clearTimeout(syncTimer); syncTimer = setTimeout(syncPush, 4000); } }; }
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) syncPull();
+  else { const c = lerSync(); if (c.token && (syncSujo || (S._t || 0) > (c.ult || 0))) syncPush(); }
+});
 setTimeout(() => syncPull(), 1500);
 
 Object.assign(ACOES, {
