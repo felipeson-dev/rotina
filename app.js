@@ -1422,7 +1422,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.se
 
 // ---------- versão do app: o app da tela de início não recarrega sozinho; ao voltar para ele, confere se há versão nova ----------
 // APP_V tem que ser igual ao VERSAO do sw.js (subir os dois juntos)
-const APP_V = 'rotina-51';
+const APP_V = 'rotina-52';
 async function versaoNoSite() {
   try { const t = await (await fetch('sw.js?v=' + Date.now(), { cache: 'no-store' })).text(); return (t.match(/VERSAO = '([^']+)'/) || [])[1] || null; } catch { return null; }
 }
