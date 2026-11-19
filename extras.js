@@ -14,17 +14,21 @@ function modalQuestoes(a) {
     <div class="linha"><button class="botao" data-acao="salvarQuestoes" data-id="${a.id}">Salvar</button></div>`);
 }
 
-/** Registra questões feitas/acertadas de um assunto (e do dia). Abaixo de 70%: agenda a revisão dos erros. Devolve a mensagem. */
+/** Registra questões feitas/acertadas de um assunto (e do dia). Abaixo de 70%: marca o assunto como fraco para prioridade nas revisões. Devolve a mensagem. */
 function registrarQ(a, f, ac) {
   const m = a.materia, ant = a.questoes;
-  if (ant && S.qlog[a.qdia]?.[m]) { const v = S.qlog[a.qdia][m]; v.f = Math.max(0, v.f - ant.feitas); v.a = Math.max(0, v.a - ant.acertos); }
-  a.questoes = { feitas: f, acertos: ac }; a.qdia = hoje();
+  if (ant && S.qlog[a.qdia]?.[m]) {
+    const v = S.qlog[a.qdia][m];
+    v.f = Math.max(0, v.f - ant.feitas);
+    v.a = Math.max(0, v.a - (ant.acertos || 0));
+    if (ant.semAc) v.s = Math.max(0, (v.s || 0) - ant.semAc);
+  }
+  a.questoes = { feitas: f, acertos: ac, semAc: 0 }; a.qdia = hoje();
   const v = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); v.f += f; v.a += ac;
   let msg = `Anotado: ${ac} de ${f}.`;
-  if (f >= 10 && ac / f < 0.7 && !a.revisao) {
-    a.revisao = true;
-    S.assuntos.push({ id: uid(), mes: mesDe(somaDias(semAtual(), 7)), materia: m, titulo: `Refazer os erros: ${a.titulo}`, semana: somaDias(semAtual(), 7), ord: 0.5, min: 45, feito: false });
-    msg += ' Foi abaixo de 70%, então agendei uma revisão dos erros para a semana que vem.';
+  if (f >= 10 && ac / f < 0.7) {
+    a.fraco = true;
+    msg += ' Foi abaixo de 70%, então marquei como assunto fraco para voltar com prioridade nas revisões.';
   } else if (f >= 10 && ac / f >= 0.9) msg += ' Excelente!';
   return msg;
 }
@@ -131,7 +135,7 @@ function anoCaminho() {
       <circle class="bolinha" cx="${p.x}" cy="${p.y}" r="13"/>
       ${s.st === 'ok' ? `<path class="certo" d="M${p.x - 5} ${p.y} l4 4 l7 -8"/>` : s.l.length ? `<text class="qtd" x="${p.x}" y="${p.y + 4.5}" text-anchor="middle">${s.l.length - s.f}</text>` : ''}
       ${agora ? `<g class="avatar"><text x="${p.x}" y="${p.y - 30}" text-anchor="middle">♥</text></g>` : ''}
-      ${pr ? `<g class="bandeira-svg"><line x1="${p.x}" y1="${p.y - 22}" x2="${p.x}" y2="${p.y - 62}"/><path d="M${p.x} ${p.y - 62} h${Math.min(124, 10 + pr[0].nome.length * 6.8)} l-8 9 l8 9 h-${Math.min(124, 10 + pr[0].nome.length * 6.8)}z"/><text x="${p.x + 6}" y="${p.y - 48}">${esc(pr[0].nome.slice(0, 17))}</text></g>` : ''}</g>`; }).join('');
+      ${pr ? (() => { const bw = Math.min(124, 10 + pr[0].nome.length * 6.8), esq = p.x + bw > W - 12, x0 = esq ? p.x - bw : p.x; return `<g class="bandeira-svg"><line x1="${p.x}" y1="${p.y - 22}" x2="${p.x}" y2="${p.y - 54}"/><path d="${esq ? `M${p.x} ${p.y - 54} h-${bw} l8 9 l-8 9 h${bw}z` : `M${p.x} ${p.y - 54} h${bw} l-8 9 l8 9 h-${bw}z`}"/><text x="${x0 + (esq ? 10 : 6)}" y="${p.y - 40}">${esc(pr[0].nome.length > 17 ? pr[0].nome.slice(0, 16) + '…' : pr[0].nome)}</text></g>`; })() : ''}</g>`; }).join('');
   const total = S.assuntos.length, fz = S.assuntos.filter(a => a.feito).length, pct = total ? Math.round(fz / total * 100) : 0;
   const mats = [...new Set(S.assuntos.map(a => a.materia))];
   const agora = ws.includes(ui.caminhoSem) ? ui.caminhoSem : semAtual();
@@ -170,16 +174,21 @@ function mesMapa(m) {
       <div class="barras2"><div class="barra"><i style="width:${pc(fm, mes.length)}%;background:var(--c)"></i></div><div class="barra fina"><i style="width:${pc(fa, ano.length)}%;background:var(--c);opacity:.45"></i></div></div></button>`;
   }).join('');
   const totEstMes = soma(dias, d => S.estudo[d] || 0), diasComEst = dias.filter(d => (S.estudo[d] || 0) > 0).length;
+  const assuntosMat = ui.anoMat ? S.assuntos.filter(a => a.mes === m && a.materia === ui.anoMat) : [];
+  const detalheMat = ui.anoMat ? `<div class="coluna" style="gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--linha)">
+    <span class="rotulo">${esc(ui.anoMat)} em ${nomeMes(m)} (${assuntosMat.filter(a => a.feito).length}/${assuntosMat.length})</span>
+    ${assuntosMat.length ? `<div class="mini-lista">${assuntosMat.map(a => `<button class="item-mini ${a.feito ? 'feito' : ''}" style="${cor(a.materia)};border:0;cursor:pointer;text-align:left" data-acao="assunto" data-id="${a.id}"><i class="ponto"></i>${esc(a.titulo)}</button>`).join('')}</div>` : '<span class="fraco" style="font-size:13px">Nenhum assunto desta matéria previsto neste mês.</span>'}
+  </div>` : '';
   return `<section class="cartao"><div class="entre" style="flex-wrap:wrap;gap:8px"><h2>Constância em ${nomeMes(m)}</h2>
-      <span class="fraco" style="font-size:14px">${diasComEst} ${diasComEst === 1 ? 'dia estudado' : 'dias estudados'} · ${fmtMin(totEstMes)} acumuladas no mês</span></div>
+      <span class="fraco" style="font-size:14px">${diasComEst} ${diasComEst === 1 ? 'dia estudado' : 'dias estudados'} · total acumulado: ${fmtMin(totEstMes)}</span></div>
     ${provas.length ? `<div class="linha">${provas.map(p => `<span class="bandeira">🎯 ${esc(p.nome)} · ${diaCurto(p.data)}</span>`).join('')}</div>` : ''}
     <div class="dias-estudo" style="grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:6px">${dias.map(d => {
       const min = S.estudo[d] || 0;
       return `<div class="de ${d === h ? 'hoje' : ''}" title="${diaCurto(d)}: ${min ? fmtMin(min) : 'sem registro'}"><div class="coluna-barra"><i style="height:${Math.round(min / maxEst * 100)}%"></i></div><span>${d.slice(8)}</span><small>${min ? fmtMin(min) : '·'}</small></div>`;
     }).join('')}</div></section>
     <section class="cartao"><div class="entre"><h2>Equilíbrio por matéria (mês vs. ano)</h2>${ui.anoMat ? '<button class="link" data-acao="anoMat" data-v="">Mostrar todas</button>' : ''}</div>
-      <p class="fraco" style="margin:0;font-size:13px">Barra forte = avanço neste mês; barra clara = avanço no cronograma anual inteiro.</p>
-      ${porMat}</section>`;
+      <p class="fraco" style="margin:0;font-size:13px">Barra forte = avanço neste mês; barra clara = avanço no cronograma anual inteiro. Toque em uma matéria para ver os assuntos do mês.</p>
+      ${porMat}${detalheMat}</section>`;
 }
 
 document.addEventListener('pointerover', e => {
@@ -199,8 +208,9 @@ Object.assign(ACOES, {
     const msg = registrarQ(a, f, ac);
     if (f > 0) {
       for (const b of diaHoje().blocos || []) if (b.assuntoId === a.id) {
+        const metaB = window.questoesDoBloco ? window.questoesDoBloco(b) : (tempoDe(a).q || 15);
         const p = (b.passos || []).find(x => !x.ok && /quest/i.test(x.t));
-        if (p) { p.ok = true; S.feitos[hoje()] = (S.feitos[hoje()] || 0) + 1; if (b.passos.every(x => x.ok)) setFeito(a, true, false); }
+        if (p && a.questoes.feitas >= metaB) { p.ok = true; S.feitos[hoje()] = (S.feitos[hoje()] || 0) + 1; if (b.passos.every(x => x.ok)) setFeito(a, true, false); }
       }
     }
     salvar(); fecharModal(); ui.iaMsg = msg; ui.desfazer = null; render();

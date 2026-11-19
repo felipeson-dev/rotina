@@ -3,7 +3,7 @@
 
 ICONES.pendencias = '<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/>';
 S.pend ||= []; S.metaQ ||= {}; S.minQ ||= {};
-const METAQ_PADRAO = { 'Matemática': 50, 'Física': 50, 'Química': 50, 'Biologia': 100, 'História': 100, 'Geografia': 100, 'Português': 100, 'Literatura': 100 };
+const METAQ_PADRAO = { 'Matemática': 50, 'Física': 50, 'Química': 50, 'Biologia': 100, 'História': 100, 'Geografia': 100, 'Português': 100, 'Literatura': 100, 'Artes': 50 };
 const metaQ = m => S.metaQ[m] ?? METAQ_PADRAO[m] ?? 0;
 const CATS_PEND = ['Saúde', 'Casa', 'Pessoal', 'Estudos', 'Compras', 'Outros'];
 const ALERTAS = [[-1, 'sem aviso'], [0, 'na hora'], [10, '10 min antes'], [30, '30 min antes'], [60, '1 hora antes'], [1440, '1 dia antes']];
@@ -81,7 +81,7 @@ function criarPend(d) { const p = { id: uid(), feito: false, ...normPend(d) }; i
 const icsTxt = s => String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
 function icsEvento(p) {
   const d8 = p.dia.replace(/-/g, ''), L = ['BEGIN:VEVENT', `UID:${p.id}@rotina`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z`];
-  if (p.hora) { const [hh, mm] = p.hora.split(':').map(Number), fim = hh * 60 + mm + 30; L.push(`DTSTART:${d8}T${pad(hh)}${pad(mm)}00`, `DTEND:${d8}T${pad(Math.floor(fim / 60) % 24)}${pad(fim % 60)}00`); }
+  if (p.hora) { const [hh, mm] = p.hora.split(':').map(Number), fim = hh * 60 + mm + 30, dFim = fim >= 1440 ? somaDias(p.dia, 1).replace(/-/g, '') : d8; L.push(`DTSTART:${d8}T${pad(hh)}${pad(mm)}00`, `DTEND:${dFim}T${pad(Math.floor(fim / 60) % 24)}${pad(fim % 60)}00`); }
   else L.push(`DTSTART;VALUE=DATE:${d8}`, `DTEND;VALUE=DATE:${somaDias(p.dia, 1).replace(/-/g, '')}`);
   L.push(`SUMMARY:${icsTxt(p.titulo)}`); if (p.nota) L.push(`DESCRIPTION:${icsTxt(p.nota)}`);
   if (p.repete) L.push('RRULE:FREQ=' + { diaria: 'DAILY', semanal: 'WEEKLY', mensal: 'MONTHLY' }[p.repete]);

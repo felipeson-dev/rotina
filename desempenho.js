@@ -33,7 +33,7 @@ function dsSequencia() {
 
 // por que ela errou: marcado na própria questão (fica em S.qh[id].h[n][3]) e opcional
 const MOTIVOS = [['conteudo', 'Não sabia o conteúdo'], ['atencao', 'Falta de atenção'], ['enunciado', 'Não entendi a pergunta'], ['pressa', 'Pressa ou falta de tempo']];
-const DS_PROVAS = /fuvest|santa casa|einstein|unifesp|s[aã]o camilo|fmabc|famerp|enem/i;   // as provas dela
+const DS_PROVAS = /fuvest|unicamp|unesp|santa casa|einstein|unifesp|s[aã]o camilo|fmabc|famerp|puc[- ]?campinas|enem/i;   // as provas dela
 
 function motivoHtml(q) {
   if (q.certo || !q.id || q.tipo === 'disc') return '';
@@ -125,7 +125,7 @@ function dsBarras(serie) {
 }
 
 function dsMaterias(r) {
-  const l = Object.entries(r.mats).map(([m, v]) => ({ m, f: v.f, ac: acerto(v.f, v.a, v.s || 0), seg: v.t && v.f ? v.t / v.f : 0 })).sort((a, b) => (a.f < 5) - (b.f < 5) || (a.ac ?? 101) - (b.ac ?? 101));
+  const l = Object.entries(r.mats).map(([m, v]) => ({ m, f: v.f, ac: acerto(v.f, v.a, v.s || 0), seg: v.t && (v.tf || v.f) ? v.t / (v.tf || v.f) : 0 })).sort((a, b) => (a.f < 5) - (b.f < 5) || (a.ac ?? 101) - (b.ac ?? 101));
   if (!l.length) return '<p class="fraco" style="margin:0">Nenhuma questão neste período.</p>';
   return `<div class="coluna" style="gap:10px">${l.map(x => `<div class="meta-linha" style="${cor(x.m)}"><span><i class="ponto"></i>${esc(x.m)}</span>
     <span class="fraco"><b style="color:${x.f < 5 ? 'var(--fraco)' : dsCorAc(x.ac)}">${x.ac == null ? '–' : x.ac + '%'}</b> · ${x.f} q${x.seg ? ' · ' + dsMin(x.seg) + '/q' : ''}</span>
@@ -197,13 +197,13 @@ function vDesempenho() {
   const dias = dsDias(ui.dsPer), r = resumoPeriodo(dias), ac = acerto(r.f, r.a, r.s), seq = dsSequencia();
   const cab = `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">como estou indo</span><h1>Desempenho</h1></div>
     <div class="alterna" role="group">${DS_PERIODOS.map(([v, t]) => `<button data-acao="dsPer" data-v="${v}" aria-pressed="${ui.dsPer === v}">${t}</button>`).join('')}</div></header>${avisoIa()}`;
-  if (!Object.keys(S.qlog).length && !S.redacoes.some(e => notaRedDe(e) != null))
+  if (!Object.keys(S.qlog).length && !S.redacoes.some(e => notaRedDe(e) != null) && !(S.simulados || []).length && !S.assuntos.some(a => a.feito))
     return cab + `<section class="cartao"><h2>Ainda não tem dados</h2><p class="fraco" style="margin:0">Assim que você resolver questões ou tiver uma redação corrigida, os gráficos aparecem aqui.</p><div class="linha"><button class="botao" data-acao="ir" data-v="questoes">Ir para as questões</button></div></section>`;
   const venc = S.erros.filter(e => e.rev <= hoje()).length;
   return cab + `<section class="cartao"><div class="resumo-dia">
       <div><strong>${r.f}</strong><span>questões feitas</span></div>
       <div><strong style="color:${dsCorAc(ac)}">${ac == null ? '–' : ac + '%'}</strong><span>de acerto</span></div>
-      <div><strong>${r.f && r.t ? dsMin(r.t / r.f) : '–'}</strong><span>por questão</span></div>
+      <div><strong>${(r.tf || r.f) && r.t ? dsMin(r.t / (r.tf || r.f)) : '–'}</strong><span>por questão</span></div>
       <div><strong>${seq}</strong><span>${seq === 1 ? 'dia seguido' : 'dias seguidos'}</span></div></div>
     ${dsDicas(r)}${dsBarras(dsSerie(ui.dsPer))}</section>
     <section class="cartao"><h2>Por matéria</h2>${dsMaterias(r)}</section>
@@ -236,7 +236,7 @@ Object.assign(ACOES, {
   dsTreinar: async el => {
     const m = el.dataset.m, a = el.dataset.a;
     // primeiro as que errou ou ainda não fez, das bancas de SP e do ENEM; completa com as já acertadas
-    const l = BANCO.itens.filter(x => x.m === m && x.as === a), prio = x => S.qh[x.id] ? (S.qh[x.id].ok ? 2 : 0) : 1;
+    const l = BANCO.itens.filter(x => !x.ds && !window.questaoIgnorada?.(x) && x.m === m && x.as === a), prio = x => S.qh[x.id] ? (S.qh[x.id].ok ? 2 : 0) : 1;
     const fora = x => PRESETS_BANCA.sp[1].test(x.b) || /enem/i.test(x.b) ? 0 : 1;
     const ids = l.map(x => [x, Math.random()]).sort(([x, r], [y, s]) => prio(x) - prio(y) || fora(x) - fora(y) || r - s).slice(0, 15).map(([x]) => x.id);
     if (!ids.length) { ui.iaMsg = 'Não achei questões desse assunto no banco.'; render(); return; }
