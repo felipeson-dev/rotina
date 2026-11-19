@@ -76,16 +76,16 @@ main { padding: calc(30px + env(safe-area-inset-top, 0px)) clamp(16px, 4vw, 44px
   .app, [data-tema="noite"] .app, [data-tema="cores"] .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
   .menu, [data-tema="noite"] .menu, [data-tema="cores"] .menu {
     position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: auto; margin: 0; z-index: 20; flex-direction: row; flex-wrap: nowrap;
-    justify-content: flex-start; align-items: center; padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    justify-content: space-around; align-items: center; padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
     background: var(--painel); border: 0; border-top: 1px solid var(--linha); border-radius: 0;
-    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }   /* 11 abas não cabem em tela estreita (iPad dividido): o menu rola de lado */
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   .menu::-webkit-scrollbar { display: none; }
   .marca, .menu .espaco { display: none; }
-  .menu button, [data-tema="noite"] .menu button, [data-tema="cores"] .menu button { flex: none; min-width: 64px; flex-direction: column; gap: 2px; font-size: 11px; padding: 6px 4px; width: auto; height: auto; border-radius: 12px; }
-  .menu button span, [data-tema="noite"] .menu span { display: block; }
+  .menu button, [data-tema="noite"] .menu button, [data-tema="cores"] .menu button { flex: 1 1 0; min-width: 50px; flex-direction: column; gap: 2px; font-size: 10.5px; padding: 6px 2px; width: auto; height: auto; border-radius: 12px; }
+  .menu button span, [data-tema="noite"] .menu span { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   [data-tema="cores"] .menu button svg { display: block; }
-  main, [data-tema="cores"] main { padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 150px; }
-  .ia-botao { bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important; }
+  main, [data-tema="cores"] main { padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 170px; }
+  .ia-botao { bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important; }
 }
 
 /* ---------- peças ---------- */
@@ -112,7 +112,7 @@ main { padding: calc(30px + env(safe-area-inset-top, 0px)) clamp(16px, 4vw, 44px
   color: color-mix(in srgb, var(--c) 78%, var(--texto)); background: color-mix(in srgb, var(--c) 16%, transparent); white-space: nowrap; }
 .ponto { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
 
-input[type="text"], input[type="date"], input[type="password"], select, textarea {
+input[type="text"], input[type="number"], input[type="date"], input[type="time"], input[type="password"], input[type="search"], select, textarea {
   width: 100%; border: 1.5px solid var(--linha); background: var(--painel); border-radius: 14px; padding: 11px 14px; min-height: 46px; outline: none; }
 input:focus, select:focus, textarea:focus { border-color: var(--acento); }
 textarea { resize: vertical; min-height: 90px; }
@@ -189,8 +189,8 @@ label.campo small { font-weight: 400; color: var(--fraco); }
 @media (max-width: 600px) { .temas { grid-template-columns: minmax(0, 1fr); } }
 
 /* botão da IA */
-.ia-botao { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 15;
-  border: 0; border-radius: 999px; padding: 14px 22px; min-height: 52px; font-weight: 700; background: var(--acento); color: var(--sobre-acento);
+.ia-botao { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 15;
+  border: 0; border-radius: 999px; padding: 11px 18px; min-height: 46px; font-size: 14px; font-weight: 700; background: var(--acento); color: var(--sobre-acento);
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35); }
 
 /* janelas */
@@ -277,7 +277,7 @@ label.campo small { font-weight: 400; color: var(--fraco); }
 .col-mes .ringbox svg { width: 52px; height: 52px; display: block; }
 
 /* ---------- v4: caneta, caminho, matérias ---------- */
-.rascunho-botao { right: max(190px, calc(16px + 168px)) !important; background: var(--painel) !important; color: var(--texto) !important; box-shadow: 0 6px 20px -8px rgba(0,0,0,.3), inset 0 0 0 1.5px var(--linha) !important; }
+.rascunho-botao { right: max(172px, calc(16px + 154px)) !important; background: var(--painel) !important; color: var(--texto) !important; box-shadow: 0 6px 20px -8px rgba(0,0,0,.3), inset 0 0 0 1.5px var(--linha) !important; }
 @media (max-width: 760px) { .rascunho-botao { right: auto !important; left: 16px; } }
 .acoes-bloco { gap: 4px; }
 .mat-linha { grid-template-columns: 1fr auto !important; row-gap: 4px; }
@@ -616,8 +616,8 @@ input[type="search"]:focus { border-color: var(--acento); }
 /* tarefa única no bloco + etapas discretas expansíveis */
 .bloco-check { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; flex: 1; min-width: 0; }
 .check-bloco { width: 24px; height: 24px; margin-top: 2px; accent-color: var(--acento); flex: none; cursor: pointer; }
-.bloco.feito .bloco-check strong { text-decoration: line-through; color: var(--fraco); }
-.etapas-bloco { border-top: 1px dashed var(--borda); padding-top: 8px; }
+.bloco.feito .bloco-check strong, .bloco.feito .bloco-check h3 { text-decoration: line-through; color: var(--fraco); }
+.etapas-bloco { border-top: 1px dashed var(--linha); padding-top: 8px; }
 .etapas-bloco > summary { cursor: pointer; font-size: 13px; color: var(--fraco); user-select: none; list-style: none; display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; background: var(--painel2); }
 .etapas-bloco > summary::-webkit-details-marker { display: none; }
 .etapas-bloco > summary::before { content: "▸"; font-size: 12px; transition: transform .15s; }
@@ -625,18 +625,21 @@ input[type="search"]:focus { border-color: var(--acento); }
 .etapas-bloco .passos { margin-top: 8px; }
 
 /* prévia opcional para adiantar assuntos */
-.adiantar-previa { border-style: dashed; background: color-mix(in srgb, var(--painel) 70%, var(--fundo)); }
+.adiantar-previa { border: 1.5px dashed var(--linha); background: color-mix(in srgb, var(--painel) 70%, var(--bg)); }
 .adiantar-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
-.adiantar-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--painel); border: 1px solid var(--borda); }
+.adiantar-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--painel); border: 1px solid var(--linha); }
 
 /* timer flexível e cronômetro */
-.timer-opcoes { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.timer-opcoes { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; width: 100%; }
 .chip-timer { padding: 6px 11px; min-height: 34px; font-size: 13px; }
-.timer-custom-linha { display: flex; align-items: center; gap: 6px; }
-.input-timer-min { width: 82px !important; min-height: 34px !important; padding: 4px 8px !important; font-size: 13px !important; text-align: center; }
+.timer-custom-linha { display: flex; align-items: center; gap: 6px; width: 100%; }
+.timer-custom-linha input[type="number"] { width: 112px; min-height: 36px; padding: 6px 10px; font-size: 13px; text-align: center; }
+.proximo .timer-custom-linha input[type="number"] { background: rgba(255,255,255,0.14); color: inherit; border-color: rgba(255,255,255,0.3); }
+.proximo .timer-custom-linha input[type="number"]::placeholder { color: rgba(255,255,255,0.7); }
+.input-timer-min { width: 96px !important; min-height: 34px !important; padding: 4px 8px !important; font-size: 13px !important; text-align: center; }
 
 /* listas abertas no banco de questões */
-.listas-abertas { border-color: color-mix(in srgb, var(--acento) 45%, var(--borda)); background: color-mix(in srgb, var(--suave) 35%, var(--painel)); }
+.listas-abertas { border: 1.5px solid color-mix(in srgb, var(--acento) 45%, var(--linha)); background: color-mix(in srgb, var(--suave) 35%, var(--painel)); }
 .botao.destaque { background: var(--acento); color: var(--sobre-acento); }
 
 /* barra completa da caneta + flashcards na questão */
@@ -649,7 +652,7 @@ input[type="search"]:focus { border-color: var(--acento); }
 .flash-previa { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px; background: var(--painel); border: 2px solid var(--acento); }
 .flash-salvo { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 14px; background: var(--painel); border: 1px solid var(--linha); }
 .flash-face { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 16px; background: var(--painel2); min-height: 90px; }
-.q-ignorar { padding: 10px 12px; border-radius: 14px; background: var(--painel2); border: 1px dashed var(--borda); }
+.q-ignorar { padding: 10px 12px; border-radius: 14px; background: var(--painel2); border: 1px dashed var(--linha); }
 .x-mini { border: 0; background: rgba(0,0,0,.12); color: inherit; border-radius: 999px; width: 18px; height: 18px; line-height: 16px; padding: 0; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
 .chip.ativo { background: var(--acento); color: var(--sobre-acento); border-color: var(--acento); }
 
