@@ -13,7 +13,7 @@ function cobranca(a) { return BANCO.pronto ? BANCO.itens.filter(q => !window.que
 function acertoDe(a) {
   let f = 0, ok = 0;
   if (BANCO.pronto) for (const q of BANCO.itens) if (q.m === a.materia && q.as === tagDe(a) && S.qh[q.id]) { f++; if (S.qh[q.id].ok) ok++; }
-  if (a.questoes?.feitas) { f += a.questoes.feitas; ok += a.questoes.acertos; }
+  if (a.questoes?.feitas) { const comAc = Math.max(0, a.questoes.feitas - (a.questoes.semAc || 0)); f += comAc; ok += a.questoes.acertos || 0; }
   return f >= 3 ? Math.round(ok / f * 100) : null;
 }
 
@@ -75,12 +75,18 @@ const tagDe = a => {
     const n = a.nome || a.titulo || '';
     if (/^interpreta[cç][aã]o de texto/i.test(n) && a.materia === 'Português') t = 'Interpretação de texto e tipologia';
     else if (/^ingl[eê]s:\s*um texto/i.test(n) || a.materia === 'Inglês') t = 'Interpretação de textos em inglês';
-    else if (/^obra da fuvest/i.test(n)) t = 'Leituras obrigatórias da Fuvest';
+    else if (/^obra(\s+\(fuvest\)| da fuvest)/i.test(n)) t = 'Leituras obrigatórias da Fuvest';
     else t = a.titulo;
   }
   return window.limparNomeAssunto ? window.limparNomeAssunto(t) : t;
 };
 const nomeDe = a => a.nome || a.titulo;
+const ehHabitoQ = a => !!a && !ehConteudo(a) && (
+  /^discursivas/i.test(nomeDe(a)) ||
+  (/^interpreta[cç][aã]o de texto/i.test(nomeDe(a)) && a.materia === 'Português') ||
+  /^ingl[eê]s:\s*um texto/i.test(nomeDe(a)) ||
+  /^obra(\s+\(fuvest\)| da fuvest)/i.test(nomeDe(a))
+);
 function subRegexDe(a) {
   const tag = tagDe(a), nome = nomeDe(a), subs = window.SUBTOPICOS?.[tag];
   if (!subs || !nome || nome === tag) return null;
@@ -114,13 +120,16 @@ const fixacao = () => estudados().filter(a => PESADAS_REV.includes(a.materia) &&
     if (c.maior > 0 && diasRev().includes(deIso(hoje()).getDay()) && !ja.some(b => b.vaga === 'semana')) {
       // fora: os que já estão em outra vaga e os estudados há menos de 3 dias (esses têm a fixação e a volta de 7 dias)
       const recente = somaDias(hoje(), -3), fora = [...usados, ...novos.flatMap(b => b.revisao), ...estudados().filter(a => a.feitoEm && a.feitoEm > recente && !a.fraco).map(a => a.id)];
-      const l = escolherRevisao(Math.max(1, Math.floor(c.maior / 30)), fora);
-      // a vaga tem o tamanho do que há para revisar (~30 min por assunto), nunca mais que o teto
-      if (l.length) novos.push(blocoRev('Revisão da semana: questões de assuntos já estudados', l, Math.min(c.maior, l.length * 30), 'semana'));
+      const tetoMaior = Math.min(c.maior, Math.max(30, capOk - soma(ja, b => b.min) - soma(novos, b => b.min)));
+      const l = escolherRevisao(Math.max(1, Math.floor(tetoMaior / 30)), fora);
+      // a vaga tem o tamanho do que há para revisar (~30 min por assunto), nunca mais que o teto nem que o tempo livre do dia
+      if (l.length) novos.push(blocoRev('Revisão da semana: questões de assuntos já estudados', l, Math.min(tetoMaior, l.length * 30), 'semana'));
     }
   }
-  const usado = soma(novos, b => b.min);
-  m0.call(this, Math.max(1, capOk - usado), so);
+  const usado = soma(novos, b => b.min), jaMin = soma(ja, b => b.min), resto = capOk - usado;
+  if (capOk === 0) m0.call(this, 0, so);
+  else if (resto - jaMin >= 30 || (so || []).length || (!novos.length && !ja.length)) m0.call(this, Math.max(1, resto), so);
+  else d.blocos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.feito || (b.passos || []).some(p => p.ok); });
   d.cap = capOk; d.blocos.push(...novos);
 }; }
 // marcou todos os passos de um bloco de revisão: a volta conta como feita (sem acerto, se ela fez fora do app)
@@ -215,7 +224,8 @@ Object.assign(ACOES, {
   qDoAssunto: async el => {
     const a = achar(el.dataset.id); if (!a) return;
     const b = (el.dataset.b && diaHoje().blocos.find(x => x.id === el.dataset.b)) || diaHoje().blocos.find(x => x.assuntoId === a.id);
-    const nQ = b && window.questoesDoBloco ? window.questoesDoBloco(b) : Math.max(5, Math.min(40, tempoDe(a).q || 15));
+    const ehDisc = /^discursivas/i.test(nomeDe(a));
+    const nQ = ehDisc ? 3 : ehHabitoQ(a) ? 10 : (b && window.questoesDoBloco ? window.questoesDoBloco(b) : Math.max(5, Math.min(40, tempoDe(a).q || 15)));
     await questoesDosAssuntos([a], { assuntoId: a.id, blocoId: b?.id || '', chaveLista: 'a:' + a.id, tituloLista: a.titulo }, nQ);
   },
   qDaRevisao: async el => {
@@ -259,9 +269,9 @@ Object.assign(ACOES, {
       <div class="linha acoes-bloco">${btnRev}<button class="link" data-acao="revEscolher" data-b="${b.id}">${b.escolhidos ? 'Trocar os assuntos' : 'Escolher eu mesma'}</button></div></article>`);
   }
   const a = b.assuntoId && achar(b.assuntoId);
-  if (!a || !ehConteudo(a)) return h;
+  if (!a || (!ehConteudo(a) && !ehHabitoQ(a))) return h;
   const ab = S.listasAbertas?.['a:' + a.id];
-  const qMeta = window.questoesDoBloco ? window.questoesDoBloco(b) : (tempoDe(a).q || 15);
+  const qMeta = /^discursivas/i.test(nomeDe(a)) ? 3 : ehHabitoQ(a) ? 10 : (window.questoesDoBloco ? window.questoesDoBloco(b) : (tempoDe(a).q || 15));
   const btnAss = ab?.itens?.length && !ab.fim
     ? `<button class="botao destaque" data-acao="qContinuarLista" data-k="a:${a.id}">Continuar questões (${ab.itens.filter(q => q.resp != null).length}/${ab.itens.length})</button>`
     : `<button class="botao claro" data-acao="qDoAssunto" data-id="${a.id}" data-b="${b.id}">Fazer ${qMeta} questões no app</button>`;
@@ -269,15 +279,22 @@ Object.assign(ACOES, {
 }; }
 { const m0 = modalAssunto; modalAssunto = function (a) {
   m0.apply(this, arguments);
-  if (!ehConteudo(a)) return;
+  if (!ehConteudo(a) && !ehHabitoQ(a)) return;
   const linha = document.querySelector('#modal .janela > .linha:last-child');
-  const rev = a.rev ? `<span class="fraco" style="font-size:14px">Revisão: ${a.rev.n === 0 ? '1ª volta' : `${a.rev.n + 1}ª volta`} em ${diaCurto(a.rev.prox)}${acertoDe(a) != null ? ` · acerto ${acertoDe(a)}%` : ''}</span>` : '';
+  if (!linha) return;
   const ab = S.listasAbertas?.['a:' + a.id];
-  const btn = ab?.itens?.length && !ab.fim
-    ? `<button class="botao destaque" data-acao="qContinuarLista" data-k="a:${a.id}">Continuar questões (${ab.itens.filter(q => q.resp != null).length}/${ab.itens.length})</button>`
-    : `<button class="botao" data-acao="qDoAssunto" data-id="${a.id}">Fazer questões no app</button>`;
-  linha?.insertAdjacentHTML('beforebegin', rev);
-  linha?.insertAdjacentHTML('afterbegin', `${btn}<button class="botao contorno" data-acao="fraco" data-id="${a.id}">${a.fraco ? 'Não estou mais fraca nisso' : 'Estou fraca nisso'}</button>`);
+  const btnCont = ab?.itens?.length && !ab.fim
+    ? `<button class="botao destaque" data-acao="qContinuarLista" data-k="a:${a.id}">Continuar questões (${ab.itens.filter(q => q.resp != null).length}/${ab.itens.length})</button>` : '';
+  const qBtn = linha.querySelector('[data-acao="qDoAssunto"]');
+  if (qBtn && btnCont) qBtn.outerHTML = btnCont;
+  else if (!qBtn) linha.insertAdjacentHTML('afterbegin', btnCont || `<button class="botao claro" data-acao="qDoAssunto" data-id="${a.id}">Fazer questões no app</button>`);
+  if (!ehConteudo(a)) return;
+  const revTxt = a.rev ? (a.rev.prox ? `${a.rev.n === 0 ? '1ª volta' : `${a.rev.n + 1}ª volta`} em ${diaCurto(a.rev.prox)}` : a.rev.perdoada ? 'perdoada (volta na revisão geral)' : 'voltas concluídas') : '';
+  const rev = a.rev ? `<span class="fraco" style="font-size:14px">Revisão: ${revTxt}${acertoDe(a) != null ? ` · acerto ${acertoDe(a)}%` : ''}</span>` : '';
+  if (rev) linha.insertAdjacentHTML('beforebegin', rev);
+  const btnFraco = `<button class="botao contorno" data-acao="fraco" data-id="${a.id}">${a.fraco ? 'Não estou mais fraca nisso' : 'Estou fraca nisso'}</button>`;
+  const remBtn = linha.querySelector('[data-acao="removerAssunto"]');
+  if (remBtn) remBtn.insertAdjacentHTML('beforebegin', btnFraco); else linha.insertAdjacentHTML('beforeend', btnFraco);
 }; }
 
 // Ajustes: as vagas de revisão (tempo fixo) e os dias da revisão maior
