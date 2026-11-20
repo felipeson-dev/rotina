@@ -5,7 +5,7 @@ const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
 // Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
 // declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
-const APP_V = 'rotina-52';
+const APP_V = 'rotina-53';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -271,7 +271,7 @@ const lerArgon = () => { try { return JSON.parse(localStorage.getItem(CHAVE_ARGO
 const gravarArgon = o => { try { localStorage.setItem(CHAVE_ARGON, JSON.stringify(o)); } catch { } };
 const temArgon = () => !!lerArgon().chave;
 const GEMINI = {
-  texto: ['gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.5-flash'],
+  texto: ['gemini-4-hydrogen', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.8-flash'],
   visao: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'],
   flash: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'],
   'flash-lite': ['gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.5-flash'],
@@ -301,8 +301,10 @@ async function chamarIa(prompt, max = 8000, imagens = [], tarefa = imagens.lengt
   let erro = 'sem chave';
   const rota = rotaIa(tarefa);
   if (!rota.length) throw new Error('sem chave. Cole a chave em Ajustes');
+  const sobrecarregado = new Set();   // modelo com 503: pula as outras chaves dele nesta chamada
   for (const x of rota) {
     let r;
+    if (x.t === 'gemini' && sobrecarregado.has(x.modelo)) continue;
     try {
       if (x.t === 'llama') {
         if (imagens.length) continue;
@@ -325,9 +327,9 @@ async function chamarIa(prompt, max = 8000, imagens = [], tarefa = imagens.lengt
         r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${x.modelo}:generateContent`, { method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-goog-api-key': x.chave },
           body: JSON.stringify({ systemInstruction: { parts: [{ text: sistema() }] }, contents: [{ role: 'user', parts: partes }],
-            generationConfig: { responseMimeType: 'application/json', maxOutputTokens: max, temperature: 0.6 } }), signal: AbortSignal.timeout(40000) });
+            generationConfig: { responseMimeType: 'application/json', maxOutputTokens: max, temperature: 0.6, thinkingConfig: { thinkingLevel: 'low' } } }), signal: AbortSignal.timeout(x.modelo === 'gemini-4-hydrogen' ? 20000 : 40000) });
       }
-    } catch (e) { erro = e.name === 'TimeoutError' ? 'a IA demorou demais' : 'sem internet?'; continue; }
+    } catch (e) { erro = e.name === 'TimeoutError' ? 'a IA demorou demais' : 'sem internet?'; if (x.t === 'gemini' && e.name === 'TimeoutError') sobrecarregado.add(x.modelo); continue; }
     if (r.ok) {
       const j = await r.json();
       const t = (x.t === 'llama' || x.t === 'openrouter') ? (j.choices?.[0]?.message?.content || '')
@@ -335,6 +337,7 @@ async function chamarIa(prompt, max = 8000, imagens = [], tarefa = imagens.lengt
         : (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
       try { const out = JSON.parse(t.replace(/^```(json)?|```$/g, '').trim()); marcarUso(x.id); ui.ultimaIa = x.id === 'argon' ? 'Argon · ' + x.modelo : x.t === 'llama' ? 'Llama · ' + x.modelo : x.modelo; salvar(); return out; } catch { erro = 'resposta incompleta'; continue; }
     }
+    if (r.status === 503 && x.t === 'gemini') sobrecarregado.add(x.modelo);
     if (r.status === 429) { marcarUso(x.id, false); erro = 'a cota grátis acabou por agora'; }
     else erro = r.status === 503 ? 'a IA está sobrecarregada' : r.status === 401 || r.status === 403 ? 'chave recusada (' + x.id + ')' : `erro ${r.status}`;
   }

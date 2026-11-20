@@ -70,9 +70,94 @@ function garantirAgendaPadrao(d, data = hoje()) {
 }
 window.garantirAgendaPadrao = garantirAgendaPadrao;
 
+/** Parser local por atividades (usado sem IA): acha almoço, jantar, treino e tarefas soltas, liga a cada uma a hora e a duração mais próximas
+    ("1h de jantar", "19h", "final da tarde", "40 min") e encaixa num horário livre o que veio sem horário. */
+function parsearAtividadesLocal(texto, agoraMin, ehHoje) {
+  const orig = String(texto || '').toLowerCase();
+  let t = '', mapa = [];   // t = sem acentos; mapa = posição de cada letra no texto original
+  for (let i = 0; i < orig.length; i++) { const n = orig[i].normalize('NFD').replace(/\p{M}/gu, ''); for (const c of n) { t += c; mapa.push(i); } }
+  const defs = [
+    { re: /\balmoc\w*/g, tipo: 'refeicao', tit: 'Almoço', dur: 60, ini: 12 * 60 + 30, tarde: false },
+    { re: /\bjant\w*/g, tipo: 'refeicao', tit: 'Jantar', dur: 60, ini: 19 * 60 + 30, tarde: true },
+    { re: /\b(?:trein\w*|academia|corrida|pilates|natac\w*|musculac\w*|caminhad\w*)/g, tipo: 'exercicio', tit: 'Treino', dur: 60, ini: 18 * 60, tarde: true },
+    { re: /\b(?:arrum|lav|limp|organiz|resolv|compr|pag|mercado|banco|dentista|medic|cabeleir|unha|lavand)\w*(?:(?!\s+e\s)[^,.;\d])*/g, tipo: 'compromisso', tit: '', dur: 30, ini: 14 * 60 + 30, tarde: false },
+  ];
+  const acts = [];
+  for (const d of defs) for (const m of t.matchAll(d.re)) {
+    let fim = m.index + m[0].length; if (d.tit === '') { while (fim > m.index && (/\s/.test(t[fim - 1]) || /\s(?:as|a|ao|no|na|em|para|pra|por|de|do|da)$/.test(t.slice(m.index, fim)))) fim--; }
+    const titulo = d.tit || (() => { const s = orig.slice(mapa[m.index], mapa[fim - 1] + 1).trim(); return s ? s[0].toUpperCase() + s.slice(1) : 'Tarefa'; })();
+    acts.push({ ...d, titulo: titulo.slice(0, 60), a: m.index, b: fim, tempo: null, durMin: null, per: null });
+  }
+  if (!acts.length) return [];
+  acts.sort((x, y) => x.a - y.a);
+  // fichas de hora, duração e período
+  const fichas = [];
+  const reTok = /(\d{1,2}):(\d{2})|\bas\s+(\d{1,2})\b(?!\s*(?:h|min|horas?)|:)|(\d{1,2})\s*(?:h|horas?)(?:\s*(?:e\s*)?(\d{1,2})\s*(?:min\w*)?)?(?![a-z])|(\d{1,3})\s*min\w*/g;
+  for (const m of t.matchAll(reTok)) {
+    const a = m.index, b = a + m[0].length, antes = t.slice(Math.max(0, a - 14), a), depois = t.slice(b, b + 6);
+    if (m[1] != null) fichas.push({ k: 't', v: +m[1] * 60 + +m[2], a, b });
+    else if (m[3] != null) fichas.push({ k: 't', v: +m[3] * 60, a, b });
+    else if (m[4] != null) {
+      const n = +m[4], mm = +(m[5] || 0), comAs = /(?:\bas|\bdas|a partir das|ate as)\s*$/.test(antes);
+      const hora = comAs || (n >= 6 && n <= 23 && !/^\s*(?:de|do)\s/.test(depois) && !/(?:\bpor|durante|\buns|\bmais)\s*$/.test(antes));
+      if (hora && n < 24) fichas.push({ k: 't', v: n * 60 + mm, a, b }); else fichas.push({ k: 'd', v: n * 60 + mm, a, b });
+    } else if (m[6] != null) fichas.push({ k: 'd', v: +m[6], a, b });
+  }
+  for (const m of t.matchAll(/final da tarde|fim da tarde|inicio da tarde|comecinho da tarde|de manha|manha|de tarde|tarde|de noite|noite/g)) {
+    const w = m[0], v = /final|fim/.test(w) ? 17 * 60 : /inicio|comecinho/.test(w) ? 13 * 60 + 30 : /manha/.test(w) ? 9 * 60 : /tarde/.test(w) ? 15 * 60 : 20 * 60;
+    fichas.push({ k: 'p', v, a: m.index, b: m.index + w.length });
+  }
+  // liga cada ficha à atividade mais próxima (a mais perto de cada tipo ganha primeiro; "1h de jantar" tem prioridade)
+  const pares = [];
+  for (const f of fichas) for (const ac of acts) {
+    const entre = f.b <= ac.a ? t.slice(f.b, ac.a) : '';
+    const explicito = f.k === 'd' && f.b <= ac.a && /^\s*(?:de|do|da)\s+(?:o\s+|a\s+)?$/.test(entre);
+    // distância = letras entre os dois, sem contar outras fichas nem palavrinhas de ligação ("às", "por", "de"...)
+    const gap = (de, ate) => { let s = ''; for (let i = de; i < ate; i++) if (!fichas.some(o => o !== f && i >= o.a && i < o.b)) s += t[i]; return s.replace(/\b(?:as|a|ao|no|na|em|por|de|do|da|durante|uns|mais|para|pra)\b/g, '').replace(/\s+/g, '').length; };
+    const dist = explicito ? -1 : f.a >= ac.b ? gap(ac.b, f.a) : gap(f.b, ac.a) * 1.5;
+    if (dist >= -1) pares.push({ f, ac, dist });
+  }
+  pares.sort((x, y) => x.dist - y.dist);
+  const usada = new Set();
+  for (const { f, ac } of pares) {
+    if (usada.has(f)) continue;
+    const campo = f.k === 't' ? 'tempo' : f.k === 'd' ? 'durMin' : 'per';
+    if (ac[campo] != null) continue;
+    ac[campo] = f.v; usada.add(f);
+  }
+  // a mesma coisa citada duas vezes (ex.: "jantar 19h ... 1h de jantar") vira uma só, juntando o que cada citação trouxe
+  const unicas = [];
+  for (const ac of acts) {
+    const igual = ac.tit ? unicas.find(u => u.tit === ac.tit) : null;
+    if (!igual) { unicas.push(ac); continue; }
+    for (const c of ['tempo', 'durMin', 'per']) if (igual[c] == null) igual[c] = ac[c];
+  }
+  // encaixe
+  const colocados = [], livre = (i, f) => !colocados.some(c => i < c.f && f > c.i);
+  const lista = unicas.map(ac => {
+    let ini = ac.tempo ?? ac.per, explicito = ini != null;
+    if (ac.tempo != null && ac.tarde && ini < 12 * 60) ini += 12 * 60;
+    return { ac, ini: ini ?? ac.ini, dur: ac.durMin || ac.dur, explicito };
+  });
+  for (const x of lista.sort((p, q) => (q.ac.tempo != null) - (p.ac.tempo != null))) {
+    let i = x.ini; const piso = ehHoje ? agoraMin : 6 * 60;
+    if (!x.explicito && i < piso) i = piso;
+    if (!livre(i, i + x.dur)) {
+      let achou = false;
+      for (let s = i; s + x.dur <= 22 * 60 + 30; s += 10) if (s >= piso && livre(s, s + x.dur)) { i = s; achou = true; break; }
+      if (!achou) for (let s = i; s >= piso; s -= 10) if (livre(s, s + x.dur)) { i = s; break; }
+    }
+    colocados.push({ i, f: Math.min(1439, i + x.dur), ac: x.ac });
+  }
+  return colocados.map(c => ({ inicio: hmStr(c.i), fim: hmStr(c.f), titulo: c.ac.titulo, tipo: c.ac.tipo }));
+}
+
 /** Parser local para montar a agenda mesmo sem chave de IA ou se ela quiser resposta imediata ao digitar horários. */
 function parsearDiaLocal(texto, horas, agoraMin, ehHoje = true) {
   const ag = [], txt = String(texto || '');
+  const temJanela = [...txt.matchAll(/(?:das?|de)?\s*(\d{1,2})(?:h|:)?(\d{2})?\s*(?:às|as|a|até|[-–—])\s*(\d{1,2})(?:h|:)?(\d{2})?/ig)]
+    .some(m => { const i = +m[1] * 60 + +(m[2] || 0), f = +m[3] * 60 + +(m[4] || 0); return +m[1] < 24 && +m[3] < 24 && f > i; });
+  if (!temJanela) { const porAtiv = parsearAtividadesLocal(txt, agoraMin, ehHoje); if (porAtiv.length) return tratarAgenda(porAtiv, agoraMin, texto, ehHoje, horas); }
   // divide por vírgula/ponto/quebra ou " e " quando começa outra atividade (mas preserva "das X às Y e das Z às W" juntos)
   const Partes = txt.split(/[,.;\n]+|(?:\s+e\s+(?!(?:das?|de)\s*\d)(?=[a-zà-ú]+\s+(?:às|as|das|de|\d)))/i);
   const parseH = (h, m) => (+h < 24 && +(m || 0) < 60 ? +h * 60 + +(m || 0) : null);
@@ -89,7 +174,7 @@ function parsearDiaLocal(texto, horas, agoraMin, ehHoje = true) {
     })();
     if (!faixas.length) continue;
     let tipo = 'compromisso';
-    let tit = s.replace(reIntG, '').replace(/(?:às|as|a partir das?|das?|de)?\s*\d{1,2}(?:h|:)?\d{0,2}/ig, '').replace(/^(?:e\s+|vou\s+)+/i, '').replace(/^[\s,:-]+|[\s,:-]+$/g, '');
+    let tit = s.replace(reIntG, '').replace(/(?:às|as|a partir das?|das?|de)?\s*\d{1,2}(?:h|:)?\d{0,2}/ig, '').replace(/^(?:e\s+|vou\s+|tenho\s+)+/i, '').replace(/^[\s,:-]+|[\s,:-]+$/g, '');
     if (/dormir|sono|deitar/i.test(s)) { tipo = 'outro'; tit = 'Dormir'; }
     else if (/treino|academia|corrida|pilates|natac|musculac|exerc|esporte|caminhada/i.test(s)) { tipo = 'exercicio'; tit = tit || 'Treino'; }
     else if (/estud/i.test(s)) { tipo = 'estudo'; tit = 'Bloco de estudo'; }
@@ -245,18 +330,25 @@ REGRA DE OURO: Ela é uma vestibulanda focada e quer render o máximo.
 3. Se ela citar horário de dormir (ex.: "dormir às 23:30"), esse é o término do dia: NÃO crie uma tarefa de "dormir" na agenda. Se não citar, assuma 23:00 (ou logo após o último compromisso).
 4. Janelas de estudo contínuas maiores que 1h30 a 2h devem ter pausas curtas de 10 a 15 min (tipo "pausa").
 5. Respeite pontualmente os compromissos fixos que ela citou (aula, treino, médico, refeições).
+6. TUDO o que ela citou tem que aparecer na agenda, uma vez cada, com o nome que ela usou (almoço, jantar, treino, arrumar as roupas...). Nada some, nada é juntado com outra coisa.
+7. DURAÇÃO: use exatamente a duração que ela disse ("1h", "40 min", "1h30"). Se não disse, use o normal: refeição 1h, treino 1h, tarefa curta 30 min.
+8. REFEIÇÕES (almoço, jantar, café, lanche) são tipo "refeicao", no horário que ela disse.
+9. TAREFA SEM HORÁRIO (ex.: "arrumar as roupas", "resolver coisas"): escolha você um horário livre, entre blocos de estudo, sem encostar em outro compromisso, com a duração que ela disse. Tipo "compromisso". Não a ignore.
+10. HORÁRIO POR PERÍODO: "manhã" = 08:00 a 12:00; "início da tarde" = 13:00 a 15:00; "tarde" = 13:00 a 18:00; "final da tarde" = começa entre 16:30 e 18:00 e termina antes das 19:00; "noite" = 19:00 a 22:00. O bloco inteiro tem que caber no período.
+11. NADA se sobrepõe: cada bloco começa quando o anterior termina (ou depois), e nada começa antes de "agora".
+12. Antes de responder, confira a lista de tudo o que ela citou contra a agenda.
 Responda SÓ com JSON: {"resposta":"2 frases curtas e gentis resumindo o dia","fator":1,"motivo":"curto","agenda":[{"inicio":"HH:MM","fim":"HH:MM","titulo":"...","tipo":"estudo|refeicao|exercicio|compromisso|trabalho|pausa|lazer|outro"}],"suposicoes":["o que você assumiu por falta de informação, curto"],"atualizar_rotina":"","materias_hoje":[]}
 "materias_hoje": só se ela pediu matérias específicas para estudar nesse dia (ex.: "quero só matemática", "vou focar em química e física"), a lista com os nomes exatos entre ${[...Object.keys(MIN_Q), 'Redação'].join(', ')}; senão [].
-"fator" vai de 0.5 a 1 (1 = energia normal; menos se ela disse que está cansada, dormiu mal, doente etc.). "atualizar_rotina" só se ela disse que algo mudou de vez (ex.: "agora acordo às 6h"): devolva a rotina base inteira já atualizada, senão deixe vazio.`, 3000);
+"fator" vai de 0.5 a 1 (1 = energia normal; menos se ela disse que está cansada, dormiu mal, doente etc.). "atualizar_rotina" só se ela disse que algo mudou de vez (ex.: "agora acordo às 6h"): devolva a rotina base inteira já atualizada, senão deixe vazio.`, 8000);
         ag = tratarAgenda(r.agenda, agoraMin, texto.trim() || basal, ehHoje);
         d.suposicoes = (Array.isArray(r.suposicoes) ? r.suposicoes : []).map(x => String(x).slice(0, 120)).slice(0, 4);
         fator = Math.min(1, Math.max(0.5, +r.fator || 1)); resposta = String(r.resposta || '').trim();
         so = (Array.isArray(r.materias_hoje) ? r.materias_hoje : []).map(String);
         if (r.motivo && fator < 1) resposta += ` (${String(r.motivo).trim()})`;
         if (r.atualizar_rotina && String(r.atualizar_rotina).trim().length > 10) { S.perfil.horarios = String(r.atualizar_rotina).trim().slice(0, 1500); resposta += ' Atualizei a sua rotina base.'; }
-      } catch {
+      } catch (e) {
         ag = parsearDiaLocal(texto.trim() || basal, horas, agoraMin, ehHoje);
-        resposta = `${ehHoje ? 'Dia' : 'Amanhã'} montado com os seus horários e compromissos.`;
+        resposta = `A IA não respondeu (${e.message}), então montei de um jeito mais simples e pode ter ficado menos certinho. Toque em montar de novo daqui a pouco para a IA refazer.`;
       }
       estudoMin = soma(ag.filter(x => x.tipo === 'estudo'), x => hm(x.fim) - hm(x.inicio));
       if (!estudoMin && horas > 0) { estudoMin = Math.round(horas * 60); ag.push({ inicio: '08:00', fim: hmStr(Math.min(1410, 480 + estudoMin)), titulo: `${horas}h livres para estudar`, tipo: 'estudo', min: estudoMin }); }
