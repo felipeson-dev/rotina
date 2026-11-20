@@ -8,7 +8,7 @@ S.qh ||= {}; // histórico por questão: { id: { ok, dia, n, ac, er, h: [[dia, 1
 S.qExtras ||= {}; // resoluções, dúvidas e flashcards gerados pela IA por questão (sincroniza entre aparelhos)
 S.qIgnorar ||= []; // provas guardadas p/ simulado ("Banca|Ano", "*|Ano", "Banca|*") — excluídas de todas as listas manuais e automáticas
 const BANCO = { itens: [], pronto: false, carregando: false, msg: '', baixando: false };
-ui.qf = { assunto: '', sub: '', mat: '', banca: '', ano: '', st: 'novas', tag: '', semFig: true, res: false, n: 15, ordem: 'sorteio' };
+ui.qf = { assunto: '', sub: '', mat: '', banca: '', ano: '', st: 'novas', tag: '', semFig: true, soTexto: false, res: false, n: 15, ordem: 'sorteio' };
 ui.qIaModelo ||= 'argon';
 ui.qIgnBanca ||= 'Albert Einstein';
 ui.qIgnAno ||= '2026';
@@ -88,9 +88,9 @@ function tokensBusca(q) {
 /** Começo do enunciado para a lista (sem fórmulas nem marcações). */
 const previa = s => String(s || '').replace(/\$\$?[^$]*\$\$?/g, ' [fórmula] ').replace(/[*_#|>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 130);
 const txtBusca = s => { const t = normBusca(s); return t.length <= 700 ? t : t.slice(0, 350) + ' ' + t.slice(-350); };
-const META_V = 5;   // muda quando a ficha leve ganha campos ou chaveQ muda: refaz as fichas a partir das questões guardadas
+const META_V = 6;  // muda quando a ficha leve ganha campos ou chaveQ muda: refaz as fichas a partir das questões guardadas
 const limAss = s => (typeof limparNomeAssunto === 'function' ? limparNomeAssunto(s) : s) || '';
-const metaDe = q => { const as = limAss(q.assunto); return { id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(as).slice(0, 140), as, x: txtBusca(q.enunciado), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: (q.modo === 'objetivo' && q.h > q.corte) || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0 }; };
+const metaDe = q => { const as = limAss(q.assunto); return { id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(as).slice(0, 140), as, x: txtBusca(q.enunciado), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: (q.modo === 'objetivo' && q.h > q.corte) || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0, g: q.modo === 'objetivo' || (q.imagens || []).length ? 1 : 0 }; };
 
 async function carregarBanco() {
   if (BANCO.pronto) return;
@@ -208,6 +208,7 @@ function filtrarBanco(troca = {}) {
     if (f.assunto && q.as !== f.assunto) return false;
     if (f.sub && !bateSubtopico(q, f.assunto, f.sub)) return false;
     if (f.semFig && q.f) return false;
+    if (f.soTexto && q.g) return false;   // temporário: só questões em texto (sem imagem da prova nem figura)
     if (f.res && !q.r) return false;
     if (toks.length) { const alvo = q.s + ' ' + (q.x || '') + ' ' + normBusca(q.b) + ' ' + normBusca(q.m); if (!toks.every(w => alvo.includes(w))) return false; }
     return situacaoOk(f.st, q.id);
@@ -286,7 +287,7 @@ function qMontar() {
   const caixa = (rot, id, html, ativo, extra = '') => `<label class="filtro ${ativo ? 'ativo' : ''}"><span>${rot}</span><select data-qf="${id}" ${extra}>${html}</select></label>`;
   const nSt = v => semSt.filter(q => situacaoOk(v, q.id)).length;
   const nAno = d => semAno.filter(q => q.a >= d).length;
-  const algum = f.mat || f.assunto || f.sub || f.banca || f.ano || (f.st && f.st !== 'novas') || f.tag || f.res || !f.semFig;
+  const algum = f.mat || f.assunto || f.sub || f.banca || f.ano || (f.st && f.st !== 'novas') || f.tag || f.res || f.soTexto || !f.semFig;
   const subHtml = !f.mat ? opcao('', 'Escolha a matéria antes', '') : subassuntosHtml(f.mat, f.assunto, f.sub, f.assunto ? semSub : semAssunto);
   return `${listasAbertasHtml()}<section class="cartao escolher"><div class="entre"><h2>Escolher questões</h2>${algum ? '<button class="link" data-acao="qfLimpar">Limpar filtros</button>' : ''}</div>
     <div class="filtros">
@@ -302,6 +303,7 @@ function qMontar() {
     </div>
     <label class="filtro busca"><span>Procurar no texto</span><input type="search" data-qf="tag" value="${esc(f.tag)}" placeholder="Ex.: função quadrática, Segundo Reinado, mitose"></label>
     <label class="linha" style="gap:8px;cursor:pointer;font-size:14px"><input type="checkbox" data-qf-marca="semFig" ${f.semFig ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--rosa)"> Ocultar questões que dependem de figura faltando</label>
+    <label class="linha" style="gap:8px;cursor:pointer;font-size:14px"><input type="checkbox" data-qf-marca="soTexto" ${f.soTexto ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--rosa)"> Só questões em texto (sem imagem) <span class="fraco">· temporário</span></label>
     ${ignorarHtml()}
     <div class="acao-q"><div class="coluna" style="gap:0"><strong class="n-achadas">${milhar(achadas.length)}</strong><span class="fraco">${achadas.length === 1 ? 'questão encontrada' : 'questões encontradas'}</span></div>
       <label class="filtro quantas"><span>Quantas</span><select data-qf="n">${[5, 10, 15, 20, 30, 50].map(n => opcao(n, String(n), f.n)).join('')}${opcao(9999, 'Todas', f.n >= 9999 ? 9999 : f.n)}</select></label>
@@ -513,7 +515,7 @@ Object.assign(ACOES, {
     const r = ui.qPrevImg?.prev && await BD.get(ui.qPrevImg.prev);
     if (r) ui.qPrevImg = r; else ui.iaMsg = 'Não há questão antes desta no banco.'; render();
   },
-  qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', sub: '', banca: '', ano: '', st: 'novas', tag: '', semFig: true, res: false }; ui.qPag = 0; render(); },
+  qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', sub: '', banca: '', ano: '', st: 'novas', tag: '', semFig: true, soTexto: false, res: false }; ui.qPag = 0; render(); },
   qIgnorarToggle: () => { ui.qIgnAberto = !ui.qIgnAberto; render(); },
   qIgnorarAdd: () => {
     const b = $('#q-ign-banca')?.value || ui.qIgnBanca || 'Albert Einstein', a = $('#q-ign-ano')?.value || ui.qIgnAno || '2026';

@@ -5,7 +5,7 @@ const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
 // Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
 // declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
-const APP_V = 'rotina-54';
+const APP_V = 'rotina-55';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
