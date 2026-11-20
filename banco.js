@@ -88,9 +88,14 @@ function tokensBusca(q) {
 /** Começo do enunciado para a lista (sem fórmulas nem marcações). */
 const previa = s => String(s || '').replace(/\$\$?[^$]*\$\$?/g, ' [fórmula] ').replace(/[*_#|>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 130);
 const txtBusca = s => { const t = normBusca(s); return t.length <= 700 ? t : t.slice(0, 350) + ' ' + t.slice(-350); };
-const META_V = 6;  // muda quando a ficha leve ganha campos ou chaveQ muda: refaz as fichas a partir das questões guardadas
+// correções pontuais de questões do pacote (valem mesmo que o pacote seja baixado de novo)
+const CORRECOES_Q = {
+  'obj-alberteinstein2022-43': { imagens: [], modo: 'objetivo' },   // figura recortada errada pela leitura por IA: usa a imagem da prova
+};
+const corrigirQ = q => (q && CORRECOES_Q[q.id] ? { ...q, ...CORRECOES_Q[q.id] } : q);
+const META_V = 7; // muda quando a ficha leve ganha campos ou chaveQ muda: refaz as fichas a partir das questões guardadas
 const limAss = s => (typeof limparNomeAssunto === 'function' ? limparNomeAssunto(s) : s) || '';
-const metaDe = q => { const as = limAss(q.assunto); return { id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(as).slice(0, 140), as, x: txtBusca(q.enunciado), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: (q.modo === 'objetivo' && q.h > q.corte) || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0, g: q.modo === 'objetivo' || (q.imagens || []).length ? 1 : 0 }; };
+const metaDe = q => { q = corrigirQ(q); const as = limAss(q.assunto); return { id: q.id, k: chaveQ(q), b: q.banca || 'Outra', a: q.ano || 0, ar: q.area || '', m: q.materia || '', s: normBusca(as).slice(0, 140), as, x: txtBusca(q.enunciado), p: previa(q.enunciado), n: q.num || '', d: q.dif || '', t: q.tipo === 'ia' ? 'ia' : 'real', f: q.fig ? 1 : 0, r: (q.modo === 'objetivo' && q.h > q.corte) || q.coment ? 1 : 0, v: +q.v || 0, ds: q.tipo === 'disc' ? 1 : 0, g: q.modo === 'objetivo' || (q.imagens || []).length ? 1 : 0 }; };
 
 async function carregarBanco() {
   if (BANCO.pronto) return;
@@ -541,7 +546,7 @@ Object.assign(ACOES, {
   },
   qIniciarIds: async (ids, extra = {}) => {
     const recs = (await Promise.all(ids.map(id => BD.get(id)))).filter(Boolean);
-    const itens = recs.map(q => {
+    const itens = recs.map(corrigirQ).map(q => {
       const ex = S.qExtras?.[q.id] || {};
       return { id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
         enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: ex.res_ia || q.res_ia || '', duvidas: ex.duvidas || q.duvidas || [], flashcards: ex.flashcards || q.flashcards || [],
@@ -1347,3 +1352,17 @@ window.tipografarMath = tipografarMath;
 { const r1 = render; render = function () { r1.apply(this, arguments); tipografarMath(); }; }
 window.addEventListener('load', () => setTimeout(() => render(), 300));
 render();
+
+// ---------- ampliar imagens (toque na figura ou na imagem da prova) ----------
+document.addEventListener('click', e => {
+  const im = e.target.closest?.('.q-img, .obj-recorte img, .enunciado img');
+  if (!im || im.closest('#lightbox') || im.closest('button')) return;
+  const alvo = im.closest('.obj-recorte') || im;
+  const box = document.createElement('div'); box.id = 'lightbox';
+  box.innerHTML = '<button type="button" class="lb-x" aria-label="Fechar">✕</button><div class="lb-cont"></div><p class="lb-dica">Toque na imagem para aproximar ou afastar</p>';
+  const cont = box.querySelector('.lb-cont'), c = alvo.cloneNode(true); c.removeAttribute('loading'); c.querySelectorAll?.('img').forEach(i => i.removeAttribute('loading')); cont.appendChild(c);
+  const fechar = () => { box.remove(); document.removeEventListener('keydown', tecla); };
+  const tecla = ev => { if (ev.key === 'Escape') fechar(); };
+  box.addEventListener('click', ev => { if (ev.target.closest('.lb-x') || ev.target === box) fechar(); else cont.classList.toggle('lb-zoom'); });
+  document.addEventListener('keydown', tecla); document.body.appendChild(box);
+});
