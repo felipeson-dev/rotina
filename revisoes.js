@@ -141,6 +141,7 @@ const fixacao = () => estudados().filter(a => PESADAS_REV.includes(a.materia) &&
 
 /** Abre uma lista com questões NÃO FEITAS do banco desses assuntos (se faltarem inéditas, completa com as que ela errou antes). */
 async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
+  const qtd = extra.qtd || {}; extra = { ...extra }; delete extra.qtd;   // qtd: quantas questões de cada assunto (id -> n), se ela personalizou
   const k = extra.chaveLista;
   if (k && S.listasAbertas?.[k]?.itens?.length && !S.listasAbertas[k].fim) {
     ACOES.qContinuarLista({ dataset: { k } });
@@ -175,14 +176,15 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
     const subRe = subRegexDe(a);
     let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds && !q.f);
     if (!candidatas.length) candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds);
+    const nA = qtd[a.id] || porAssunto;
     const ineditas = candidatas.filter(q => !S.qh[q.id]);
-    const fonte = ineditas.length >= porAssunto ? ineditas : candidatas;
+    const fonte = ineditas.length >= nA ? ineditas : candidatas;
     fonte.sort((x, y) => {
       const sx = subRe ? (subRe.test((x.x || '') + ' ' + (x.s || '')) ? 0 : 1) : 0;
       const sy = subRe ? (subRe.test((y.x || '') + ' ' + (y.s || '')) ? 0 : 1) : 0;
       return sx - sy || prio(x) - prio(y) || bancaBoa(x) - bancaBoa(y) || Math.random() - 0.5;
     });
-    ids.push(...fonte.slice(0, porAssunto).map(q => q.id));
+    ids.push(...fonte.slice(0, nA).map(q => q.id));
   }
   if (!ids.length) {
     // sem questão desse assunto no banco: abre as questões não feitas da matéria, já filtradas
