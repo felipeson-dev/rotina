@@ -47,7 +47,7 @@ function garantirAgendaPadrao(d, data = hoje()) {
     }
   }
   const temComHora = d.agenda.some(x => hm(x.inicio) != null && hm(x.fim) != null);
-  if (!temComHora && (d.horas > 0 || d.blocos?.length)) {
+  if (!temComHora && !d.semAgenda && (d.horas > 0 || d.blocos?.length)) {
     const minTot = Math.round((d.horas || Math.max(2, Math.round(soma(d.blocos || [], b => b.min || 30) / 48))) * 60);
     const agora = data === hoje() ? (new Date().getHours() * 60 + new Date().getMinutes()) : 480;
     const iniBase = data === hoje() ? Math.min(1260, Math.max(480, Math.ceil(agora / 30) * 30)) : 480;
@@ -356,13 +356,13 @@ Responda SÓ com JSON: {"resposta":"2 frases curtas e gentis resumindo o dia","f
     if (!estudoMin) throw new Error('não achei tempo livre para estudar. Conte mais sobre o dia ou informe as horas');
     // o que já passou na agenda anterior continua aparecendo (apagado), para ela ver o dia inteiro
     const passados = ehHoje ? (d.agenda || []).filter(x => hm(x.fim) != null && hm(x.fim) <= agoraMin && !ag.some(y => y.inicio === x.inicio && y.titulo === x.titulo)) : [];
-    d.agenda = [...passados, ...ag]; d.fator = fator; d.horas = Math.round(estudoMin / 6) / 10;
+    d.agenda = [...passados, ...ag]; d.semAgenda = false; d.fator = fator; d.horas = Math.round(estudoMin / 6) / 10;
     d.contexto = [texto.trim(), horas > 0 ? `${horas}h livres` : ''].filter(Boolean).join(' · ') || 'rotina base';
     if (ehHoje) { montarHoje(Math.round(estudoMin * 0.8 * fator), so); sugerirHorarios(d); }
     else { d.cap = Math.round(estudoMin * 0.8 * fator); d.so = so; d.blocos = []; d.montado = false; }
     ui.desfazer = antes; ui.iaMsg = resposta || (ehHoje ? 'Dia montado.' : 'Amanhã montado.');
     ui.diaTexto = ''; ui.diaHoras = ''; ui.amanhaTexto = '';
-    salvar();
+    ui._desfazerGuard = true; salvar(); ui._desfazerGuard = false;
   } catch (e) { ui.iaMsg = `Não consegui montar ${ehHoje ? 'o dia' : 'amanhã'}: ${e.message}.`; ui.desfazer = null; }
   ui.carregando = ''; render();
 }
@@ -588,13 +588,15 @@ function vMeuDia() {
     ${temAg ? '' : `<div class="linha"><label class="fraco" for="dia-horas">ou só diga as horas livres:</label>
       <input type="number" id="dia-horas" min="0.5" max="16" step="0.5" placeholder="ex.: 6" value="${esc(ui.diaHoras)}" style="width:100px"></div>`}
     <div class="linha"><button class="botao grande" data-acao="planejarDia">${temAg ? 'Refazer o resto do dia' : 'Montar meu dia'}</button>
-      ${d?.blocos?.length ? '<button class="botao contorno" data-acao="ir" data-v="hoje">Ver os assuntos de hoje</button>' : ''}</div>
+      ${d?.blocos?.length ? '<button class="botao contorno" data-acao="ir" data-v="hoje">Ver os assuntos de hoje</button>' : ''}
+      ${temAg ? `<button class="link" data-acao="apagarPlanejamento" data-dia="${h}">Apagar o planejamento de hoje</button>` : ''}</div>
     ${chavesOk ? '' : '<p class="fraco" style="margin:0;color:var(--tinta)">Sem chave de IA, só consigo usar as horas livres. Cole as chaves em Ajustes para eu entender o texto.</p>'}</section>`;
   const amanhaCartao = `<details class="cartao" data-k="amanha" ${ui.ab?.amanha || am?.agenda?.length ? 'open' : ''}><summary><strong>Planejar amanhã</strong> <span class="fraco">· ${dataLonga(amanha())}</span></summary>
     <div class="coluna" style="gap:12px;margin-top:12px">${am?.agenda?.length ? agendaHtml(am, amanha()) : ''}
     <p class="fraco" style="margin:0">${am?.agenda?.length ? 'Mudou algo para amanhã? Conte e eu refaço.' : 'Conte como vai ser amanhã e eu já deixo o dia montado. Se não escrever nada, uso a sua rotina base.'}</p>
     <textarea data-ui="amanhaTexto" placeholder="Ex.: amanhã acordo 6h30, aula até 12h, dentista às 16h, quero estudar mais matemática.">${esc(ui.amanhaTexto || '')}</textarea>
-    <div class="linha"><button class="botao" data-acao="planejarAmanha">${am?.agenda?.length ? 'Refazer amanhã' : 'Montar amanhã'}</button></div></div></details>`;
+    <div class="linha"><button class="botao" data-acao="planejarAmanha">${am?.agenda?.length ? 'Refazer amanhã' : 'Montar amanhã'}</button>
+      ${am?.agenda?.length ? `<button class="link" data-acao="apagarPlanejamento" data-dia="${amanha()}">Apagar o planejamento de amanhã</button>` : ''}</div></div></details>`;
   const rotina = `<details class="cartao" ${basal ? '' : 'open'}><summary><strong>Minha rotina base</strong> <span class="fraco">· o que se repete na maioria dos dias</span></summary>
     <label class="campo" style="margin-top:12px"><small>Horários fixos, aulas, refeições, exercício, sono. O que você contar no dia ajusta isso, e se algo mudar de vez eu atualizo aqui.</small>
     <textarea data-campo="horarios" placeholder="Ex.: acordo 7h; aula de seg a sex das 8h às 12h30; almoço 13h; academia seg, qua e sex às 18h; janto 20h; durmo 23h30; sábado à tarde livre">${esc(S.perfil.horarios)}</textarea></label></details>`;
@@ -654,6 +656,16 @@ Object.assign(ACOES, {
     ui.iaMsg = `Empurrei o resto do dia em ${v >= 60 ? v / 60 + ' h' : v + ' min'}.`; reajustarDia(d);
   },
   agAgenda: el => levarParaAgenda(el.dataset.dia || hoje()),
+  apagarPlanejamento: el => {
+    const alvo = el.dataset.dia || hoje(), ehHoje = alvo === hoje(), d = diaDe(alvo);
+    const { chat: _c, ...resto } = S; const antes = JSON.stringify(resto);
+    d.agenda = []; d.contexto = ''; d.suposicoes = []; d.fator = 1; d.horas = 0; d.semAgenda = true;
+    if (ehHoje) sugerirHorarios(d);   // os assuntos de hoje ficam (e o que ela já fez), só somem a agenda e os horários sugeridos
+    else { d.cap = 0; d.so = []; d.blocos = []; d.montado = false; }
+    ui.diaTexto = ''; ui.amanhaTexto = '';
+    ui.desfazer = antes; ui.iaMsg = ehHoje ? 'Planejamento de hoje apagado. Os assuntos continuam na aba Hoje.' : 'Planejamento de amanhã apagado.';
+    ui._desfazerGuard = true; salvar(); ui._desfazerGuard = false; render();
+  },
   planejarDia: () => {
     const ta = document.querySelector('[data-campo="horarios"]'); // a rotina base vale mesmo que o campo ainda não tenha "saído do foco"
     if (ta && ta.value.trim() !== (S.perfil.horarios || '')) { S.perfil.horarios = ta.value.trim(); salvar(); }

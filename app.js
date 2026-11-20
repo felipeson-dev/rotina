@@ -5,7 +5,7 @@ const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
 // Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
 // declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
-const APP_V = 'rotina-53';
+const APP_V = 'rotina-54';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -271,7 +271,7 @@ const lerArgon = () => { try { return JSON.parse(localStorage.getItem(CHAVE_ARGO
 const gravarArgon = o => { try { localStorage.setItem(CHAVE_ARGON, JSON.stringify(o)); } catch { } };
 const temArgon = () => !!lerArgon().chave;
 const GEMINI = {
-  texto: ['gemini-4-hydrogen', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.8-flash'],
+  texto: ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-4-hydrogen', 'gemini-3.8-flash'],
   visao: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'],
   flash: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'],
   'flash-lite': ['gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.5-flash'],
