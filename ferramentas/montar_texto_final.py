@@ -8,6 +8,9 @@ import glob, json, os, subprocess, sys
 from collections import Counter
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import conferir_texto as C
+import re
+import transcrever as T
+from PIL import Image
 
 sys.stdout.reconfigure(encoding='utf-8')
 SAIDA = r'C:\rotina-banco'
@@ -26,6 +29,16 @@ def do_haiku(h, q):
             'enunciado': str(h.get('enunciado') or '').strip(), 'alts': alts, 'gab': str(h.get('gabarito') or '').strip().upper()[:1] or q['gab'], 'coment': str(h.get('resolucao') or '').strip(),
             'imagens': [], 'dep': 1 if h.get('depende_de_outro_texto') else 0, 'prev': q.get('prev') or '', 'img': q['img'], 'tipo': 'real', 'fonte': 'Objetivo (lido por IA)'}
 
+def figuras_de(h, q):
+    """Recorta como imagem as figuras que o leitor marcou (box_2d), igual ao transcrever.py. Sem figura marcada ou sem a imagem em cache: []."""
+    if not h.get('figuras'): return []
+    slug = T.PASTA_DA_BANCA.get(q['banca'], q['banca'].lower())
+    for arq in (os.path.join(T.o.CACHE, slug, slug + str(q.get('fase') or ''), re.sub(r'[^\w.-]', '_', q['img'].split('/resolucao-comentada/')[-1])), T.caminho(q)):
+        if os.path.exists(arq):
+            try: return T.recortar_figuras(Image.open(arq).convert('RGB'), h, q, arq)
+            except Exception: return []
+    return []
+
 def principal():
     B = banco(); aprovadas, motivos, origem = {}, Counter(), Counter()
     cov = {}
@@ -35,15 +48,24 @@ def principal():
         ok, mot, y = C.conferir(B[i], x)
         if ok: aprovadas[i] = y; cov[i] = y['_cob'] or 0; origem['Flash Lite aprovadas'] += 1
         else: origem['Flash Lite reprovadas'] += 1; motivos.update(m.split(' (')[0] for m in mot)
-    if os.path.exists(NUVEM):
-        for h in json.load(open(NUVEM, encoding='utf-8')):
-            i = h['id']
-            if i not in B: continue
-            x = do_haiku(h, B[i]); ok, mot, y = C.conferir(B[i], x)
+    # outras leituras por IA, no mesmo formato (enunciado/alternativas/gabarito/resolucao...): Haiku da nuvem, Hydrogen (hydrogen/saida) e Claude (claude/saida)
+    fontes = []
+    if os.path.exists(NUVEM): fontes.append(('Haiku', json.load(open(NUVEM, encoding='utf-8'))))
+    for rot, padrao in (('Hydrogen', os.path.join(SAIDA, 'hydrogen', 'saida', 'H*.json')), ('Claude', os.path.join(SAIDA, 'claude', 'saida', 'C*.json'))):
+        lista = []
+        for f in sorted(glob.glob(padrao)):
+            try: lista += json.load(open(f, encoding='utf-8'))
+            except Exception: pass
+        fontes.append((rot, lista))
+    for rot, lista in fontes:
+        for h in lista:
+            i = h.get('id')
+            if i not in B or h.get('erro') or not h.get('enunciado'): continue
+            x = do_haiku(h, B[i]); x['imagens'] = figuras_de(h, B[i]); ok, mot, y = C.conferir(B[i], x)
             if ok:
-                origem['Haiku aprovadas'] += 1
+                origem[rot + ' aprovadas'] += 1
                 if i not in aprovadas or (y['_cob'] or 0) > cov.get(i, 0): aprovadas[i] = y; cov[i] = y['_cob'] or 0
-            else: origem['Haiku reprovadas'] += 1; motivos.update('Haiku: ' + m.split(' (')[0] for m in mot)
+            else: origem[rot + ' reprovadas'] += 1; motivos.update(rot + ': ' + m.split(' (')[0] for m in mot)
     final = []
     for i, y in aprovadas.items():
         y = {k: v for k, v in y.items() if not k.startswith('_')}; y['id'] = 'tx-' + i; final.append(y)
