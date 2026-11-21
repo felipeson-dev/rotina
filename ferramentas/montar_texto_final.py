@@ -21,6 +21,13 @@ def banco():
     for a in glob.glob(os.path.join(SAIDA, 'objetivo-*.json')):
         if '-disc-' in a or 'amostra' in a or 'antes-pdf' in a: continue
         for q in json.load(open(a, encoding='utf-8')): b[q['id']] = q
+    # prova com só 4 alternativas (a a d): em 20+ questões da mesma prova nenhuma tem gabarito E. O banco assume 5 e reprovava o texto correto.
+    from collections import defaultdict
+    por = defaultdict(list)
+    for q in b.values(): por[(q.get('banca'), q.get('fase'))].append(q)
+    for lista in por.values():
+        if len(lista) >= 20 and not any(str(q.get('gab', '')).upper() == 'E' for q in lista):
+            for q in lista: q['nalts'] = '4'
     return b
 
 def do_haiku(h, q):
