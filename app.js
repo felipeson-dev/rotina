@@ -5,7 +5,7 @@ const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
 // Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
 // declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
-const APP_V = 'rotina-60';
+const APP_V = 'rotina-61';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -735,6 +735,7 @@ function blocoHtml(b) {
       <label class="bloco-check"><input type="checkbox" class="check-bloco" data-acao="blocoFeito" data-b="${b.id}" ${concluido ? 'checked' : ''} aria-label="Marcar tarefa como concluída"><h3>${esc(b.titulo)}</h3></label>
       <span class="hora" title="Horário e ordem flexíveis: faça na ordem que preferir">≈ ${fmtMin(b.min || 0)}${b.sug && !concluido ? ` · ~${b.sug} (flexível)` : ''}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
       ${totB > 1 ? `<span class="linha" style="gap:2px"><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="-1" ${posB <= 0 ? 'disabled' : ''} title="Subir na ordem do dia">↑</button><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="1" ${posB < 0 || posB >= totB - 1 ? 'disabled' : ''} title="Descer na ordem do dia">↓</button></span>` : ''}
+      ${b.tipo !== 'revisao' && !concluido ? `<button type="button" class="chip" data-acao="trocarAssunto" data-b="${b.id}" title="Escolher outro assunto no lugar deste">trocar assunto</button>` : ''}
       <button class="x" data-acao="tirarBloco" data-b="${b.id}" aria-label="Tirar bloco">×</button></div>
     ${detalhes}
     ${a ? `<div class="linha acoes-bloco">${ehConteudo(a) ? `<button class="link" data-acao="questoes" data-id="${a.id}">${a.questoes ? ((a.questoes.semAc || 0) >= a.questoes.feitas ? `Fiz fora (${a.questoes.feitas} feitas)` : `Fiz fora (${a.questoes.acertos}/${a.questoes.feitas - (a.questoes.semAc || 0)} certas${a.questoes.semAc ? ` · +${a.questoes.semAc}` : ''})`) : 'Fiz questões fora'}</button>` : ''}

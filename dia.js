@@ -34,6 +34,39 @@ function sugerirHorarios(d) {
 }
 window.sugerirHorarios = sugerirHorarios;
 
+/** Botões de cada assunto sugerido num turno de estudo da programação: questões no app (se o assunto tem), trocar o assunto e tirar. */
+function botoesBlocoAg(b, data) {
+  const a = b.assuntoId && achar(b.assuntoId), dia = `data-dia="${esc(data)}"`;
+  const temQ = b.tipo === 'revisao' ? (b.revisao || []).length
+    : a && (typeof ehConteudo === 'function' && ehConteudo(a) || typeof ehHabitoQ === 'function' && ehHabitoQ(a));
+  const q = !temQ ? '' : b.tipo === 'revisao'
+    ? `<button type="button" class="chip" data-acao="qDaRevisao" data-b="${b.id}" title="Resolver questões deste assunto no app">Questões</button>`
+    : `<button type="button" class="chip" data-acao="qDoAssunto" data-id="${a.id}" data-b="${b.id}" title="Resolver questões deste assunto no app">Questões</button>`;
+  const troca = b.tipo === 'revisao'
+    ? `<button type="button" class="chip" data-acao="revEscolher" data-b="${b.id}">Trocar</button>`
+    : `<button type="button" class="chip" data-acao="trocarAssunto" data-b="${b.id}" ${dia}>Trocar</button>`;
+  return `${q}${troca}<button type="button" class="x-mini" data-acao="tirarBloco" data-b="${b.id}" title="Tirar este assunto do dia">×</button>`;
+}
+
+/** Janela para escolher outro assunto no lugar do que foi sugerido (do plano dela, com busca e filtro por matéria). */
+function modalTrocarAssunto(bId, dia = hoje()) {
+  const d = diaDe(dia), b = (d.blocos || []).find(x => x.id === bId); if (!b) return;
+  const fila = filaParaHoje(d.blocos).filter(a => a.id !== b.assuntoId);
+  const mats = [...new Set(fila.map(a => a.materia).filter(Boolean))];
+  const mat = ui.trocaMat || '', qb = normBusca(ui.trocaQ || '');
+  const lista = fila.filter(a => (!mat || a.materia === mat) && (!qb || normBusca(`${a.titulo} ${a.materia}`).includes(qb))).slice(0, 40);
+  const dd = `data-dia="${esc(dia)}"`;
+  abrirModal(`<div class="entre"><h2>Trocar o assunto</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
+    <p class="fraco" style="margin:0">Agora está: <strong>${esc(b.titulo)}</strong>. Escolha o que quer estudar no lugar:</p>
+    <div class="linha" style="gap:6px;flex-wrap:wrap">${mats.map(m => `<button class="chip" data-acao="trocaMat" data-v="${esc(m)}" data-b="${b.id}" ${dd} aria-pressed="${mat === m}">${esc(m)}</button>`).join('')}</div>
+    <div class="linha"><input type="search" id="troca-q" placeholder="Buscar assunto…" value="${esc(ui.trocaQ || '')}" style="flex:1;min-width:140px"><button class="botao claro" data-acao="trocaBuscar" data-b="${b.id}" ${dd}>Buscar</button></div>
+    <div class="coluna" style="gap:6px;max-height:48vh;overflow:auto">${lista.map(a => `<button class="item" style="${cor(a.materia)}" data-acao="trocarPara" data-b="${b.id}" data-id="${a.id}" ${dd}><i class="ponto"></i><span>${esc(a.titulo)} <span class="fraco" style="font-size:12px">· ${a.materia ? esc(a.materia) + ' · ' : ''}${fmtMin(minDe(a))}${a.dia && a.dia <= hoje() ? ' · pedido para hoje' : ''}</span></span></button>`).join('') || '<p class="fraco" style="margin:0">Nenhum assunto encontrado.</p>'}</div>
+    <details><summary class="fraco">Ou escreva outro assunto</summary>
+      <div class="coluna" style="gap:8px;margin-top:8px"><input type="text" id="troca-livre" maxlength="120" placeholder="Ex.: Geometria espacial: prismas">
+        <select id="troca-livre-m"><option value="">Matéria (opcional)</option>${Object.keys(MATERIAS).map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('')}</select>
+        <button class="botao" data-acao="trocaLivre" data-b="${b.id}" ${dd}>Usar este assunto</button></div></details>`);
+}
+
 /** Se ela montou o dia rápido ("Tenho 4h hoje") sem agenda detalhada, cria janelas flexíveis iniciais e inclui pendências com horário. */
 function garantirAgendaPadrao(d, data = hoje()) {
   if (!d) return;
@@ -521,7 +554,8 @@ function programacaoHojeHtml(d) {
                 ${ehCont ? '<span class="selo flexivel" style="font-size:11px">continuação</span>' : ''}
                 <small class="fraco">(${(() => { const jt = b.janelas?.find(j => j.idx === jIdx); return b.janelas?.length > 1 && jt ? `${fmtMin(jt.min)} de ${fmtMin(b.min || 30)}` : fmtMin(b.min || 30); })()})</small>
               </label>
-              <div class="linha" style="gap:2px">
+              <div class="linha" style="gap:4px;flex-wrap:wrap">
+                ${botoesBlocoAg(b, data)}
                 <button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="-1" ${pos <= 0 ? 'disabled' : ''} title="Subir na ordem">↑</button>
                 <button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="1" ${pos < 0 || pos >= d.blocos.length - 1 ? 'disabled' : ''} title="Descer na ordem">↓</button>
               </div>
@@ -623,6 +657,26 @@ Object.assign(ACOES, {
     item.ok = !!el.checked;
     if (item.pendId) { const p = (S.pend || []).find(x => x.id === item.pendId); if (p) p.feito = item.ok; }
     salvar(); render();
+  },
+  // trocar o assunto de um bloco do dia (o app sugeriu um assunto e ela quer outro)
+  trocarAssunto: el => { ui.trocaMat = ''; ui.trocaQ = ''; modalTrocarAssunto(el.dataset.b, el.dataset.dia || hoje()); },
+  trocaMat: el => { ui.trocaQ = $('#troca-q')?.value.trim() || ui.trocaQ || ''; ui.trocaMat = ui.trocaMat === el.dataset.v ? '' : el.dataset.v; modalTrocarAssunto(el.dataset.b, el.dataset.dia || hoje()); },
+  trocaBuscar: el => { ui.trocaQ = $('#troca-q')?.value.trim() || ''; modalTrocarAssunto(el.dataset.b, el.dataset.dia || hoje()); },
+  trocarPara: el => {
+    const dia = el.dataset.dia || hoje(), d = diaDe(dia), i = (d.blocos || []).findIndex(x => x.id === el.dataset.b), a = achar(el.dataset.id);
+    if (i < 0 || !a) return;
+    const antigo = d.blocos[i], novo = blocoDe(a); novo.adiantado = antigo.adiantado;
+    if (antigo.feito || (antigo.passos || []).some(p => p.ok)) {   // já tinha andamento: não perde, acrescenta o novo logo depois
+      d.blocos.splice(i + 1, 0, novo); ui.iaMsg = `"${antigo.titulo}" já tinha andamento: mantive e acrescentei "${a.titulo}".`;
+    } else { d.blocos[i] = novo; ui.iaMsg = `Troquei por "${a.titulo}".`; }
+    sugerirHorarios(d); salvar(); fecharModal(); render();
+  },
+  trocaLivre: el => {
+    const dia = el.dataset.dia || hoje(), d = diaDe(dia), i = (d.blocos || []).findIndex(x => x.id === el.dataset.b), t = ($('#troca-livre')?.value || '').trim().slice(0, 120);
+    if (i < 0 || !t) { ui.iaMsg = 'Escreva o nome do assunto.'; render(); return; }
+    const antigo = d.blocos[i], novo = { id: uid(), assuntoId: null, titulo: t, materia: $('#troca-livre-m')?.value || '', min: antigo.min || 30, feito: false, passos: [] };
+    if (antigo.feito || (antigo.passos || []).some(p => p.ok)) d.blocos.splice(i + 1, 0, novo); else d.blocos[i] = novo;
+    sugerirHorarios(d); salvar(); fecharModal(); ui.iaMsg = `Troquei por "${t}".`; render();
   },
   moverBloco: el => {
     const d = diaHoje(), idx = (d.blocos || []).findIndex(b => b.id === el.dataset.b), dir = +el.dataset.d || 0;
