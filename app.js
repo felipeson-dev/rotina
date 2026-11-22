@@ -5,7 +5,7 @@ const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
 // Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
 // declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
-const APP_V = 'rotina-62';
+const APP_V = 'rotina-63';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -524,7 +524,8 @@ const passosPadrao = a => {
   if (a.min) return [];
   const { t, q } = tempoDe(a), mq = minPorQ(a.materia);
   // plano v4: a teoria é a aula do Ferretto (módulo e números), em 1,25×
-  const teoria = a.ferretto ? `${a.opcional ? 'Aulas de aprofundamento do Ferretto (opcional)' : 'Aulas do Ferretto em 1,25×'}: ${a.ferretto} (~${fmtMin(t)})` : `Teoria: aula ou resumo (~${fmtMin(t)})`;
+  const sess = a.sessao ? ` — sessão ${a.sessao.k} de ${a.sessao.n}` : '';
+  const teoria = a.ferretto ? `${a.opcional ? 'Aulas de aprofundamento do Ferretto (opcional)' : 'Aulas do Ferretto em 1,25×'}: ${a.ferretto}${sess} (~${fmtMin(t)})` : `Teoria: aula ou resumo${sess} (~${fmtMin(t)})`;
   return [teoria, `Fazer ${q} questões (~${fmtMin(Math.round(q * mq))})`, `Corrigir e anotar os erros (~${fmtMin(Math.round(q * mq * 0.25))})`];
 };
 const blocoDe = a => ({ id: uid(), assuntoId: a.id, titulo: a.titulo, materia: a.materia, min: minDe(a), feito: !!a.feito, passos: passosPadrao(a).map(t => ({ t, ok: !!a.feito })) });
@@ -533,6 +534,29 @@ function blocoConcluido(b) {
   if (a) return !!a.feito;
   if (b.passos?.length) return b.passos.every(p => p.ok);
   return !!b.feito;
+}
+
+/** Divide um assunto grande em n sessões (cada uma vira um assunto próprio, logo depois dele na fila). A 1ª mantém o histórico.
+   O nome fica "Assunto · sessão 1/3", sem repetir "parte de parte". Devolve a lista de sessões. */
+const baseTitulo = t => String(t || '').replace(/\s*·\s*sessão\s+\d+\/\d+\s*$/i, '');
+function dividirAssunto(a, n) {
+  if (!a || a.min || a.feito) return [a];
+  const tot = minDe(a), { t, q } = tempoDe(a), base = baseTitulo(a.titulo);
+  n = Math.max(2, Math.min(6, Math.floor(n), Math.floor(tot / 55)));
+  if (!(n >= 2) || tot < 120) return [a];
+  const partes = [a];
+  for (let k = 1; k < n; k++) {
+    const c = JSON.parse(JSON.stringify(a));
+    c.id = uid(); c.feito = false; delete c.feitoEm; delete c.questoes; delete c.rev; delete c.dia; delete c.fraco;
+    partes.push(c);
+  }
+  const ord0 = a.ord || 0;
+  partes.forEach((p, k) => {
+    p.titulo = `${base} · sessão ${k + 1}/${n}`; p.teoria = Math.max(25, Math.round(t / n)); p.q = Math.max(8, Math.round(q / n));
+    p.sessao = { k: k + 1, n }; p.ord = ord0 + k * 0.001;
+  });
+  S.assuntos.splice(S.assuntos.indexOf(a) + 1, 0, ...partes.slice(1));
+  return partes;
 }
 
 /** Fila do plano: atrasados primeiro, depois a semana atual, depois as próximas (adiantar). */
@@ -590,10 +614,15 @@ function montarHoje(cap, so = []) {
   if (pedidas.length) fila = pedidas;
   const novos = [];
   while (usado < d.cap) {
-    let cabe = fila.filter(a => usado + minDe(a) <= d.cap * 1.15 || !(novos.length || mantidos.length));
-    if (!cabe.length && d.cap - usado >= 40 && fila.length) {
-      cabe = [fila.slice().sort((x, y) => minDe(x) - minDe(y))[0]];
+    // se o assunto mais urgente não cabe no tempo que sobra, divide em sessões (só a 1ª entra hoje, o resto segue nos próximos dias),
+    // em vez de pular para um tema aleatório; assim o dia fecha com o tempo que ela tem
+    const resto = d.cap - usado, g = fila.find(ehConteudo);
+    if (g && minDe(g) >= 120 && minDe(g) > resto * 1.15 && resto >= 55) {
+      const partes = dividirAssunto(g, Math.ceil(minDe(g) / Math.max(60, resto)));
+      if (partes.length > 1) { const p = fila.indexOf(g); fila = [...fila.slice(0, p), ...partes, ...fila.slice(p + 1)]; }
     }
+    let cabe = fila.filter(a => usado + minDe(a) <= d.cap * 1.15);
+    if (!cabe.length && !(novos.length || mantidos.length) && fila.length) cabe = [fila[0]];
     const a = escolherProximo(cabe, [...mantidos, ...novos], !pedidas.length);
     if (!a) break;
     novos.push(blocoDe(a)); usado += minDe(a); fila = fila.filter(x => x !== a);
@@ -682,13 +711,8 @@ function vHoje() {
     </div>
   </div>`;
   const lado = `<aside class="coluna">
-    <div class="cartao proximo">
-      ${prox ? `<span class="rotulo">foco agora</span><h2>${esc(prox.b.titulo)}</h2>${prox.i >= 0 && prox.b.passos?.[prox.i] ? `<span class="fraco" style="color:inherit;opacity:.8">${esc(prox.b.passos[prox.i].t)}</span>` : ''}${controlesTimer}`
-        : d.blocos.length ? `<span class="rotulo">hoje</span><h2>Tudo feito por hoje. Orgulho! 🎉</h2><span class="fraco" style="color:inherit;opacity:.8">Se quiser estudar mais um pouco no seu ritmo:</span>${controlesTimer}` : `<span class="rotulo">hoje</span><h2>Diga quanto tempo tem e eu encho o dia.</h2>`}
-    </div>
+    <details class="cartao" data-k="timer-hoje" ${ui.ab?.['timer-hoje'] ? 'open' : ''}><summary><strong>⏱ ${prox ? 'Cronômetro' : 'Tudo feito por hoje. Orgulho! 🎉'}</strong></summary>${controlesTimer.replace(/color:inherit;opacity:\.8/g, 'opacity:.8')}</details>
     ${window.metaQHtml?.() ?? ''}${window.pendHojeHtml?.() ?? ''}
-    <div class="cartao ia-cartao"><strong>${seq ? `${seq} ${seq === 1 ? 'dia seguido' : 'dias seguidos'} estudando` : 'Um passo hoje já conta'}</strong>
-      <span>${esc(faseAtual()?.objetivo || S.meses[mesDe(h)]?.foco || 'Comece pelo passo mais fácil. O resto vem.')}</span></div>
     ${d.blocos.length ? `<div class="linha">
       <button class="botao contorno" data-acao="ir" data-v="meudia">Agenda do dia</button>
       <button class="botao contorno" data-acao="novaTarefa">+ Tarefa avulsa</button></div>` : ''}
@@ -736,7 +760,9 @@ function blocoHtml(b) {
       <span class="hora" title="Horário e ordem flexíveis: faça na ordem que preferir">≈ ${fmtMin(b.min || 0)}${b.sug && !concluido ? ` · ~${b.sug} (flexível)` : ''}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
       ${totB > 1 ? `<span class="linha" style="gap:2px"><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="-1" ${posB <= 0 ? 'disabled' : ''} title="Subir na ordem do dia">↑</button><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="1" ${posB < 0 || posB >= totB - 1 ? 'disabled' : ''} title="Descer na ordem do dia">↓</button></span>` : ''}
       ${b.tipo !== 'revisao' && !concluido ? `<button type="button" class="chip" data-acao="trocarAssunto" data-b="${b.id}" title="Escolher outro assunto no lugar deste">trocar assunto</button>` : ''}
+      ${window.btnDividir?.(b) ?? ''}
       <button class="x" data-acao="tirarBloco" data-b="${b.id}" aria-label="Tirar bloco">×</button></div>
+    ${window.divisorHtml?.(b) ?? ''}
     ${detalhes}
     ${a ? `<div class="linha acoes-bloco">${ehConteudo(a) ? `<button class="link" data-acao="questoes" data-id="${a.id}">${a.questoes ? ((a.questoes.semAc || 0) >= a.questoes.feitas ? `Fiz fora (${a.questoes.feitas} feitas)` : `Fiz fora (${a.questoes.acertos}/${a.questoes.feitas - (a.questoes.semAc || 0)} certas${a.questoes.semAc ? ` · +${a.questoes.semAc}` : ''})`) : 'Fiz questões fora'}</button>` : ''}
       <button class="link" data-acao="caderno" data-id="${a.id}">Caderno à mão</button></div>` : ''}
@@ -1289,6 +1315,21 @@ const ACOES = {
   tirarBloco: el => {
     const d = diaHoje(), b0 = d.blocos.find(b => b.id === el.dataset.b); if (!b0) return;
     comDesfazer(`Tirei "${b0.titulo}" do dia.`, () => { d.blocos = d.blocos.filter(b => b.id !== el.dataset.b); if (window.sugerirHorarios) window.sugerirHorarios(d); });
+  },
+  dividirBloco: el => { ui.divB = ui.divB === el.dataset.b ? '' : el.dataset.b; render(); },
+  dividirEm: el => {
+    const d = diaHoje(), i = d.blocos.findIndex(b => b.id === el.dataset.b), b = d.blocos[i], a = b?.assuntoId && achar(b.assuntoId);
+    ui.divB = '';
+    if (!a || a.min || a.feito || minDe(a) < 120) { ui.iaMsg = 'Esse assunto é curto demais para dividir.'; render(); return; }
+    const n = +el.dataset.n;
+    comDesfazer(`Dividi "${baseTitulo(b.titulo)}" em ${n} sessões.`, () => {
+      const partes = dividirAssunto(a, n);
+      const novos = partes.map((p, k) => k === 0
+        ? Object.assign(b, { titulo: p.titulo, min: minDe(p), passos: (b.passos || []).some(x => x.ok) ? b.passos : passosPadrao(p).map(t => ({ t, ok: false })) })
+        : blocoDe(p));
+      d.blocos.splice(i, 1, ...novos);
+      if (window.sugerirHorarios) window.sugerirHorarios(d);
+    });
   },
   novaTarefa: () => modalTarefa(),
   salvarTarefa: () => {

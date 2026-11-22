@@ -34,6 +34,12 @@ function sugerirHorarios(d) {
 }
 window.sugerirHorarios = sugerirHorarios;
 
+/** "Dividir": só para assunto de conteúdo grande (2h ou mais) e ainda não feito; abre uma linha com 2, 3 ou 4 sessões. */
+const podeDividir = b => { const a = b.tipo !== 'revisao' && b.assuntoId && achar(b.assuntoId); return !!a && ehConteudo(a) && !a.feito && !blocoConcluido(b) && minDe(a) >= 120; };
+window.btnDividir = b => podeDividir(b) ? `<button type="button" class="chip" data-acao="dividirBloco" data-b="${b.id}" title="Dividir este assunto em sessões menores">Dividir</button>` : '';
+window.divisorHtml = b => ui.divB === b.id && podeDividir(b)
+  ? `<div class="linha" style="gap:6px;flex-wrap:wrap;align-items:center"><span class="fraco" style="font-size:13px">Dividir em quantas sessões?</span>${[2, 3, 4].filter(n => minDe(achar(b.assuntoId)) / n >= 55).map(n => `<button type="button" class="chip" data-acao="dividirEm" data-b="${b.id}" data-n="${n}">${n}</button>`).join('')}<button type="button" class="link" data-acao="dividirBloco" data-b="${b.id}">cancelar</button></div>` : '';
+
 /** Botões de cada assunto sugerido num turno de estudo da programação: questões no app (se o assunto tem), trocar o assunto e tirar. */
 function botoesBlocoAg(b, data) {
   const a = b.assuntoId && achar(b.assuntoId), dia = `data-dia="${esc(data)}"`;
@@ -45,7 +51,7 @@ function botoesBlocoAg(b, data) {
   const troca = b.tipo === 'revisao'
     ? `<button type="button" class="chip" data-acao="revEscolher" data-b="${b.id}">Trocar</button>`
     : `<button type="button" class="chip" data-acao="trocarAssunto" data-b="${b.id}" ${dia}>Trocar</button>`;
-  return `${q}${troca}<button type="button" class="x-mini" data-acao="tirarBloco" data-b="${b.id}" title="Tirar este assunto do dia">×</button>`;
+  return `${q}${troca}${window.btnDividir(b)}<button type="button" class="x-mini" data-acao="tirarBloco" data-b="${b.id}" title="Tirar este assunto do dia">×</button>`;
 }
 
 /** Janela para escolher outro assunto no lugar do que foi sugerido (do plano dela, com busca e filtro por matéria). */
@@ -559,6 +565,7 @@ function programacaoHojeHtml(d) {
                 <button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="-1" ${pos <= 0 ? 'disabled' : ''} title="Subir na ordem">↑</button>
                 <button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="1" ${pos < 0 || pos >= d.blocos.length - 1 ? 'disabled' : ''} title="Descer na ordem">↓</button>
               </div>
+              ${window.divisorHtml(b)}
             </div>`;
           }).join('')}` : `<span class="fraco" style="font-size:12px">Horário de estudo livre · complete pendências ou adiante matérias da semana abaixo.</span>`}
         </div>` : ''}
