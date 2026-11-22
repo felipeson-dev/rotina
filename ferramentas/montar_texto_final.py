@@ -99,7 +99,9 @@ def alts_figura(x, q, h=None):
 def principal():
     B = banco(); aprovadas, motivos, origem = {}, Counter(), Counter()
     cov = {}; leit = defaultdict(list)   # leit[id] = todas as leituras (aprovadas ou não), para o consenso
-    for x in json.load(open(os.path.join(SAIDA, 'transcrito.json'), encoding='utf-8')):
+    _fila = os.path.join(SAIDA, 'fila-flashlite', 'saida.json')   # questões que o Claude não leu (filtro de conteúdo): Flash Lite lê quando a cota estiver livre
+    _lista = json.load(open(os.path.join(SAIDA, 'transcrito.json'), encoding='utf-8')) + (json.load(open(_fila, encoding='utf-8')) if os.path.exists(_fila) else [])
+    for x in _lista:
         i = x['id'][3:]
         if i not in B: continue
         ok, mot, y = C.conferir(B[i], x); leit[i].append(('Flash Lite', ok, mot, y))
