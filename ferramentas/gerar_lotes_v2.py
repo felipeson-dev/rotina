@@ -28,7 +28,7 @@ if fonte == 'texto-base': ids = list(json.load(open(os.path.join(SAIDA, 'candida
 elif fonte == 'resto':   # tudo o que ainda esta em imagem e o Claude nunca leu (outra IA leu e a conferencia reprovou): ordem de prioridade, sem repetir lote
     mot = json.load(open(os.path.join(SAIDA, 'motivos-por-id.json'), encoding='utf-8'))
     FIG = ('"[figura]" no texto', 'alternativas repetidas', 'Haiku: "[figura]" no texto', 'Hydrogen: "[figura]" no texto', 'Hydrogen: alternativas repetidas', 'Claude: "[figura]" no texto')
-    ids = sorted((i for i in B if not any(m in FIG or '[figura]' in m or 'repetidas' in m for m in mot.get(i, []))), key=prio)
+    ids = sorted(B, key=prio)   # (alternativas em figura entram: o montar_texto_final recorta o bloco das alternativas)
 else:
     tent = {x['id'][3:] for x in json.load(open(os.path.join(SAIDA, 'transcrito.json'), encoding='utf-8'))} | set(json.load(open(os.path.join(SAIDA, 'transcrito.json.falhas.json'), encoding='utf-8')))
     for pat in ('hydrogen/saida/H*.json', 'claude/saida/C*.json'):

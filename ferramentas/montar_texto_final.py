@@ -57,10 +57,15 @@ def recorte_alts(q):
     corte = q.get('corte') or info.get('h')
     lab = lambda l, c: re.fullmatch(r'\W*' + c + r'\W{0,2}', l['t'].strip(), re.I) is not None
     ca = [l for l in ln if lab(l, 'a') and l['y'] < corte]
-    ok = [l for l in ca if any(lab(m, 'b') and l['y'] - 25 <= m['y'] <= l['y'] + 450 for m in ln)]
-    if not ok: return None
-    ya = min(l['y'] for l in ok) if len(ok) == 1 else max(l['y'] for l in ok if l['y'] < corte - 20) if any(l['y'] < corte - 20 for l in ok) else None
-    if ya is None: return None
+    ok = [l for l in ca if any((lab(m, 'b') or lab(m, 'c') or lab(m, 'd')) and l['y'] - 25 <= m['y'] <= l['y'] + max(450, 0.6 * corte) for m in ln)]
+    ya = None
+    if ok:
+        ya = min(l['y'] for l in ok) if len(ok) == 1 else max(l['y'] for l in ok if l['y'] < corte - 20) if any(l['y'] < corte - 20 for l in ok) else None
+    if ya is None:   # o OCR não achou o "a)": o bloco das alternativas começa depois da última linha de texto corrido do enunciado
+        longas = [l for l in ln if len(l['t'].strip()) >= 28 and l['y'] + l['h'] < corte - 60]
+        if not longas: return None
+        ya = max(l['y'] + l['h'] for l in longas) + 6
+        if corte - ya < 70 or (corte - ya) > 0.85 * corte: return None
     im = Image.open(arq).convert('RGB'); W, H = im.size
     topo, base = max(0, int(ya - 8)), min(int(corte), H)
     if base - topo < 40 or (base - topo) > 0.85 * H: return None
