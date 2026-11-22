@@ -49,7 +49,7 @@ def figuras_de(h, q):
     """Recorta como imagem as figuras que o leitor marcou (box_2d), igual ao transcrever.py. Sem figura marcada ou sem a imagem em cache: []."""
     if not h.get('figuras'): return []
     slug = T.PASTA_DA_BANCA.get(q['banca'], q['banca'].lower())
-    for arq in (os.path.join(T.o.CACHE, slug, slug + str(q.get('fase') or ''), re.sub(r'[^\w.-]', '_', q['img'].split('/resolucao-comentada/')[-1])), T.caminho(q)):
+    for arq in (os.path.join(T.o.CACHE, slug, slug + str(q.get('fase') or ''), re.sub(r'[^\w.-]', '_', q['img'].split('/resolucao-comentada/')[-1])), T.caminho(q), C.caminho(q)):
         if os.path.exists(arq):
             try: return T.recortar_figuras(Image.open(arq).convert('RGB'), h, q, arq)
             except Exception: return []

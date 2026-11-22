@@ -20,6 +20,8 @@ def caminho(q):
     if not os.path.exists(arq):   # ids com sufixo ("-tarde-", "-2dia-") guardam a imagem na pasta banca+fase (ex.: mackenzie2023_2)
         alt = os.path.join(O.CACHE, banca, banca + str(q.get('fase') or ''), nome)
         if os.path.exists(alt): return alt
+        loc = (q.get('img') or '').replace('https://felipeson-dev.github.io/rotina/', 'C:/rotina/')   # provas lidas de PDF: a imagem fica na pasta do próprio site
+        if loc.startswith('C:/rotina/') and os.path.exists(loc): return loc
     return arq
 
 def ocr_de(q):
