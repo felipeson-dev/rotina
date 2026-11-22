@@ -49,18 +49,28 @@ const nomeProblema = v => TIPOS_PROBLEMA.find(t => t[0] === v)?.[1] || 'Outro';
 function problemaHtml(q) {
   if (!q.id) return '';
   const p = S.qProblemas[q.id];
-  if (p) return `<div class="mot-erro"><span class="fraco" style="font-size:14px">Marcada com erro: ${nomeProblema(p.tipo)}.</span><button class="link" data-acao="qProblemaTirar" style="align-self:flex-start;font-size:14px">Desfazer</button></div>`;
+  if (p) {
+    const det = ui.qProblemaDet === q.id, resumo = [p.gab ? `certa seria ${esc(p.gab)}` : '', p.nota ? `“${esc(p.nota.slice(0, 70))}${p.nota.length > 70 ? '…' : ''}”` : ''].filter(Boolean).join(' · ');
+    return `<div class="mot-erro"><span class="fraco" style="font-size:14px">Marcada com erro: ${nomeProblema(p.tipo)}${resumo ? ' · ' + resumo : ''}.</span>
+      ${det ? `<div class="coluna" style="gap:8px">${p.tipo === 'gabarito' ? `<span class="rotulo">qual é a letra certa?</span><div class="linha" style="gap:6px">${(q.alts || []).map(a => `<button class="chip" data-acao="qProblemaGab" data-v="${esc(a.l)}" aria-pressed="${p.gab === a.l}">${esc(a.l)}</button>`).join('')}</div>` : ''}
+        <textarea id="problemaNota" rows="3" maxlength="500" placeholder="O que está errado? (ajuda muito a consertar)" style="font-size:14px">${esc(p.nota || '')}</textarea>
+        <button class="botao" data-acao="qProblemaSalvar">Salvar</button></div>`
+      : `<button class="link" data-acao="qProblemaDetalhar" style="align-self:flex-start;font-size:14px">${p.nota || p.gab ? 'Editar o detalhe' : 'Contar o que está errado (ajuda a consertar)'}</button>`}
+      <button class="link" data-acao="qProblemaTirar" style="align-self:flex-start;font-size:14px">Desfazer</button></div>`;
+  }
   if (ui.qProblemaDe !== q.id) return `<button class="link" data-acao="qProblemaAbrir" style="align-self:flex-start;font-size:14px">Esta questão tem erro?</button>`;
   return `<div class="mot-erro"><span class="rotulo">qual é o erro?</span><div class="linha" style="gap:6px">${TIPOS_PROBLEMA.map(([v, t]) => `<button class="chip" data-acao="qProblemaMarcar" data-v="${v}">${t}</button>`).join('')}</div></div>`;
 }
 
-const textoProblemas = () => Object.entries(S.qProblemas).map(([id, p]) => `${id} | ${nomeProblema(p.tipo)} | ${p.fonte || ''}${p.num ? ' nº ' + p.num : ''} | ${p.dia}`).join('\n');
+// uma linha por questão: id | tipo | prova nº | dia | como aparecia (texto ou imagem) | gabarito do app → certo segundo ela | observação
+const textoProblemas = () => 'ERROS DO ROTINA\n' + Object.entries(S.qProblemas).map(([id, p]) => [id, nomeProblema(p.tipo), `${p.fonte || ''}${p.num ? ' nº ' + p.num : ''}`, p.dia, 'modo ' + (p.modo || '?'),
+  p.tipo === 'gabarito' ? `gabarito do app ${p.gabAtual || '?'} → certo ${p.gab || '?'}` : '', (p.nota || '').replace(/\s+/g, ' ')].join(' | ')).join('\n');
 
 function dsProblemas() {
   const l = Object.entries(S.qProblemas).sort((a, b) => a[1].dia < b[1].dia ? 1 : -1);
   if (!l.length) return `<section class="cartao"><h2>Questões com erro</h2><p class="fraco" style="margin:0">Nenhuma marcada. Se encontrar um erro em uma questão, toque em "Esta questão tem erro?".</p></section>`;
   return `<section class="cartao"><div class="entre"><h2>Questões com erro</h2><span class="fraco">${l.length} ${l.length === 1 ? 'marcada' : 'marcadas'}</span></div>
-    <div class="linha"><button class="botao" data-acao="dsProblemasCopiar">Copiar lista</button></div>
+    <div class="linha"><button class="botao" data-acao="dsProblemasEnviar">Enviar para o Felipe</button><button class="botao contorno" data-acao="dsProblemasCopiar">Copiar lista</button></div>
     ${detalhe('dsProb', 'Ver a lista', `<div class="coluna" style="gap:6px">${l.map(([id, p]) => `<div class="entre"><span style="font-size:14px">${esc(p.fonte || id)}${p.num ? ' nº ' + esc(p.num) : ''} · ${nomeProblema(p.tipo)}</span><button class="link" data-acao="dsProblemaTirar" data-id="${esc(id)}" style="font-size:14px">Tirar</button></div>`).join('')}
       <textarea readonly rows="4" style="font-size:13px">${esc(textoProblemas())}</textarea></div>`)}</section>`;
 }
@@ -219,8 +229,24 @@ Object.assign(VIEWS, { desempenho: vDesempenho });
 Object.assign(ACOES, {
   dsPer: el => { ui.dsPer = el.dataset.v; render(); },
   qProblemaAbrir: () => { const y = window.scrollY; ui.qProblemaDe = ui.qs.itens[ui.qs.i].id; render(); window.scrollTo(0, y); },
-  qProblemaMarcar: el => { const y = window.scrollY, q = ui.qs.itens[ui.qs.i]; S.qProblemas[q.id] = { tipo: el.dataset.v, dia: hoje(), fonte: q.fonte || '', num: q.num || '' }; ui.qProblemaDe = null; salvar(); render(); window.scrollTo(0, y); },
-  qProblemaTirar: () => { const y = window.scrollY; delete S.qProblemas[ui.qs.itens[ui.qs.i].id]; salvar(); render(); window.scrollTo(0, y); },
+  qProblemaMarcar: el => {
+    const y = window.scrollY, q = ui.qs.itens[ui.qs.i], img = typeof verImagem === 'function' ? verImagem(q) : false;
+    S.qProblemas[q.id] = { tipo: el.dataset.v, dia: hoje(), fonte: q.fonte || '', num: q.num || '', modo: img ? 'imagem' : 'texto', gabAtual: q.gab || '' };
+    ui.qProblemaDe = null; ui.qProblemaDet = q.id;   // já abre o campo para ela contar o que está errado
+    salvar(); render(); window.scrollTo(0, y);
+  },
+  qProblemaDetalhar: () => { const y = window.scrollY; ui.qProblemaDet = ui.qs.itens[ui.qs.i].id; render(); window.scrollTo(0, y); },
+  qProblemaGab: el => { const y = window.scrollY, p = S.qProblemas[ui.qs.itens[ui.qs.i].id]; if (!p) return; const nota = document.getElementById('problemaNota'); if (nota) p.nota = nota.value.slice(0, 500); p.gab = p.gab === el.dataset.v ? '' : el.dataset.v; salvar(); render(); window.scrollTo(0, y); },
+  qProblemaSalvar: () => { const y = window.scrollY, p = S.qProblemas[ui.qs.itens[ui.qs.i].id]; if (!p) return; const nota = document.getElementById('problemaNota'); p.nota = nota ? nota.value.trim().slice(0, 500) : (p.nota || ''); ui.qProblemaDet = null; salvar(); render(); window.scrollTo(0, y); },
+  qProblemaTirar: () => { const y = window.scrollY; delete S.qProblemas[ui.qs.itens[ui.qs.i].id]; ui.qProblemaDet = null; salvar(); render(); window.scrollTo(0, y); },
+  dsProblemasEnviar: async () => {
+    const texto = textoProblemas();
+    try {
+      if (navigator.share) { await navigator.share({ title: 'Erros do Rotina', text: texto }); ui.iaMsg = 'Enviado.'; }
+      else { await navigator.clipboard.writeText(texto); ui.iaMsg = 'Lista copiada. Cole numa conversa com o Felipe.'; }
+    } catch (e) { if (e && e.name === 'AbortError') return; try { await navigator.clipboard.writeText(texto); ui.iaMsg = 'Lista copiada. Cole numa conversa com o Felipe.'; } catch { ui.iaMsg = 'Não consegui enviar. Abra "Ver a lista" e copie o texto da caixa.'; } }
+    render();
+  },
   dsProblemaTirar: el => { const y = window.scrollY; delete S.qProblemas[el.dataset.id]; salvar(); render(); window.scrollTo(0, y); },
   dsProblemasCopiar: async () => {
     try { await navigator.clipboard.writeText(textoProblemas()); ui.iaMsg = 'Lista copiada.'; }
