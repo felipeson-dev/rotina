@@ -119,10 +119,17 @@ async function carregarBanco() {
         for (const k of ['enem', 'ia', 'import']) await DB.del('banco:' + k);
       }
     } catch (e) { BANCO.msg = 'Não consegui abrir o banco: ' + e.message; }
-    BANCO.pronto = true; BANCO.carregando = false; BANCO._prom = null; render();
+    BANCO.pronto = true; BANCO.carregando = false; BANCO._prom = null; renderBanco();
     BANCO._sync = sincronizarPacotesBanco(false);   // quem precisa das questões na hora (primeiro uso) pode esperar essa promessa
   })();
   return BANCO._prom;
+}
+
+/** Redesenho causado pelo download em segundo plano: com uma questão aberta, não mexe na tela (redesenhar recarrega as figuras e a página
+   "pula" para cima enquanto ela rola); fora disso, redesenha mantendo a posição da página. */
+function renderBanco() {
+  if (ui.qs && !ui.qs.fim && ui.view === 'questoes') return;
+  const y = window.scrollY; render(); if (window.scrollY !== y) window.scrollTo(0, y);
 }
 
 /** Atualiza automaticamente o banco de questões a partir da pasta pacotes/ do site quando há versão nova. */
@@ -144,7 +151,7 @@ async function sincronizarPacotesBanco(forcar = false) {
     for (const arq of man.arquivos || []) {
       const vArq = man.por?.[arq];
       if (!forcar && vArq != null && (pv[arq] ?? base) >= vArq) continue;
-      BANCO.msg = `Atualizando pacote ${arq.replace('.json.gz', '')}…`; render();
+      BANCO.msg = `Atualizando pacote ${arq.replace('.json.gz', '')}…`; renderBanco();
       const r = await fetch('pacotes/' + arq);
       if (!r.ok) continue;
       const txt = await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).text();
@@ -158,7 +165,7 @@ async function sincronizarPacotesBanco(forcar = false) {
   } catch (e) {
     if (forcar) BANCO.msg = 'Não consegui atualizar os pacotes agora: ' + e.message;
   }
-  BANCO.baixando = false; render();
+  BANCO.baixando = false; renderBanco();
 }
 
 /** Acrescenta questões ao banco (sem repetir ids) e devolve quantas entraram. */

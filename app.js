@@ -5,7 +5,7 @@ const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
 // Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
 // declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
-const APP_V = 'rotina-63';
+const APP_V = 'rotina-64';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -544,6 +544,9 @@ function dividirAssunto(a, n) {
   const tot = minDe(a), { t, q } = tempoDe(a), base = baseTitulo(a.titulo);
   n = Math.max(2, Math.min(6, Math.floor(n), Math.floor(tot / 55)));
   if (!(n >= 2) || tot < 120) return [a];
+  // o tema do banco e o nome do assunto continuam os mesmos em todas as sessões (as questões certas seguem ligadas)
+  if (!a.tag && typeof tagDe === 'function') a.tag = tagDe(a);
+  a.nome ||= base;
   const partes = [a];
   for (let k = 1; k < n; k++) {
     const c = JSON.parse(JSON.stringify(a));
@@ -603,29 +606,84 @@ function filaParaHoje(blocos = []) {
   return [...todos.filter(a => a.dia && a.dia <= h), ...todos.filter(a => !(a.dia && a.dia <= h))];
 }
 
-/** Enche o dia com assuntos até caber o tempo livre (menos 20% para distrações). `so`: matérias que ela pediu para hoje. */
+/* Séries: "X (parte 1 de 4)", "X (parte 2 de 4)" e as sessões "· sessão 1/2" são uma sequência. Uma parte só entra no dia
+   depois que as anteriores foram feitas (ou já estão no dia antes dela): nunca a parte 2 antes da parte 1. */
+const serieDe = a => `${a.materia}|${normBusca(a.nome || baseTitulo(a.titulo).replace(/\s*\(parte \d+ de \d+\)\s*$/i, ''))}`;
+const posSerie = a => { const p = Array.isArray(a.parte) ? +a.parte[0] : +(/\(parte (\d+) de \d+\)/i.exec(a.titulo || '') || [])[1] || 0; return p * 100 + (a.sessao?.k || 0); };
+/** Devolve liberado(a, noDia); as séries pendentes são calculadas uma vez só (montar o dia passa por centenas de assuntos). */
+function checarSeries() {
+  const pend = new Map();
+  for (const x of S.assuntos) { if (x.feito) continue; const o = posSerie(x); if (!o) continue; const s = serieDe(x); (pend.get(s) || pend.set(s, []).get(s)).push({ x, o }); }
+  return (a, noDia) => {
+    const o = posSerie(a); if (!o) return true;
+    return !(pend.get(serieDe(a)) || []).some(p => p.x !== a && p.o < o && !p.x.feito && !noDia.has(p.x.id));
+  };
+}
+
+/** Bloco só de questões de um assunto (dia "só questões"): o tempo inteiro vira questões, no ritmo dela por matéria (com a correção). */
+function blocoQuestoes(a, min) {
+  const n = Math.max(5, Math.round(min / (minPorQ(a.materia) * 1.25)));
+  return { id: uid(), tipo: 'questoes', qAssunto: a.id, assuntoId: null, titulo: `Questões: ${a.nome || baseTitulo(a.titulo)}`, materia: a.materia, min, qMeta: n, feito: false,
+    passos: [{ t: `Fazer ${n} questões (~${fmtMin(Math.round(n * minPorQ(a.materia)))})`, ok: false }, { t: `Corrigir e anotar os erros (~${fmtMin(Math.round(n * minPorQ(a.materia) * 0.25))})`, ok: false }] };
+}
+
+/** Enche o dia com assuntos até caber o tempo livre (menos 20% para distrações). `so`: matérias que ela pediu para hoje.
+   Ordem de prioridade: (1) o conteúdo mais urgente da fila sempre entra; se for maior que o tempo do dia, entra a 1ª sessão dele;
+   (2) o resto do tempo é completado na ordem da fila, só com o que cabe, sem pular para assuntos de semanas futuras enquanto
+   houver da semana atual ou atrasados, e respeitando a ordem das partes. */
 function montarHoje(cap, so = []) {
   const d = diaHoje();
   d.cap = cap > 0 ? cap : d.cap || 0;
-  const mantidos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.feito || (b.passos || []).some(p => p.ok); });
+  const mantidos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId);
+    if (b.tipo === 'questoes') return b.feito || (b.passos || []).some(p => p.ok);
+    return !a || a.feito || b.feito || (b.passos || []).some(p => p.ok); });
   let usado = soma(mantidos, b => b.min || 0);
   let fila = filaParaHoje(mantidos);
   const pedidas = fila.filter(a => so.includes(a.materia));
   if (pedidas.length) fila = pedidas;
-  const novos = [];
-  while (usado < d.cap) {
-    // se o assunto mais urgente não cabe no tempo que sobra, divide em sessões (só a 1ª entra hoje, o resto segue nos próximos dias),
-    // em vez de pular para um tema aleatório; assim o dia fecha com o tempo que ela tem
-    const resto = d.cap - usado, g = fila.find(ehConteudo);
-    if (g && minDe(g) >= 120 && minDe(g) > resto * 1.15 && resto >= 55) {
-      const partes = dividirAssunto(g, Math.ceil(minDe(g) / Math.max(60, resto)));
-      if (partes.length > 1) { const p = fila.indexOf(g); fila = [...fila.slice(0, p), ...partes, ...fila.slice(p + 1)]; }
+  const novos = [], teto = () => d.cap * 1.05 - usado;
+  const noDia = () => new Set([...mantidos, ...novos].map(b => b.assuntoId || b.qAssunto).filter(Boolean));
+  const daSemana = a => semDe(a) <= semAtual();
+  const pega = a => { novos.push(blocoDe(a)); usado += minDe(a); fila = fila.filter(x => x !== a); };
+  let lib = checarSeries();
+  const dividir = (g, alvo) => { const p = dividirAssunto(g, Math.ceil(minDe(g) / Math.max(60, alvo))); if (p.length > 1) { fila.splice(fila.indexOf(g), 1, ...p); lib = checarSeries(); } return p[0]; };
+
+  if (d.soQ) {
+    // dia só de questões: os assuntos da fila (os mesmos que entrariam), mas o tempo inteiro vai para questões; ~50 min por assunto
+    const livre = d.cap - usado, k = Math.max(1, Math.min(6, Math.round(livre / 50)));
+    for (let i = 0; i < k; i++) {
+      const ids = noDia(), cand = fila.filter(a => ehConteudo(a) && lib(a, ids));
+      const a = escolherProximo(cand.filter(daSemana).length ? cand.filter(daSemana) : cand, [...mantidos, ...novos], !pedidas.length);
+      if (!a) break;
+      novos.push(blocoQuestoes(a, Math.round(livre / k))); fila = fila.filter(x => x !== a);
     }
-    let cabe = fila.filter(a => usado + minDe(a) <= d.cap * 1.15);
-    if (!cabe.length && !(novos.length || mantidos.length) && fila.length) cabe = [fila[0]];
-    const a = escolherProximo(cabe, [...mantidos, ...novos], !pedidas.length);
-    if (!a) break;
-    novos.push(blocoDe(a)); usado += minDe(a); fila = fila.filter(x => x !== a);
+  } else {
+    // (1) o conteúdo principal: se já tem conteúdo em andamento no dia, não precisa
+    const temConteudo = mantidos.some(b => { const a = b.assuntoId && achar(b.assuntoId); return a && ehConteudo(a) && !a.feito; });
+    if (!temConteudo && d.cap - usado >= 55) {
+      const ids = noDia(), cand = fila.filter(a => ehConteudo(a) && lib(a, ids));
+      let g = cand.find(daSemana) || cand[0];
+      if (g) {
+        if (minDe(g) > teto() && minDe(g) >= 120) g = dividir(g, d.cap - usado);
+        if (minDe(g) <= teto() || !mantidos.length) pega(g);
+      }
+    }
+    // (2) completa o tempo
+    while (usado < d.cap) {
+      const ids = noDia();
+      const livres = fila.filter(a => lib(a, ids));
+      const urgentes = livres.filter(daSemana), base = urgentes.length ? urgentes : livres;
+      let cabe = base.filter(a => minDe(a) <= teto());
+      if (!cabe.length) {
+        // nada cabe inteiro: o próximo conteúdo da fila entra dividido, se o pedaço couber (até 3 sessões)
+        const resto = d.cap - usado, g = base.find(a => ehConteudo(a) && minDe(a) >= 120);
+        if (g && resto >= 60 && Math.ceil(minDe(g) / resto) <= 3) { const p = dividir(g, resto); if (minDe(p) <= teto()) cabe = [p]; }
+      }
+      if (!cabe.length && !(novos.length || mantidos.length) && base.length) cabe = [base[0]];
+      const a = escolherProximo(cabe, [...mantidos, ...novos], !pedidas.length);
+      if (!a) break;
+      pega(a);
+    }
   }
   // as pesadas vão para o começo do dia (cabeça mais descansada), depois redação, depois as leves; é só a ordem sugerida
   const ordem = { pesada: 0, simulado: 0, redacao: 1, leve: 2 };
@@ -674,9 +732,11 @@ function vHoje() {
   const selos = `${atrasados ? `<span class="selo atraso">${atrasados} ${atrasados === 1 ? 'atrasado' : 'atrasados'} da semana passada</span>` : ''}
     ${adiantados.length ? `<span class="selo adiante">${adiantados.length} ${adiantados.length === 1 ? 'assunto adiantado' : 'assuntos adiantados'} · ${fmtMin(soma(adiantados, minDe))}</span>` : ''}`;
   const painel = d.blocos.length ? `<section class="cartao dia-resumo">
-      <div class="entre"><strong>${feitosBlocos} de ${d.blocos.length} tarefas concluídas · ${fmtMin(feitoMin)} estudados${feitosBlocos === d.blocos.length || (meta && feitoMin >= meta) ? ' · meta batida! 🎉' : meta ? ` · meta ${fmtMin(meta)}` : ''}</strong><span class="fraco">${d.horas ? `${d.horas}h livres · 20% reservado para pausas` : ''}</span></div>
+      <div class="entre"><strong>${feitosBlocos} de ${d.blocos.length} tarefas concluídas · ${fmtMin(feitoMin)} estudados${feitosBlocos === d.blocos.length || (meta && feitoMin >= meta) ? ' · meta batida! 🎉' : meta ? ` · meta ${fmtMin(meta)}` : ''}</strong><span class="fraco">${d.horas ? `${d.horas}h livres · 20% reservado para pausas` : ''}</span>
+        <button class="chip" data-acao="diaSoQ" title="${d.soQ ? 'Voltar ao dia normal (teoria + questões)' : 'Refazer o que ainda não começou: o tempo vira só questões'}">${d.soQ ? 'Voltar ao dia normal' : 'Hoje só questões'}</button></div>
       <div class="barra grossa"><i style="width:${pct}%"></i></div>${selos.trim() ? `<div class="linha">${selos}</div>` : ''}</section>` : '';
   const planejar = d.blocos.length ? '' : `<section class="cartao"><h2>Como vai ser o seu dia hoje?</h2><p class="fraco" style="margin:0">Escolha quantas horas livres tem hoje para montar rápido, ou conte abaixo seus horários (treino, compromissos, estudo) que eu organizo os assuntos e a programação do dia.</p>
+    <label class="linha" style="gap:8px;cursor:pointer"><input type="checkbox" data-acao="soQToggle" ${ui.soQ ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--rosa)"> <span><b>Hoje só questões</b> <span class="fraco" style="font-size:14px">· sem teoria: o tempo todo vira questões dos assuntos do plano</span></span></label>
     <div class="linha">${[2, 3, 4, 6, 8, 10].map(n => `<button class="chip" data-acao="montarRapido" data-h="${n}">Tenho ${n}h hoje</button>`).join('')}</div>
     <p class="fraco" style="margin:0;font-size:14px">Conte as horas livres de verdade: eu deixo 20% para pausas. Para as <b>8 h de estudo</b> do plano, são cerca de <b>10 h livres</b>.</p>
     <textarea id="hoje-ia-txt" data-ui="diaTexto" rows="2" placeholder="Opcional: conte seus horários de hoje (ex.: treino às 18h, médico às 14h, estudo das 8h às 12h e das 15h30 às 17h30)">${esc(ui.diaTexto || '')}</textarea>
@@ -764,6 +824,7 @@ function blocoHtml(b) {
       <button class="x" data-acao="tirarBloco" data-b="${b.id}" aria-label="Tirar bloco">×</button></div>
     ${window.divisorHtml?.(b) ?? ''}
     ${detalhes}
+    ${b.tipo === 'questoes' && b.qAssunto && !concluido ? `<div class="linha acoes-bloco"><button class="link" data-acao="qDoAssunto" data-id="${b.qAssunto}" data-b="${b.id}">Resolver as ${b.qMeta || ''} questões no app</button></div>` : ''}
     ${a ? `<div class="linha acoes-bloco">${ehConteudo(a) ? `<button class="link" data-acao="questoes" data-id="${a.id}">${a.questoes ? ((a.questoes.semAc || 0) >= a.questoes.feitas ? `Fiz fora (${a.questoes.feitas} feitas)` : `Fiz fora (${a.questoes.acertos}/${a.questoes.feitas - (a.questoes.semAc || 0)} certas${a.questoes.semAc ? ` · +${a.questoes.semAc}` : ''})`) : 'Fiz questões fora'}</button>` : ''}
       <button class="link" data-acao="caderno" data-id="${a.id}">Caderno à mão</button></div>` : ''}
   </article>`;
@@ -1273,13 +1334,13 @@ const ACOES = {
     const outro = parseFloat($('#horas-livres')?.value);
     if (outro > 0) d.horas = Math.min(16, outro);
     if (!d.horas) { ui.iaMsg = 'Escolha quantas horas livres você tem hoje.'; render(); return; }
-    d.contexto = contextoAtual() || 'dia normal';
+    d.contexto = contextoAtual() || 'dia normal'; d.soQ = !!ui.soQ;
     montarHoje(Math.round(d.horas * 48)); ui.planejar = false; salvar(); render();
     if (temChave() && d.blocos.length) pedirIa(`Ajuste e detalhe meu dia. Contexto de hoje: ${d.contexto}. Tenho ${d.horas}h livres (uso ${fmtMin(d.cap)} com a folga de 20%). Devolva blocos_hoje com os assuntos de blocos_de_hoje (mantenha assuntoId e min; só tire ou troque algum se o contexto pedir) e, para cada um, de 3 a 5 passos concretos e específicos do assunto, o primeiro bem fácil. Se eu pedi algo no contexto (ex.: só uma matéria, ou mais de uma), troque os assuntos por outros da lista com o mesmo total de minutos. Sem pedido meu, mantenha a mistura que já vem: 1 matéria pesada (Matemática, Física, Química) e 1 leve alternadas, e no máximo 1 redação.`, 'Detalhando seus passos…');
   },
   montarRapido: el => {
     const h = +el.dataset.h || 4, d = diaHoje();
-    d.horas = h; d.contexto = `${h}h livres`; d.agenda = [];
+    d.horas = h; d.contexto = `${h}h livres${ui.soQ ? ' · só questões' : ''}`; d.agenda = []; d.soQ = !!ui.soQ;
     montarHoje(Math.round(h * 48));
     if (window.garantirAgendaPadrao) window.garantirAgendaPadrao(d);
     if (window.sugerirHorarios) window.sugerirHorarios(d);
@@ -1315,6 +1376,13 @@ const ACOES = {
   tirarBloco: el => {
     const d = diaHoje(), b0 = d.blocos.find(b => b.id === el.dataset.b); if (!b0) return;
     comDesfazer(`Tirei "${b0.titulo}" do dia.`, () => { d.blocos = d.blocos.filter(b => b.id !== el.dataset.b); if (window.sugerirHorarios) window.sugerirHorarios(d); });
+  },
+  soQToggle: el => { ui.soQ = el.checked; render(); },
+  diaSoQ: () => {
+    const d = diaHoje(), v = !d.soQ;
+    comDesfazer(v ? 'Pronto: o tempo que sobra hoje virou só questões.' : 'De volta ao dia normal (teoria + questões).', () => {
+      d.soQ = v; ui.soQ = v; montarHoje(d.cap); if (window.sugerirHorarios) window.sugerirHorarios(d);
+    });
   },
   dividirBloco: el => { ui.divB = ui.divB === el.dataset.b ? '' : el.dataset.b; render(); },
   dividirEm: el => {

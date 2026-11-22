@@ -667,6 +667,9 @@ input[type="search"]:focus { border-color: var(--acento); }
 .selo.flexivel { background: color-mix(in srgb, var(--acento) 14%, var(--painel2)); color: var(--tinta); font-weight: 600; }
 .ag-ass-lista { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: var(--painel); border: 1px solid var(--linha); }
 .ag-ass-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px; border-radius: 10px; background: var(--painel2); font-size: 13px; }
+.ag-ass-item.continua { border-left: 4px dashed var(--c, var(--acento)); background: transparent; border-top: 1px dashed var(--linha); border-right: 1px dashed var(--linha); border-bottom: 1px dashed var(--linha); }
+.selo.continua { font-size: 11px; background: var(--tinta); color: var(--painel); font-weight: 700; }
+.tempo-parte { font-weight: 700; color: var(--tinta); }
 .ag-ass-item.feito .ag-ass-tit { text-decoration: line-through; color: var(--fraco); }
 .ag-sug { font-weight: 700; color: var(--tinta); font-size: 12px; background: var(--painel); padding: 2px 6px; border-radius: 999px; }
 .ag-ord { border: 1px solid var(--linha); background: var(--painel); color: var(--texto); border-radius: 8px; width: 26px; height: 26px; padding: 0; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }

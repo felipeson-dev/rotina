@@ -43,6 +43,7 @@ window.divisorHtml = b => ui.divB === b.id && podeDividir(b)
 /** Botões de cada assunto sugerido num turno de estudo da programação: questões no app (se o assunto tem), trocar o assunto e tirar. */
 function botoesBlocoAg(b, data) {
   const a = b.assuntoId && achar(b.assuntoId), dia = `data-dia="${esc(data)}"`;
+  if (b.tipo === 'questoes') return `${b.qAssunto ? `<button type="button" class="chip" data-acao="qDoAssunto" data-id="${b.qAssunto}" data-b="${b.id}" title="Resolver as questões no app">Questões</button>` : ''}<button type="button" class="chip" data-acao="trocarAssunto" data-b="${b.id}" ${dia}>Trocar</button><button type="button" class="x-mini" data-acao="tirarBloco" data-b="${b.id}" title="Tirar do dia">×</button>`;
   const temQ = b.tipo === 'revisao' ? (b.revisao || []).length
     : a && (typeof ehConteudo === 'function' && ehConteudo(a) || typeof ehHabitoQ === 'function' && ehHabitoQ(a));
   const q = !temQ ? '' : b.tipo === 'revisao'
@@ -395,7 +396,7 @@ Responda SÓ com JSON: {"resposta":"2 frases curtas e gentis resumindo o dia","f
     if (!estudoMin) throw new Error('não achei tempo livre para estudar. Conte mais sobre o dia ou informe as horas');
     // o que já passou na agenda anterior continua aparecendo (apagado), para ela ver o dia inteiro
     const passados = ehHoje ? (d.agenda || []).filter(x => hm(x.fim) != null && hm(x.fim) <= agoraMin && !ag.some(y => y.inicio === x.inicio && y.titulo === x.titulo)) : [];
-    d.agenda = [...passados, ...ag]; d.semAgenda = false; d.fator = fator; d.horas = Math.round(estudoMin / 6) / 10;
+    d.agenda = [...passados, ...ag]; d.semAgenda = false; d.fator = fator; d.horas = Math.round(estudoMin / 6) / 10; d.soQ = !!ui.soQ;
     d.contexto = [texto.trim(), horas > 0 ? `${horas}h livres` : ''].filter(Boolean).join(' · ') || 'rotina base';
     if (ehHoje) { montarHoje(Math.round(estudoMin * 0.8 * fator), so); sugerirHorarios(d); }
     else { d.cap = Math.round(estudoMin * 0.8 * fator); d.so = so; d.blocos = []; d.montado = false; }
@@ -551,14 +552,20 @@ function programacaoHojeHtml(d) {
             const pos = d.blocos.indexOf(b);
             const ehCont = b.janelas?.length && b.janelas[0].idx < jIdx;
             const sugTurno = b.janelas?.find(j => j.idx === jIdx)?.ini || b.sug;
-            return `<div class="ag-ass-item ${conc ? 'feito' : ''}" style="${cor(b.materia)}">
+            return `<div class="ag-ass-item ${conc ? 'feito' : ''} ${ehCont ? 'continua' : ''}" style="${cor(b.materia)}">
               <label class="linha" style="gap:6px;flex:1;min-width:160px;cursor:pointer">
                 <input type="checkbox" data-acao="blocoFeito" data-b="${b.id}" ${conc ? 'checked' : ''}>
                 ${sugTurno && !conc ? `<span class="ag-sug">~${sugTurno}</span>` : ''}
                 ${b.materia ? `<span class="tag" style="${cor(b.materia)}">${esc(b.materia)}</span>` : ''}
                 <span class="ag-ass-tit">${esc(b.titulo)}</span>
-                ${ehCont ? '<span class="selo flexivel" style="font-size:11px">continuação</span>' : ''}
-                <small class="fraco">(${(() => { const jt = b.janelas?.find(j => j.idx === jIdx); return b.janelas?.length > 1 && jt ? `${fmtMin(jt.min)} de ${fmtMin(b.min || 30)}` : fmtMin(b.min || 30); })()})</small>
+                ${ehCont ? '<span class="selo continua">↳ continuação</span>' : ''}
+                <small class="${b.janelas?.length > 1 ? 'tempo-parte' : 'fraco'}">${(() => {
+                  // assunto que passa de um turno para outro: mostra até onde chega neste turno ("1h34 de 2h58"), contando o que veio antes
+                  const js = b.janelas || [], k = js.findIndex(j => j.idx === jIdx), tot = b.min || 30;
+                  if (js.length < 2 || k < 0) return `(${fmtMin(tot)})`;
+                  const ate = k === js.length - 1 ? tot : Math.min(tot, soma(js.slice(0, k + 1), j => j.min));
+                  return `(${k ? `+${fmtMin(js[k].min)} · ` : ''}${fmtMin(ate)} de ${fmtMin(tot)}${k < js.length - 1 ? ' · continua no próximo turno ↓' : ''})`;
+                })()}</small>
               </label>
               <div class="linha" style="gap:4px;flex-wrap:wrap">
                 ${botoesBlocoAg(b, data)}
@@ -673,7 +680,7 @@ Object.assign(ACOES, {
   trocarPara: el => {
     const dia = el.dataset.dia || hoje(), d = diaDe(dia), i = (d.blocos || []).findIndex(x => x.id === el.dataset.b), a = achar(el.dataset.id);
     if (i < 0 || !a) return;
-    const antigo = d.blocos[i], novo = blocoDe(a); novo.adiantado = antigo.adiantado;
+    const antigo = d.blocos[i], novo = antigo.tipo === 'questoes' ? blocoQuestoes(a, antigo.min || 50) : blocoDe(a); novo.adiantado = antigo.adiantado;
     const andamento = antigo.feito || (antigo.passos || []).some(p => p.ok);   // já tinha andamento: não perde, acrescenta o novo logo depois
     fecharModal();
     comDesfazer(andamento ? `"${antigo.titulo}" já tinha andamento: mantive e acrescentei "${a.titulo}".` : `Troquei "${antigo.titulo}" por "${a.titulo}".`, () => {

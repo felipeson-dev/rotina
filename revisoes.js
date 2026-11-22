@@ -177,6 +177,19 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
     let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds && !q.f);
     if (!candidatas.length) candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds);
     const nA = qtd[a.id] || porAssunto;
+    // assunto que é só um pedaço do tema do banco (ex.: "Base de Matemática" dentro de "Conjuntos e conjuntos numéricos"):
+    // usa só as questões desse pedaço; completar com o resto do tema trazia questões de outro assunto (Venn, intervalos...)
+    if (subRe) {
+      // conta as pistas de cada pedaço do tema: a questão fica se as pistas do pedaço certo forem pelo menos tantas quanto as de outro
+      // (ex.: "raiz de 2 é irracional" tem mais cara de conjuntos numéricos do que de frações e raízes)
+      const irmaos = (window.SUBTOPICOS?.[tagDe(a)] || []).map(([, re]) => re).filter(re => re !== subRe);
+      const pistas = (re, t) => (t.match(new RegExp(re.source, 'g')) || []).length;
+      const doSub = candidatas.filter(q => {
+        const t = (q.x || '') + ' ' + (q.s || ''), n = pistas(subRe, t);
+        return n > 0 && irmaos.every(re => pistas(re, t) <= n);
+      });
+      if (doSub.length >= Math.min(nA, 4)) candidatas = doSub;
+    }
     const ineditas = candidatas.filter(q => !S.qh[q.id]);
     const fonte = ineditas.length >= nA ? ineditas : candidatas;
     fonte.sort((x, y) => {

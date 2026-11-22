@@ -34,8 +34,10 @@ const usaPlanoQ = () => !planoQ().manual && metaSemanaPlano() != null;
 const pontosDia = d => {
   const p = planoQ(), wd = deIso(d).getDay();
   if (!p.manual && metaSemanaPlano(segunda(d)) != null) {
-    if (wd === 0 || metaSemanaPlano(segunda(d)) === 0) return 0;
-    if ((S.dias[d]?.blocos || []).length) { const o = metasDosBlocos(d); if (Object.keys(o).length) return Math.max(40, soma(Object.entries(o), ([m, n]) => n * custoQ(m))); }
+    // domingo (ou semana de respiro) é livre, a não ser que ela tenha montado o dia para estudar: aí a meta vem dos assuntos do dia
+    const montado = (S.dias[d]?.blocos || []).length > 0;
+    if (!montado && (wd === 0 || metaSemanaPlano(segunda(d)) === 0)) return 0;
+    if (montado) { const o = metasDosBlocos(d); if (Object.keys(o).length) return Math.max(40, soma(Object.entries(o), ([m, n]) => n * custoQ(m))); }
     const cap = S.dias[d]?.cap || 420;   // minutos de estudo que ela disse ter no dia (sem o dia montado: 7 h)
     return Math.max(40, Math.round(20 * Math.max(0, cap - minAulaDoDia(d)) / 60 / 10) * 10);   // 1 ponto ≈ 3 min
   }
@@ -64,7 +66,7 @@ function metasDosBlocos(d = hoje()) {
   return o;
 }
 function metasPorMateria() {
-  if (usaPlanoQ() && deIso(hoje()).getDay() !== 0 && (S.dias[hoje()]?.blocos || []).length) { const o = metasDosBlocos(); if (Object.keys(o).length) return o; }
+  if (usaPlanoQ() && (S.dias[hoje()]?.blocos || []).length) { const o = metasDosBlocos(); if (Object.keys(o).length) return o; }
   const mats = materiasDoDia(), pts = pontosDia(hoje()), o = {};
   if (!mats.length || !pts) return o;
   for (const m of mats) o[m] = Math.max(5, Math.round(pts / mats.length / custoQ(m) / 5) * 5);
@@ -84,6 +86,7 @@ const minQuestoes = metas => Math.round(soma(Object.entries(metas), ([m, n]) => 
 function questoesDoBloco(b) {
   if (!b) return 15;
   if (b.tipo === 'revisao') return Math.max(4, ((b.revisao || []).length || 1) * (b.vaga === 'dia' ? 4 : 5));
+  if (b.tipo === 'questoes') return b.qMeta || 10;
   const a = b.assuntoId && achar(b.assuntoId);
   const metas = metasPorMateria(), metaMat = metas[b.materia];
   if (metaMat > 0) {
