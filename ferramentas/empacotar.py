@@ -6,7 +6,8 @@ Uso: python empacotar.py
 """
 import gzip, json, os, shutil, sys, time
 SAIDA = r'C:\rotina-banco'
-PACOTES_WEB = r'C:\rotina\pacotes'
+PACOTES_WEB = os.environ.get('EMP_WEB') or r'C:\rotina\pacotes'   # EMP_WEB/EMP_IPAD: pastas temporarias (publicar_novos.py)
+PASTA_IPAD = os.environ.get('EMP_IPAD') or os.path.join(SAIDA, 'para-o-ipad')
 TRANSCRITO = sys.argv[1] if len(sys.argv) > 1 else os.path.join(SAIDA, 'transcrito.json')
 ANTES_ARQ = sys.argv[2] if len(sys.argv) > 2 else os.path.join(SAIDA, 'texto-antes.json')   # ids que já estavam em texto no site; se reprovarem agora, voltam para imagem com v=4
 ANTES = set(json.load(open(ANTES_ARQ, encoding='utf-8'))) if os.path.exists(ANTES_ARQ) else set()
@@ -66,7 +67,7 @@ def principal():
             q['materia'] = t.get('materia') or r.get('materia') or ''
             q['assunto'] = t.get('assunto') or r.get('assunto') or ''
             saida.append(q); n_txt += 1
-        p = os.path.join(SAIDA, 'para-o-ipad', nome + '.json.gz')
+        p = os.path.join(PASTA_IPAD, nome + '.json.gz')
         tmp = p + '.tmp'
         with gzip.open(tmp, 'wt', encoding='utf-8', compresslevel=9) as f:
             json.dump(saida, f, ensure_ascii=False, separators=(',', ':'))
@@ -85,7 +86,7 @@ def principal():
                 lista += [{k: v for k, v in r.items() if k != 'assunto_local'} for r in json.load(open(a, encoding='utf-8'))]
         if not lista:
             continue
-        p = os.path.join(SAIDA, 'para-o-ipad', nome + '.json.gz')
+        p = os.path.join(PASTA_IPAD, nome + '.json.gz')
         with gzip.open(p + '.tmp', 'wt', encoding='utf-8', compresslevel=9) as f:
             json.dump(lista, f, ensure_ascii=False, separators=(',', ':'))
         os.replace(p + '.tmp', p)
