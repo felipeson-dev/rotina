@@ -10,12 +10,13 @@ W = r'C:\rotina\pacotes'; REPO = r'C:\rotina'
 man = json.load(open(f'{W}/manifesto.json', encoding='utf-8'))
 def carregar(n):
     d = json.load(gzip.open(f'{W}/{n}', 'rt', encoding='utf-8')); return d if isinstance(d, list) else d.get('questoes', [])
-img, txt = {}, {}
+img, atual = {}, {}
 for arq in man['arquivos']:
     if arq.startswith('D'): continue
     for q in carregar(arq):
         if q.get('modo') == 'objetivo': img.setdefault(q['id'], q)      # versão em imagem (dos pacotes grandes)
-        else: txt[q['id']] = q                                         # versão em texto (os pacotes mais novos vencem)
+        atual[q['id']] = q                                             # versão vigente: o pacote mais novo da lista vence (texto novo ou "volta para imagem")
+txt = {i: q for i, q in atual.items() if q.get('modo') != 'objetivo'}
 ruins = [i for i, q in txt.items() if (P.inventada(q) or i in P.EXCLUIR) and i in img]
 print('publicadas em texto que devem voltar para imagem:', len(ruins))
 if '--gravar' not in sys.argv or not ruins: sys.exit(0)
