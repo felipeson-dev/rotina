@@ -17,6 +17,12 @@ sys.stdout.reconfigure(encoding='utf-8')
 SAIDA = r'C:\rotina-banco'
 NUVEM = os.path.join(SAIDA, 'nuvem', 'transc_provas.json')
 
+# gabaritos investigados (claude/gabarito, certeza alta): 'ok' = o do banco está certo (libera a leitura de confiança baixa, que só estava baixa por a resolução impressa discordar);
+# 'dif' = {id: letra certa} (o banco estava errado: corrige e libera)
+_VER = os.path.join(SAIDA, 'gabaritos-verificados.json')
+VER = json.load(open(_VER, encoding='utf-8')) if os.path.exists(_VER) else {'ok': [], 'dif': {}}
+LIBERA = set(VER['ok']) | set(VER['dif'])
+
 def banco():
     b = {}
     for a in glob.glob(os.path.join(SAIDA, 'objetivo-*.json')):
@@ -29,6 +35,8 @@ def banco():
     for lista in por.values():
         if len(lista) >= 20 and not any(str(q.get('gab', '')).upper() == 'E' for q in lista):
             for q in lista: q['nalts'] = '4'
+    for i, g in VER['dif'].items():
+        if i in b: b[i]['gab'] = g
     return b
 
 def do_haiku(h, q):
@@ -120,8 +128,11 @@ def principal():
         for h in lista:
             i = h.get('id')
             if i not in B or h.get('erro') or not h.get('enunciado'): continue
-            if str(h.get('confianca', '')).lower() == 'baixa': continue   # o próprio leitor disse que não tem certeza: fica em imagem
-            x = do_haiku(h, B[i]); x['imagens'] = figuras_de(h, B[i]); x = alts_figura(x, B[i], h); ok, mot, y = C.conferir(B[i], x); leit[i].append((rot, ok, mot, y))
+            if str(h.get('confianca', '')).lower() == 'baixa' and i not in LIBERA: continue   # o próprio leitor disse que não tem certeza: fica em imagem
+            x = do_haiku(h, B[i]);
+            if i in VER['dif']: x['gab'] = B[i]['gab']   # gabarito corrigido depois de investigado
+            if i in LIBERA and x.get('gab') != B[i]['gab']: x['gab'] = B[i]['gab']   # a leitura trazia a letra antiga ou a da resolução impressa
+            x['imagens'] = figuras_de(h, B[i]); x = alts_figura(x, B[i], h); ok, mot, y = C.conferir(B[i], x); leit[i].append((rot, ok, mot, y))
             if ok:
                 origem[rot + ' aprovadas'] += 1
                 if i not in aprovadas or (y['_cob'] or 0) > cov.get(i, 0): aprovadas[i] = y; cov[i] = y['_cob'] or 0
