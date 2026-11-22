@@ -10,8 +10,14 @@ AQUI = os.path.dirname(os.path.abspath(__file__)); W = r'C:\rotina\pacotes'; REP
 SECO = '--seco' in sys.argv
 MIN = int(sys.argv[sys.argv.index('--min') + 1]) if '--min' in sys.argv else 40
 # ids que nao devem virar texto (leitura inventada so para o conferidor aceitar etc.)
-EXCLUIR = {'obj-fgvsp2011_economia_1fase-089'}
+EXCLUIR = {'obj-fgvsp2011_economia_1fase-089', 'obj-fgvsp2026_administracao-43', 'obj-fatec2023_2-04', 'obj-insper2015_1-01', 'obj-fatec2012-01', 'obj-insper2015_1-11', 'obj-mackenzie2016-46', 'obj-mackenzie2025-10', 'obj-mackenzie2025-11', 'obj-mackenzie2025-2dia-41', 'obj-mackenzie2025-2dia-60', 'obj-mackenzie2025-2dia-10', 'obj-mackenzie2025-2dia-11', 'obj-pucsp2019_2-01'}   # pucsp2019_2-01: imagem cortada, palavras reconstruídas pelo contexto   # 089: enunciado inventado; 2026-43: a resolução impressa é de outra questão
 GRANDES = ['6-oficiais-Fuvest-Unicamp-UNESP', '7-oficiais-Medicina-SP', '8-oficiais-outras-SP-e-exatas', '9-oficiais-ENEM-com-resolucao']
+
+import re
+def inventada(q):
+    """alternativa-figura 'descrita' em texto para passar na conferência ("(desenho a: ...)", "[gráfico: ...]"): descrição inventada, fica em imagem."""
+    if re.search(r'trecho cortado|cortad[oa] na imagem|ileg[ií]vel', ' '.join([q.get('enunciado') or '', q.get('coment') or ''] + [(a.get('t') if isinstance(a, dict) else str(a)) or '' for a in (q.get('alts') or [])]), re.I): return True   # marcador de leitura incompleta: fica em imagem
+    return any(re.match(r'\s*[\(\[]?\s*(desenho|gr.fico|figura|imagem|diagrama|estrutura\s+[a-e]\b|alternativa\s+[a-e]\b|op..o\s+[a-e]\b)', (a.get('t') if isinstance(a, dict) else str(a)) or '', re.I) for a in (q.get('alts') or []))
 
 def log(*a): print(time.strftime('%d/%m %H:%M'), *a, flush=True)
 def carregar(pasta, nome):
@@ -35,7 +41,7 @@ def principal():
     for n in GRANDES:
         for q in carregar(web, n):
             p = pub.get(q['id'])
-            if q.get('modo') != 'objetivo' and p is not None and p.get('modo') == 'objetivo' and q['id'] not in EXCLUIR: novas[q['id']] = q
+            if q.get('modo') != 'objetivo' and p is not None and p.get('modo') == 'objetivo' and q['id'] not in EXCLUIR and not inventada(q): novas[q['id']] = q
     log('novas em texto:', len(novas))
     shutil.rmtree(tmp, ignore_errors=True)
     if len(novas) < MIN or SECO: log('nada a publicar' if len(novas) < MIN else 'modo seco'); return 0

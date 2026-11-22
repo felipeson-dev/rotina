@@ -15,7 +15,12 @@ MIN_COBERTURA = 0.65   # texto trocado de questão dá ~0,1; figuras e tabelas t
 def caminho(q):
     banca = PASTA_DA_BANCA.get(q['banca'], q['banca'].lower())
     pasta = q['id'].split('-', 1)[1].rsplit('-', 1)[0]
-    return os.path.join(O.CACHE, banca, pasta, re.sub(r'[^\w.-]', '_', q['img'].split('/resolucao-comentada/')[-1]))
+    nome = re.sub(r'[^\w.-]', '_', q['img'].split('/resolucao-comentada/')[-1])
+    arq = os.path.join(O.CACHE, banca, pasta, nome)
+    if not os.path.exists(arq):   # ids com sufixo ("-tarde-", "-2dia-") guardam a imagem na pasta banca+fase (ex.: mackenzie2023_2)
+        alt = os.path.join(O.CACHE, banca, banca + str(q.get('fase') or ''), nome)
+        if os.path.exists(alt): return alt
+    return arq
 
 def ocr_de(q):
     arq = caminho(q); pasta = os.path.dirname(arq)
@@ -123,10 +128,11 @@ def conferir(q, x):
     todo = enun + ' ' + ' '.join(textos)
     if x.get('gab') and q.get('gab') and x['gab'] != q['gab']: mot.append('gabarito diferente do oficial')
     n = int(q.get('nalts') or 5)
-    if len(alts) != n or not all(t.strip() for t in textos): mot.append('alternativas incompletas')
-    if re.search(r'\[figura|\[imagem|\[gráfico', todo, re.I): mot.append('"[figura]" no texto')
-    if len({re.sub(r'\s+', '', t) for t in textos}) < len(textos): mot.append('alternativas repetidas')   # sem minúscula: genótipos e fórmulas (AA x aa) diferem só pela caixa
-    if re.search(r'(?i)^\s*(gr[aá]fico|figura|imagem)\s*[A-E]?\s*\.?\s*$', '\n'.join(textos), re.M): mot.append('alternativa só com rótulo')
+    af = bool(x.get('alts_fig'))   # alternativas que são figuras: texto vazio, a imagem do bloco das alternativas vai em "imagens"
+    if len(alts) != n or (not af and not all(t.strip() for t in textos)): mot.append('alternativas incompletas')
+    if re.search(r'\[figura|\[imagem|\[gráfico', enun if af else todo, re.I): mot.append('"[figura]" no texto')
+    if not af and len({re.sub(r'\s+', '', t) for t in textos}) < len(textos): mot.append('alternativas repetidas')   # sem minúscula: genótipos e fórmulas (AA x aa) diferem só pela caixa
+    if not af and re.search(r'(?i)^\s*(gr[aá]fico|figura|imagem)\s*[A-E]?\s*\.?\s*$', '\n'.join(textos), re.M): mot.append('alternativa só com rótulo')
     if enun.count('$') % 2 or any(t.count('$') % 2 for t in textos): mot.append('$ sem par')
     if re.search(r'\\n(?![a-zA-Z])', todo): mot.append('"\\n" literal')
     ruim = latex_ruim(todo + ' ' + x['coment'])

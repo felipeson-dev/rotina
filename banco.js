@@ -445,7 +445,7 @@ function recorteObj(q, resolucao) {
   return `<div class="obj-recorte" style="aspect-ratio:${q.w}/${Math.max(20, alto)}"><img src="${esc(q.img)}" alt="${resolucao ? 'resolução' : 'questão'}" loading="lazy" style="${topo ? `margin-top:-${(topo / q.w * 100).toFixed(3)}%` : ''}"></div>`;
 }
 
-const textoQuestao = q => `Questão (${q.fonte}${q.materia ? ', ' + q.materia : ''}):\n${q.enunciado}\n\nAlternativas:\n${q.alts.map(a => `${a.l}) ${a.t}`).join('\n')}\n\nGabarito oficial: ${q.gab}.${q.coment ? '\nResolução existente: ' + q.coment : ''}`;
+const textoQuestao = q => `Questão (${q.fonte}${q.materia ? ', ' + q.materia : ''}):\n${q.enunciado}\n\nAlternativas:\n${q.alts.every(a => !a.t) ? 'as alternativas A a E são figuras (gráficos ou desenhos que você não vê); só dá para raciocinar pelo enunciado e pela resolução.' : q.alts.map(a => `${a.l}) ${a.t}`).join('\n')}\n\nGabarito oficial: ${q.gab}.${q.coment ? '\nResolução existente: ' + q.coment : ''}`;
 async function guardarNaQuestao(q, campos) {
   Object.assign(q, campos);
   if (q.id) { S.qExtras ||= {}; S.qExtras[q.id] = { ...(S.qExtras[q.id] || {}), ...campos }; salvar(); }

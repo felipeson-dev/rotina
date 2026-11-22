@@ -47,6 +47,42 @@ def figuras_de(h, q):
             except Exception: return []
     return []
 
+RE_FIG = re.compile(r'\W*\[?\s*(figura|gr[aá]fico|imagem|desenho|esquema|diagrama)[^\]]*\]?\W*$', re.I)
+
+def recorte_alts(q):
+    """Alternativas que são figuras: recorta da imagem da prova o bloco das alternativas (do rótulo "a)" até o fim da questão, que o OCR localiza) para ele aparecer como figura da questão."""
+    arq = C.caminho(q); info = C.ocr_de(q) or {}
+    if not os.path.exists(arq) or not info.get('linhas'): return None
+    ln = [l for l in info['linhas'] if l.get('t')]
+    corte = q.get('corte') or info.get('h')
+    lab = lambda l, c: re.fullmatch(r'\W*' + c + r'\W{0,2}', l['t'].strip(), re.I) is not None
+    ca = [l for l in ln if lab(l, 'a') and l['y'] < corte]
+    ok = [l for l in ca if any(lab(m, 'b') and l['y'] - 25 <= m['y'] <= l['y'] + 450 for m in ln)]
+    if not ok: return None
+    ya = min(l['y'] for l in ok) if len(ok) == 1 else max(l['y'] for l in ok if l['y'] < corte - 20) if any(l['y'] < corte - 20 for l in ok) else None
+    if ya is None: return None
+    im = Image.open(arq).convert('RGB'); W, H = im.size
+    topo, base = max(0, int(ya - 8)), min(int(corte), H)
+    if base - topo < 40 or (base - topo) > 0.85 * H: return None
+    return T.img_uri(im.crop((0, topo, W, base))), topo, H
+
+def alts_figura(x, q, h=None):
+    """Se todas as alternativas lidas são "[figura]" (ou vazias), a questão fica em texto + imagem do bloco das alternativas + botões só com a letra.
+    As figuras que o leitor marcou DENTRO do bloco das alternativas viram duplicata dele: saem."""
+    ts = [str(a.get('t', '')).strip() for a in x.get('alts') or []]
+    if len(ts) < 2 or not all((not t) or RE_FIG.match(t) for t in ts): return x
+    r = recorte_alts(q)
+    if not r: return x
+    rec, topo, H = r
+    x = dict(x); x['alts'] = [dict(a, t='') for a in x['alts']]; x['alts_fig'] = True
+    if h is not None and h.get('figuras'):
+        def acima(f):
+            c = T.caixa(f.get('box_2d') if isinstance(f, dict) else None)
+            return bool(c) and c[0] / 1000 * H < topo - 5
+        x['imagens'] = figuras_de(dict(h, figuras=[f for f in h['figuras'] if acima(f)]), q)
+    x['imagens'] = list(x.get('imagens') or []) + [rec]
+    return x
+
 def principal():
     B = banco(); aprovadas, motivos, origem = {}, Counter(), Counter()
     cov = {}; leit = defaultdict(list)   # leit[id] = todas as leituras (aprovadas ou não), para o consenso
@@ -79,7 +115,8 @@ def principal():
         for h in lista:
             i = h.get('id')
             if i not in B or h.get('erro') or not h.get('enunciado'): continue
-            x = do_haiku(h, B[i]); x['imagens'] = figuras_de(h, B[i]); ok, mot, y = C.conferir(B[i], x); leit[i].append((rot, ok, mot, y))
+            if str(h.get('confianca', '')).lower() == 'baixa': continue   # o próprio leitor disse que não tem certeza: fica em imagem
+            x = do_haiku(h, B[i]); x['imagens'] = figuras_de(h, B[i]); x = alts_figura(x, B[i], h); ok, mot, y = C.conferir(B[i], x); leit[i].append((rot, ok, mot, y))
             if ok:
                 origem[rot + ' aprovadas'] += 1
                 if i not in aprovadas or (y['_cob'] or 0) > cov.get(i, 0): aprovadas[i] = y; cov[i] = y['_cob'] or 0
@@ -103,12 +140,21 @@ def principal():
                 ya, yb = boas[a][3], boas[b][3]
                 if ya['gab'] == yb['gab'] and len(ya['alts']) == len(yb['alts']) and igual(ya['enunciado'], yb['enunciado'], .97)                         and all(igual(p['t'], q['t'], .95) for p, q in zip(ya['alts'], yb['alts'])):
                     aprovadas[i] = ya if len(ya['enunciado']) >= len(yb['enunciado']) else yb; origem['Consenso de 2 leituras'] += 1; achou = True; consenso_ids.append(i)
-    cand2 = []
+    cand2 = []; textos_cand = {}
     for i, L in leit.items():
         if i in aprovadas: continue
         so_ocr = [r for r in L if not r[1] and r[2] and all(m.split(' (')[0] in OCR_MOT for m in r[2])]
-        if so_ocr and len({r[0] for r in L}) < 2: cand2.append(i)
+        if so_ocr and len({r[0] for r in L}) < 2: cand2.append(i); textos_cand[i] = {k: v for k, v in so_ocr[0][3].items() if not k.startswith('_')}
+    # motivos de reprovação de TODAS as leituras de cada questão (gerar_lotes_v2 'resto' pula as de alternativas em figura: ficam em imagem de verdade)
+    json.dump({i: sorted({m.split(' (')[0] for r in L if not r[1] for m in r[2]}) for i, L in leit.items() if i not in aprovadas},
+              open(os.path.join(SAIDA, 'motivos-por-id.json'), 'w', encoding='utf-8'), ensure_ascii=False)
     json.dump(cand2, open(os.path.join(SAIDA, 'candidatos-segunda.json'), 'w', encoding='utf-8'))
+    json.dump(textos_cand, open(os.path.join(SAIDA, 'candidatos-textos.json'), 'w', encoding='utf-8'), ensure_ascii=False)
+    # revisor (agente que comparou a imagem com o texto e deu OK): vale como conferida
+    ver = os.path.join(SAIDA, 'verificadas.json')
+    if os.path.exists(ver):
+        for i, y in json.load(open(ver, encoding='utf-8')).items():   # {id: texto} (o texto fica guardado aqui porque a candidata some da lista depois de aprovada)
+            if i not in aprovadas and i in B: aprovadas[i] = y; origem['Verificadas por revisor'] += 1
     print('candidatas a 2ª leitura:', len(cand2))
     json.dump(consenso_ids, open(os.path.join(SAIDA, 'consenso-ids.json'), 'w', encoding='utf-8'))
     final = []
