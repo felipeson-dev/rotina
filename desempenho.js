@@ -238,7 +238,7 @@ Object.assign(ACOES, {
   qProblemaDetalhar: () => { const y = window.scrollY; ui.qProblemaDet = ui.qs.itens[ui.qs.i].id; render(); window.scrollTo(0, y); },
   qProblemaGab: el => { const y = window.scrollY, p = S.qProblemas[ui.qs.itens[ui.qs.i].id]; if (!p) return; const nota = document.getElementById('problemaNota'); if (nota) p.nota = nota.value.slice(0, 500); p.gab = p.gab === el.dataset.v ? '' : el.dataset.v; salvar(); render(); window.scrollTo(0, y); },
   qProblemaSalvar: () => { const y = window.scrollY, p = S.qProblemas[ui.qs.itens[ui.qs.i].id]; if (!p) return; const nota = document.getElementById('problemaNota'); p.nota = nota ? nota.value.trim().slice(0, 500) : (p.nota || ''); ui.qProblemaDet = null; salvar(); render(); window.scrollTo(0, y); },
-  qProblemaTirar: () => { const y = window.scrollY; delete S.qProblemas[ui.qs.itens[ui.qs.i].id]; ui.qProblemaDet = null; salvar(); render(); window.scrollTo(0, y); },
+  qProblemaTirar: () => { const y = window.scrollY, id = ui.qs.itens[ui.qs.i].id; comDesfazer('Tirei a marca de erro.', () => { delete S.qProblemas[id]; ui.qProblemaDet = null; }); window.scrollTo(0, y); },
   dsProblemasEnviar: async () => {
     const texto = textoProblemas();
     try {
@@ -247,7 +247,7 @@ Object.assign(ACOES, {
     } catch (e) { if (e && e.name === 'AbortError') return; try { await navigator.clipboard.writeText(texto); ui.iaMsg = 'Lista copiada. Cole numa conversa com o Felipe.'; } catch { ui.iaMsg = 'Não consegui enviar. Abra "Ver a lista" e copie o texto da caixa.'; } }
     render();
   },
-  dsProblemaTirar: el => { const y = window.scrollY; delete S.qProblemas[el.dataset.id]; salvar(); render(); window.scrollTo(0, y); },
+  dsProblemaTirar: el => { const y = window.scrollY; comDesfazer('Tirei a questão da lista de erros.', () => { delete S.qProblemas[el.dataset.id]; }); window.scrollTo(0, y); },
   dsProblemasCopiar: async () => {
     try { await navigator.clipboard.writeText(textoProblemas()); ui.iaMsg = 'Lista copiada.'; }
     catch { ui.iaMsg = 'Não consegui copiar. Abra "Ver a lista" e copie o texto da caixa.'; }

@@ -160,7 +160,7 @@ Object.assign(ACOES, {
     if (el.dataset.id) { const p = S.pend.find(x => x.id === el.dataset.id); if (p) { Object.assign(p, normPend(d)); p.avisado = ''; } } else criarPend(d);
     salvar(); fecharModal(); render();
   },
-  pendApagar: el => { S.pend = S.pend.filter(x => x.id !== el.dataset.id); salvar(); fecharModal(); render(); },
+  pendApagar: el => { const p0 = S.pend.find(x => x.id === el.dataset.id); fecharModal(); comDesfazer(`Apaguei "${p0?.titulo || 'a pendência'}".`, () => { S.pend = S.pend.filter(x => x.id !== el.dataset.id); }); },
   pendFeito: el => {
     const p = S.pend.find(x => x.id === el.dataset.id); if (!p) return;
     if (el.checked && p.repete && p.dia) {

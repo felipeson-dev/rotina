@@ -337,7 +337,7 @@ Object.assign(ACOES, {
   qSair: () => { if (!navSairSessao()) return; ui.view = 'questoes'; ui.qAba = 'listas'; render(); window.scrollTo(0, 0); },
   qAnt: () => { const s = ui.qs; if (s.i > 0) { if (s.itens[s.i].resp == null) fecharItem(s); s.i--; s.tq = Date.now(); window.scrollTo(0, 0); } render(); },
   qNova: () => { ui.qs = null; ui.view = 'questoes'; ui.qAba = 'listas'; render(); window.scrollTo(0, 0); },
-  qApagarErro: el => { S.erros = S.erros.filter(e => e.id !== el.dataset.id); salvar(); render(); },
+  qApagarErro: el => { comDesfazer('Apaguei o erro do caderno.', () => { S.erros = S.erros.filter(e => e.id !== el.dataset.id); }); },
   qForaSalvar: () => {
     const m = $('#f-mat').value, f = Math.round(+$('#f-feitas').value), ac = Math.round(+$('#f-acertos').value), min = +$('#f-min').value || 0;
     if (!(f > 0) || !(ac >= 0) || ac > f) { ui.iaMsg = 'Confira os números: os acertos não podem passar das questões feitas.'; render(); return; }

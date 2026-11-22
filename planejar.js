@@ -163,7 +163,7 @@ Object.assign(ACOES, {
     await copiarPlano(`${hoje()} ${agoraHm()} · antes de voltar`);
     Object.assign(S, JSON.parse(raw)); ui.iaMsg = `Plano voltou para "${nome}".`; salvar(); render();
   },
-  plTirar: el => { S.assuntos = S.assuntos.filter(a => a.id !== el.dataset.id); salvar(); render(); },
+  plTirar: el => { const a0 = achar(el.dataset.id); comDesfazer(`Tirei "${a0?.titulo || 'o assunto'}" do plano.`, () => { S.assuntos = S.assuntos.filter(a => a.id !== el.dataset.id); }); },
   plApagar: el => {
     const { chat: _c, ...resto } = S; ui.desfazer = JSON.stringify(resto);
     S.assuntos = S.assuntos.filter(a => a.periodo !== el.dataset.id || a.feito); S.periodos = S.periodos.filter(x => x.id !== el.dataset.id);

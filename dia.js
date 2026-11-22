@@ -623,14 +623,15 @@ function vMeuDia() {
       <input type="number" id="dia-horas" min="0.5" max="16" step="0.5" placeholder="ex.: 6" value="${esc(ui.diaHoras)}" style="width:100px"></div>`}
     <div class="linha"><button class="botao grande" data-acao="planejarDia">${temAg ? 'Refazer o resto do dia' : 'Montar meu dia'}</button>
       ${d?.blocos?.length ? '<button class="botao contorno" data-acao="ir" data-v="hoje">Ver os assuntos de hoje</button>' : ''}
-      ${temAg ? `<button class="link" data-acao="apagarPlanejamento" data-dia="${h}">Apagar o planejamento de hoje</button>` : ''}</div>
+      ${temAg || d?.blocos?.length ? `<button class="botao contorno" data-acao="apagarDiaTodo" data-dia="${h}" title="Apaga a agenda e os assuntos de hoje para você montar outro dia. Dá para desfazer.">Apagar o dia e começar de novo</button>` : ''}
+      ${temAg ? `<button class="link" data-acao="apagarPlanejamento" data-dia="${h}" title="Tira só os horários; os assuntos continuam na aba Hoje">Apagar só os horários</button>` : ''}</div>
     ${chavesOk ? '' : '<p class="fraco" style="margin:0;color:var(--tinta)">Sem chave de IA, só consigo usar as horas livres. Cole as chaves em Ajustes para eu entender o texto.</p>'}</section>`;
   const amanhaCartao = `<details class="cartao" data-k="amanha" ${ui.ab?.amanha || am?.agenda?.length ? 'open' : ''}><summary><strong>Planejar amanhã</strong> <span class="fraco">· ${dataLonga(amanha())}</span></summary>
     <div class="coluna" style="gap:12px;margin-top:12px">${am?.agenda?.length ? agendaHtml(am, amanha()) : ''}
     <p class="fraco" style="margin:0">${am?.agenda?.length ? 'Mudou algo para amanhã? Conte e eu refaço.' : 'Conte como vai ser amanhã e eu já deixo o dia montado. Se não escrever nada, uso a sua rotina base.'}</p>
     <textarea data-ui="amanhaTexto" placeholder="Ex.: amanhã acordo 6h30, aula até 12h, dentista às 16h, quero estudar mais matemática.">${esc(ui.amanhaTexto || '')}</textarea>
     <div class="linha"><button class="botao" data-acao="planejarAmanha">${am?.agenda?.length ? 'Refazer amanhã' : 'Montar amanhã'}</button>
-      ${am?.agenda?.length ? `<button class="link" data-acao="apagarPlanejamento" data-dia="${amanha()}">Apagar o planejamento de amanhã</button>` : ''}</div></div></details>`;
+      ${am?.agenda?.length || am?.blocos?.length ? `<button class="botao contorno" data-acao="apagarDiaTodo" data-dia="${amanha()}" title="Apaga a agenda de amanhã para você montar outra. Dá para desfazer.">Apagar amanhã e começar de novo</button>` : ''}</div></div></details>`;
   const rotina = `<details class="cartao" ${basal ? '' : 'open'}><summary><strong>Minha rotina base</strong> <span class="fraco">· o que se repete na maioria dos dias</span></summary>
     <label class="campo" style="margin-top:12px"><small>Horários fixos, aulas, refeições, exercício, sono. O que você contar no dia ajusta isso, e se algo mudar de vez eu atualizo aqui.</small>
     <textarea data-campo="horarios" placeholder="Ex.: acordo 7h; aula de seg a sex das 8h às 12h30; almoço 13h; academia seg, qua e sex às 18h; janto 20h; durmo 23h30; sábado à tarde livre">${esc(S.perfil.horarios)}</textarea></label></details>`;
@@ -666,17 +667,22 @@ Object.assign(ACOES, {
     const dia = el.dataset.dia || hoje(), d = diaDe(dia), i = (d.blocos || []).findIndex(x => x.id === el.dataset.b), a = achar(el.dataset.id);
     if (i < 0 || !a) return;
     const antigo = d.blocos[i], novo = blocoDe(a); novo.adiantado = antigo.adiantado;
-    if (antigo.feito || (antigo.passos || []).some(p => p.ok)) {   // já tinha andamento: não perde, acrescenta o novo logo depois
-      d.blocos.splice(i + 1, 0, novo); ui.iaMsg = `"${antigo.titulo}" já tinha andamento: mantive e acrescentei "${a.titulo}".`;
-    } else { d.blocos[i] = novo; ui.iaMsg = `Troquei por "${a.titulo}".`; }
-    sugerirHorarios(d); salvar(); fecharModal(); render();
+    const andamento = antigo.feito || (antigo.passos || []).some(p => p.ok);   // já tinha andamento: não perde, acrescenta o novo logo depois
+    fecharModal();
+    comDesfazer(andamento ? `"${antigo.titulo}" já tinha andamento: mantive e acrescentei "${a.titulo}".` : `Troquei "${antigo.titulo}" por "${a.titulo}".`, () => {
+      if (andamento) d.blocos.splice(i + 1, 0, novo); else d.blocos[i] = novo;
+      sugerirHorarios(d);
+    });
   },
   trocaLivre: el => {
     const dia = el.dataset.dia || hoje(), d = diaDe(dia), i = (d.blocos || []).findIndex(x => x.id === el.dataset.b), t = ($('#troca-livre')?.value || '').trim().slice(0, 120);
     if (i < 0 || !t) { ui.iaMsg = 'Escreva o nome do assunto.'; render(); return; }
     const antigo = d.blocos[i], novo = { id: uid(), assuntoId: null, titulo: t, materia: $('#troca-livre-m')?.value || '', min: antigo.min || 30, feito: false, passos: [] };
-    if (antigo.feito || (antigo.passos || []).some(p => p.ok)) d.blocos.splice(i + 1, 0, novo); else d.blocos[i] = novo;
-    sugerirHorarios(d); salvar(); fecharModal(); ui.iaMsg = `Troquei por "${t}".`; render();
+    fecharModal();
+    comDesfazer(`Troquei "${antigo.titulo}" por "${t}".`, () => {
+      if (antigo.feito || (antigo.passos || []).some(p => p.ok)) d.blocos.splice(i + 1, 0, novo); else d.blocos[i] = novo;
+      sugerirHorarios(d);
+    });
   },
   moverBloco: el => {
     const d = diaHoje(), idx = (d.blocos || []).findIndex(b => b.id === el.dataset.b), dir = +el.dataset.d || 0;
@@ -701,7 +707,22 @@ Object.assign(ACOES, {
     if (i >= 0) d.agenda[i] = x; else d.agenda.push(x);
     ui.agEdit = null; reajustarDia(d, data);
   },
-  agRemover: el => { const data = el.dataset.dia || hoje(), d = diaDe(data); d.agenda.splice(+el.dataset.i, 1); ui.agEdit = null; reajustarDia(d, data); },
+  agRemover: el => {
+    const data = el.dataset.dia || hoje(), d = diaDe(data), x = d.agenda?.[+el.dataset.i]; if (!x) return;
+    comDesfazer(`Tirei "${x.titulo}" do dia.`, () => {
+      d.agenda.splice(+el.dataset.i, 1); ui.agEdit = null;
+      if (!d.agenda.length) d.semAgenda = true;   // tirou o último: o app não recria um bloco de estudo padrão sozinho
+      reajustarDia(d, data);
+    });
+  },
+  // recomeçar: apaga a agenda E os assuntos do dia (o que já foi estudado continua registrado nos assuntos); tem "Desfazer"
+  apagarDiaTodo: el => {
+    const alvo = el.dataset.dia || hoje(), d = diaDe(alvo), ehHoje = alvo === hoje();
+    comDesfazer(ehHoje ? 'Dia de hoje apagado por inteiro. Pode montar outro.' : 'Dia de amanhã apagado por inteiro. Pode montar outro.', () => {
+      d.agenda = []; d.blocos = []; d.contexto = ''; d.suposicoes = []; d.fator = 1; d.horas = 0; d.cap = 0; d.so = []; d.montado = false; d.semAgenda = true;
+      ui.diaTexto = ''; ui.amanhaTexto = ''; ui.diaHoras = ''; ui.agEdit = null;
+    });
+  },
   agAtrasar: el => {
     // empurra o que ainda não acabou; o que passaria da meia-noite fica no limite
     const d = diaHoje(), v = +el.dataset.v, agora = agoraMinutos();

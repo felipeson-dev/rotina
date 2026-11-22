@@ -5,7 +5,7 @@ const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
 // Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
 // declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
-const APP_V = 'rotina-61';
+const APP_V = 'rotina-62';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -1010,6 +1010,13 @@ function render() {
 // ---------- janelas ----------
 function abrirModal(html) { const m = $('#modal'); m.innerHTML = `<div class="janela" role="dialog" aria-modal="true">${html}</div>`; m.hidden = false; }
 function fecharModal() { const m = $('#modal'); m.hidden = true; m.innerHTML = ''; }
+/** Faz uma mudança e deixa o aviso "<msg> Desfazer" na tela (guarda uma cópia do estado antes, como o resto do app). */
+function comDesfazer(msg, fn) {
+  const { chat: _c, ...resto } = S, antes = JSON.stringify(resto);
+  fn();
+  ui.desfazer = antes; ui.iaMsg = msg;
+  ui._desfazerGuard = true; salvar(); ui._desfazerGuard = false; render();
+}
 
 function modalAssunto(a) {
   const w0 = semAtual();
@@ -1279,7 +1286,10 @@ const ACOES = {
   descartarCores: () => { const y = window.scrollY; ui.coresPrev = null; render(); window.scrollTo(0, y); },
   passo: el => { marcarPasso(el.dataset.b, +el.dataset.i, el.checked); if (window.sugerirHorarios) window.sugerirHorarios(diaHoje()); salvar(); render(); },
   blocoFeito: el => { marcarBloco(el.dataset.b, el.checked); if (window.sugerirHorarios) window.sugerirHorarios(diaHoje()); salvar(); render(); },
-  tirarBloco: el => { const d = diaHoje(); d.blocos = d.blocos.filter(b => b.id !== el.dataset.b); if (window.sugerirHorarios) window.sugerirHorarios(d); salvar(); render(); },
+  tirarBloco: el => {
+    const d = diaHoje(), b0 = d.blocos.find(b => b.id === el.dataset.b); if (!b0) return;
+    comDesfazer(`Tirei "${b0.titulo}" do dia.`, () => { d.blocos = d.blocos.filter(b => b.id !== el.dataset.b); if (window.sugerirHorarios) window.sugerirHorarios(d); });
+  },
   novaTarefa: () => modalTarefa(),
   salvarTarefa: () => {
     const t = $('#t-titulo').value.trim(); if (!t) return;
@@ -1336,7 +1346,7 @@ const ACOES = {
   assunto: el => { const a = achar(el.dataset.id); if (a) modalAssunto(a); },
   feitoAssunto: el => { const a = achar(el.dataset.id); if (a) { setFeito(a, !a.feito); salvar(); } fecharModal(); render(); },
   proxMes: el => { const a = achar(el.dataset.id); if (a) { a.mes = somaMes(a.mes, 1); a.semana = null; distribuirSemanas(); salvar(); } fecharModal(); render(); },
-  removerAssunto: el => { S.assuntos = S.assuntos.filter(a => a.id !== el.dataset.id); salvar(); fecharModal(); render(); },
+  removerAssunto: el => { const a0 = achar(el.dataset.id); fecharModal(); comDesfazer(`Tirei "${a0?.titulo || 'o assunto'}" do plano.`, () => { S.assuntos = S.assuntos.filter(a => a.id !== el.dataset.id); }); },
   mes: el => { ui.mes = somaMes(ui.mes, +el.dataset.v); render(); },
   mesFiltro: el => { ui.mesFiltro = el.dataset.v || 'todos'; render(); },
   abrirMes: el => { ui.mes = el.dataset.v; ui.view = 'mes'; window.scrollTo(0, 0); render(); },

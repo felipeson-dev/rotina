@@ -435,7 +435,7 @@ Se a letra estiver difícil de ler, diga isso nos comentários. Responda SÓ com
   },
   revisar: () => { ui.cartao = { fila: cartoesVencidos().map(c => c.id).sort(() => Math.random() - 0.5), i: 0, virado: false }; render(); },
   revisarTodos: () => { ui.cartao = { fila: S.cartoes.map(c => c.id).sort(() => Math.random() - 0.5), i: 0, virado: false }; render(); },
-  apagarCartao: el => { S.cartoes = S.cartoes.filter(c => c.id !== el.dataset.id); salvar(); render(); },
+  apagarCartao: el => { comDesfazer('Apaguei o cartão.', () => { S.cartoes = S.cartoes.filter(c => c.id !== el.dataset.id); }); },
   virar: () => { ui.cartao.virado = true; render(); },
   nota: el => {
     const s = ui.cartao, c = S.cartoes.find(x => x.id === s.fila[s.i]), n = +el.dataset.v;
