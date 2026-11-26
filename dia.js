@@ -421,7 +421,7 @@ function reajustarDia(d, data = hoje()) {
   d.agenda.sort((a, b) => (hm(a.inicio) ?? 9999) - (hm(b.inicio) ?? 9999));
   const estudo = soma(d.agenda.filter(x => x.tipo === 'estudo'), x => x.min || Math.max(0, (hm(x.fim) ?? 0) - (hm(x.inicio) ?? 0)));
   d.horas = Math.round(estudo / 6) / 10;
-  if (data === hoje()) { if (estudo) montarHoje(Math.round(estudo * 0.8 * (d.fator || 1))); sugerirHorarios(d); }
+  if (data === hoje()) { if (estudo) montarHoje(Math.round(estudo * 0.8 * (d.fator || 1)), d.so || []); sugerirHorarios(d); }
   else d.cap = Math.round(estudo * 0.8 * (d.fator || 1));
   salvar(); render();
 }
@@ -429,7 +429,10 @@ function reajustarDia(d, data = hoje()) {
 // ---------- levar o dia para a Agenda do iPad (.ics): os blocos aparecem no app Calendário e no widget dele ----------
 function icsDoDia(data, d) {
   const d8 = data.replace(/-/g, ''), agora = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
-  const doBloco = x => d.blocos.filter(b => b.sug && hm(b.sug) >= hm(x.inicio) && hm(b.sug) < hm(x.fim)).map(b => b.titulo);
+  const doBloco = x => (d.blocos || []).filter(b => {
+    if (b.janelas?.length) return b.janelas.some(j => hm(j.fim) > hm(x.inicio) && hm(j.ini) < hm(x.fim));
+    return b.sug && hm(b.sug) >= hm(x.inicio) && hm(b.sug) < hm(x.fim);
+  }).map(b => b.titulo);
   const ev = d.agenda.filter(x => hm(x.inicio) != null && hm(x.fim) != null).map((x, i) => {
     const ass = x.tipo === 'estudo' ? doBloco(x) : [];
     const titulo = x.tipo === 'estudo' ? `Estudo${ass.length ? ': ' + ass.join(' · ') : ''}` : x.titulo;
@@ -469,7 +472,11 @@ function agendaHtml(d, data = hoje()) {
       <div class="ag-c"><div class="entre"><strong>${esc(x.titulo)}</strong><span class="linha" style="gap:6px">${eAgora ? '<span class="selo">agora</span>' : ''}<button class="link ag-ed" data-acao="agEditar" data-i="${i}" data-dia="${data}" aria-label="Mudar">mudar</button></span></div>
         <span class="fraco">${TIPOS_DIA[x.tipo]}${ini != null && fim != null ? ` · ${fmtMin(fim - ini)}` : ''}</span>
         ${eAgora ? `<div class="barra fina"><i style="width:${pct}%"></i></div>` : ''}
-        ${x.tipo === 'estudo' && d.blocos.length ? `<div class="ag-ass">${(x.inicio ? dosBlocos(x) : d.blocos).map(b => `<span class="tag" style="${cor(b.materia)}">${b.sug ? b.sug + ' · ' : ''}${esc(b.titulo.length > 34 ? b.titulo.slice(0, 33) + '…' : b.titulo)}</span>`).join('')}</div>` : ''}</div></div>`;
+        ${x.tipo === 'estudo' && d.blocos.length ? `<div class="ag-ass">${(x.inicio ? dosBlocos(x) : d.blocos).map(b => {
+          const jWin = x.inicio && b.janelas?.find(j => hm(j.fim) > hm(x.inicio) && hm(j.ini) < hm(x.fim));
+          const horaTag = jWin ? jWin.ini : b.sug;
+          return `<span class="tag" style="${cor(b.materia)}">${horaTag ? horaTag + ' · ' : ''}${esc(b.titulo.length > 34 ? b.titulo.slice(0, 33) + '…' : b.titulo)}</span>`;
+        }).join('')}</div>` : ''}</div></div>`;
   }).join('');
   return `<section class="cartao"><div class="entre"><h2>${ehHoje ? 'Como está o seu dia' : 'Amanhã'}</h2><span class="fraco">${dataLonga(data)}</span></div>
     <div class="resumo-dia"><div><strong>${fmtMin(soma(jan, x => x.min || hm(x.fim) - hm(x.inicio)))}</strong><span>de estudo no dia</span></div>
@@ -498,13 +505,13 @@ function programacaoHojeHtml(d) {
       if (b.janelas?.length) return b.janelas.some(j => j.idx === idxJan);
       return b.sug && hm(b.sug) >= ini && hm(b.sug) < fim;
     });
-    // na última janela de estudo, mostra também assuntos pendentes que não couberam ou já concluídos
+    // na última janela de estudo, mostra apenas assuntos PENDENTES que não couberam (concluídos ficam no cartão "Concluídos hoje")
     if (idxJan === jan.length - 1) {
       const jaMostrados = new Set((d.blocos || []).filter(b => {
         if (b.janelas?.length) return b.janelas.some(j => j.idx < idxJan);
         return b.sug && jan.some(j => hm(b.sug) >= hm(j.inicio) && hm(b.sug) < hm(j.fim));
       }).map(b => b.id));
-      const extras = (d.blocos || []).filter(b => !jaMostrados.has(b.id) && !encaixados.some(e => e.id === b.id));
+      const extras = (d.blocos || []).filter(b => !(typeof blocoConcluido === 'function' && blocoConcluido(b)) && !jaMostrados.has(b.id) && !encaixados.some(e => e.id === b.id));
       return [...encaixados, ...extras];
     }
     return encaixados;
@@ -580,11 +587,13 @@ function programacaoHojeHtml(d) {
   }).join('');
 
   const nv = ui.agNovoPreset || { inicio: hmStr(Math.ceil(agora / 15) * 15 % 1440), fim: hmStr((Math.ceil(agora / 15) * 15 + 60) % 1440), tipo: 'compromisso', titulo: '' };
-  const aberto = ui.ab?.['prog-hoje'] !== false;
+  // por padrão fica recolhida em uma faixa limpa com resumo dos horários, deixando as tarefas de hoje logo acima da dobra
+  const aberto = ui.ab?.['prog-hoje'] === true || ui.hojeIaAberta || (ui.agEdit || '').startsWith(data + '|');
+  const resumoHorarios = (d.agenda || []).filter(x => x.inicio).slice(0, 4).map(x => `${x.inicio} ${x.titulo.split('·')[0].trim()}`).join(' · ');
   return `<details class="cartao prog-hoje" data-k="prog-hoje" ${aberto ? 'open' : ''}>
     <summary><div class="entre" style="flex:1;flex-wrap:wrap;gap:8px">
-      <div class="linha" style="gap:8px"><strong>🗓 Programação do seu dia</strong><span class="selo flexivel">tudo editável e flexível</span></div>
-      <span class="fraco" style="font-size:13px">${(d.agenda || []).length} ${(d.agenda || []).length === 1 ? 'bloco' : 'blocos'} no dia · toque para ver ou mudar</span>
+      <div class="linha" style="gap:8px"><strong>🗓 Agenda do dia</strong><span class="fraco" style="font-size:13px">${esc(resumoHorarios || `${(d.agenda || []).length} blocos flexíveis`)}</span></div>
+      <span class="selo flexivel">${aberto ? 'recolher ▴' : 'ver / ajustar ▾'}</span>
     </div></summary>
     <div class="prog-hoje-corpo">
       <div class="entre" style="flex-wrap:wrap;gap:8px">

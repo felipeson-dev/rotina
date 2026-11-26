@@ -36,6 +36,7 @@ const areaDeQ = q => q.ar || AREA_DA_MATERIA[q.m] || '';
 const rotuloArea = a => (AREAS_Q.find(x => x[0] === a) || [, ''])[1];
 // Grupos de bancas (seleção minha, por nome): São Paulo, Medicina e "provas exigentes parecidas com Fuvest/Vunesp" de outros estados
 const PRESETS_BANCA = {
+  spmed: ['Medicina SP (suas provas)', /fuvest|unifesp|santa casa|einstein|s[aã]o camilo|fmabc|unesp|famerp|famema|fcmsc/i],
   sp: ['Bancas de SP', /fuvest|\busp\b|unicamp|unesp|vunesp|unifesp|famerp|famema|santa casa|fmabc|einstein|puc-?sp|puc[- ]?campinas|fgv|fatec|etec|mackenzie|unitau|unisa|unimep|\busf\b|uninove|ufscar|ufabc|insper|facere|fmj|fameg|unaerp|unifran|fcmsc|cesumar|esamc/i],
   med: ['Medicina', /medicina|puc[- ]?campinas|famerp|famema|santa casa|fmabc|einstein|unifesp|facere|fmj|fameg|fame\b|famevaço|cusc|unieva|famene|fcm\b|uniceplac|famesp|cesmac med/i],
   exigentes: ['Exigentes (parecem Fuvest/Vunesp)', /unicamp|unesp|ufrgs|uerj|ufmg|unb|ufpr|uel\b|ufsc|ufrj|ufpe|ufc\b|ufba|puc|fgv|mackenzie|\bita\b|\bime\b|espcex|enem|uff|ufscar|unifesp|ufu|uem|uepg|ufes|usp|fuvest|vunesp/i],
@@ -148,10 +149,12 @@ async function sincronizarPacotesBanco(forcar = false) {
     // global antiga em todos os pacotes; cada pacote baixado grava a sua (se a internet cair no meio, continua de onde parou)
     const pv = (await DB.get('banco:pacotespv')) || {};
     const base = BANCO.itens.length >= 20000 ? vAtual : 0;
+    let iPkg = 0;
     for (const arq of man.arquivos || []) {
       const vArq = man.por?.[arq];
       if (!forcar && vArq != null && (pv[arq] ?? base) >= vArq) continue;
-      BANCO.msg = `Atualizando pacote ${arq.replace('.json.gz', '')}…`; renderBanco();
+      BANCO.msg = `Atualizando pacote ${arq.replace('.json.gz', '')}…`;
+      if (ui.view === 'questoes' && (iPkg++ % 4 === 0)) renderBanco();
       const r = await fetch('pacotes/' + arq);
       if (!r.ok) continue;
       const txt = await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).text();
@@ -176,7 +179,8 @@ async function adicionarQuestoes(lista) {
   for (const q of lista) {
     const i = q && pos.get(q.id); if (i == null) continue;
     const m = BANCO.itens[i];
-    if ((q.v || 0) > (m.v || 0) || (q.assunto && q.assunto !== m.as) || (q.materia && q.materia !== m.m)) {
+    const assLimpo = limAss(q.assunto);
+    if ((q.v || 0) > (m.v || 0) || (assLimpo && assLimpo !== m.as) || (q.materia && q.materia !== m.m)) {
       const velho = await BD.get(q.id);
       atual.push(velho ? { ...q, res_ia: velho.res_ia || q.res_ia || '', duvidas: velho.duvidas || q.duvidas || [], flashcards: velho.flashcards || q.flashcards || [] } : q); BANCO.itens[i] = metaDe(q);
     }
@@ -301,7 +305,15 @@ function qMontar() {
   const nAno = d => semAno.filter(q => q.a >= d).length;
   const algum = f.mat || f.assunto || f.sub || f.banca || f.ano || (f.st && f.st !== 'novas') || f.tag || f.res || f.soTexto || !f.semFig;
   const subHtml = !f.mat ? opcao('', 'Escolha a matéria antes', '') : subassuntosHtml(f.mat, f.assunto, f.sub, f.assunto ? semSub : semAssunto);
+  const atalho = (k, rot, ativo) => `<button type="button" class="chip chip-mini" data-acao="qfPreset" data-v="${k}" aria-pressed="${!!ativo}">${rot}</button>`;
   return `${listasAbertasHtml()}<section class="cartao escolher"><div class="entre"><h2>Escolher questões</h2>${algum ? '<button class="link" data-acao="qfLimpar">Limpar filtros</button>' : ''}</div>
+    <div class="linha q-presets" style="gap:6px">
+      ${atalho('spmed', '🎯 Medicina SP', f.banca === 'p:spmed')}
+      ${atalho('enem', '🏫 ENEM', f.banca === 'b:ENEM')}
+      ${atalho('erradas', '🔁 Errei antes', f.st === 'erradas')}
+      ${atalho('novas', '✨ Só inéditas', f.st === 'novas' && !f.banca)}
+      ${atalho('recentes', '📅 2020+', f.ano === 'd:2020')}
+    </div>
     <div class="filtros">
       ${caixa('Matéria', 'mat', opcao('', `Todas as matérias (${milhar(semMat.length)})`, f.mat) + Object.entries(porMat).sort((a, b) => a[0].localeCompare(b[0])).map(([m, n]) => opcao(m, `${m} (${milhar(n)})`, f.mat)).join(''), f.mat)}
       ${caixa('Assunto (cronograma)', 'assunto', f.mat ? opcao('', `Todos de ${f.mat} (${milhar(semAssunto.length)})`, f.assunto) + assuntosDe(f.mat, semAssunto).map(([a, n]) => opcao(a, `${a} (${n})`, f.assunto)).join('') : opcao('', 'Escolha a matéria antes', ''), f.assunto, f.mat ? '' : 'disabled')}
@@ -528,6 +540,15 @@ Object.assign(ACOES, {
     if (r) ui.qPrevImg = r; else ui.iaMsg = 'Não há questão antes desta no banco.'; render();
   },
   qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', sub: '', banca: '', ano: '', st: 'novas', tag: '', semFig: true, soTexto: false, res: false }; ui.qPag = 0; render(); },
+  qfPreset: el => {
+    const v = el.dataset.v;
+    if (v === 'spmed') ui.qf.banca = ui.qf.banca === 'p:spmed' ? '' : 'p:spmed';
+    else if (v === 'enem') ui.qf.banca = ui.qf.banca === 'b:ENEM' ? '' : 'b:ENEM';
+    else if (v === 'erradas') ui.qf.st = ui.qf.st === 'erradas' ? 'novas' : 'erradas';
+    else if (v === 'novas') { ui.qf.st = 'novas'; ui.qf.banca = ''; }
+    else if (v === 'recentes') ui.qf.ano = ui.qf.ano === 'd:2020' ? '' : 'd:2020';
+    ui.qPag = 0; render();
+  },
   qIgnorarToggle: () => { ui.qIgnAberto = !ui.qIgnAberto; render(); },
   qIgnorarAdd: () => {
     const b = $('#q-ign-banca')?.value || ui.qIgnBanca || 'Albert Einstein', a = $('#q-ign-ano')?.value || ui.qIgnAno || '2026';
@@ -552,12 +573,14 @@ Object.assign(ACOES, {
     });
   },
   qIniciarIds: async (ids, extra = {}) => {
+    const porId = extra.porId || {};
     const recs = (await Promise.all(ids.map(id => BD.get(id)))).filter(Boolean);
     const itens = recs.map(corrigirQ).map(q => {
       const ex = S.qExtras?.[q.id] || {};
       return { id: q.id, fonte: `${q.banca}${q.ano ? ' ' + q.ano : ''}${q.tipo === 'ia' ? ' · IA' : ''}`, materia: q.materia || (q.area ? rotuloArea(q.area) + ' (' + q.banca + ')' : 'Questão'),
         enunciado: q.enunciado, imagens: q.imagens || [], alts: q.alts, gab: q.gab, coment: q.coment || '', fig: q.fig, res_ia: ex.res_ia || q.res_ia || '', duvidas: ex.duvidas || q.duvidas || [], flashcards: ex.flashcards || q.flashcards || [],
-        modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, topo: q.topo || 0, prev: q.prev || '', dep: q.dep || 0, assunto: limAss(q.assunto), num: q.num || '', tipo: q.tipo || '', discIa: ex.discIa || q.discIa || null };
+        modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, topo: q.topo || 0, prev: q.prev || '', dep: q.dep || 0, assunto: limAss(q.assunto), num: q.num || '', tipo: q.tipo || '', discIa: ex.discIa || q.discIa || null,
+        ...(porId[q.id] ? { _revAssuntoId: porId[q.id] } : {}) };
     });
     if (itens.length) iniciarSessao(itens, extra);
   },

@@ -500,3 +500,23 @@ exportar = async function () {
   const m0 = abrirModal; abrirModal = function () { m0.apply(this, arguments); montarQuadros(); };
 }
 render();
+// Limpeza silenciosa de desenhos órfãos de cartões ou redações já apagados (evita acúmulo no IndexedDB ao longo do ano)
+setTimeout(() => {
+  try {
+    DB.abrir().then(db => {
+      if (!db.objectStoreNames.contains('d')) return;
+      const st = db.transaction('d', 'readwrite').objectStore('d'), req = st.getAllKeys();
+      req.onsuccess = () => {
+        const vivos = new Set((S.cartoes || []).map(c => c.id));
+        const reds = new Set((S.redacoes || []).map(r => r.id));
+        for (const k of req.result || []) {
+          const s = String(k);
+          const mc = /^d:([a-z0-9]+):[fv]$/i.exec(s);
+          if (mc && !vivos.has(mc[1])) { st.delete(k); continue; }
+          const mr = /^d:red:([a-z0-9]+)$/i.exec(s);
+          if (mr && !reds.has(mr[1])) st.delete(k);
+        }
+      };
+    }).catch(() => { });
+  } catch { }
+}, 12000);

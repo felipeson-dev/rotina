@@ -13,7 +13,12 @@ function navSalvar() {
     const u = {}; for (const [k, v] of Object.entries(ui)) if (!NAV_FORA.includes(k) && typeof v !== 'function') u[k] = v;
     localStorage.setItem(NAV.chave, JSON.stringify({ u, y: Math.round(NAV.y) }));
   } catch { }
-  if (ui.qs) { NAV.tinhaQs = true; DB.set('d:qs', ui.qs); } else if (NAV.tinhaQs) { NAV.tinhaQs = false; DB.del('d:qs'); }
+  if (ui.qs) {
+    NAV.tinhaQs = true;
+    // enxuga questões do banco (sem gravar imagens/enunciados pesados no IndexedDB a cada rolagem)
+    const leve = Array.isArray(ui.qs.itens) && typeof qLeve === 'function' ? { ...ui.qs, itens: ui.qs.itens.map(qLeve) } : ui.qs;
+    DB.set('d:qs', leve);
+  } else if (NAV.tinhaQs) { NAV.tinhaQs = false; DB.del('d:qs'); }
 }
 function navAgendar() { clearTimeout(NAV.salvando); NAV.salvando = setTimeout(navSalvar, ui.qs ? 120 : 400); }
 addEventListener('scroll', () => { NAV.y = window.scrollY; clearTimeout(NAV.salvando); NAV.salvando = setTimeout(navSalvar, 600); }, { passive: true });
@@ -99,7 +104,16 @@ function navRolar(y) { for (const t of [0, 120, 500]) setTimeout(() => window.sc
   if (!VIEWS[ui.view]) ui.view = 'hoje';
   try {
     const qs = await DB.get('d:qs');
-    if (qs?.itens?.length && qs.i < qs.itens.length) { qs.tq = Date.now(); ui.qs = qs; NAV.tinhaQs = true; }
+    if (qs?.itens?.length && qs.i < qs.itens.length) {
+      if (qs.itens.some(q => q && q._leve) && typeof qCheia === 'function') {
+        const cheias = await Promise.all(qs.itens.map(qCheia));
+        qs.itens = cheias.filter(Boolean);
+      }
+      if (qs.itens.length) {
+        qs.i = Math.min(qs.i, qs.itens.length - 1);
+        qs.tq = Date.now(); ui.qs = qs; NAV.tinhaQs = true;
+      }
+    }
   } catch { }
   // entrada base (a tela) e, se havia questão em andamento, mais uma entrada por cima: assim o Voltar funciona depois do F5
   const qs = ui.qs, antes = history.state?.k ? JSON.parse(history.state.k) : null;

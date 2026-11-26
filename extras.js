@@ -25,6 +25,12 @@ function registrarQ(a, f, ac) {
   }
   a.questoes = { feitas: f, acertos: ac, semAc: 0 }; a.qdia = hoje();
   const v = ((S.qlog[hoje()] ||= {})[m] ||= { f: 0, a: 0 }); v.f += f; v.a += ac;
+  // sincroniza com S.foraQ para alimentar o motor unificado de Revisão Inteligente
+  if (f > 0) {
+    S.foraQ ||= [];
+    S.foraQ = S.foraQ.filter(e => !(e.a === a.id && e.origem === 'assunto' && e.dia === hoje()));
+    S.foraQ.push({ id: uid(), a: a.id, dia: hoje(), f, ac, origem: 'assunto' });
+  }
   let msg = `Anotado: ${ac} de ${f}.`;
   if (f >= 10 && ac / f < 0.7) {
     a.fraco = true;
@@ -35,12 +41,13 @@ function registrarQ(a, f, ac) {
 
 function questoesSemana(w) {
   const tot = {};
-  for (let i = 0; i < 7; i++) for (const [m, v] of Object.entries(S.qlog[somaDias(w, i)] || {})) { const t = tot[m] ||= { f: 0, a: 0 }; t.f += v.f; t.a += v.a; }
+  for (let i = 0; i < 7; i++) for (const [m, v] of Object.entries(S.qlog[somaDias(w, i)] || {})) { const t = tot[m] ||= { f: 0, a: 0, s: 0 }; t.f += v.f || 0; t.a += v.a || 0; t.s += v.s || 0; }
   const ms = Object.entries(tot).filter(([, v]) => v.f);
   if (!ms.length) return '';
-  const f = soma(ms, ([, v]) => v.f), a = soma(ms, ([, v]) => v.a);
-  return `<div class="coluna" style="gap:8px"><span class="rotulo">questões da semana · ${f} feitas · ${Math.round(a / f * 100)}% de acerto</span>
-    <div class="linha">${ms.map(([m, v]) => `<span class="tag" style="${cor(m)}">${esc(m)} ${v.f} · ${Math.round(v.a / v.f * 100)}%</span>`).join('')}</div></div>`;
+  const f = soma(ms, ([, v]) => v.f), a = soma(ms, ([, v]) => v.a), s = soma(ms, ([, v]) => v.s);
+  const pctTot = (f - s) > 0 ? Math.round(a / (f - s) * 100) : null;
+  return `<div class="coluna" style="gap:8px"><span class="rotulo">questões da semana · ${f} feitas${pctTot != null ? ` · ${pctTot}% de acerto` : ''}</span>
+    <div class="linha">${ms.map(([m, v]) => { const pm = (v.f - v.s) > 0 ? Math.round(v.a / (v.f - v.s) * 100) : null; return `<span class="tag" style="${cor(m)}">${esc(m)} ${v.f}${pm != null ? ` · ${pm}%` : ''}</span>`; }).join('')}</div></div>`;
 }
 
 // ---------- dia: o adiantamento agora fica na prévia opcional de Hoje (previaAdiantarHtml), sem empurrar tarefas obrigatórias ----------
@@ -162,15 +169,15 @@ function mesMapa(m) {
   const provas = (S.provas || []).filter(p => okData(p.data) && mesDe(p.data) === m);
   const qPorMat = {};
   for (const d of dias) for (const [mt, v] of Object.entries(S.qlog?.[d] || {})) {
-    const x = (qPorMat[mt] ||= { f: 0, a: 0 }); x.f += v.f || 0; x.a += v.a || 0;
+    const x = (qPorMat[mt] ||= { f: 0, a: 0, s: 0 }); x.f += v.f || 0; x.a += v.a || 0; x.s += v.s || 0;
   }
   const mats = [...new Set(S.assuntos.map(a => a.materia))];
   const porMat = mats.map(mt => {
     const ano = S.assuntos.filter(a => a.materia === mt), fa = ano.filter(a => a.feito).length;
     const mes = ano.filter(a => a.mes === m), fm = mes.filter(a => a.feito).length, pc = (f, n) => n ? Math.round(f / n * 100) : 0;
-    const qm = qPorMat[mt];
+    const qm = qPorMat[mt], qPct = qm && (qm.f - qm.s) > 0 ? Math.round(qm.a / (qm.f - qm.s) * 100) : null;
     return `<button class="mat-linha ${ui.anoMat === mt ? 'sel' : ''}" style="${cor(mt)}" data-acao="anoMat" data-v="${esc(mt)}">
-      <span><i class="ponto"></i>${esc(mt)}</span><small><b>${nomeMes(m).slice(0, 3)}:</b> ${fm}/${mes.length}${qm?.f ? ` · ${qm.f} q (${Math.round(qm.a / qm.f * 100)}%)` : ''} · <b>ano:</b> ${fa}/${ano.length}</small>
+      <span><i class="ponto"></i>${esc(mt)}</span><small><b>${nomeMes(m).slice(0, 3)}:</b> ${fm}/${mes.length}${qm?.f ? ` · ${qm.f} q${qPct != null ? ` (${qPct}%)` : ''}` : ''} · <b>ano:</b> ${fa}/${ano.length}</small>
       <div class="barras2"><div class="barra"><i style="width:${pc(fm, mes.length)}%;background:var(--c)"></i></div><div class="barra fina"><i style="width:${pc(fa, ano.length)}%;background:var(--c);opacity:.45"></i></div></div></button>`;
   }).join('');
   const totEstMes = soma(dias, d => S.estudo[d] || 0), diasComEst = dias.filter(d => (S.estudo[d] || 0) > 0).length;
@@ -210,7 +217,7 @@ Object.assign(ACOES, {
       for (const b of diaHoje().blocos || []) if (b.assuntoId === a.id) {
         const metaB = window.questoesDoBloco ? window.questoesDoBloco(b) : (tempoDe(a).q || 15);
         const p = (b.passos || []).find(x => !x.ok && /quest/i.test(x.t));
-        if (p && a.questoes.feitas >= metaB) { p.ok = true; S.feitos[hoje()] = (S.feitos[hoje()] || 0) + 1; if (b.passos.every(x => x.ok)) setFeito(a, true, false); }
+        if (p && a.questoes.feitas >= metaB) { p.ok = true; S.feitos[hoje()] = (S.feitos[hoje()] || 0) + 1; if (b.passos.every(x => x.ok)) { b.feito = true; setFeito(a, true, false); } }
       }
     }
     salvar(); fecharModal(); ui.iaMsg = msg; ui.desfazer = null; render();

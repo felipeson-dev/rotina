@@ -19,13 +19,15 @@ function widgetDados() {
     questoes: Object.values(S.qlog[hoje()] || {}).reduce((s, v) => s + (v.f || 0), 0) };
 }
 
-async function syncPush() {
+async function syncPush(emBackground = false) {
   const c = lerSync(); if (!c.token) return;
   const t = S._t || Date.now();
   const files = { 'rotina.json': { content: JSON.stringify({ t, S }, compactarS) }, 'widget.json': { content: JSON.stringify(widgetDados()) } };
+  const corpo = JSON.stringify(c.id ? { files } : { description: 'Rotina (dados do app)', public: false, files });
   try {
-    const r = await fetch(c.id ? `${GH}/${c.id}` : GH, { method: c.id ? 'PATCH' : 'POST', headers: { Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github+json' },
-      body: JSON.stringify(c.id ? { files } : { description: 'Rotina (dados do app)', public: false, files }) });
+    const opts = { method: c.id ? 'PATCH' : 'POST', headers: { Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github+json' }, body: corpo };
+    if (emBackground && corpo.length < 60000) opts.keepalive = true;
+    const r = await fetch(c.id ? `${GH}/${c.id}` : GH, opts);
     if (!r.ok) throw new Error('GitHub ' + r.status);
     const j = await r.json(); syncSujo = false; gravarSync({ ...c, id: j.id, ult: t, erro: '', quando: Date.now() });
   } catch (e) { gravarSync({ ...lerSync(), erro: /load failed|failed to fetch|network/i.test(e.message) ? 'sem conexão com o GitHub' : e.message }); }
@@ -46,7 +48,7 @@ async function syncPull(mostrar) {
       if (guardou) gravarSync({ ...lerSync(), antes: Date.now() });
       syncAplicando = true;
       S = carregarDe(rem.S);
-      if (typeof aplicarCronograma === 'function' && typeof CRONOGRAMA !== 'undefined' && S.cronoV !== CRONOGRAMA.v) aplicarCronograma(S.cenario || 'capital');
+      if (typeof aplicarCronograma === 'function' && typeof CRONOGRAMA !== 'undefined' && (S.cronoV !== CRONOGRAMA.v || (typeof cenarioDe === 'function' && S.cronoCen !== cenarioDe()))) aplicarCronograma();
       salvar(); syncAplicando = false; syncSujo = false;
       if (typeof BD !== 'undefined' && S.qExtras) {
         (async () => { for (const [id, ex] of Object.entries(S.qExtras)) { try { const r = await BD.get(id); if (r) await BD.put([{ ...r, ...ex }]); } catch { } } })();
@@ -58,10 +60,10 @@ async function syncPull(mostrar) {
 // mesma normalização do carregar() do app, a partir de um objeto
 function carregarDe(obj) { try { localStorage.setItem(CHAVE, JSON.stringify(obj)); } catch { } return carregar(); }
 
-{ const s0 = salvar; salvar = function () { if (!syncAplicando && !syncBoot) { S._t = Date.now(); syncSujo = true; } s0.apply(this, arguments); if (!syncAplicando && !syncBoot && lerSync().token) { clearTimeout(syncTimer); syncTimer = setTimeout(syncPush, 4000); } }; }
+{ const s0 = salvar; salvar = function () { if (!syncAplicando && !syncBoot) { S._t = Date.now(); syncSujo = true; } s0.apply(this, arguments); if (!syncAplicando && !syncBoot && lerSync().token) { clearTimeout(syncTimer); syncTimer = setTimeout(() => syncPush(false), 4000); } }; }
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) syncPull();
-  else { const c = lerSync(); if (c.token && (syncSujo || (S._t || 0) > (c.ult || 0))) syncPush(); }
+  else { const c = lerSync(); if (c.token && (syncSujo || (S._t || 0) > (c.ult || 0))) syncPush(true); }
 });
 setTimeout(() => syncPull(), 1500);
 

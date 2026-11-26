@@ -167,9 +167,16 @@ function registrarHist(q) {
   const h = (typeof histDe === 'function' && histDe(q.id)) || { n: 0, ac: 0, er: 0, h: [] };
   h.n = (h.n || 0) + 1; if (q.certo) h.ac++; else h.er++;
   h.h = [...h.h, [hoje(), q.certo ? 1 : 0, q.resp]].slice(-12); h.ok = !!q.certo; h.dia = hoje();
+  const aid = q._revAssuntoId || ui.qs?.assuntoId || '';
+  if (aid) h.aid = aid;
   S.qh[q.id] = h; salvar();
 }
-function fecharItem(s) { const q = s.itens[s.i]; q.seg += Math.round((Date.now() - s.tq) / 1000); s.tq = Date.now(); }
+function fecharItem(s) {
+  const q = s.itens[s.i];
+  const delta = Math.max(0, Math.min(900, Math.round((Date.now() - (s.tq || Date.now())) / 1000)));
+  q.seg = Math.min(1800, (q.seg || 0) + delta);
+  s.tq = Date.now();
+}
 
 function assuntoCorrespondenteHoje(s, q) {
   if (s?.assuntoId) return achar(s.assuntoId);
@@ -227,7 +234,8 @@ function contabilizarQuestaoRespondida(s, q) {
   const h = hoje(), m = q.materia;
   if (m) {
     const d = ((S.qlog[h] ||= {})[m] ||= { f: 0, a: 0, t: 0 });
-    const seg = Math.round(q.seg || 0);
+    // trava contra aba deixada aberta por horas: cada questão conta no máx. 15 min (900s) para não distorcer min/questão
+    const seg = Math.min(900, Math.max(0, Math.round(q.seg || 0)));
     d.f += 1; d.a += q.certo ? 1 : 0; if (seg > 0) { d.t = (d.t || 0) + seg; d.tf = (d.tf || 0) + 1; aprenderTempo(m, seg, 1); }
   }
   const ja = S.erros.find(e => (q.id && e.qid === q.id) || (q.enunciado && e.enunciado === q.enunciado));
@@ -249,7 +257,7 @@ function contabilizarQuestaoRespondida(s, q) {
       if (p && a.questoes.feitas >= metaB) {
         p.ok = true;
         S.feitos[h] = (S.feitos[h] || 0) + 1;
-        if (b.passos.every(x => x.ok)) setFeito(a, true, false);
+        if (b.passos.every(x => x.ok)) { b.feito = true; setFeito(a, true, false); }
       }
     }
   }

@@ -5,7 +5,7 @@ const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
 // Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
 // declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
-const APP_V = 'rotina-64';
+const APP_V = 'rotina-66';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -50,9 +50,9 @@ const icone = n => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
 
 // ---------- dados ----------
 const VAZIO = {
-  perfil: { nome: 'Uany Rebeca', vestibular: 'ENEM e, logo depois, Medicina em SP: USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo e FMABC', dataProva: '', fortes: '', fracas: '', horarios: '',
-    jeito: 'Primeiro foco total no ENEM. Cerca de 2 dias depois do ENEM, começar a estudar para as provas de Medicina em SP (USP-SP, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC).' },
-  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFFFF' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, listasAbertas: {}, qExtras: {}, foco: [], focoAnalise: {}, timer: null, provas: [], semeado: false, resetTesteV: 3, v: 2,
+  perfil: { nome: 'Uany Rebeca', vestibular: 'Medicina em SP: Fuvest (USP), Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC e ENEM', dataProva: '', fortes: '', fracas: '', horarios: '',
+    jeito: 'Foco em Medicina SP (Fuvest, Santa Casa SP, Albert Einstein, UNIFESP, São Camilo, FMABC e ENEM). Prefiro começos pequenos (5 min) e revisões enxutas sem comprometer assuntos novos.' },
+  tema: 'cores', cores: { acento: '#C2255C', fundo: '#FFFBFD' }, fases: [], meses: {}, assuntos: [], dias: {}, feitos: {}, estudo: {}, chat: [], cartoes: [], redacoes: [], qlog: {}, notas: {}, erros: [], tq: {}, pend: [], metaQ: {}, minQ: {}, qh: {}, foraQ: [], listasAbertas: {}, qExtras: {}, foco: [], focoAnalise: {}, timer: null, provas: [], semeado: false, resetTesteV: 3, v: 2,
 };
 
 const provasFuturas = () => (S.provas || []).filter(p => okData(p.data) && p.data >= hoje()).sort((a, b) => a.data < b.data ? -1 : 1);
@@ -84,9 +84,9 @@ function zerarDadosTeste(s) {
 const RESET_V = 3;
 function zerarUsoCompleto(s) {
   zerarDadosTeste(s);
-  s.redacoes = []; s.simulados = []; s.cartoes = []; s.notas = {}; s.chat = []; s.pend = []; s.qExtras = {}; s.qProblemas = {};
+  s.redacoes = []; s.simulados = []; s.cartoes = []; s.notas = {}; s.chat = []; s.pend = []; s.qExtras = {}; s.qProblemas = {}; s.foraQ = [];
   s.metaQ = {}; s.minQ = {}; s.planoQ = {}; s.focoAnalise = {}; s.uso = {};
-  for (const a of s.assuntos || []) { delete a.fraco; delete a.dia; }
+  for (const a of s.assuntos || []) { delete a.fraco; delete a.dia; delete a.revSoneca; delete a.timerMin; delete a.estudoAdd; }
   s._t = Date.now();   // mais novo que qualquer cópia antiga na sincronização
   // desenhos, rascunhos, fotos de redação e a lista aberta guardados no IndexedDB (as cópias do plano ficam)
   setTimeout(() => { try {
@@ -104,7 +104,8 @@ function carregar() {
   s = Object.assign(JSON.parse(JSON.stringify(VAZIO)), s || {});
   s.perfil = Object.assign({}, VAZIO.perfil, s.perfil);
   if (!s.perfil.nome) s.perfil.nome = VAZIO.perfil.nome;
-  s.tema = 'cores'; s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.qmeta ||= {}; s.simulados ||= []; s.planoQ ||= { total: 120, dias: {}, compensar: true, texto: '', resposta: '' }; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.listasAbertas ||= {}; s.qExtras ||= {}; s.qIgnorar ||= []; s.qProblemas ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
+  if (!['cores', 'caderno', 'noite'].includes(s.tema)) s.tema = 'cores';
+  s.cores = Object.assign({}, VAZIO.cores, s.cores); s.estudo ||= {}; s.chat ||= []; s.cartoes ||= []; s.redacoes ||= []; s.qlog ||= {}; s.qmeta ||= {}; s.simulados ||= []; s.planoQ ||= { total: 120, dias: {}, compensar: true, texto: '', resposta: '' }; s.notas ||= {}; s.erros ||= []; s.tq ||= {}; s.pend ||= []; s.metaQ ||= {}; s.minQ ||= {}; s.qh ||= {}; s.foraQ ||= []; s.listasAbertas ||= {}; s.qExtras ||= {}; s.qIgnorar ||= []; s.qProblemas ||= {}; s.foco ||= []; s.focoAnalise ||= {}; s.periodos ||= [];
   if (s.v !== 2) { s.v = 2; s.assuntos = []; s.semeado = false; s.dias = {}; s.timer = null; } // formato novo: o plano base é refeito
   if ((s.resetTesteV || 0) < RESET_V) { s.resetTesteV = RESET_V; zerarUsoCompleto(s); try { localStorage.setItem(CHAVE, JSON.stringify(s)); } catch { } }
   return s;
@@ -216,6 +217,22 @@ function distribuirSemanas() {
   }
 }
 
+/** Limpeza automática de longo prazo: mantém os últimos 60 dias de agendas detalhadas (as horas estudadas, questões e assuntos ficam para sempre), evitando estourar o localStorage e o sync ao longo de 1 ano. */
+function podarHistoricoAntigo() {
+  const lim = somaDias(hoje(), -45);
+  let mudou = false;
+  for (const d of Object.keys(S.dias || {})) {
+    if (okData(d) && d < lim) { delete S.dias[d]; mudou = true; }
+  }
+  if (Array.isArray(S.chat) && S.chat.length > 80) { S.chat = S.chat.slice(-80); mudou = true; }
+  const limLista = somaDias(hoje(), -30);
+  for (const [k, l] of Object.entries(S.listasAbertas || {})) {
+    const diaL = l?.dia || (k.match(/\d{4}-\d{2}-\d{2}/) || [])[0];
+    if (!l?.itens?.length || l.fim || (diaL && diaL < limLista)) { delete S.listasAbertas[k]; mudou = true; }
+  }
+  return mudou;
+}
+
 function rolar() {
   const m = mesDe(hoje());
   let mudou = false;
@@ -223,6 +240,7 @@ function rolar() {
     if (!a.feito && a.mes < m) { a.mes = m; mudou = true; }
   }
   if (S.assuntos.some(a => !a.feito && !a.semana)) { distribuirSemanas(); mudou = true; }
+  if (podarHistoricoAntigo()) mudou = true;
   if (mudou) salvar();
 }
 
@@ -544,18 +562,27 @@ function dividirAssunto(a, n) {
   const tot = minDe(a), { t, q } = tempoDe(a), base = baseTitulo(a.titulo);
   n = Math.max(2, Math.min(6, Math.floor(n), Math.floor(tot / 55)));
   if (!(n >= 2) || tot < 120) return [a];
-  // o tema do banco e o nome do assunto continuam os mesmos em todas as sessões (as questões certas seguem ligadas)
+  // o tema do banco, o nome e o origId continuam ligados em todas as sessões (evita duplicar revisões e preserva progresso na troca de cenário)
   if (!a.tag && typeof tagDe === 'function') a.tag = tagDe(a);
   a.nome ||= base;
+  a.origId ||= a.id;
   const partes = [a];
   for (let k = 1; k < n; k++) {
     const c = JSON.parse(JSON.stringify(a));
-    c.id = uid(); c.feito = false; delete c.feitoEm; delete c.questoes; delete c.rev; delete c.dia; delete c.fraco;
+    c.id = uid(); c.origId = a.origId; c.feito = false; delete c.feitoEm; delete c.questoes; delete c.rev; delete c.revSoneca; delete c.dia; delete c.fraco; delete c.timerMin; delete c.estudoAdd;
     partes.push(c);
   }
   const ord0 = a.ord || 0;
+  // reparte teoria e questões de forma balanceada (sem inflar a soma nem deixar pedaço ridiculamente curto)
+  let tRest = t, qRest = q;
   partes.forEach((p, k) => {
-    p.titulo = `${base} · sessão ${k + 1}/${n}`; p.teoria = Math.max(25, Math.round(t / n)); p.q = Math.max(8, Math.round(q / n));
+    const falt = n - k;
+    const tk = Math.max(20, Math.round((tRest / falt) / 5) * 5);
+    const qk = Math.max(5, Math.round(qRest / falt));
+    tRest = Math.max(20 * (falt - 1), tRest - tk);
+    qRest = Math.max(5 * (falt - 1), qRest - qk);
+    p.titulo = `${base} · sessão ${k + 1}/${n}`;
+    p.teoria = tk; p.q = qk;
     p.sessao = { k: k + 1, n }; p.ord = ord0 + k * 0.001;
   });
   S.assuntos.splice(S.assuntos.indexOf(a) + 1, 0, ...partes.slice(1));
@@ -723,18 +750,57 @@ function vHoje() {
   const h = hoje(), d = S.dias[h] || { contexto: '', horas: 0, cap: 0, blocos: [] };
   const hr = new Date().getHours();
   const saud = hr < 5 ? 'Boa noite' : hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
-  const topo = `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">${dataLonga(h)}</span><h1>${saud}, ${esc(S.perfil.nome.split(' ')[0] || '')}</h1></div></header>`;
+  const seq = sequencia();
+  const proxProva = proximaProva();
+  const subTopo = proxProva ? ` · ${esc(proxProva.nome)} em ${diasAte(proxProva.data)}d` : '';
+  const topo = `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">${dataLonga(h)}${subTopo}</span><h1>${saud}, ${esc(S.perfil.nome.split(' ')[0] || '')}</h1></div>
+    ${seq >= 2 ? `<span class="selo seq-selo" title="Dias seguidos estudando">🔥 ${seq} dias seguidos</span>` : ''}</header>`;
   const atrasados = S.assuntos.filter(a => estadoDe(a) === 'atrasado').length;
   const adiantados = S.assuntos.filter(a => a.feito && semDe(a) > semAtual());
   const feitoMin = S.estudo[h] || 0, meta = d.cap || 0;
   const feitosBlocos = d.blocos.filter(blocoConcluido).length;
   const pct = d.blocos.length && feitosBlocos === d.blocos.length ? 100 : meta ? Math.min(100, Math.round(feitoMin / meta * 100)) : 0;
-  const selos = `${atrasados ? `<span class="selo atraso">${atrasados} ${atrasados === 1 ? 'atrasado' : 'atrasados'} da semana passada</span>` : ''}
-    ${adiantados.length ? `<span class="selo adiante">${adiantados.length} ${adiantados.length === 1 ? 'assunto adiantado' : 'assuntos adiantados'} · ${fmtMin(soma(adiantados, minDe))}</span>` : ''}`;
+  const revResumo = typeof window.revResumoHoje === 'function' ? window.revResumoHoje() : null;
+  const selos = `${atrasados ? `<span class="selo atraso" title="Estes assuntos entram aos poucos no seu ritmo">${atrasados} ${atrasados === 1 ? 'pendente' : 'pendentes'} de semanas anteriores</span>` : ''}
+    ${adiantados.length ? `<span class="selo adiante">${adiantados.length} ${adiantados.length === 1 ? 'assunto adiantado' : 'assuntos adiantados'} · ${fmtMin(soma(adiantados, minDe))}</span>` : ''}
+    ${revResumo && revResumo.urgentes > 0 ? `<button type="button" class="selo rev-selo" data-acao="ir" data-v="revisao">🧠 ${revResumo.urgentes} ${revResumo.urgentes === 1 ? 'revisão pronta' : 'revisões prontas'}</button>` : ''}`;
   const painel = d.blocos.length ? `<section class="cartao dia-resumo">
-      <div class="entre"><strong>${feitosBlocos} de ${d.blocos.length} tarefas concluídas · ${fmtMin(feitoMin)} estudados${feitosBlocos === d.blocos.length || (meta && feitoMin >= meta) ? ' · meta batida! 🎉' : meta ? ` · meta ${fmtMin(meta)}` : ''}</strong><span class="fraco">${d.horas ? `${d.horas}h livres · 20% reservado para pausas` : ''}</span>
-        <button class="chip" data-acao="diaSoQ" title="${d.soQ ? 'Voltar ao dia normal (teoria + questões)' : 'Refazer o que ainda não começou: o tempo vira só questões'}">${d.soQ ? 'Voltar ao dia normal' : 'Hoje só questões'}</button></div>
-      <div class="barra grossa"><i style="width:${pct}%"></i></div>${selos.trim() ? `<div class="linha">${selos}</div>` : ''}</section>` : '';
+      <div class="entre"><strong>${feitosBlocos} de ${d.blocos.length} tarefas · ${fmtMin(feitoMin)} estudados${feitosBlocos === d.blocos.length || (meta && feitoMin >= meta) ? ' · meta batida! 🎉' : meta ? ` · meta ${fmtMin(meta)}` : ''}</strong>
+        <div class="linha" style="gap:8px">${d.horas ? `<span class="fraco" style="font-size:13px">${d.horas}h livres · 20% folga</span>` : ''}<button class="chip chip-mini" data-acao="diaSoQ" title="${d.soQ ? 'Voltar ao dia normal (teoria + questões)' : 'Refazer o que ainda não começou: o tempo vira só questões'}">${d.soQ ? 'Dia normal' : 'Só questões'}</button></div></div>
+      <div class="barra grossa"><i style="width:${pct}%"></i></div>${selos.trim() ? `<div class="linha" style="gap:6px">${selos}</div>` : ''}</section>` : '';
+
+  // Próximo passo (anti-procrastinação): mostra a tarefa #1, a aula do Ferretto e o botão "Só 5 minutos" logo acima da dobra
+  let prox = null;
+  for (const b of d.blocos) {
+    if (blocoConcluido(b)) continue;
+    const i = (b.passos || []).findIndex(p => !p.ok);
+    prox = { b, i }; break;
+  }
+  const bId = prox?.b?.id || '', pIdx = prox?.i ?? -1;
+  const proxA = prox?.b?.assuntoId ? achar(prox.b.assuntoId) : null;
+  const proxPassoTxt = prox && pIdx >= 0 && prox.b.passos?.[pIdx] ? prox.b.passos[pIdx].t : '';
+  const heroProximo = d.blocos.length && prox ? `<section class="cartao hero-proximo" style="${cor(prox.b.materia)}">
+      <div class="entre" style="gap:8px">
+        <div class="linha" style="gap:8px"><span class="rotulo" style="color:var(--tinta);font-weight:800">comece por aqui</span>${prox.b.materia ? tag(prox.b.materia) : ''}<span class="fraco" style="font-size:13px">≈ ${fmtMin(prox.b.min || 0)}${prox.b.sug ? ` · ~${prox.b.sug}` : ''}</span></div>
+        <button class="link" style="font-size:13px;padding:0;min-height:28px" data-acao="${prox.b.tipo === 'revisao' ? 'revEscolher' : 'trocarAssunto'}" data-b="${prox.b.id}">trocar</button>
+      </div>
+      <h2>${esc(prox.b.titulo)}</h2>
+      ${proxA?.ferretto ? `<p class="hero-ferretto"><b>▶ Ferretto (1,25×):</b> ${esc(proxA.ferretto)}</p>` : proxPassoTxt ? `<p class="hero-ferretto">${esc(proxPassoTxt)}</p>` : ''}
+      <div class="linha hero-acoes">
+        <button class="botao grande" data-acao="timer" data-min="5" data-b="${bId}" data-i="${pIdx}">▶ Só 5 minutos</button>
+        <button class="botao claro" data-acao="timer" data-min="25" data-b="${bId}" data-i="${pIdx}">25 min</button>
+        <button class="botao contorno" data-acao="timerLivre" data-b="${bId}" data-i="${pIdx}">⏱ Livre</button>
+        ${prox.b.tipo === 'revisao' && (prox.b.revisao || []).length ? `<button class="botao contorno" data-acao="qDaRevisao" data-b="${prox.b.id}">📝 Questões</button>`
+          : proxA && (ehConteudo(proxA) || (typeof ehHabitoQ === 'function' && ehHabitoQ(proxA))) ? `<button class="botao contorno" data-acao="qDoAssunto" data-id="${proxA.id}" data-b="${prox.b.id}">📝 Questões</button>`
+          : prox.b.tipo === 'questoes' && prox.b.qAssunto ? `<button class="botao contorno" data-acao="qDoAssunto" data-id="${prox.b.qAssunto}" data-b="${prox.b.id}">📝 Questões</button>` : ''}
+      </div>
+    </section>` : '';
+
+  const inicioCrono = S.cronoInicio || (typeof CRONOGRAMA !== 'undefined' && CRONOGRAMA.inicio) || '';
+  const avisoPreInicio = inicioCrono && h < inicioCrono ? `<section class="cartao ia-cartao">
+      <div class="entre" style="gap:8px"><strong>✨ Seu cronograma começa em ${dataLonga(inicioCrono)} (em ${diasAte(inicioCrono)} ${diasAte(inicioCrono) === 1 ? 'dia' : 'dias'})</strong><button class="botao" data-acao="irSemana" data-v="${esc(inicioCrono)}">Ver a 1ª semana</button></div>
+      <p class="fraco" style="margin:0;font-size:14px">Até lá, seus dias estão livres e sem atrasos. Se quiser ir aquecendo antes de segunda, você pode resolver questões, testar uma redação ou abrir qualquer assunto na aba Plano.</p>
+    </section>` : '';
   const planejar = d.blocos.length ? '' : `<section class="cartao"><h2>Como vai ser o seu dia hoje?</h2><p class="fraco" style="margin:0">Escolha quantas horas livres tem hoje para montar rápido, ou conte abaixo seus horários (treino, compromissos, estudo) que eu organizo os assuntos e a programação do dia.</p>
     <label class="linha" style="gap:8px;cursor:pointer"><input type="checkbox" data-acao="soQToggle" ${ui.soQ ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--rosa)"> <span><b>Hoje só questões</b> <span class="fraco" style="font-size:14px">· sem teoria: o tempo todo vira questões dos assuntos do plano</span></span></label>
     <div class="linha">${[2, 3, 4, 6, 8, 10].map(n => `<button class="chip" data-acao="montarRapido" data-h="${n}">Tenho ${n}h hoje</button>`).join('')}</div>
@@ -744,21 +810,13 @@ function vHoje() {
       <button class="botao contorno" data-acao="ir" data-v="meudia">Ver rotina base / amanhã</button></div></section>`;
   const progHoje = d.blocos.length && window.programacaoHojeHtml ? window.programacaoHojeHtml(d) : '';
 
-  const grupos = [['atrasado', 'Atrasados'], ['semana', 'Para hoje'], ['futuro', 'Adiantando (opcional)'], ['feito', 'Concluídos hoje']];
+  const grupos = [['atrasado', 'Pendentes de antes'], ['semana', 'Para hoje'], ['futuro', 'Adiantando (opcional)'], ['feito', 'Concluídos hoje']];
   const dos = b => { if (blocoConcluido(b)) return 'feito'; if (b.adiantado) return 'futuro'; const a = b.assuntoId && achar(b.assuntoId); return a ? estadoDe(a) : 'semana'; };
   const lista = grupos.map(([k, t]) => {
     const bs = d.blocos.filter(b => dos(b) === k);
     return bs.length ? `<h3 class="grupo ${k}">${t}<span class="fraco"> · ${fmtMin(soma(bs, b => b.min || 0))}</span></h3>${bs.map(blocoHtml).join('')}` : '';
   }).join('') + previaAdiantarHtml(d);
 
-  let prox = null;
-  for (const b of d.blocos) {
-    if (blocoConcluido(b)) continue;
-    const i = (b.passos || []).findIndex(p => !p.ok);
-    prox = { b, i }; break;
-  }
-  const seq = sequencia();
-  const bId = prox?.b?.id || '', pIdx = prox?.i ?? -1;
   const controlesTimer = `<div class="timer-opcoes">
     <span class="rotulo" style="color:inherit;opacity:.8">tempo de estudo (escolha ou deixe livre)</span>
     <div class="linha" style="gap:6px">
@@ -771,13 +829,13 @@ function vHoje() {
     </div>
   </div>`;
   const lado = `<aside class="coluna">
-    <details class="cartao" data-k="timer-hoje" ${ui.ab?.['timer-hoje'] ? 'open' : ''}><summary><strong>⏱ ${prox ? 'Cronômetro' : 'Tudo feito por hoje. Orgulho! 🎉'}</strong></summary>${controlesTimer.replace(/color:inherit;opacity:\.8/g, 'opacity:.8')}</details>
+    <details class="cartao" data-k="timer-hoje" ${ui.ab?.['timer-hoje'] ? 'open' : ''}><summary><strong>⏱ ${prox ? 'Mais opções de cronômetro' : 'Tudo feito por hoje. Orgulho! 🎉'}</strong></summary>${controlesTimer.replace(/color:inherit;opacity:\.8/g, 'opacity:.8')}</details>
     ${window.metaQHtml?.() ?? ''}${window.pendHojeHtml?.() ?? ''}
     ${d.blocos.length ? `<div class="linha">
       <button class="botao contorno" data-acao="ir" data-v="meudia">Agenda do dia</button>
       <button class="botao contorno" data-acao="novaTarefa">+ Tarefa avulsa</button></div>` : ''}
   </aside>`;
-  return topo + avisoIa() + painel + progHoje + planejar + (d.blocos.length ? `<div class="grade2"><section class="coluna" aria-label="Assuntos de hoje">${lista}</section>${lado}</div>` : '');
+  return topo + avisoIa() + avisoPreInicio + painel + heroProximo + progHoje + planejar + (d.blocos.length ? `<div class="grade2"><section class="coluna" aria-label="Assuntos de hoje">${lista}</section>${lado}</div>` : '');
 }
 
 function planejarHtml(d) {
@@ -797,10 +855,10 @@ function planejarHtml(d) {
 
 function blocoHtml(b) {
   const a = b.assuntoId && achar(b.assuntoId);
-  if (window.sincronizarPassoQ) window.sincronizarPassoQ(b, a);
+  if (window.sincronizarPassoQ) window.sincronizarPassoQ(b, a, true);
   const concluido = blocoConcluido(b);
   const est = concluido ? 'feito' : b.adiantado ? 'futuro' : a ? estadoDe(a) : '';
-  const rot = { atrasado: 'atrasado', futuro: 'adiantando', feito: 'concluído' }[est];
+  const rot = { atrasado: 'pendente', futuro: 'adiantando', feito: 'concluído' }[est];
   const passos = b.passos || [], feitosP = passos.filter(p => p.ok).length;
   const qMeta = window.questoesDoBloco ? window.questoesDoBloco(b) : (a ? tempoDe(a).q : 0);
   const qFeitas = a?.questoes?.feitas || 0;
@@ -817,11 +875,12 @@ function blocoHtml(b) {
   return `<article class="cartao bloco ${est}" style="${cor(b.materia)}">
     <div class="bloco-topo">
       <label class="bloco-check"><input type="checkbox" class="check-bloco" data-acao="blocoFeito" data-b="${b.id}" ${concluido ? 'checked' : ''} aria-label="Marcar tarefa como concluída"><h3>${esc(b.titulo)}</h3></label>
-      <span class="hora" title="Horário e ordem flexíveis: faça na ordem que preferir">≈ ${fmtMin(b.min || 0)}${b.sug && !concluido ? ` · ~${b.sug} (flexível)` : ''}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
+      <span class="hora" title="Horário e ordem flexíveis: faça na ordem que preferir">≈ ${fmtMin(b.min || 0)}${b.sug && !concluido ? ` · ~${b.sug}` : ''}</span>${b.materia ? tag(b.materia) : ''}${rot ? `<span class="selo ${est}">${rot}</span>` : ''}
       ${totB > 1 ? `<span class="linha" style="gap:2px"><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="-1" ${posB <= 0 ? 'disabled' : ''} title="Subir na ordem do dia">↑</button><button type="button" class="ag-ord" data-acao="moverBloco" data-b="${b.id}" data-d="1" ${posB < 0 || posB >= totB - 1 ? 'disabled' : ''} title="Descer na ordem do dia">↓</button></span>` : ''}
-      ${b.tipo !== 'revisao' && !concluido ? `<button type="button" class="chip" data-acao="trocarAssunto" data-b="${b.id}" title="Escolher outro assunto no lugar deste">trocar assunto</button>` : ''}
+      ${b.tipo !== 'revisao' && !concluido ? `<button type="button" class="chip chip-mini" data-acao="trocarAssunto" data-b="${b.id}" title="Escolher outro assunto no lugar deste">trocar</button>` : ''}
       ${window.btnDividir?.(b) ?? ''}
       <button class="x" data-acao="tirarBloco" data-b="${b.id}" aria-label="Tirar bloco">×</button></div>
+    ${a?.ferretto && !concluido ? `<div class="bloco-ferretto"><span>▶ Ferretto (1,25×):</span> ${esc(a.ferretto)}</div>` : ''}
     ${window.divisorHtml?.(b) ?? ''}
     ${detalhes}
     ${b.tipo === 'questoes' && b.qAssunto && !concluido ? `<div class="linha acoes-bloco"><button class="link" data-acao="qDoAssunto" data-id="${b.qAssunto}" data-b="${b.id}">Resolver as ${b.qMeta || ''} questões no app</button></div>` : ''}
@@ -873,8 +932,10 @@ function vMes() {
   const feitos = lista.filter(a => a.feito).length, faltam = lista.length - feitos;
   const pct = lista.length ? Math.round(feitos / lista.length * 100) : 0;
   const minTot = soma(lista, minDe), minFz = soma(lista.filter(a => a.feito), minDe);
-  let qMesF = 0, qMesA = 0;
-  for (const [d, mats] of Object.entries(S.qlog || {})) if (d.startsWith(m)) for (const v of Object.values(mats || {})) { qMesF += v.f || 0; qMesA += v.a || 0; }
+  let qMesF = 0, qMesA = 0, qMesS = 0;
+  for (const [d, mats] of Object.entries(S.qlog || {})) if (d.startsWith(m)) for (const v of Object.values(mats || {})) { qMesF += v.f || 0; qMesA += v.a || 0; qMesS += v.s || 0; }
+  const qMesComAc = Math.max(0, qMesF - qMesS);
+  const qMesPct = qMesComAc > 0 ? Math.round(qMesA / qMesComAc * 100) : null;
   const fase = faseAtual(m), flt = ui.mesFiltro || 'todos';
   const filtraItem = a => flt === 'pendentes' ? !a.feito : flt === 'feitos' ? !!a.feito : true;
   const ordemMat = Object.keys(MATERIAS);
@@ -892,7 +953,7 @@ function vMes() {
       ${S.meses[m]?.foco ? `<p class="mao" style="margin:0">${esc(S.meses[m].foco)}</p>` : ''}
       <div class="entre" style="flex-wrap:wrap;gap:8px">
         <strong>${feitos} de ${lista.length} assuntos (${pct}%) · ${fmtMin(minFz)} de ${fmtMin(minTot)}</strong>
-        <span class="fraco">${qMesF ? `${qMesF} questões feitas no mês (${Math.round(qMesA / qMesF * 100)}% de acerto)` : 'Meta mensal por matéria'}</span>
+        <span class="fraco">${qMesF ? `${qMesF} questões feitas no mês${qMesPct != null ? ` (${qMesPct}% de acerto)` : ''}` : 'Meta mensal por matéria'}</span>
       </div>
       <div class="barra grossa"><i style="width:${pct}%"></i></div>
       <div class="entre" style="flex-wrap:wrap;gap:8px">
@@ -936,7 +997,21 @@ function vAno() {
     <div class="linha"><button class="botao" data-acao="ir" data-v="ajustes">Abrir Ajustes</button></div></section>`;
   const meses = [];
   for (let m = m0; m <= mesDe(ult.data) && meses.length < 30; m = somaMes(m, 1)) meses.push(m);
-  const linhaProva = x => `<div class="entre prova"><span>${esc(x.nome)}</span><span class="fraco">${okData(x.data) ? `${dataLonga(x.data)}${x.estimada ? ' (estimada)' : ''} · ${diasAte(x.data)} dias` : 'data a confirmar'}</span></div>`;
+  const DICA_PROVA = {
+    'Santa Casa SP': 'Vunesp · 80q obj + 2ª fase disc (Bio/Quí/Fís/Port) + redação',
+    'Albert Einstein': 'Vunesp · 50q obj + 5 disc (Bio/Quí/Fís) + redação',
+    'FMABC': 'Vunesp · 60q obj + 5 disc + redação',
+    'São Camilo': 'Vunesp · 60q obj + 5 disc + redação',
+    'USP (Fuvest), 1ª fase': '90q obj (todas as matérias + 9 obras)',
+    'USP (Fuvest), 2ª fase': 'Dia 1: Port + Redação · Dia 2: Bio, Quí, Fís (disc)',
+    'UNIFESP (provas próprias)': 'ENEM + Dia 1 Port/Ing/Red + Dia 2 Bio/Quí/Fís/Mat (disc)',
+    'ENEM 2027, 1º dia': '90q Linguagens/Humanas + Redação (com intervenção)',
+    'ENEM 2027, 2º dia': '90q Natureza e Matemática',
+    'Unicamp, 1ª fase': '72q obj (todas as matérias + obras)',
+    'Unicamp, 2ª fase': 'Dia 1 Redação (gêneros) + Port · Dia 2 Bio/Quí/Mat',
+    'PUC-Campinas (Medicina)': '50q obj + específicas + redação',
+  };
+  const linhaProva = x => `<div class="entre prova"><div class="coluna" style="gap:2px"><strong>${esc(x.nome)}</strong>${DICA_PROVA[x.nome] ? `<span class="fraco" style="font-size:12.5px">${esc(DICA_PROVA[x.nome])}</span>` : ''}</div><span class="fraco" style="text-align:right">${okData(x.data) ? `${dataLonga(x.data)}${x.estimada ? ' (est.)' : ''}<br><b>${diasAte(x.data)} dias</b>` : 'data a confirmar'}</span></div>`;
   const semData = (S.provas || []).filter(x => !okData(x.data));
   if (ui.anoModo === 'mapa') ui.anoModo = 'cartoes';
   const cabeca = `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">próxima prova</span>
@@ -945,11 +1020,11 @@ function vAno() {
       <button data-acao="anoModo" data-v="cartoes" aria-pressed="${ui.anoModo === 'cartoes'}">Cartões</button>
       <button data-acao="anoModo" data-v="caminho" aria-pressed="${ui.anoModo === 'caminho'}">Caminho</button></div>
     <button class="botao" data-acao="planoAno">Refazer o plano com a IA</button></div></header>${avisoIa()}`;
-  const provas = `<section class="cartao"><h2>Provas</h2>${provasFuturas().concat(semData).map(linhaProva).join('')}
-      <p class="fraco" style="margin:0">As datas de 2027 são estimadas pelo padrão de 2026. Quando saírem os editais, mude pela IA ("a Fuvest será dia tal").</p></section>`;
+  const provas = `<section class="cartao"><h2>Suas provas</h2>${provasFuturas().concat(semData).map(linhaProva).join('')}
+      <p class="fraco" style="margin:0;font-size:13px">As datas de 2027 são estimadas pelo padrão de 2026. Quando saírem os editais, atualize pela IA ("a Fuvest será dia tal").</p></section>`;
   if (ui.anoModo === 'caminho') return cabeca + anoCaminho();
   return cabeca + provas + `${S.fases.length ? `<section class="cartao">${fasesHtml()}<div class="coluna" style="gap:6px">${S.fases.map(f =>
-      `<div><strong>${esc(f.nome)}</strong> <span class="fraco">· ${nomeMes(f.inicio)} a ${nomeMes(f.fim)}${f.objetivo ? ' — ' + esc(f.objetivo) : ''}</span></div>`).join('')}</div></section>`
+      `<div><strong>${esc(f.nome)}</strong> <span class="fraco">· ${f.inicio === f.fim ? nomeMes(f.inicio) : `${nomeMes(f.inicio)} a ${nomeMes(f.fim)}`}${f.objetivo ? ' — ' + esc(f.objetivo) : ''}</span></div>`).join('')}</div></section>`
       : '<p class="fraco" style="margin:0">A IA divide o tempo até a prova em fases e dá um foco para cada mês.</p>'}
     <section class="meses">${meses.map(m => {
       const l = S.assuntos.filter(a => a.mes === m), f = l.filter(a => a.feito).length;
@@ -1025,8 +1100,14 @@ function vAjustes() {
     <section class="cartao"><h2>Do meu jeito</h2>
       ${caixa('jeito', 'Como você gosta que a IA te ajude', 'Tudo aqui a IA segue sempre. Ela também anota aqui o que você pedir pra ela lembrar.', 'Ex.: não gosto de química à noite; fala comigo de forma leve; prefiro blocos de 40 min')}
     </section>
-    <section class="cartao"><h2>Cores</h2>
-      <p class="fraco" style="margin:0">Escolha e veja a prévia ao lado. Só vale de vez quando você tocar em "Salvar estas cores".</p>
+    <section class="cartao"><h2>Estilo e cores</h2>
+      <span class="rotulo">tema do app</span>
+      <div class="temas">
+        <button class="tema-op" data-acao="tema" data-v="cores" aria-pressed="${S.tema === 'cores'}"><div class="amostra"><i style="background:#FFFBFD"></i><i style="background:#C2255C"></i><i style="background:#F7EDF2"></i></div><strong>Claro suave</strong><span class="fraco" style="font-size:13px">Limpo, leve e personalizável</span></button>
+        <button class="tema-op" data-acao="tema" data-v="caderno" aria-pressed="${S.tema === 'caderno'}"><div class="amostra"><i style="background:#FCF4F6"></i><i style="background:#C2477A"></i><i style="background:#F6E3A0"></i></div><strong>Caderno</strong><span class="fraco" style="font-size:13px">Editorial com tipografia serifada</span></button>
+        <button class="tema-op" data-acao="tema" data-v="noite" aria-pressed="${S.tema === 'noite'}"><div class="amostra"><i style="background:#10141F"></i><i style="background:#F4A6C0"></i><i style="background:#181E2E"></i></div><strong>Noite</strong><span class="fraco" style="font-size:13px">Escuro confortável para estudar à noite</span></button>
+      </div>
+      ${S.tema === 'cores' ? `<p class="fraco" style="margin:0">Personalize o acento e o fundo e veja a prévia ao lado. Só vale de vez quando tocar em "Salvar estas cores".</p>
       <div class="grade-cores"><div class="coluna" style="gap:16px">
         <div class="coluna" style="gap:8px"><span class="rotulo">cor de destaque</span><div class="linha">${bolas('acento', acentos)}
           <label class="bola personalizada" title="Outra cor"><input type="color" data-cor="acento" value="${esc(cc.acento)}" aria-label="Escolher outra cor de destaque"></label></div></div>
@@ -1034,11 +1115,11 @@ function vAjustes() {
           <label class="bola personalizada" title="Outra cor"><input type="color" data-cor="fundo" value="${esc(cc.fundo)}" aria-label="Escolher outra cor de fundo"></label></div></div>
         <div class="linha"><button class="botao" data-acao="salvarCores" ${mudouCores ? '' : 'disabled'}>Salvar estas cores</button>
           ${mudouCores ? '<button class="botao contorno" data-acao="descartarCores">Descartar</button>' : '<span class="fraco">Cores salvas.</span>'}</div></div>
-        <div class="previa"><span class="rotulo">prévia</span><h3>Bom dia, Uany</h3>
+        <div class="previa"><span class="rotulo">prévia</span><h3>Bom dia, ${esc(p.nome.split(' ')[0] || 'Uany')}</h3>
           <div class="linha"><button class="botao" tabindex="-1">Só 5 minutos</button><button class="botao claro" tabindex="-1">Puxar mais um</button></div>
           <div class="linha"><span class="tag" style="--c:var(--mat)">Matemática</span><span class="tag" style="--c:var(--nat)">Biologia</span><span class="tag" style="--c:var(--lin)">Redação</span></div>
           <div class="barra grossa"><i style="width:62%"></i></div>
-          <div class="trilha-previa"><i></i><i></i><i></i><b></b></div></div></div>
+          <div class="trilha-previa"><i></i><i></i><i></i><b></b></div></div></div>` : '<p class="fraco" style="margin:0;font-size:13px">Para personalizar cores livres, escolha o tema "Claro suave" acima.</p>'}
     </section>
     <section class="cartao"><h2>IA (Gemini grátis)</h2>
       <p class="fraco" style="margin:0">A chave fica salva só neste iPad. Se a primeira acabar a cota do dia, uso a segunda.</p>
@@ -1060,10 +1141,10 @@ function vAjustes() {
     <section class="cartao"><h2>Tempos dos assuntos</h2>
       <p class="fraco" style="margin:0">O tempo de cada assunto soma a teoria e as questões (Matemática leva mais por questão que Biologia). A IA ajusta por densidade, e isso já acontece sozinho nas próximas 4 semanas. Aqui você calibra todos de uma vez.</p>
       <div class="linha"><button class="botao claro" data-acao="calibrarTodos">Calibrar todos com a IA</button></div></section>
-    <section class="cartao"><h2>Plano base</h2>
-      <p class="fraco" style="margin:0">Todos os assuntos de Medicina em SP, distribuídos até dezembro de 2027. Refazer troca os assuntos e dias (o perfil e as chaves ficam).</p>
-      <label class="campo">Começar a estudar em<input type="date" id="base-inicio" value="${hoje() < '2026-11-17' ? '2026-11-17' : hoje()}"></label>
-      <div class="linha"><button class="botao claro" data-acao="refazerBase">Refazer o plano base</button></div>
+    <section class="cartao"><h2>Cronograma e plano base</h2>
+      <p class="fraco" style="margin:0">Você usa o cronograma oficial de Medicina em SP (com aulas do Ferretto). Restaurar o cronograma oficial reaplica os assuntos mantendo o que já foi marcado como feito.</p>
+      <div class="linha">${typeof CRONOGRAMA !== 'undefined' ? '<button class="botao claro" data-acao="restaurarCrono">Restaurar cronograma oficial (Ferretto)</button>' : ''}</div>
+      ${typeof detalhe === 'function' ? detalhe('planoBaseAv', 'Modo antigo: gerar plano base genérico por data', `<label class="campo">Começar a estudar em<input type="date" id="base-inicio" value="${hoje() < '2026-11-17' ? '2026-11-17' : hoje()}"></label><div class="linha"><button class="botao contorno" data-acao="refazerBase">Refazer o plano base genérico</button></div>`) : `<label class="campo">Começar a estudar em<input type="date" id="base-inicio" value="${hoje() < '2026-11-17' ? '2026-11-17' : hoje()}"></label><div class="linha"><button class="botao claro" data-acao="refazerBase">Refazer o plano base</button></div>`}
     </section>
     <section class="cartao"><h2>Versão do app</h2>
       <p class="fraco" style="margin:0">Esta é a versão <b>${APP_V}</b>. O app se atualiza sozinho quando você volta para ele; se algo parecer desatualizado, toque abaixo. Não apaga nada.</p>
@@ -1085,10 +1166,11 @@ function vAjustes() {
 const VIEWS = { hoje: vHoje, semana: vSemana, mes: vMes, ano: vAno, ajustes: vAjustes };
 
 function render() {
-  document.documentElement.dataset.tema = 'cores';
-  aplicarCores();
+  const tema = ['cores', 'caderno', 'noite'].includes(S.tema) ? S.tema : 'cores';
+  document.documentElement.dataset.tema = tema;
+  aplicarCores(tema);
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#FCF4F6';
+  if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#FFFBFD';
   $('#menu').innerHTML = menuHtml();
   $('#tela').innerHTML = subnavHtml() + avisoVersao() + VIEWS[ui.view]() + (ui.carregando ? `<div class="carregando" role="status">${esc(ui.carregando)}</div>` : '');
   renderTimer();
@@ -1170,13 +1252,13 @@ function fmtRelogio(seg) {
 
 function iniciarTimer(min, b, i, modo = 'foco') {
   try { audio ||= new (window.AudioContext || window.webkitAudioContext)(); audio.resume?.(); } catch { }
-  const bloco = (S.dias[hoje()]?.blocos || []).find(x => x.id === b);
+  const h = hoje(), bloco = (S.dias[h]?.blocos || []).find(x => x.id === b);
   const passo = i >= 0 && bloco?.passos?.[i] ? bloco.passos[i].t : '';
   const rotulo = modo === 'pausa' ? 'Pausa para respirar' : bloco ? (passo ? `${bloco.titulo} · ${passo}` : bloco.titulo) : 'Tempo de estudo';
   const agora = Date.now(), dur = Math.max(1, +min || 25) * 60000;
   S.timer = modo === 'livre'
-    ? { inicio: agora, acum: 0, min: 0, modo: 'livre', b: b || '', i: i ?? -1, rotulo, pausado: false, acabou: false, salvoMin: 0 }
-    : { inicio: agora, fim: agora + dur, total: dur, restaPausa: dur, min: Math.round(dur / 60000), modo, b: b || '', i: i ?? -1, rotulo, pausado: false, acabou: false, salvoMin: 0 };
+    ? { inicio: agora, acum: 0, min: 0, modo: 'livre', dia: h, b: b || '', i: i ?? -1, rotulo, pausado: false, acabou: false, salvoMin: 0 }
+    : { inicio: agora, fim: agora + dur, total: dur, restaPausa: dur, min: Math.round(dur / 60000), modo, dia: h, b: b || '', i: i ?? -1, rotulo, pausado: false, acabou: false, salvoMin: 0 };
   salvar(); renderTimer(true);
 }
 
@@ -1185,13 +1267,15 @@ function guardarMinutosTimer(t) {
   const decMs = t.modo === 'livre'
     ? (t.acum || 0) + (t.pausado ? 0 : Math.max(0, Date.now() - (t.inicio || Date.now())))
     : (t.total || 0) - (t.pausado ? (t.restaPausa || 0) : Math.max(0, (t.fim || Date.now()) - Date.now()));
-  const totMin = Math.floor(decMs / 60000), novo = Math.max(0, totMin - (t.salvoMin || 0));
+  // trava de segurança contra tela bloqueada/sono prolongado no iPad (máx. 4h por sessão contínua)
+  const totMin = Math.min(240, Math.floor(decMs / 60000)), novo = Math.max(0, totMin - (t.salvoMin || 0));
   if (novo > 0) {
     t.salvoMin = totMin;
-    const b = t.b && (S.dias[hoje()]?.blocos || []).find(x => x.id === t.b);
+    const diaAlvo = okData(t.dia) ? t.dia : hoje();
+    const b = t.b && ((S.dias[diaAlvo]?.blocos || []).find(x => x.id === t.b) || (S.dias[hoje()]?.blocos || []).find(x => x.id === t.b));
     const a = b?.assuntoId && achar(b.assuntoId);
     if (!a?.feito && !b?.feito) {
-      S.estudo[hoje()] = (S.estudo[hoje()] || 0) + novo;
+      S.estudo[diaAlvo] = (S.estudo[diaAlvo] || 0) + novo;
       if (b) b.timerMin = (b.timerMin || 0) + novo;
       if (a) a.timerMin = (a.timerMin || 0) + novo;
     }
@@ -1262,8 +1346,15 @@ function marcarPasso(b, i, ok) {
   bloco.feito = todosOk;
   if (bloco.assuntoId) setFeito(achar(bloco.assuntoId), todosOk, false);
   else if (antes !== todosOk) {
-    if (todosOk) S.estudo[h] = (S.estudo[h] || 0) + (bloco.min || 30);
-    else S.estudo[h] = Math.max(0, (S.estudo[h] || 0) - (bloco.min || 30));
+    if (todosOk) {
+      const add = Math.max(0, (bloco.min || 30) - (bloco.timerMin || 0));
+      bloco.estudoAdd = add;
+      if (add > 0) S.estudo[h] = (S.estudo[h] || 0) + add;
+    } else {
+      const rem = bloco.estudoAdd ?? Math.max(0, (bloco.min || 30) - (bloco.timerMin || 0));
+      if (rem > 0) S.estudo[h] = Math.max(0, (S.estudo[h] || 0) - rem);
+      delete bloco.estudoAdd;
+    }
   }
 }
 
@@ -1281,8 +1372,15 @@ function marcarBloco(bId, ok) {
   }
   if (bloco.assuntoId) setFeito(achar(bloco.assuntoId), ok, false);
   else if (antes !== ok) {
-    if (ok) S.estudo[h] = (S.estudo[h] || 0) + (bloco.min || 30);
-    else S.estudo[h] = Math.max(0, (S.estudo[h] || 0) - (bloco.min || 30));
+    if (ok) {
+      const add = Math.max(0, (bloco.min || 30) - (bloco.timerMin || 0));
+      bloco.estudoAdd = add;
+      if (add > 0) S.estudo[h] = (S.estudo[h] || 0) + add;
+    } else {
+      const rem = bloco.estudoAdd ?? Math.max(0, (bloco.min || 30) - (bloco.timerMin || 0));
+      if (rem > 0) S.estudo[h] = Math.max(0, (S.estudo[h] || 0) - rem);
+      delete bloco.estudoAdd;
+    }
   }
   if (bloco.tipo === 'revisao' && ok && !bloco.contou && typeof revisaoFeita === 'function') {
     bloco.contou = true;
@@ -1292,19 +1390,25 @@ function marcarBloco(bId, ok) {
 
 function contextoAtual() { return [ui.ctxTexto.trim(), ui.ctxEnergia].filter(Boolean).join(' · '); }
 
-/** Cores personalizadas: tudo sai do acento e do fundo escolhidos. */
-function aplicarCores() {
+/** Cores personalizadas: no tema "cores" gera a paleta do acento e do fundo; em "caderno" e "noite" limpa overrides para usar a paleta do tema. */
+function aplicarCores(tema = S.tema || 'cores') {
   if (ui.view !== 'ajustes') ui.coresPrev = null;
-  const c = ui.coresPrev || S.cores || {}, r = document.documentElement.style;
+  const r = document.documentElement.style;
+  const vars = ['--bg', '--acento', '--sobre-acento', '--painel', '--painel2', '--linha', '--suave', '--destaque', '--sobre-destaque', '--tinta'];
+  if (tema !== 'cores') {
+    for (const k of vars) r.removeProperty(k);
+    return;
+  }
+  const c = ui.coresPrev || S.cores || {};
   const hex = x => /^#[0-9a-f]{6}$/i.test(x || '');
-  const a = hex(c.acento) ? c.acento : '#C2255C', f = hex(c.fundo) ? c.fundo : '#FFFFFF';
+  const a = hex(c.acento) ? c.acento : '#C2255C', f = hex(c.fundo) ? c.fundo : '#FFFBFD';
   const n = parseInt(a.slice(1), 16), lum = (0.299 * (n >> 16) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
   const set = (k, v) => r.setProperty(k, v);
   set('--bg', f); set('--acento', a); set('--sobre-acento', lum > 0.62 ? '#16181D' : '#FFFFFF');
-  set('--painel', `color-mix(in srgb, ${f} 93%, #4a5068)`); set('--painel2', `color-mix(in srgb, ${a} 9%, ${f})`);
-  set('--linha', `color-mix(in srgb, #4a5068 13%, ${f})`); set('--suave', `color-mix(in srgb, ${a} 15%, ${f})`);
-  set('--destaque', `color-mix(in srgb, ${a} 26%, ${f})`); set('--sobre-destaque', '#16181D');
-  set('--tinta', `color-mix(in srgb, ${a} 80%, #000)`);
+  set('--painel', `color-mix(in srgb, ${f} 95%, #7c5868)`); set('--painel2', `color-mix(in srgb, ${a} 7%, ${f})`);
+  set('--linha', `color-mix(in srgb, #6e4f5d 14%, ${f})`); set('--suave', `color-mix(in srgb, ${a} 13%, ${f})`);
+  set('--destaque', `color-mix(in srgb, ${a} 22%, ${f})`); set('--sobre-destaque', '#16181D');
+  set('--tinta', `color-mix(in srgb, ${a} 82%, #000)`);
 }
 
 function exportar() {
@@ -1369,6 +1473,7 @@ const ACOES = {
   anoMes: el => { ui.anoMes = el.dataset.v; render(); },
   anoMat: el => { ui.anoMat = ui.anoMat === el.dataset.v ? '' : el.dataset.v; render(); },
   cor: el => { const y = window.scrollY; ui.coresPrev = { ...(ui.coresPrev || S.cores), [el.dataset.campo]: el.dataset.v }; render(); window.scrollTo(0, y); },
+  tema: el => { const y = window.scrollY; if (['cores', 'caderno', 'noite'].includes(el.dataset.v)) { S.tema = el.dataset.v; ui.coresPrev = null; salvar(); render(); window.scrollTo(0, y); } },
   salvarCores: () => { const y = window.scrollY; if (ui.coresPrev) S.cores = { ...ui.coresPrev }; ui.coresPrev = null; salvar(); ui.iaMsg = 'Cores salvas.'; render(); window.scrollTo(0, y); },
   descartarCores: () => { const y = window.scrollY; ui.coresPrev = null; render(); window.scrollTo(0, y); },
   passo: el => { marcarPasso(el.dataset.b, +el.dataset.i, el.checked); if (window.sugerirHorarios) window.sugerirHorarios(diaHoje()); salvar(); render(); },
@@ -1473,11 +1578,17 @@ const ACOES = {
     const fim = ultimaProva()?.data || hoje();
     pedirIa(`Refaça meu plano até a última prova (${fim}): use "fases" (3 a 5 fases do mês ${mesDe(hoje())} até ${mesDe(fim)}, por exemplo base, aprofundamento, revisão e reta final, com objetivo curto) e foco_mes para cada mês desse período. Depois crie os assuntos do mês atual (${mesDe(hoje())}) com novo_assunto (8 a 14), sem repetir os que já existem.`, 'Montando seu ano…');
   },
+  restaurarCrono: () => {
+    if (typeof aplicarCronograma !== 'function' || typeof CRONOGRAMA === 'undefined') return;
+    const n = aplicarCronograma();
+    ui.iaMsg = `Cronograma oficial (Ferretto) restaurado (${n} itens). O que você já marcou como feito foi preservado.`; render();
+  },
   refazerBase: () => {
     const d = $('#base-inicio')?.value;
     if (!okData(d)) return;
+    if (!confirm('Trocar o cronograma oficial do Ferretto pelo plano base genérico? Seu progresso anterior fica em Cópias do plano.')) return;
     aplicarPlanoBase(d); salvar(); ui.mes = mesDe(hoje() > d ? hoje() : d); ui.view = 'ano';
-    ui.iaMsg = 'Plano base refeito.'; ui.desfazer = null; render();
+    ui.iaMsg = 'Plano base genérico aplicado. Para voltar ao cronograma oficial do Ferretto, use "Restaurar cronograma oficial" em Ajustes.'; ui.desfazer = null; render();
   },
   testarIa: async () => {
     ui.carregando = 'Testando…'; render();
@@ -1520,7 +1631,7 @@ document.addEventListener('change', e => {
       novo._t = Date.now();
       localStorage.setItem(CHAVE, JSON.stringify(novo, compactarS));
       S = carregar();
-      if (typeof aplicarCronograma === 'function' && typeof CRONOGRAMA !== 'undefined' && S.cronoV !== CRONOGRAMA.v) aplicarCronograma(S.cenario || 'capital');
+      if (typeof aplicarCronograma === 'function' && typeof CRONOGRAMA !== 'undefined' && (S.cronoV !== CRONOGRAMA.v || (typeof cenarioDe === 'function' && S.cronoCen !== cenarioDe()))) aplicarCronograma();
       salvar();
       if (desenhos && window.restaurarDesenhos) restaurarDesenhos(desenhos);
       ui.iaMsg = 'Cópia restaurada.'; render();

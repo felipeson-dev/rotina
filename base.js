@@ -3,15 +3,15 @@
    As datas de 2027 são ESTIMADAS pelo padrão de 2026 até saírem os editais. */
 
 const PROVAS_BASE = [
-  { nome: 'ENEM, 1º dia', data: '2026-11-08' },
-  { nome: 'ENEM, 2º dia', data: '2026-11-15' },
   { nome: 'Santa Casa SP', data: '2027-09-25', estimada: true },
   { nome: 'Albert Einstein', data: '2027-10-10', estimada: true },
-  { nome: 'USP (Fuvest), 1ª fase', data: '2027-11-07', estimada: true },
+  { nome: 'FMABC', data: '2027-11-01', estimada: true },
+  { nome: 'ENEM 2027, 1º dia', data: '2027-11-07', estimada: true },
+  { nome: 'ENEM 2027, 2º dia', data: '2027-11-14', estimada: true },
+  { nome: 'USP (Fuvest), 1ª fase', data: '2027-11-21', estimada: true },
   { nome: 'São Camilo', data: '2027-11-27', estimada: true },
   { nome: 'USP (Fuvest), 2ª fase', data: '2027-12-05', estimada: true },
-  { nome: 'UNIFESP', data: '', estimada: true },
-  { nome: 'FMABC', data: '', estimada: true },
+  { nome: 'UNIFESP (provas próprias)', data: '2027-12-16', estimada: true },
 ];
 
 const FIM_CONTEUDO = '2027-06';

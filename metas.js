@@ -98,17 +98,17 @@ function questoesDoBloco(b) {
 }
 window.questoesDoBloco = questoesDoBloco;
 
-function sincronizarPassoQ(b, a) {
+function sincronizarPassoQ(b, a, somenteLeitura = false) {
   if (!b || !a || !ehConteudo(a) || !b.passos?.length) return;
   const q = questoesDoBloco(b);
   b.qMeta = q;
   const p = b.passos.find(x => /quest/i.test(x.t));
   if (!p) return;
   if (/^Fazer \d+ quest/i.test(p.t)) p.t = `Fazer ${q} questões (~${fmtMin(Math.round(q * minPorQ(b.materia)))})`;
-  if (!p.ok && (a.questoes?.feitas || 0) >= q) {
+  if (!somenteLeitura && !p.ok && (a.questoes?.feitas || 0) >= q) {
     p.ok = true;
     S.feitos[hoje()] = (S.feitos[hoje()] || 0) + 1;
-    if (b.passos.every(x => x.ok)) setFeito(a, true, false);
+    if (b.passos.every(x => x.ok)) { b.feito = true; setFeito(a, true, false); }
   }
 }
 window.sincronizarPassoQ = sincronizarPassoQ;
@@ -198,18 +198,20 @@ function registrarFora(m, f, ac, min, assuntoId = '') {
   if (min > 0) { d.t = (d.t || 0) + min * 60; d.tf = (d.tf || 0) + f; aprenderTempo(m, min * 60, f); }
   const h = hoje(), dia = S.dias[h];
   const bl = (dia?.blocos || []).find(b => assuntoId ? b.assuntoId === assuntoId : (b.materia === m && b.assuntoId && ehConteudo(achar(b.assuntoId))));
-  if (bl) {
-    const a = achar(bl.assuntoId);
-    if (a) {
-      const ant = a.questoes || { feitas: 0, acertos: 0, semAc: 0 };
-      a.questoes = { feitas: ant.feitas + f, acertos: ant.acertos + (ac != null ? ac : 0), semAc: (ant.semAc || 0) + (ac == null ? f : 0) };
-      a.qdia = h;
+  const alvoA = assuntoId ? achar(assuntoId) : (bl?.assuntoId ? achar(bl.assuntoId) : null);
+  if (alvoA) {
+    const ant = alvoA.questoes || { feitas: 0, acertos: 0, semAc: 0 };
+    alvoA.questoes = { feitas: ant.feitas + f, acertos: ant.acertos + (ac != null ? ac : 0), semAc: (ant.semAc || 0) + (ac == null ? f : 0) };
+    alvoA.qdia = h;
+    // alimenta S.foraQ com data (unifica com a aba Revisão) quando houver acerto informado
+    if (ac != null) (S.foraQ ||= []).push({ id: uid(), a: alvoA.id, dia: h, f, ac });
+    if (bl) {
       const metaB = questoesDoBloco(bl);
       const p = (bl.passos || []).find(x => !x.ok && /quest/i.test(x.t));
-      if (p && a.questoes.feitas >= metaB) {
+      if (p && alvoA.questoes.feitas >= metaB) {
         p.ok = true;
         S.feitos[h] = (S.feitos[h] || 0) + 1;
-        if (bl.passos.every(x => x.ok)) setFeito(a, true, false);
+        if (bl.passos.every(x => x.ok)) { bl.feito = true; setFeito(alvoA, true, false); }
       }
     }
   }

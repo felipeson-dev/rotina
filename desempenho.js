@@ -180,15 +180,18 @@ function dsPlano() {
 }
 
 function dsRedacao() {
-  const l = S.redacoes.map(e => ({ ...e, nota: notaRedDe(e) })).filter(e => e.nota != null).slice(-10);
+  const maxDe = e => (typeof MODELOS_RED !== 'undefined' && MODELOS_RED[e.modelo]?.max) || e.ia?.max_total || 1000;
+  const nomeDeM = e => (typeof MODELOS_RED !== 'undefined' && MODELOS_RED[e.modelo]?.nome) || 'ENEM';
+  const l = S.redacoes.map(e => { const n = notaRedDe(e), mx = maxDe(e); return { ...e, nota: n, max: mx, pct: n != null ? Math.min(100, Math.round(n / mx * 100)) : null }; }).filter(e => e.nota != null).slice(-10);
   if (!l.length) return '<p class="fraco" style="margin:0">Quando uma redação for corrigida, a nota aparece aqui.</p>';
-  const notas = l.map(e => e.nota), media = Math.round(soma(notas, n => n) / notas.length), ult = notas.slice(-3), ant = notas.slice(0, -3);
+  const pcts = l.map(e => e.pct), mediaPct = Math.round(soma(pcts, n => n) / pcts.length), ult = pcts.slice(-3), ant = pcts.slice(0, -3);
   const tend = ant.length ? Math.round(soma(ult, n => n) / ult.length - soma(ant, n => n) / ant.length) : null;
-  const comp = [1, 2, 3, 4, 5].map(n => { const v = l.map(e => e.ia?.competencias?.find(c => c.n === n)?.nota).filter(x => x != null); return v.length ? Math.round(soma(v, x => x) / v.length) : null; });
-  return `<div class="resumo-dia"><div><strong>${media}</strong><span>média das últimas ${l.length}</span></div><div><strong>${Math.max(...notas)}</strong><span>melhor nota</span></div>
-      ${tend != null ? `<div><strong style="color:${tend >= 0 ? '#2E8B57' : '#C2483D'}">${tend >= 0 ? '+' : ''}${tend}</strong><span>nas 3 últimas</span></div>` : ''}</div>
-    <div class="des-barras des-red">${l.map(e => `<div class="des-col" title="${diaCurto(e.dia)}: ${e.nota}"><span class="des-n">${e.nota}</span><i style="height:${Math.max(4, e.nota / 10)}%;background:var(--acento)"></i><small>${diaCurto(e.dia).slice(0, 5)}</small></div>`).join('')}</div>
-    ${comp.some(x => x != null) ? `<div class="coluna" style="gap:8px"><span class="rotulo">média por competência (máx. 200)</span>${comp.map((x, i) => x == null ? '' : `<div class="meta-linha"><span>Competência ${i + 1}</span><span class="fraco">${x}</span><div class="barra"><i style="width:${x / 2}%;background:${dsCorAc(x / 2)}"></i></div></div>`).join('')}</div>` : ''}`;
+  const soEnem = l.every(e => (e.modelo || 'enem') === 'enem');
+  const comp = soEnem ? [1, 2, 3, 4, 5].map(n => { const v = l.map(e => e.ia?.competencias?.find(c => c.n === n)?.nota).filter(x => x != null); return v.length ? Math.round(soma(v, x => x) / v.length) : null; }) : [];
+  return `<div class="resumo-dia"><div><strong>${soEnem ? Math.round(soma(l, e => e.nota) / l.length) : mediaPct + '%'}</strong><span>média das últimas ${l.length}</span></div><div><strong>${soEnem ? Math.max(...l.map(e => e.nota)) : Math.max(...pcts) + '%'}</strong><span>melhor nota</span></div>
+      ${tend != null ? `<div><strong style="color:${tend >= 0 ? '#2E8B57' : '#C2483D'}">${tend >= 0 ? '+' : ''}${tend}pp</strong><span>nas 3 últimas</span></div>` : ''}</div>
+    <div class="des-barras des-red">${l.map(e => `<div class="des-col" title="${diaCurto(e.dia)} (${nomeDeM(e)}): ${e.nota}/${e.max} (${e.pct}%)"><span class="des-n">${soEnem ? e.nota : e.pct + '%'}</span><i style="height:${Math.max(4, e.pct)}%;background:var(--acento)"></i><small>${diaCurto(e.dia).slice(0, 5)}</small></div>`).join('')}</div>
+    ${comp.some(x => x != null) ? `<div class="coluna" style="gap:8px"><span class="rotulo">média por competência ENEM (máx. 200)</span>${comp.map((x, i) => x == null ? '' : `<div class="meta-linha"><span>Competência ${i + 1}</span><span class="fraco">${x}</span><div class="barra"><i style="width:${x / 2}%;background:${dsCorAc(x / 2)}"></i></div></div>`).join('')}</div>` : ''}`;
 }
 
 function dsDicas(r) {

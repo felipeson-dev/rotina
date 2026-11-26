@@ -97,8 +97,8 @@ function qQuestaoSimulado() {
 }
 setInterval(() => { const el = document.getElementById('sim-relogio'); if (el && ui.qs?.simulado) el.textContent = fmtMin(Math.round((Date.now() - ui.qs.t0) / 60000)); }, 30000);
 
-// na prova, responder só marca (pode trocar); o histórico e o gabarito ficam para a entrega
-{ const r0 = ACOES.qResp; ACOES.qResp = el => { const s = ui.qs; if (!s?.simulado) return r0(el); s.itens[s.i].resp = el.dataset.v; render(); }; }
+// na prova, responder só marca (pode trocar) e registra tempo da questão; o histórico e o gabarito ficam para a entrega
+{ const r0 = ACOES.qResp; ACOES.qResp = el => { const s = ui.qs; if (!s?.simulado) return r0(el); if (typeof fecharItem === 'function') fecharItem(s); s.itens[s.i].resp = el.dataset.v; render(); }; }
 
 // revisando a prova já entregue: chegar ao fim só volta ao resultado (não conta as questões de novo)
 { const f0 = finalizarSessao; finalizarSessao = function () { const s = ui.qs; if (s?.revisando) { s.fim = true; s.simRes = s.simResG; return; } return f0.apply(this, arguments); }; }
@@ -148,14 +148,15 @@ Object.assign(ACOES, {
     await ACOES.qIniciarIds(p.ids, { simulado: true, simNome, t0: Date.now() });
     if (ui.qs) Object.assign(ui.qs, { simulado: true, simNome }); window.scrollTo(0, 0); render();
   },
-  qProxSim: () => { const s = ui.qs; if (s.i + 1 < s.itens.length) { s.i++; window.scrollTo(0, 0); } render(); },
+  qProxSim: () => { const s = ui.qs; if (typeof fecharItem === 'function') fecharItem(s); if (s.i + 1 < s.itens.length) { s.i++; s.tq = Date.now(); window.scrollTo(0, 0); } render(); },
   simEntregar: () => {
     const s = ui.qs, falta = s.itens.filter(q => q.resp == null).length;
     if (falta && !confirm(`Ainda há ${falta} ${falta === 1 ? 'questão' : 'questões'} sem resposta. Entregar mesmo assim?`)) return;
+    if (typeof fecharItem === 'function') fecharItem(s);
     const porMat = {}; let ac = 0;
     for (const q of s.itens) {
-      const m = q.materia || 'Outra', x = (porMat[m] ||= { f: 0, a: 0 }); x.f++;
-      if (q.resp != null) { q.certo = q.resp === q.gab; if (q.certo) { x.a++; ac++; } registrarHist(q); }
+      const m = q.materia || 'Outra', x = (porMat[m] ||= { f: 0, a: 0, r: 0 }); x.f++;
+      if (q.resp != null) { x.r++; q.certo = q.resp === q.gab; if (q.certo) { x.a++; ac++; } registrarHist(q); }
     }
     const tempo = Math.round((Date.now() - s.t0) / 60000);
     s.eraSimulado = true; s.simulado = false; finalizarSessao();

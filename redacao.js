@@ -2,8 +2,68 @@
 /* Redação com histórico (reler o texto e todas as correções, da IA e de outras pessoas) e cartões com gerador por IA.
    Carregado depois do pencil.js: as funções vRedacao, vCartoes e as ações daqui substituem as antigas. */
 
+const MODELOS_RED = {
+  vunesp: {
+    nome: 'Vunesp / Med SP',
+    desc: 'Santa Casa, Einstein, UNIFESP, São Camilo, FMABC e UNESP · dissertação argumentativa (0 a 28, SEM proposta de intervenção)',
+    max: 28,
+    step: 1,
+    comps: [
+      { n: 1, nome: 'Tema e gênero (texto dissertativo-argumentativo)', max: 8 },
+      { n: 2, nome: 'Coerência, argumentação e repertório', max: 8 },
+      { n: 3, nome: 'Coesão, modalidade e norma culta', max: 12 },
+    ],
+  },
+  fuvest: {
+    nome: 'Fuvest (USP)',
+    desc: 'USP · dissertação (ou gênero pedido na proposta), foco em projeto de texto, criticidade e articulação (0 a 50, SEM proposta de intervenção)',
+    max: 50,
+    step: 1,
+    comps: [
+      { n: 1, nome: 'Desenvolvimento do tema e organização do gênero', max: 20 },
+      { n: 2, nome: 'Coerência dos argumentos e articulação das partes', max: 15 },
+      { n: 3, nome: 'Correção gramatical e adequação vocabular', max: 15 },
+    ],
+  },
+  enem: {
+    nome: 'ENEM',
+    desc: '5 competências (0 a 1000, COM proposta de intervenção detalhada na C5)',
+    max: 1000,
+    step: 40,
+    comps: [
+      { n: 1, nome: 'Norma culta', max: 200 },
+      { n: 2, nome: 'Tema, repertório e estrutura', max: 200 },
+      { n: 3, nome: 'Argumentação e projeto de texto', max: 200 },
+      { n: 4, nome: 'Coesão textual', max: 200 },
+      { n: 5, nome: 'Proposta de intervenção', max: 200 },
+    ],
+  },
+  unicamp: {
+    nome: 'Unicamp',
+    desc: 'Gênero textual específico pedido na proposta + leitura crítica da coletânea (0 a 48)',
+    max: 48,
+    step: 1,
+    comps: [
+      { n: 1, nome: 'Proposta temática e cumprimento do gênero', max: 12 },
+      { n: 2, nome: 'Leitura e articulação dos textos de apoio', max: 12 },
+      { n: 3, nome: 'Construção do texto, coesão e coerência', max: 12 },
+      { n: 4, nome: 'Convenções da escrita e registro', max: 12 },
+    ],
+  },
+};
+const modeloRedDe = r => MODELOS_RED[r?.modelo] || MODELOS_RED.enem;
+const pctNotaRed = (nota, max) => nota == null ? null : Math.max(0, Math.min(100, Math.round(nota / (max || 1000) * 100)));
+const detectarModeloRed = txt => {
+  const t = String(txt || '').toLowerCase();
+  if (/fuvest|\busp\b/.test(t)) return 'fuvest';
+  if (/unicamp/.test(t)) return 'unicamp';
+  if (/vunesp|santa casa|einstein|unifesp|camilo|fmabc|unesp/.test(t)) return 'vunesp';
+  if (/enem/.test(t)) return 'enem';
+  return null;
+};
 const migrarRed = r => {
   if (!r.id) r.id = uid();
+  r.modelo ||= 'enem';
   r.correcoes ||= [];
   if (r.manual) { r.correcoes.push({ id: uid(), fonte: 'Professor', nota: r.manual.nota, obs: r.manual.obs || '', dia: r.dia }); delete r.manual; }
   return r;
@@ -12,12 +72,19 @@ const notaRed = r => r.nota ?? (r.correcoes.length ? r.correcoes[r.correcoes.len
 const stepperHtml = (id, v, min, max) => `<div class="stepper"><button type="button" class="qb" data-acao="step" data-id="${id}" data-d="-1" aria-label="menos">−</button><input type="number" id="${id}" min="${min}" max="${max}" value="${v}" inputmode="numeric"><button type="button" class="qb" data-acao="step" data-id="${id}" data-d="1" aria-label="mais">+</button></div>`;
 Object.assign(ACOES, { step: el => { const i = document.getElementById(el.dataset.id); if (!i) return; const passo = i.id === 'mq-total' ? 10 : 1; const n = Math.max(+i.min, Math.min(+i.max, (+i.value || 0) + +el.dataset.d * passo)); i.value = n; if (i.id === 'cg-n') ui.cgN = n; if (i.id === 'qia-n') ui.qNIa = n; i.dispatchEvent(new Event('input', { bubbles: true })); if (i.id === 'mq-total') render(); const b = document.querySelector('[data-acao="cgGerar"]'); if (b && i.id === 'cg-n') b.textContent = 'Gerar ' + n; } });
 document.addEventListener('input', e => { if (e.target.id === 'cg-n') { ui.cgN = Math.max(1, Math.min(100, Math.round(+e.target.value) || 1)); const b = document.querySelector('[data-acao="cgGerar"]'); if (b) b.textContent = 'Gerar ' + ui.cgN; } if (e.target.id === 'qia-n') ui.qNIa = Math.max(1, Math.min(60, Math.round(+e.target.value) || 1)); });
-ui.redVer = null; ui.cgMat = 'Biologia'; ui.cgPedido = ''; ui.cgN = 10; ui.cgLista = null; ui.cartaoModo = 'mao';
+ui.redVer = null; ui.redModelo ||= 'vunesp'; ui.cgMat = 'Biologia'; ui.cgPedido = ''; ui.cgN = 10; ui.cgLista = null; ui.cartaoModo = 'mao';
 
-function iaCardHtml(r) {
-  return `<div class="corr-card"><div class="entre"><h3>Correção da IA</h3><span class="nota" style="color:${notaCor(r.nota_total / 5)}">${r.nota_total}<small>/1000</small></span></div>
-    ${(r.competencias || []).map(c => `<div class="comp"><div class="entre"><strong>C${c.n} · ${esc(c.nome || '')}</strong><span style="color:${notaCor(c.nota)};font-weight:800">${c.nota}</span></div>
-      <div class="barra"><i style="width:${Math.min(100, c.nota / 2)}%;background:${notaCor(c.nota)}"></i></div><span class="fraco" style="font-size:14px">${esc(c.comentario || '')}</span></div>`).join('')}
+function iaCardHtml(r, modeloId = 'enem') {
+  const mod = MODELOS_RED[r.modelo || modeloId] || MODELOS_RED.enem;
+  const maxTot = r.max_total || mod.max;
+  const pct = pctNotaRed(r.nota_total, maxTot) ?? 0;
+  return `<div class="corr-card"><div class="entre"><div class="coluna" style="gap:2px"><h3>Correção da IA</h3><span class="fraco" style="font-size:12.5px">Critérios: ${esc(mod.nome)}</span></div><span class="nota" style="color:${notaCor(pct * 2)}">${r.nota_total}<small>/${maxTot}</small></span></div>
+    ${(r.competencias || []).map((c, idx) => {
+      const cMax = c.max || mod.comps[idx]?.max || 200;
+      const cPct = Math.min(100, Math.round((c.nota || 0) / cMax * 100));
+      return `<div class="comp"><div class="entre"><strong>${mod === MODELOS_RED.enem ? `C${c.n}` : `Critério ${c.n}`} · ${esc(c.nome || mod.comps[idx]?.nome || '')}</strong><span style="color:${notaCor(cPct * 2)};font-weight:800">${c.nota}/${cMax}</span></div>
+        <div class="barra"><i style="width:${cPct}%;background:${notaCor(cPct * 2)}"></i></div><span class="fraco" style="font-size:14px">${esc(c.comentario || '')}</span></div>`;
+    }).join('')}
     ${r.pontos_fortes?.length ? `<div><span class="rotulo">o que está bom</span><ul>${r.pontos_fortes.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
     ${r.melhorar?.length ? `<div><span class="rotulo">para melhorar</span><ul>${r.melhorar.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
     ${r.proximo_passo ? `<p class="mao" style="margin:0">${esc(r.proximo_passo)}</p>` : ''}
@@ -27,47 +94,67 @@ function iaCardHtml(r) {
 function evolucaoRed() {
   const l = S.redacoes.filter(r => notaRed(r) != null).slice(-12);
   if (l.length < 2) return '';
-  return `<div class="coluna" style="gap:6px"><span class="rotulo">sua evolução</span><div class="evolucao">${l.map(r => `<div title="${esc(r.tema || '')}: ${notaRed(r)}"><i style="height:${Math.round(notaRed(r) / 10)}%;background:${notaCor(notaRed(r) / 5)}"></i><small>${notaRed(r)}</small></div>`).join('')}</div></div>`;
+  return `<div class="coluna" style="gap:6px"><span class="rotulo">sua evolução (% da nota máxima)</span><div class="evolucao">${l.map(r => {
+    const mod = modeloRedDe(r), n = notaRed(r), pct = pctNotaRed(n, mod.max) ?? 0;
+    return `<div title="${esc(r.tema || '')} (${mod.nome}): ${n}/${mod.max} (${pct}%)"><i style="height:${Math.max(6, pct)}%;background:${notaCor(pct * 2)}"></i><small>${pct}%</small></div>`;
+  }).join('')}</div></div>`;
 }
 
 function vRedacao() {
   S.redacoes.forEach(migrarRed);
   if (ui.redVer) return vRedDetalhe(S.redacoes.find(r => r.id === ui.redVer));
-  const w = semAtual();
-  const temas = S.assuntos.filter(a => /^Reda/.test(a.titulo) && !a.feito && semDe(a) <= somaDias(w, 7)).slice(0, 6);
+  const w = semAtual(), mod = MODELOS_RED[ui.redModelo] || MODELOS_RED.vunesp;
+  const temas = S.assuntos.filter(a => /^Reda/.test(a.titulo) && !a.feito && semDe(a) <= somaDias(w, 14)).slice(0, 4);
   const r = ui.redRes, hist = S.redacoes.slice().reverse();
-  return `<section class="cartao"><p class="fraco" style="margin:0">Escreva a redação (à mão ou digitando). A IA corrige pelas 5 competências do ENEM, e você pode guardar também a correção do professor ou de outra pessoa. Tudo fica no histórico abaixo.</p>
-    <div class="alterna" role="group"><button data-acao="redModo" data-v="mao" aria-pressed="${ui.redModo !== 'digitar'}">Escrever à mão</button><button data-acao="redModo" data-v="digitar" aria-pressed="${ui.redModo === 'digitar'}">Digitar</button></div>
-    <label class="campo">Tema<input type="text" id="red-tema" value="${esc(ui.redTema)}" placeholder="Ex.: Desafios da saúde mental" data-ui="redTema"></label>
-    ${temas.length ? `<div class="linha">${temas.map(a => `<button class="chip" data-acao="temaRed" data-id="${a.id}">${esc(a.titulo.replace(/^Redação[^:]*:\s*/, ''))}</button>`).join('')}</div>` : ''}
+  const rotuloTemaChip = t => {
+    const m = detectarModeloRed(t);
+    const limpo = t.replace(/^Redação\s*/i, '').replace(/\s*\+\s*reescrever.*$/i, '').trim();
+    return (m ? `${MODELOS_RED[m].nome}: ` : '') + limpo.slice(0, 56) + (limpo.length > 56 ? '…' : '');
+  };
+  return `<section class="cartao">
+    <div class="coluna" style="gap:6px">
+      <span class="rotulo">banca / critérios de correção</span>
+      <div class="linha" style="gap:6px">${Object.entries(MODELOS_RED).map(([k, m]) => `<button type="button" class="chip" data-acao="redModelo" data-v="${k}" aria-pressed="${ui.redModelo === k}">${esc(m.nome)}</button>`).join('')}</div>
+      <p class="fraco" style="margin:0;font-size:13.5px">${esc(mod.desc)}</p>
+    </div>
+    <div class="alterna" role="group" style="align-self:flex-start"><button data-acao="redModo" data-v="mao" aria-pressed="${ui.redModo !== 'digitar'}">Escrever à mão</button><button data-acao="redModo" data-v="digitar" aria-pressed="${ui.redModo === 'digitar'}">Digitar</button></div>
+    <label class="campo">Tema<input type="text" id="red-tema" value="${esc(ui.redTema)}" placeholder="Ex.: Limites da inteligência artificial na saúde" data-ui="redTema"></label>
+    ${temas.length ? `<div class="coluna" style="gap:6px"><span class="rotulo">próximas redações do plano</span><div class="linha" style="gap:6px">${temas.map(a => `<button class="chip chip-mini" data-acao="temaRed" data-id="${a.id}" title="${esc(a.titulo)}">${esc(rotuloTemaChip(a.titulo))}</button>`).join('')}</div></div>` : ''}
     ${ui.redModo === 'digitar' ? `<textarea id="red-digitada" data-ui="redTexto" style="min-height:420px" placeholder="Digite a sua redação aqui (se estiver sem a caneta ou no notebook).">${esc(ui.redTexto)}</textarea>` : quadroHtml('redacao', 1700, 'linhas')}
-    <div class="linha"><button class="botao grande" data-acao="corrigirRed">Corrigir com a IA</button><button class="botao contorno" data-acao="salvarRed">Só salvar no histórico</button></div></section>
-    ${r ? `<section class="cartao">${iaCardHtml(r)}<div class="linha">${r.id ? `<button class="botao claro" data-acao="redAbrir" data-id="${r.id}">Abrir no histórico</button>` : ''}
+    <div class="linha"><button class="botao grande" data-acao="corrigirRed">Corrigir (${esc(mod.nome)})</button><button class="botao contorno" data-acao="salvarRed">Só salvar no histórico</button></div></section>
+    ${r ? `<section class="cartao">${iaCardHtml(r, r.modelo || ui.redModelo)}<div class="linha">${r.id ? `<button class="botao claro" data-acao="redAbrir" data-id="${r.id}">Abrir no histórico</button>` : ''}
       ${r.assuntoId && achar(r.assuntoId) && !achar(r.assuntoId).feito ? `<button class="botao claro" data-acao="feitoAssunto" data-id="${r.assuntoId}">Marcar a redação como feita</button>` : ''}
       <button class="botao contorno" data-acao="rascunhoNova" data-q="redacao">Folha nova</button></div></section>` : ''}
     <section class="cartao"><div class="entre"><h2>Histórico de redações</h2><span class="fraco">${hist.length} ${hist.length === 1 ? 'redação' : 'redações'}</span></div>${evolucaoRed()}
-      ${hist.length ? hist.map(h => `<button class="red-item" data-acao="redAbrir" data-id="${h.id}"><span><strong>${esc(h.tema || 'Sem tema')}</strong><small class="fraco"> · ${diaCurto(h.dia)} · ${h.modo === 'digitar' ? 'digitada' : 'à mão'}</small></span>
-        <span class="notas-mini">${h.nota != null ? `<b style="color:${notaCor(h.nota / 5)}">IA ${h.nota}</b>` : ''}${h.correcoes.map(c => `<b style="color:${notaCor(c.nota / 5)}">${esc(c.fonte)} ${c.nota}</b>`).join('')}${h.nota == null && !h.correcoes.length ? '<small class="fraco">sem correção</small>' : ''}</span></button>`).join('')
+      ${hist.length ? hist.map(h => {
+        const mh = modeloRedDe(h);
+        return `<button class="red-item" data-acao="redAbrir" data-id="${h.id}"><span><strong>${esc(h.tema || 'Sem tema')}</strong><small class="fraco"> · ${esc(mh.nome)} · ${diaCurto(h.dia)} · ${h.modo === 'digitar' ? 'digitada' : 'à mão'}</small></span>
+        <span class="notas-mini">${h.nota != null ? `<b style="color:${notaCor((pctNotaRed(h.nota, mh.max) ?? 0) * 2)}">IA ${h.nota}/${mh.max}</b>` : ''}${h.correcoes.map(c => `<b style="color:${notaCor((pctNotaRed(c.nota, c.max || mh.max) ?? 0) * 2)}">${esc(c.fonte)} ${c.nota}</b>`).join('')}${h.nota == null && !h.correcoes.length ? '<small class="fraco">sem correção</small>' : ''}</span></button>`;
+      }).join('')
         : '<p class="fraco" style="margin:0">As redações que você corrigir ou salvar aparecem aqui.</p>'}</section>`;
 }
 
 function vRedDetalhe(e) {
   if (!e) { ui.redVer = null; return vRedacao(); }
-  const ia = e.ia ? iaCardHtml({ ...e.ia, nota_total: e.nota }) : '';
-  const corr = e.correcoes.map(c => `<div class="corr-card"><div class="entre"><h3>${esc(c.fonte)} <small class="fraco">· ${diaCurto(c.dia)}</small></h3><span class="nota" style="color:${notaCor(c.nota / 5)}">${c.nota}<small>/1000</small></span></div>
-    ${c.comps?.some(x => x != null) ? c.comps.map((n, i) => n == null ? '' : `<div class="comp"><div class="entre"><strong>C${i + 1}</strong><span style="color:${notaCor(n)};font-weight:800">${n}</span></div><div class="barra"><i style="width:${Math.min(100, n / 2)}%;background:${notaCor(n)}"></i></div></div>`).join('') : ''}
+  const mod = modeloRedDe(e);
+  const ia = e.ia ? iaCardHtml({ ...e.ia, nota_total: e.nota, modelo: e.modelo }, e.modelo) : '';
+  const corr = e.correcoes.map(c => {
+    const cMax = c.max || mod.max, pct = pctNotaRed(c.nota, cMax) ?? 0;
+    return `<div class="corr-card"><div class="entre"><h3>${esc(c.fonte)} <small class="fraco">· ${diaCurto(c.dia)}</small></h3><span class="nota" style="color:${notaCor(pct * 2)}">${c.nota}<small>/${cMax}</small></span></div>
+    ${c.comps?.some(x => x != null) ? c.comps.map((n, i) => { if (n == null) return ''; const cm = mod.comps[i]?.max || 200; const cp = Math.min(100, Math.round(n / cm * 100)); return `<div class="comp"><div class="entre"><strong>${mod === MODELOS_RED.enem ? `C${i + 1}` : `Critério ${i + 1}`}</strong><span style="color:${notaCor(cp * 2)};font-weight:800">${n}/${cm}</span></div><div class="barra"><i style="width:${cp}%;background:${notaCor(cp * 2)}"></i></div></div>`; }).join('') : ''}
     ${c.obs ? `<p style="margin:0;white-space:pre-wrap">${esc(c.obs)}</p>` : ''}
     ${c.foto ? `<img class="desenho" data-foto="foto:${e.id}:${c.id}" alt="foto da correção" style="min-height:120px">` : ''}
-    <div class="linha"><button class="link" data-acao="redDelCorr" data-id="${e.id}" data-c="${c.id}">Apagar esta correção</button></div></div>`).join('');
-  return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">redação · ${diaCurto(e.dia)}</span><h2>${esc(e.tema || 'Sem tema')}</h2></div>
+    <div class="linha"><button class="link" data-acao="redDelCorr" data-id="${e.id}" data-c="${c.id}">Apagar esta correção</button></div></div>`;
+  }).join('');
+  return `<header class="entre"><div class="coluna" style="gap:4px"><span class="rotulo">redação · ${esc(mod.nome)} · ${diaCurto(e.dia)}</span><h2>${esc(e.tema || 'Sem tema')}</h2></div>
     <div class="linha"><button class="botao contorno" data-acao="redVoltar">‹ Voltar</button><button class="botao claro" data-acao="redReescrever" data-id="${e.id}">Reescrever</button></div></header>
     <section class="cartao"><span class="rotulo">o texto</span>${!e.modo ? '<p class="fraco" style="margin:0">Esta redação foi registrada antes de o histórico existir, então o texto e a correção da IA não foram guardados. As próximas ficam completas.</p>' : e.modo === 'digitar' ? `<p style="margin:0;white-space:pre-wrap">${esc(e.texto || '')}</p>` : `<img class="desenho" data-desenho="red:${e.id}" data-prop="2" alt="redação à mão" style="min-height:200px">`}
-      <div class="linha">${e.ia ? '' : `<button class="botao" data-acao="corrigirEntrada" data-id="${e.id}">Corrigir com a IA</button>`}<button class="link" data-acao="redApagar" data-id="${e.id}">Apagar a redação</button></div></section>
+      <div class="linha">${e.ia ? '' : `<button class="botao" data-acao="corrigirEntrada" data-id="${e.id}">Corrigir (${esc(mod.nome)})</button>`}<button class="link" data-acao="redApagar" data-id="${e.id}">Apagar a redação</button></div></section>
     ${ia ? `<section class="cartao">${ia}</section>` : ''}${corr ? `<section class="cartao">${corr}</section>` : ''}
-    <section class="cartao"><h2>Adicionar a correção de outra pessoa</h2><p class="fraco" style="margin:0">Professor, cursinho, outra IA ou você mesma. Preencha só o que tiver: a nota total, as notas de cada competência, comentários e uma foto da correção.</p>
+    <section class="cartao"><h2>Adicionar a correção de outra pessoa</h2><p class="fraco" style="margin:0">Professor, cursinho, outra IA ou você mesma (${esc(mod.nome)}, máx. ${mod.max}).</p>
       <div class="linha"><label class="campo" style="flex:1 1 200px">Quem corrigiu<input type="text" id="cr-fonte" list="fontes-corr" placeholder="Professor, Cursinho, Outra IA…"><datalist id="fontes-corr"><option>Professor</option><option>Cursinho</option><option>Outra IA</option><option>Autocorreção</option></datalist></label>
-        <label class="campo" style="flex:0 1 150px">Nota total (0 a 1000)<input type="number" id="cr-nota" min="0" max="1000" step="10"></label></div>
-      <div class="linha">${[1, 2, 3, 4, 5].map(i => `<label class="campo" style="flex:1 1 90px">C${i} (0-200)<input type="number" id="cr-c${i}" min="0" max="200" step="20"></label>`).join('')}</div>
+        <label class="campo" style="flex:0 1 160px">Nota total (0 a ${mod.max})<input type="number" id="cr-nota" min="0" max="${mod.max}" step="${mod.max === 1000 ? 10 : 0.5}"></label></div>
+      <div class="linha">${mod.comps.map(c => `<label class="campo" style="flex:1 1 100px">${mod === MODELOS_RED.enem ? `C${c.n}` : `Crit. ${c.n}`} (0-${c.max})<input type="number" id="cr-c${c.n}" min="0" max="${c.max}" step="${mod.max === 1000 ? 20 : 0.5}"></label>`).join('')}</div>
       <label class="campo">Comentários<textarea id="cr-obs" placeholder="O que a pessoa disse sobre o texto"></textarea></label>
       <label class="campo">Foto da correção (opcional)<input type="file" id="cr-foto" accept="image/*"></label>
       <div class="linha"><button class="botao" data-acao="redAddCorr" data-id="${e.id}">Salvar correção</button></div></section>`;
@@ -79,19 +166,51 @@ async function fotoComprimida(file, max = 1400) {
   c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', 0.8);
 }
 
-const PROMPT_RED = (tema, digitado) => `${digitado != null ? 'Abaixo está uma redação digitada' : 'A imagem é uma redação manuscrita'} no modelo ENEM (texto dissertativo-argumentativo)${tema ? `, tema: "${tema}"` : ''}.${digitado != null ? `\n\nTEXTO DA REDAÇÃO:\n${digitado}\n\n` : ''} Primeiro ${digitado != null ? 'repita o texto na transcrição' : 'transcreva o texto'}. Depois corrija pelas 5 competências do ENEM, com rigor e sem inflar a nota (notas só 0, 40, 80, 120, 160 ou 200 por competência):
-C1 domínio da norma culta; C2 compreensão do tema e estrutura dissertativa; C3 seleção e organização de argumentos; C4 coesão (conectivos); C5 proposta de intervenção (agente, ação, meio, finalidade, detalhamento).
+const PROMPT_RED = (tema, digitado, modeloId = 'enem') => {
+  const mod = MODELOS_RED[modeloId] || MODELOS_RED.enem;
+  const intro = `${digitado != null ? 'Abaixo está uma redação digitada' : 'A imagem é uma redação manuscrita'} para o vestibular ${mod.nome}${tema ? `, tema: "${tema}"` : ''}.${digitado != null ? `\n\nTEXTO DA REDAÇÃO:\n${digitado}\n\n` : ''} Primeiro ${digitado != null ? 'repita o texto na transcrição' : 'transcreva o texto'}.`;
+  let criterios = '';
+  if (modeloId === 'vunesp') {
+    criterios = `Corrija com rigor pelos critérios oficiais da banca Vunesp (Santa Casa, Einstein, UNIFESP, São Camilo, FMABC, UNESP), de 0 a 28 pontos. IMPORTANTE: a Vunesp NÃO exige proposta de intervenção — NÃO penalize a ausência dela! Avalie em 3 critérios:
+1. Tema e gênero dissertativo-argumentativo (0 a 8): abordagem completa do recorte temático e estrutura dissertativa.
+2. Coerência, argumentação e repertório (0 a 8): defesa de ponto de vista, progressão e uso produtivo de repertório/coletânea.
+3. Coesão, modalidade e norma culta (0 a 12): articulação entre parágrafos/frases, precisão vocabular e gramática.`;
+  } else if (modeloId === 'fuvest') {
+    criterios = `Corrija com rigor pelos critérios oficiais da Fuvest (USP), de 0 a 50 pontos. IMPORTANTE: a Fuvest NÃO exige proposta de intervenção estilo ENEM — avalie profundidade reflexiva, autoria e criticidade! Avalie em 3 critérios:
+1. Desenvolvimento do tema e organização do gênero (0 a 20): leitura crítica da proposta, autoria e recorte pertinente.
+2. Coerência dos argumentos e articulação das partes (0 a 15): projeto de texto, progressão argumentativa e coesão.
+3. Correção gramatical e adequação vocabular (0 a 15): norma-padrão, clareza e precisão expressiva.`;
+  } else if (modeloId === 'unicamp') {
+    criterios = `Corrija com rigor pelos critérios oficiais da Unicamp, de 0 a 48 pontos. Avalie em 4 critérios (0 a 12 cada):
+1. Proposta temática e cumprimento do gênero textual pedido (interlocução, propósito comunicativo).
+2. Leitura e articulação crítica dos textos de apoio/repertório.
+3. Construção do texto, coesão e coerência.
+4. Convenções da escrita, norma culta e adequação de registro.`;
+  } else {
+    criterios = `Corrija pelas 5 competências do ENEM, com rigor e sem inflar a nota (notas só 0, 40, 80, 120, 160 ou 200 por competência, total 0 a 1000):
+C1 domínio da norma culta; C2 compreensão do tema e estrutura dissertativa; C3 seleção e organização de argumentos; C4 coesão (conectivos); C5 proposta de intervenção (agente, ação, meio, finalidade, detalhamento).`;
+  }
+  return `${intro} Depois ${criterios}
 Se a letra estiver difícil de ler, diga isso nos comentários. Responda SÓ com JSON:
-{"transcricao":"...","competencias":[{"n":1,"nome":"...","nota":0,"comentario":"1 ou 2 frases"},{"n":2,...},{"n":3,...},{"n":4,...},{"n":5,...}],"nota_total":0,"pontos_fortes":["..."],"melhorar":["..."],"proximo_passo":"1 frase gentil e prática"}`;
+{"transcricao":"...","competencias":[${mod.comps.map(c => `{"n":${c.n},"nome":"${c.nome}","max":${c.max},"nota":0,"comentario":"1 ou 2 frases"}`).join(',')}],"nota_total":0,"pontos_fortes":["..."],"melhorar":["..."],"proximo_passo":"1 frase gentil e prática"}`;
+};
 
 async function corrigirComIa(e) {
+  const modId = e.modelo || ui.redModelo || 'enem';
+  const mod = MODELOS_RED[modId] || MODELOS_RED.enem;
   const digitado = e.modo === 'digitar' ? e.texto : null;
   let img = null;
   if (digitado == null) { const d = await DB.get('d:red:' + e.id); if (!d?.s?.length) throw new Error('não achei o desenho desta redação'); img = imagemDe(d, 2, 1400); }
-  const r = await iaComImagem(PROMPT_RED(e.tema, digitado), img, 8000);
-  const comps = (r.competencias || []).map(c => ({ ...c, nota: Math.max(0, Math.min(200, Math.round((+c.nota || 0) / 40) * 40)) }));
-  r.competencias = comps; r.nota_total = comps.reduce((s, c) => s + c.nota, 0);
-  e.ia = r; e.nota = r.nota_total; return r;
+  const r = await iaComImagem(PROMPT_RED(e.tema, digitado, modId), img, 8000);
+  const comps = (r.competencias || []).map((c, idx) => {
+    const cMax = mod.comps[idx]?.max || 200;
+    const raw = +c.nota || 0;
+    const nota = modId === 'enem' ? Math.max(0, Math.min(200, Math.round(raw / 40) * 40)) : Math.max(0, Math.min(cMax, Math.round(raw * 2) / 2));
+    return { ...c, n: c.n || idx + 1, nome: c.nome || mod.comps[idx]?.nome || '', max: cMax, nota };
+  });
+  r.competencias = comps; r.modelo = modId; r.max_total = mod.max;
+  r.nota_total = Math.round(comps.reduce((s, c) => s + c.nota, 0) * 10) / 10;
+  e.modelo = modId; e.ia = r; e.nota = r.nota_total; return r;
 }
 
 /** Guarda a redação do editor no histórico (e o desenho, se for à mão). */
@@ -99,13 +218,30 @@ async function guardarRedacaoAtual() {
   const digitar = ui.redModo === 'digitar', q = digitar ? null : quadroDe('redacao');
   const texto = digitar ? ($('#red-digitada')?.value || ui.redTexto || '').trim() : '';
   if (digitar ? texto.length < 80 : (!q || q.vazio())) { ui.iaMsg = digitar ? 'Escreva a redação (pelo menos algumas linhas) primeiro.' : 'A folha está em branco. Escreva a redação primeiro.'; render(); return null; }
-  const e = migrarRed({ dia: hoje(), tema: ($('#red-tema')?.value || ui.redTema || '').trim(), modo: digitar ? 'digitar' : 'mao', texto: digitar ? texto : '', nota: null, ia: null, assuntoId: ui.redAssunto || null });
+  const e = migrarRed({ dia: hoje(), modelo: ui.redModelo || 'vunesp', tema: ($('#red-tema')?.value || ui.redTema || '').trim(), modo: digitar ? 'digitar' : 'mao', texto: digitar ? texto : '', nota: null, ia: null, assuntoId: ui.redAssunto || null });
   ui.redTema = e.tema;
   if (!digitar) await DB.set('d:red:' + e.id, { w: q.W0, s: q.tr.map(s => ({ ...s })) });
-  S.redacoes.push(e); S.redacoes = S.redacoes.slice(-60); salvar(); return e;
+  S.redacoes.push(e);
+  if (S.redacoes.length > 60) {
+    const removidas = S.redacoes.slice(0, S.redacoes.length - 60);
+    S.redacoes = S.redacoes.slice(-60);
+    // limpa desenhos e fotos órfãs do IndexedDB ao descartar redações mais antigas que 60
+    for (const old of removidas) {
+      try { await DB.del('d:red:' + old.id); for (const c of old.correcoes || []) await DB.del(`foto:${old.id}:${c.id}`); } catch { }
+    }
+  }
+  salvar(); return e;
 }
 
 Object.assign(ACOES, {
+  redModelo: el => { if (MODELOS_RED[el.dataset.v]) { ui.redModelo = el.dataset.v; render(); } },
+  temaRed: el => {
+    const a = achar(el.dataset.id); if (!a) return;
+    const m = detectarModeloRed(a.titulo);
+    if (m) ui.redModelo = m;
+    ui.redTema = a.titulo.replace(/^Redação[^:]*:\s*/i, '').replace(/\s*\+\s*reescrever.*$/i, '').trim();
+    ui.redAssunto = a.id; render();
+  },
   corrigirRed: async () => {
     const e = await guardarRedacaoAtual(); if (!e) return;
     ui.carregando = e.modo === 'digitar' ? 'Corrigindo a redação…' : 'Lendo e corrigindo a redação…'; ui.iaMsg = ''; render();
@@ -130,18 +266,19 @@ Object.assign(ACOES, {
   },
   redReescrever: async el => {
     const e = S.redacoes.find(x => x.id === el.dataset.id); if (!e) return;
-    ui.redTema = e.tema; ui.redModo = e.modo; ui.redRes = null; ui.redVer = null;
+    ui.redTema = e.tema; ui.redModo = e.modo; ui.redModelo = e.modelo || 'enem'; ui.redRes = null; ui.redVer = null;
     if (e.modo === 'digitar') ui.redTexto = e.texto; else { const d = await DB.get('d:red:' + e.id); await DB.set('d:redacao', d); }
     ui.iaMsg = 'Carreguei a redação na folha para você reescrever.'; render();
   },
   redAddCorr: async el => {
     const e = S.redacoes.find(x => x.id === el.dataset.id); if (!e) return;
-    const comps = [1, 2, 3, 4, 5].map(i => { const v = $('#cr-c' + i).value; return v === '' ? null : Math.max(0, Math.min(200, Math.round(+v))); });
-    let nota = $('#cr-nota').value === '' ? null : Math.max(0, Math.min(1000, Math.round(+$('#cr-nota').value)));
-    if (nota == null && comps.some(x => x != null)) nota = comps.reduce((s, x) => s + (x || 0), 0);
+    const mod = modeloRedDe(e);
+    const comps = mod.comps.map(c => { const v = $('#cr-c' + c.n)?.value; return v == null || v === '' ? null : Math.max(0, Math.min(c.max, +v)); });
+    let nota = $('#cr-nota').value === '' ? null : Math.max(0, Math.min(mod.max, +$('#cr-nota').value));
+    if (nota == null && comps.some(x => x != null)) nota = Math.round(comps.reduce((s, x) => s + (x || 0), 0) * 10) / 10;
     const obs = $('#cr-obs').value.trim(), file = $('#cr-foto').files?.[0];
-    if (nota == null) { ui.iaMsg = 'Informe pelo menos a nota total (ou as notas das competências).'; render(); return; }
-    const c = { id: uid(), fonte: ($('#cr-fonte').value || 'Professor').trim().slice(0, 40), nota, comps: comps.some(x => x != null) ? comps : null, obs, dia: hoje(), foto: false };
+    if (nota == null) { ui.iaMsg = 'Informe pelo menos a nota total (ou as notas dos critérios).'; render(); return; }
+    const c = { id: uid(), fonte: ($('#cr-fonte').value || 'Professor').trim().slice(0, 40), nota, max: mod.max, comps: comps.some(x => x != null) ? comps : null, obs, dia: hoje(), foto: false };
     if (file) { try { await DB.set(`foto:${e.id}:${c.id}`, { foto: await fotoComprimida(file) }); c.foto = true; } catch { ui.iaMsg = 'Não consegui salvar a foto, mas a correção foi guardada.'; } }
     e.correcoes.push(c); salvar(); ui.iaMsg = ui.iaMsg || 'Correção guardada.'; render();
   },

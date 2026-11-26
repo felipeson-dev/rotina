@@ -1,72 +1,21 @@
 'use strict';
-/* Revisões espaçadas: o assunto estudado volta sozinho (1 semana, depois 1 mês, depois a cada ~2 meses), adaptando ao acerto dela:
-   foi bem (80%+) = demora mais; foi mal (<60%) = volta em 4 dias e com um pouco de teoria. Em 2 dias da semana (padrão: quarta e sábado)
-   parte do estudo vira "questões de assuntos já estudados", escolhidos pelo app (vencidos, fracos, mais cobrados) ou marcados por ela.
-   Também: "Fazer questões no app" direto do assunto (Hoje, janela do assunto e revisões), abatendo o passo de questões do bloco. */
-const diasRev = () => S.perfil.diasRev || [3, 6];   // dias de revisão (0 = domingo … 6 = sábado); padrão: quarta e sábado
-const INTERVALOS_REV = [7, 30, 70];     // dias até a 1ª, 2ª e 3ª voltas (a 3ª só para assuntos A e B; depois o assunto volta pelos simulados e pela revisão da semana)
+/* Motor unificado de Revisão Inteligente (memória adaptativa estilo FSRS leve + orçamento anti-sufoco):
+   - Uma ÚNICA fonte de verdade usada tanto nos blocos de Hoje quanto na aba Revisão (sem divergência de números).
+   - Calcula a retenção estimada R(t) = exp(-0.223 * dias / estabilidade) por assunto, combinando acertos no banco
+     (com filtro por subtópico para não misturar assuntos que compartilham a mesma tag!), questões feitas fora do app
+     (S.foraQ + a.questoes), peso nas provas de Medicina SP (A/B/C + incidência) e marcação de "fraco".
+   - Orçamento anti-sufoco: revisões NUNCA engolem os assuntos novos — garantem pelo menos 68% do tempo de estudo
+     para conteúdo novo enquanto houver cronograma pendente, intercalam Exatas + Bio/Humanas e misturam até 40%
+     de erros antigos (≥3 dias) com questões inéditas das bancas do cenário dela (Capital ou Campinas). */
 
-/** Quantas questões oficiais desse assunto há no banco (o quanto ele cai nas provas). */
-function cobranca(a) { return BANCO.pronto ? BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.as === tagDe(a)).length : 0; }
+const diasRev = () => S.perfil.diasRev || [3, 6];   // dias da revisão maior (0 = dom … 6 = sáb); padrão: quarta e sábado
+const PESADAS_REV = ['Matemática', 'Física', 'Química'];
+const REV_MIN_FIRME = 8;                            // mínimo de questões para a média ser considerada firme
+const REV_JANELA_DIAS = 90;
 
-/** Acerto dela nas questões do banco desse assunto (última tentativa de cada uma) ou nas que ela registrou. */
-function acertoDe(a) {
-  let f = 0, ok = 0;
-  if (BANCO.pronto) for (const q of BANCO.itens) if (q.m === a.materia && q.as === tagDe(a) && S.qh[q.id]) { f++; if (S.qh[q.id].ok) ok++; }
-  if (a.questoes?.feitas) { const comAc = Math.max(0, a.questoes.feitas - (a.questoes.semAc || 0)); f += comAc; ok += a.questoes.acertos || 0; }
-  return f >= 3 ? Math.round(ok / f * 100) : null;
-}
+const nomeCanonicoRev = a => String(a?.nome || a?.titulo || '').replace(/\s*·\s*sessão\s+\d+\/\d+\s*$/i, '').replace(/\s*\(parte \d+ de \d+\)\s*$/i, '').trim();
+const nomeDe = a => a?.nome || a?.titulo || '';
 
-function agendarRev(a, pct = null) {
-  const r = a.rev ||= { n: 0, hist: [] };
-  if (pct != null) r.hist = [...(r.hist || []), [hoje(), pct]].slice(-8);
-  const fim = r.n >= INTERVALOS_REV.length || (r.n >= 2 && a.cls === 'C');
-  r.teoria = pct != null && pct < 60;
-  if (fim && !r.teoria) { r.prox = null; return; }   // voltas acabaram: segue só pela revisão da semana, pelos simulados e pelo caderno de erros
-  const base = INTERVALOS_REV[Math.min(r.n, INTERVALOS_REV.length - 1)];
-  const dias = pct == null ? base : pct >= 80 ? Math.round(base * 1.5) : pct >= 60 ? base : 4;
-  r.prox = somaDias(hoje(), dias);
-}
-
-/** Uma volta da revisão foi feita (com o acerto, se ela fez questões). */
-function revisaoFeita(a, pct = null) {
-  if (!a.rev) return;
-  a.rev.n += pct == null || pct >= 60 ? 1 : 0;   // foi mal: a contagem não anda (volta logo, mais simples)
-  a.rev.ult = hoje(); agendarRev(a, pct);
-}
-
-// estudou o assunto: a 1ª volta fica para daqui a 1 semana
-{ const s0 = setFeito; setFeito = function (a, ok, sinc) { const antes = a && !!a.feito; s0.apply(this, arguments); if (!a || antes === ok) return;
-  // tópico dividido em partes: a revisão começa quando a última parte é feita
-  if (ok && ehConteudo(a) && (!a.parte || a.parte[0] === a.parte[1])) { a.rev = { n: 0, hist: [] }; agendarRev(a); } else if (!ok) delete a.rev; }; }
-
-const estudados = () => S.assuntos.filter(a => a.feito && ehConteudo(a) && (!a.parte || a.parte[0] === a.parte[1]));   // tópico em partes conta uma vez (a última)
-// perdão: revisão de assunto C (cai pouco) vencida há 3 semanas sai da fila; ele volta na revisão geral de julho
-function perdoarRevisoes() { const lim = somaDias(hoje(), -21); for (const a of estudados()) if (a.cls === 'C' && a.rev?.prox && a.rev.prox < lim) { a.rev.prox = null; a.rev.perdoada = hoje(); } }
-// prioridade quando vence mais do que cabe: A antes de B antes de C, exatas antes, depois a mais antiga
-const prioRev = a => ({ A: 3, B: 2, C: 1 }[a.cls] || 2) + (['Matemática', 'Física', 'Química'].includes(a.materia) ? 0.5 : 0);
-const vencidas = (dia = hoje()) => { perdoarRevisoes(); return estudados().filter(a => a.rev?.prox && a.rev.prox <= dia).sort((x, y) => prioRev(y) - prioRev(x) || (x.rev.prox < y.rev.prox ? -1 : 1)); };
-
-/** Os assuntos já estudados que mais precisam de questões agora: vencidos, marcados como fracos, com acerto baixo, mais cobrados, há mais tempo sem ver. */
-function escolherRevisao(n, fora = []) {
-  const h = hoje();
-  return estudados().filter(a => !fora.includes(a.id)).map(a => {
-    const pct = acertoDe(a), atraso = a.rev?.prox && a.rev.prox <= h ? (deIso(h) - deIso(a.rev.prox)) / 864e5 : -1;
-    const semVer = (deIso(h) - deIso(a.rev?.ult || a.feitoEm || h)) / 864e5;
-    const nota = (atraso >= 0 ? 100 + atraso + 15 * prioRev(a) : 0) + (a.fraco ? 40 : 0) + (pct != null && pct < 60 ? 30 : pct != null && pct < 75 ? 12 : 0) + Math.log2(1 + cobranca(a)) * 4 + Math.min(20, semVer / 3);
-    return { a, nota };
-  }).sort((x, y) => y.nota - x.nota).slice(0, n).map(x => x.a);
-}
-
-const blocoRev = (titulo, lista, min, vaga) => ({ id: uid(), assuntoId: null, tipo: 'revisao', vaga, revisao: lista.map(a => a.id), titulo, materia: lista.length === 1 ? lista[0].materia : 'Revisão', min,
-  passos: [...(lista.some(a => a.rev?.teoria) ? [{ t: 'Reler o resumo dos que foram mal da última vez (15 min)', ok: false }] : []), { t: `Fazer as questões (${lista.length * (vaga === 'dia' ? 3 : 5)} a ${lista.length * (vaga === 'dia' ? 4 : 6)}): no app ou no livro`, ok: false }, { t: 'Olhar os erros e anotar o que esqueceu', ok: false }] });
-
-/* Revisão com tempo FIXO, pré-programado: uma vaga curta todo dia e uma vaga maior nos dias de revisão (Ajustes).
-   O tamanho das vagas nunca cresce: se houver mais revisões vencidas do que cabe, as menos urgentes esperam a próxima vaga.
-   O app escolhe os assuntos (24–48 h depois para exatas, vencidos, fracos, mais cobrados) e ela pode trocar. */
-// a partir de março (fase de aprofundamento) as vagas crescem um pouco, se ela não mudou nada em Ajustes
-// v3: 15 min por dia (fixação das exatas e vencidas urgentes) + 2 vagas grandes por semana; teto de 6 h por semana (7h30 a partir de março)
-function cfgRev() { const tarde = hoje() >= '2027-03-01'; return { diario: 15, maior: tarde ? 225 : 180, ...(S.perfil.revCfg || {}) }; }
 /** Assunto do banco de questões que corresponde ao tópico (o cronograma usa tópicos mais finos que o banco). */
 const tagDe = a => {
   if (!a) return '';
@@ -80,15 +29,31 @@ const tagDe = a => {
   }
   return window.limparNomeAssunto ? window.limparNomeAssunto(t) : t;
 };
-const nomeDe = a => a.nome || a.titulo;
+
 const ehHabitoQ = a => !!a && !ehConteudo(a) && (
   /^discursivas/i.test(nomeDe(a)) ||
   (/^interpreta[cç][aã]o de texto/i.test(nomeDe(a)) && a.materia === 'Português') ||
   /^ingl[eê]s:\s*um texto/i.test(nomeDe(a)) ||
   /^obra(\s+\(fuvest\)| da fuvest)/i.test(nomeDe(a))
 );
+
+/** Um assunto de conteúdo só conta como "estudado" (e entra em revisão) quando a ÚLTIMA parte e a ÚLTIMA sessão forem concluídas. */
+const ehFinalDoAssunto = a => !!a && ehConteudo(a) && (!a.parte || a.parte[0] === a.parte[1]) && (!a.sessao || a.sessao.k === a.sessao.n);
+
+function estudados() {
+  const vistos = new Set(), out = [];
+  for (const a of S.assuntos || []) {
+    if (!a.feito || !ehFinalDoAssunto(a)) continue;
+    const k = `${a.materia}|${nomeCanonicoRev(a)}`;
+    if (vistos.has(k)) continue;
+    vistos.add(k);
+    out.push(a);
+  }
+  return out;
+}
+
 function subRegexDe(a) {
-  const tag = tagDe(a), nome = nomeDe(a), subs = window.SUBTOPICOS?.[tag];
+  const tag = tagDe(a), nome = nomeCanonicoRev(a), subs = window.SUBTOPICOS?.[tag];
   if (!subs || !nome || nome === tag) return null;
   const toks = normBusca(nome).split(/\s+/).filter(w => w.length >= 4 && !PARADAS.has(w));
   if (!toks.length) return null;
@@ -100,48 +65,403 @@ function subRegexDe(a) {
   }
   return max > 0 ? melhor : null;
 }
-const PESADAS_REV = ['Matemática', 'Física', 'Química'];
-/** Exatas estudadas há 1 ou 2 dias, ainda sem a revisão rápida de fixação. */
-const fixacao = () => estudados().filter(a => PESADAS_REV.includes(a.materia) && a.rev && !a.rev.fix && a.feitoEm && a.feitoEm < hoje() && a.feitoEm >= somaDias(hoje(), -2));
+
+const regexBancaCenario = () => {
+  const cen = (S.perfil && S.perfil.cenario) || 'capital';
+  if (cen === 'campinas') return /unicamp|puc[- ]?campinas|enem|unesp|fuvest/i;
+  return /fuvest|unifesp|santa casa|einstein|s[aã]o camilo|fmabc|unesp|famerp|famema|s[ií]rio|fmj|enem/i;
+};
+
+/** Mapa de quantos tópicos do cronograma compartilham cada (matéria|tag) — evita misturar acertos de tópicos diferentes. */
+function tagsCompartilhadas() {
+  const c = {};
+  for (const a of S.assuntos || []) {
+    if (!ehConteudo(a) || (a.parte && a.parte[0] !== a.parte[1]) || (a.sessao && a.sessao.k !== a.sessao.n)) continue;
+    const k = `${a.materia}|${tagDe(a)}`;
+    c[k] = (c[k] || 0) + 1;
+  }
+  return c;
+}
+
+/** Quantas questões oficiais desse assunto há no banco (o quanto ele cai nas provas). */
+function cobranca(a) {
+  if (!BANCO.pronto) return 0;
+  const tag = tagDe(a);
+  return BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && q.m === a.materia && q.as === tag).length;
+}
+
+/** Coleta estatísticas precisas de questões de um assunto (banco filtrado por subtópico/aid + questões feitas fora). */
+function statsAssunto(a, ctx = null) {
+  const tag = tagDe(a), chave = `${a.materia}|${tag}`;
+  const subRe = subRegexDe(a);
+  const compartilhada = ctx ? (ctx.shared[chave] || 0) > 1 : false;
+  const hj = hoje(), lim90 = somaDias(hj, -REV_JANELA_DIAS);
+
+  let qBanco = [];
+  if (BANCO.pronto) {
+    const grupo = ctx ? (ctx.qhPorChave[chave] || []) : (() => {
+      const l = [];
+      for (const q of BANCO.itens) {
+        if (q.m !== a.materia || q.as !== tag || !S.qh[q.id]) continue;
+        const h = histDe(q.id)?.h; if (!h?.length) continue;
+        const u = h[h.length - 1];
+        l.push({ m: q, aid: S.qh[q.id].aid || '', dia: u[0] || '', ok: u[1] ? 1 : 0, dias: h.map(t => t[0] || '') });
+      }
+      return l;
+    })();
+    if (compartilhada && subRe) {
+      const irmaos = (window.SUBTOPICOS?.[tag] || []).map(([, re]) => re).filter(re => re !== subRe);
+      const pistas = (re, t) => (t.match(new RegExp(re.source, 'g')) || []).length;
+      const filtradas = grupo.filter(x => {
+        if (x.aid && x.aid === a.id) return true;
+        if (x.aid && x.aid !== a.id) return false;
+        const t = (x.m.x || '') + ' ' + (x.m.s || ''), n = pistas(subRe, t);
+        return n > 0 && irmaos.every(re => pistas(re, t) <= n);
+      });
+      qBanco = filtradas;
+    } else {
+      qBanco = grupo.filter(x => !x.aid || x.aid === a.id || !compartilhada);
+    }
+  }
+
+  // Questões feitas fora do app (S.foraQ tem datas precisas; se a.questoes tiver saldo antigo sem S.foraQ, inclui sem duplicar)
+  const foraLista = (S.foraQ || []).filter(e => e.a === a.id);
+  const ext = foraLista.flatMap(e => Array.from({ length: e.f }, (_, i) => ({
+    dia: e.dia || a.qdia || a.feitoEm || hj,
+    ok: Math.floor((i + 1) * e.ac / e.f) > Math.floor(i * e.ac / e.f) ? 1 : 0,
+    dias: [e.dia || a.qdia || a.feitoEm || hj],
+  })));
+  const jaForaF = soma(foraLista, e => e.f || 0);
+  const aComAc = a.questoes?.feitas ? Math.max(0, a.questoes.feitas - (a.questoes.semAc || 0)) : 0;
+  if (aComAc > jaForaF) {
+    const extraF = aComAc - jaForaF;
+    const extraAc = Math.max(0, Math.min(extraF, (a.questoes.acertos || 0) - soma(foraLista, e => e.ac || 0)));
+    const dExt = a.qdia || a.feitoEm || hj;
+    for (let i = 0; i < extraF; i++) {
+      ext.push({ dia: dExt, ok: Math.floor((i + 1) * extraAc / extraF) > Math.floor(i * extraAc / extraF) ? 1 : 0, dias: [dExt] });
+    }
+  }
+
+  const L = [...qBanco, ...ext].sort((x, y) => x.dia < y.dia ? 1 : x.dia > y.dia ? -1 : 0);
+  const base = L.slice(0, 12);
+  const n = L.length;
+  const n90 = L.filter(x => x.dias.some(d => d >= lim90)).length;
+  const pct = n >= 3 ? Math.round(soma(base, x => x.ok) / base.length * 100) : null;
+  const ultDiaQ = L[0]?.dia || '';
+  return { n, n90, nFora: ext.length, pct, firme: n >= REV_MIN_FIRME, ultDiaQ };
+}
+
+/** Acerto dela nas questões desse assunto (compatível com chamadas existentes no app). */
+function acertoDe(a) {
+  return statsAssunto(a).pct;
+}
+
+function garantirEstadoRev(a) {
+  const pesada = PESADAS_REV.includes(a.materia);
+  const r = (a.rev ||= { n: 0, hist: [] });
+  if (!(r.dif >= 1 && r.dif <= 5)) r.dif = pesada ? 3.4 : 2.6;
+  if (!(r.estab >= 2)) {
+    // migração suave de registros antigos [7, 30, 70]
+    const baseN = [pesada ? 7 : 9, pesada ? 22 : 28, pesada ? 52 : 65][Math.min(r.n || 0, 2)];
+    r.estab = baseN;
+  }
+  r.hist ||= [];
+  return r;
+}
+
+function agendarRev(a, pct = null) {
+  const r = garantirEstadoRev(a), hj = hoje();
+  if (pct != null) r.hist = [...(r.hist || []), [hj, pct]].slice(-10);
+  r.teoria = pct != null && pct < 55;
+  const dias = Math.max(3, Math.min(120, Math.round(r.estab)));
+  r.prox = somaDias(hj, dias);
+}
+
+/** Registra uma revisão concluída (com acerto opcional) e recalcula estabilidade/próxima volta no modelo adaptativo. */
+function revisaoFeita(a, pct = null, opts = {}) {
+  if (!a) return;
+  const r = garantirEstadoRev(a), hj = hoje();
+  const pesada = PESADAS_REV.includes(a.materia);
+  const ehJanelaFix = !opts.manual && !r.fix && pesada && a.feitoEm && a.feitoEm < hj && a.feitoEm >= somaDias(hj, -2) && (r.n || 0) === 0;
+  if (ehJanelaFix) {
+    r.fix = hj;
+    r.ult = hj;
+    if (pct != null) r.hist = [...(r.hist || []), [hj, pct]].slice(-10);
+    if (pct != null && pct < 60) { r.estab = 4; r.teoria = true; r.prox = somaDias(hj, 4); }
+    else if (!r.prox) agendarRev(a, null);
+    return;
+  }
+  if (pesada && !r.fix) r.fix = hj;
+  delete a.revSoneca;
+  delete r.perdoada;
+  r.ult = hj;
+  if (pct == null) {
+    r.n = (r.n || 0) + 1;
+    r.estab = Math.min(110, Math.round(r.estab * (1.85 - 0.1 * r.dif)));
+    r.teoria = false;
+  } else if (pct >= 85) {
+    r.n = (r.n || 0) + 1;
+    r.dif = Math.max(1.2, Math.round((r.dif - 0.35) * 10) / 10);
+    r.estab = Math.min(120, Math.round(r.estab * (2.35 - 0.15 * r.dif)));
+    if (a.fraco && pct >= 85) a.fraco = false;
+  } else if (pct >= 70) {
+    r.n = (r.n || 0) + 1;
+    r.dif = Math.max(1.5, Math.round((r.dif - 0.1) * 10) / 10);
+    r.estab = Math.min(110, Math.round(r.estab * (1.85 - 0.12 * r.dif)));
+  } else if (pct >= 55) {
+    r.n = (r.n || 0) + 1;
+    r.estab = Math.min(60, Math.max(5, Math.round(r.estab * 1.15)));
+  } else {
+    // acerto baixo (<55%): estabilidade encolhe e pede revisão breve de resumo + novas questões em 3-4 dias
+    r.dif = Math.min(5, Math.round((r.dif + 0.5) * 10) / 10);
+    r.estab = Math.max(3, Math.min(5, Math.round(r.estab * 0.45)));
+    a.fraco = true;
+  }
+  agendarRev(a, pct);
+}
+
+// estudou o assunto completo (última parte + última sessão): inicia o ciclo adaptativo
+{ const s0 = setFeito; setFeito = function (a, ok, sinc) {
+  const antes = a && !!a.feito;
+  s0.apply(this, arguments);
+  if (!a || antes === ok) return;
+  if (ok && ehFinalDoAssunto(a)) {
+    const pesada = PESADAS_REV.includes(a.materia);
+    a.rev = { n: 0, estab: pesada ? 7 : 9, dif: pesada ? 3.4 : 2.6, hist: [] };
+    agendarRev(a);
+  } else if (!ok) {
+    delete a.rev;
+  }
+}; }
+
+/** Perdão suave: assunto classe C (baixa incidência) vencido há 21+ dias sai da fila urgente para evitar efeito bola de neve. */
+function perdoarRevisoes() {
+  const lim = somaDias(hoje(), -21);
+  for (const a of estudados()) {
+    if (a.cls === 'C' && !a.fraco && a.rev?.prox && a.rev.prox < lim) {
+      a.rev.prox = null;
+      a.rev.perdoada = hoje();
+    }
+  }
+}
+
+const prioRev = a => ({ A: 3, B: 2, C: 1 }[a.cls] || 2) + (PESADAS_REV.includes(a.materia) ? 0.5 : 0);
+
+/** Análise completa e UNIFICADA de todos os assuntos estudados — usada por Hoje, Revisão e Ajustes. */
+function analisarRevisoes(dia = hoje()) {
+  perdoarRevisoes();
+  const hj = dia, shared = tagsCompartilhadas();
+  const cobr = {}, qhPorChave = {}, errosPorMat = {};
+  if (BANCO.pronto) {
+    const meta = {};
+    for (const m of BANCO.itens) {
+      meta[m.id] = m;
+      if (!window.questaoIgnorada?.(m) && m.m && m.as) cobr[m.m + '|' + m.as] = (cobr[m.m + '|' + m.as] || 0) + 1;
+    }
+    for (const qid of Object.keys(S.qh || {})) {
+      const m = meta[qid]; if (!m || !m.m || !m.as) continue;
+      const h = histDe(qid)?.h; if (!h?.length) continue;
+      const u = h[h.length - 1];
+      (qhPorChave[m.m + '|' + m.as] ||= []).push({ m, aid: S.qh[qid].aid || '', dia: u[0] || '', ok: u[1] ? 1 : 0, dias: h.map(t => t[0] || '') });
+    }
+  }
+  for (const e of S.erros || []) if (e.rev <= hj && e.materia) errosPorMat[e.materia] = (errosPorMat[e.materia] || 0) + 1;
+  const ctx = { shared, qhPorChave };
+  const diffDias = (d1, d2) => Math.max(0, Math.round((deIso(d1) - deIso(d2)) / 864e5));
+
+  const res = estudados().map(a => {
+    const r = garantirEstadoRev(a);
+    const st = statsAssunto(a, ctx);
+    const chave = `${a.materia}|${tagDe(a)}`, cob = cobr[chave] || 0;
+    const contato = [st.ultDiaQ, r.ult || '', a.feitoEm || ''].reduce((mx, d) => d > mx ? d : mx, '');
+    const dias = contato ? diffDias(hj, contato) : 0;
+
+    // Estabilidade efetiva ajustada pelo acerto real observado e pela classe de incidência (A/B/C)
+    let estabEf = r.estab;
+    const graduadoC = a.cls === 'C' && !a.fraco && (r.n || 0) >= 1 && (st.pct == null || st.pct >= 65);
+    const graduadoB = a.cls === 'B' && !a.fraco && (r.n || 0) >= 2 && (st.pct == null || st.pct >= 70);
+    if (graduadoC || graduadoB) estabEf = Math.max(estabEf, 75);
+    if (st.pct != null) {
+      if (st.pct < 55) estabEf = Math.min(estabEf, 7);
+      else if (st.pct < 70) estabEf = Math.min(estabEf, Math.max(10, Math.round(r.estab * 0.75)));
+      else if (st.firme && st.pct >= 80) estabEf = Math.max(estabEf, Math.round(estabEf * 1.5));
+    }
+    // Retenção estimada R(t): 100% no dia 0, ~80% em t = estabEf, ~64% em t = 2*estabEf
+    const retencao = Math.max(15, Math.min(100, Math.round(100 * Math.exp(-0.223 * dias / Math.max(2, estabEf)))));
+    const adiada = !!(a.revSoneca && a.revSoneca > hj);
+    const ehFix = PESADAS_REV.includes(a.materia) && !r.fix && a.feitoEm && a.feitoEm < hj && a.feitoEm >= somaDias(hj, -2) && (r.n || 0) === 0;
+    const perdoada = (!!r.perdoada && !r.prox) || (a.cls === 'C' && !a.fraco && dias > 25 && (st.pct == null || st.pct >= 65));
+
+    let status = 'ok';
+    if (adiada) status = 'adiada';
+    else if (ehFix) status = 'fixacao';
+    else if (!perdoada && (retencao < 78 || (r.prox && r.prox <= hj && retencao < 85) || (st.pct != null && st.pct < 55 && dias >= 4))) status = 'agora';
+    else if (!perdoada && retencao < 88) status = 'breve';
+
+    const pesoProva = ({ A: 1.45, B: 1.1, C: 0.75 }[a.cls] || 1.05) + Math.min(0.35, Math.log2(1 + cob) * 0.05);
+    const fatorFraqueza = (a.fraco ? 1.35 : 1) * (st.pct == null ? 1.05 : st.pct < 55 ? 1.42 : st.pct < 70 ? 1.18 : st.pct >= 85 ? 0.8 : 1);
+    const urgencia = (ehFix ? 95 : 0) + (100 - retencao) * pesoProva * fatorFraqueza + (errosPorMat[a.materia] ? 4 : 0);
+
+    let motivo = '';
+    if (ehFix) motivo = 'Fixação rápida (24–48h após aula de Exatas)';
+    else if (status === 'agora') {
+      if (st.pct != null && st.pct < 55) motivo = `Acerto baixo (${st.pct}%) · reforçar`;
+      else if (a.fraco) motivo = 'Marcado como fraco · memória caindo';
+      else if (a.cls === 'A') motivo = `Cai muito nas provas · ${retencao}% retido`;
+      else motivo = `Memória em ${retencao}% · boa hora para consolidar`;
+    } else if (status === 'breve') motivo = `Retenção em ${retencao}% · volta em breve`;
+    else if (perdoada) motivo = 'Baixa incidência · fica para revisão geral';
+    else if (graduadoC || graduadoB) motivo = 'Consolidado · manutenção pelos simulados';
+
+    const diasProx = status === 'agora' || ehFix ? 0 : Math.max(1, Math.round(estabEf * Math.log(1 / 0.78) / 0.223 - dias));
+    return {
+      a, m: a.materia, tag: tagDe(a), cob,
+      n: st.n, n90: st.n90, nFora: st.nFora, pct: st.pct, firme: st.firme,
+      faltam: Math.max(0, REV_MIN_FIRME - st.n),
+      dias, estab: Math.round(estabEf), retencao, status, urgencia, motivo, diasProx, ehFix, perdoada,
+    };
+  });
+
+  // Compressão anti-ansiedade: mantém no máximo os 12 assuntos de maior impacto (urgência) em "Rever agora";
+  // excedentes aguardam com calma em "Em breve" (entram automaticamente assim que os 12 forem feitos!)
+  const ordSt = { fixacao: 0, agora: 1, breve: 2, ok: 3, adiada: 4 };
+  res.sort((x, y) => ordSt[x.status] - ordSt[y.status] || y.urgencia - x.urgencia);
+  let nAgora = 0;
+  for (const x of res) {
+    if (x.status === 'agora') {
+      nAgora++;
+      if (nAgora > 12) {
+        x.status = 'breve';
+        x.motivo = `Na fila de revisão (${x.retencao}% retido) · entra depois dos prioritários`;
+      }
+    }
+  }
+  return res.sort((x, y) => ordSt[x.status] - ordSt[y.status] || y.urgencia - x.urgencia);
+}
+
+const fixacao = () => analisarRevisoes().filter(x => x.ehFix).map(x => x.a);
+const vencidas = (dia = hoje()) => analisarRevisoes(dia).filter(x => x.status === 'agora' || x.status === 'fixacao').map(x => x.a);
+
+/** Intercala assuntos de revisão: alterna Exatas com Biologia/Humanas/Linguagens para maximizar retenção (estudo intercalado). */
+function intercalarRevisao(itens, n) {
+  const pool = [...itens], out = [];
+  while (out.length < n && pool.length) {
+    const ult = out[out.length - 1];
+    const ultPesada = ult ? PESADAS_REV.includes(ult.m) : null;
+    let idx = 0;
+    if (ult) {
+      const melhor = pool.findIndex(x => x.m !== ult.m && PESADAS_REV.includes(x.m) !== ultPesada);
+      if (melhor >= 0 && melhor <= 6) idx = melhor;
+      else {
+        const diffMat = pool.findIndex(x => x.m !== ult.m);
+        if (diffMat >= 0 && diffMat <= 4) idx = diffMat;
+      }
+    }
+    out.push(pool.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
+/** Escolhe n assuntos já estudados que mais rendem revisar agora (com intercalação inteligente). */
+function escolherRevisao(n, fora = []) {
+  const lista = analisarRevisoes().filter(x => !fora.includes(x.a.id) && x.status !== 'adiada');
+  const candidatos = lista.filter(x => x.status === 'fixacao' || x.status === 'agora' || x.status === 'breve');
+  const base = candidatos.length >= n ? candidatos : lista;
+  return intercalarRevisao(base, n).map(x => x.a);
+}
+
+/** Resumo leve exibido em Hoje (100% consistente com a aba Revisão). */
+window.revResumoHoje = () => {
+  const l = analisarRevisoes();
+  return { total: l.length, urgentes: l.filter(x => x.status === 'agora' || x.status === 'fixacao').length };
+};
+
+const blocoRev = (titulo, lista, min, vaga) => ({
+  id: uid(), assuntoId: null, tipo: 'revisao', vaga, revisao: lista.map(a => a.id), titulo,
+  materia: lista.length === 1 ? lista[0].materia : 'Revisão', min,
+  passos: [
+    ...(lista.some(a => a.rev?.teoria) ? [{ t: 'Reler o resumo rápido dos que foram abaixo de 55% (10 min)', ok: false }] : []),
+    { t: `Fazer ${lista.length * (vaga === 'dia' ? 4 : 5)} questões misturadas (no app ou fora)`, ok: false },
+    { t: 'Revisar os erros e anotar o que esqueceu', ok: false },
+  ],
+});
+
+/* Orçamento enxuto e anti-sufoco:
+   - Revisão do dia: 15 min (fixação 24–48h de Exatas ou 1 assunto mais urgente)
+   - Revisão maior (qua/sáb): 60 min na base, 90 min a partir de março — e NUNCA passa de 30% do dia enquanto houver conteúdo novo! */
+function cfgRev() {
+  const tarde = hoje() >= '2027-03-01';
+  const padrao = { diario: 15, maior: tarde ? 90 : 60 };
+  const salvo = S.perfil.revCfg || {};
+  return { ...padrao, ...salvo };
+}
 
 { const m0 = montarHoje; montarHoje = function (cap, so = []) {
   const d = diaHoje(), per = periodoDeHoje(), c = cfgRev();
-  d.blocos = d.blocos.filter(b => b.tipo !== 'revisao' || b.passos.some(p => p.ok) || b.escolhidos);   // refaz as vagas que ela não começou nem escolheu
+  d.blocos = d.blocos.filter(b => b.tipo !== 'revisao' || b.passos.some(p => p.ok) || b.escolhidos);
   const ja = d.blocos.filter(b => b.tipo === 'revisao'), usados = ja.flatMap(b => b.revisao);
   const capOk = cap > 0 ? cap : d.cap || 0;
+  const temConteudoPendente = S.assuntos.some(a => ehConteudo(a) && !a.feito && semDe(a) <= somaDias(semAtual(), 14));
   const novos = [];
+
   if (!(so || []).length && !per?.so && capOk >= 90) {
-    // vaga do dia (curta): primeiro a fixação das exatas, depois as vencidas mais urgentes; ~10 min por assunto
-    if (c.diario > 0 && !ja.some(b => b.vaga === 'dia')) {
-      const n = Math.max(1, Math.floor(c.diario / 10)), l = [...fixacao(), ...vencidas()].filter((a, i, v) => v.indexOf(a) === i && !usados.includes(a.id)).slice(0, n);
-      if (l.length) novos.push(blocoRev(`Revisão do dia: ${l.map(nomeDe).join(' · ')}`, l, c.diario, 'dia'));
+    // Teto global de revisão no dia: se ainda há conteúdo novo, revisões ocupam no máx. 32% do tempo (garantindo ≥68% para assuntos novos!)
+    const tetoGlobalRev = temConteudoPendente ? Math.max(15, Math.min(Math.round(capOk * 0.32), capOk - 90)) : capOk;
+    let revUsado = soma(ja, b => b.min || 0);
+
+    // 1. Micro-revisão do dia (15 min): fixação 24-48h de Exatas ou 1 assunto mais urgente
+    if (c.diario > 0 && !ja.some(b => b.vaga === 'dia') && revUsado < tetoGlobalRev) {
+      const minDia = Math.min(c.diario, tetoGlobalRev - revUsado);
+      if (minDia >= 15) {
+        const n = Math.max(1, Math.min(2, Math.floor(minDia / 12)));
+        const l = analisarRevisoes().filter(x => (x.status === 'fixacao' || x.status === 'agora') && !usados.includes(x.a.id)).slice(0, n).map(x => x.a);
+        if (l.length) {
+          novos.push(blocoRev(`Revisão rápida: ${l.map(nomeCanonicoRev).join(' · ')}`, l, minDia, 'dia'));
+          revUsado += minDia;
+        }
+      }
     }
-    // vaga maior, nos dias de revisão: questões de assuntos já estudados; ~30 min por assunto
-    if (c.maior > 0 && diasRev().includes(deIso(hoje()).getDay()) && !ja.some(b => b.vaga === 'semana')) {
-      // fora: os que já estão em outra vaga e os estudados há menos de 3 dias (esses têm a fixação e a volta de 7 dias)
-      const recente = somaDias(hoje(), -3), fora = [...usados, ...novos.flatMap(b => b.revisao), ...estudados().filter(a => a.feitoEm && a.feitoEm > recente && !a.fraco).map(a => a.id)];
-      const tetoMaior = Math.min(c.maior, Math.max(30, capOk - soma(ja, b => b.min) - soma(novos, b => b.min)));
-      const l = escolherRevisao(Math.max(1, Math.floor(tetoMaior / 30)), fora);
-      // a vaga tem o tamanho do que há para revisar (~30 min por assunto), nunca mais que o teto nem que o tempo livre do dia
-      if (l.length) novos.push(blocoRev('Revisão da semana: questões de assuntos já estudados', l, Math.min(tetoMaior, l.length * 30), 'semana'));
+
+    // 2. Revisão inteligente (qua/sáb): questões intercaladas, sem sufocar o conteúdo novo
+    if (c.maior > 0 && diasRev().includes(deIso(hoje()).getDay()) && !ja.some(b => b.vaga === 'semana') && revUsado < tetoGlobalRev) {
+      const recente = somaDias(hoje(), -3);
+      const fora = [...usados, ...novos.flatMap(b => b.revisao), ...estudados().filter(a => a.feitoEm && a.feitoEm > recente && !a.fraco).map(a => a.id)];
+      const tetoMaior = Math.min(c.maior, tetoGlobalRev - revUsado);
+      if (tetoMaior >= 25) {
+        const nAss = Math.max(1, Math.min(4, Math.floor(tetoMaior / 22)));
+        const l = escolherRevisao(nAss, fora);
+        if (l.length) {
+          const minBloco = Math.min(tetoMaior, Math.max(25, l.length * 22));
+          novos.push(blocoRev('Revisão inteligente (questões misturadas)', l, minBloco, 'semana'));
+        }
+      }
     }
   }
+
   const usado = soma(novos, b => b.min), jaMin = soma(ja, b => b.min), resto = capOk - usado;
   if (capOk === 0) m0.call(this, 0, so);
   else if (resto - jaMin >= 30 || (so || []).length || (!novos.length && !ja.length)) m0.call(this, Math.max(1, resto), so);
   else d.blocos = d.blocos.filter(b => { const a = b.assuntoId && achar(b.assuntoId); return !a || a.feito || b.feito || (b.passos || []).some(p => p.ok); });
   d.cap = capOk; d.blocos.push(...novos);
 }; }
+
 // marcou todos os passos de um bloco de revisão: a volta conta como feita (sem acerto, se ela fez fora do app)
-{ const p0 = ACOES.passo; ACOES.passo = el => { p0(el); const b = diaHoje().blocos.find(x => x.id === el.dataset.b);
-  if (b?.tipo === 'revisao' && !b.contou && b.passos.every(p => p.ok)) { b.contou = true; b.revisao.map(achar).filter(Boolean).forEach(a => revisaoFeita(a)); salvar(); } }; }
+{ const p0 = ACOES.passo; ACOES.passo = el => {
+  p0(el);
+  const b = diaHoje().blocos.find(x => x.id === el.dataset.b);
+  if (b?.tipo === 'revisao' && !b.contou && b.passos.every(p => p.ok)) {
+    b.contou = true;
+    b.revisao.map(achar).filter(Boolean).forEach(a => revisaoFeita(a));
+    salvar();
+  }
+}; }
 
-/** A volta de 24–48 h das exatas não muda o calendário das outras voltas (7 dias, 1 mês): só marca que a fixação foi feita. */
-{ const r0 = revisaoFeita; revisaoFeita = function (a, pct) { if (a?.rev && !a.rev.fix && PESADAS_REV.includes(a.materia) && a.feitoEm >= somaDias(hoje(), -2) && a.rev.n === 0) { a.rev.fix = hoje(); if (pct != null && pct < 60) a.rev.prox = somaDias(hoje(), 4); return; } return r0.apply(this, arguments); }; }
-
-/** Abre uma lista com questões NÃO FEITAS do banco desses assuntos (se faltarem inéditas, completa com as que ela errou antes). */
+/** Abre uma lista inteligente do banco para os assuntos escolhidos:
+    - Em modo revisão (extra.modoRevisao / extra.revisaoIds): mistura até 40% de questões que ela ERROU há ≥3 dias
+      (prática de recuperação ativa!) + 60% inéditas priorizando as bancas do cenário dela (SP Capital ou Campinas).
+    - Marca porId[qid] = a.id para que a atribuição de acertos ao fim da sessão seja 100% exata mesmo em tags compartilhadas! */
 async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
-  const qtd = extra.qtd || {}; extra = { ...extra }; delete extra.qtd;   // qtd: quantas questões de cada assunto (id -> n), se ela personalizou
+  const qtd = extra.qtd || {}; extra = { ...extra }; delete extra.qtd;
   const k = extra.chaveLista;
   if (k && S.listasAbertas?.[k]?.itens?.length && !S.listasAbertas[k].fim) {
     ACOES.qContinuarLista({ dataset: { k } });
@@ -149,8 +469,6 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
   }
   if (!BANCO.pronto) await carregarBanco();
   fecharModal();
-  // primeiro uso: o banco ainda está baixando em segundo plano; espera terminar em vez de dizer que não há questões
-  // só até chegar o primeiro pacote (Fuvest, Unicamp e UNESP, ~5.800 questões): o resto continua baixando enquanto ela estuda
   if (BANCO.itens.length < 5000 && BANCO._sync) {
     let acabou = false; BANCO._sync.then(() => { acabou = true; }, () => { acabou = true; });
     while (!acabou && BANCO.itens.length < 5000) {
@@ -159,30 +477,31 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
     }
     ui.carregando = '';
   }
-  const prio = q => !S.qh[q.id] ? 0 : (!S.qh[q.id].ok ? 1 : 2);
-  const bancaBoa = q => /fuvest|unicamp|unesp|vunesp|unifesp|santa casa|einstein|fmabc|famerp|famema|sao camilo|são camilo|sirio|sírio|fmj|enem|puc[- ]?campinas/i.test(q.b || '') ? 0 : 1;
+  const modoRev = !!(extra.modoRevisao || extra.revisaoIds?.length);
+  const limErroAntigo = somaDias(hoje(), -3);
+  const reBanca = regexBancaCenario();
+  const bancaBoa = q => reBanca.test(q.b || '') ? 0 : 1;
   const naoMilitar = q => !/^(ita|ime)$/i.test(q.b || '');
-  const ids = [];
+  const prio = q => !S.qh[q.id] ? 0 : (!S.qh[q.id].ok ? 1 : 2);
+
+  const ids = [], porId = {}, vistos = new Set();
   for (const a of lista) {
     const ehDisc = /^discursivas/i.test(nomeDe(a));
     if (ehDisc) {
-      let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.ds);
+      let candidatas = BANCO.itens.filter(q => !vistos.has(q.id) && !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.ds);
       const ineditas = candidatas.filter(q => !S.qh[q.id]);
       const fonte = ineditas.length >= 3 ? ineditas : candidatas;
       fonte.sort((x, y) => prio(x) - prio(y) || bancaBoa(x) - bancaBoa(y) || Math.random() - 0.5);
-      ids.push(...fonte.slice(0, 3).map(q => q.id));
+      for (const q of fonte.slice(0, 3)) { ids.push(q.id); porId[q.id] = a.id; vistos.add(q.id); }
       continue;
     }
-    const subRe = subRegexDe(a);
-    let candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds && !q.f);
-    if (!candidatas.length) candidatas = BANCO.itens.filter(q => !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tagDe(a) && !q.ds);
+    const subRe = subRegexDe(a), tag = tagDe(a);
+    let candidatas = BANCO.itens.filter(q => !vistos.has(q.id) && !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tag && !q.ds && !q.f);
+    if (!candidatas.length) candidatas = BANCO.itens.filter(q => !vistos.has(q.id) && !window.questaoIgnorada?.(q) && naoMilitar(q) && q.m === a.materia && q.as === tag && !q.ds);
     const nA = qtd[a.id] || porAssunto;
-    // assunto que é só um pedaço do tema do banco (ex.: "Base de Matemática" dentro de "Conjuntos e conjuntos numéricos"):
-    // usa só as questões desse pedaço; completar com o resto do tema trazia questões de outro assunto (Venn, intervalos...)
+
     if (subRe) {
-      // conta as pistas de cada pedaço do tema: a questão fica se as pistas do pedaço certo forem pelo menos tantas quanto as de outro
-      // (ex.: "raiz de 2 é irracional" tem mais cara de conjuntos numéricos do que de frações e raízes)
-      const irmaos = (window.SUBTOPICOS?.[tagDe(a)] || []).map(([, re]) => re).filter(re => re !== subRe);
+      const irmaos = (window.SUBTOPICOS?.[tag] || []).map(([, re]) => re).filter(re => re !== subRe);
       const pistas = (re, t) => (t.match(new RegExp(re.source, 'g')) || []).length;
       const doSub = candidatas.filter(q => {
         const t = (q.x || '') + ' ' + (q.s || ''), n = pistas(subRe, t);
@@ -190,33 +509,54 @@ async function questoesDosAssuntos(lista, extra = {}, porAssunto = 10) {
       });
       if (doSub.length >= Math.min(nA, 4)) candidatas = doSub;
     }
-    const ineditas = candidatas.filter(q => !S.qh[q.id]);
-    const fonte = ineditas.length >= nA ? ineditas : candidatas;
+
+    const escolhidas = [];
+    if (modoRev) {
+      // Em revisão: até 40% de questões erradas anteriormente (há ≥3 dias) para recuperação ativa real
+      const maxErros = Math.max(1, Math.floor(nA * 0.4));
+      const erradasAntigas = candidatas.filter(q => S.qh[q.id] && !S.qh[q.id].ok && (S.qh[q.id].dia || '') <= limErroAntigo)
+        .sort((x, y) => bancaBoa(x) - bancaBoa(y) || Math.random() - 0.5);
+      escolhidas.push(...erradasAntigas.slice(0, maxErros));
+    }
+    const jaIds = new Set(escolhidas.map(q => q.id));
+    const faltam = Math.max(0, nA - escolhidas.length);
+    const resto = candidatas.filter(q => !jaIds.has(q.id));
+    const ineditas = resto.filter(q => !S.qh[q.id]);
+    const fonte = ineditas.length >= faltam ? ineditas : resto;
     fonte.sort((x, y) => {
       const sx = subRe ? (subRe.test((x.x || '') + ' ' + (x.s || '')) ? 0 : 1) : 0;
       const sy = subRe ? (subRe.test((y.x || '') + ' ' + (y.s || '')) ? 0 : 1) : 0;
       return sx - sy || prio(x) - prio(y) || bancaBoa(x) - bancaBoa(y) || Math.random() - 0.5;
     });
-    ids.push(...fonte.slice(0, nA).map(q => q.id));
+    escolhidas.push(...fonte.slice(0, faltam));
+    for (const q of escolhidas) { ids.push(q.id); porId[q.id] = a.id; vistos.add(q.id); }
   }
   if (!ids.length) {
-    // sem questão desse assunto no banco: abre as questões não feitas da matéria, já filtradas
     ui.view = 'questoes'; ui.qAba = 'listas'; ui.qs = null; ui.qf.mat = lista[0]?.materia || ''; ui.qf.assunto = ''; ui.qf.st = 'novas';
     ui.iaMsg = 'Ainda não há questões desse assunto no banco: abri as inéditas da matéria.'; window.scrollTo(0, 0); render(); return;
   }
+  // Em revisão com 2+ assuntos, embaralha levemente mantendo blocos curtos intercalados
+  if (modoRev && lista.length > 1) {
+    const porAss = {};
+    for (const id of ids) (porAss[porId[id]] ||= []).push(id);
+    const filas = Object.values(porAss), mix = [];
+    while (filas.some(f => f.length)) for (const f of filas) if (f.length) mix.push(f.shift());
+    ids.splice(0, ids.length, ...mix);
+  }
   ui.view = 'questoes'; ui.qAba = 'listas'; window.scrollTo(0, 0);
-  await ACOES.qIniciarIds(ids, extra);
+  await ACOES.qIniciarIds(ids, { ...extra, porId });
 }
 
-// fim da lista: cada assunto revisado anda (com o acerto dela), e o passo de questões do bloco de hoje é abatido
+// fim da lista: cada assunto revisado anda com atribuição EXATA por _revAssuntoId (sem misturar tags compartilhadas!)
 { const f0 = finalizarSessao; finalizarSessao = function () {
   const s = ui.qs; f0.apply(this, arguments);
   if (!s) return;
   const feitas = s.itens.filter(q => q.resp != null);
   for (const id of s.revisaoIds || []) {
     const a = achar(id); if (!a) continue;
-    const l = feitas.filter(q => q.materia === a.materia && q.assunto === tagDe(a));
-    revisaoFeita(a, l.length >= 2 ? Math.round(l.filter(q => q.certo).length / l.length * 100) : null);
+    const diretas = feitas.filter(q => q._revAssuntoId === a.id);
+    const l = diretas.length ? diretas : feitas.filter(q => q.materia === a.materia && limAss(q.assunto) === tagDe(a));
+    if (l.length) revisaoFeita(a, l.length >= 2 ? Math.round(l.filter(q => q.certo).length / l.length * 100) : null);
   }
   const ids = [...(s.revisaoIds || []), ...(s.assuntoId ? [s.assuntoId] : [])];
   if (feitas.length) for (const b of diaHoje().blocos) {
@@ -246,25 +586,24 @@ Object.assign(ACOES, {
   qDaRevisao: async el => {
     const b = diaHoje().blocos.find(x => x.id === el.dataset.b);
     const l = (b?.revisao || []).map(achar).filter(Boolean);
-    if (l.length) await questoesDosAssuntos(l, { revisaoIds: l.map(a => a.id), blocoId: b.id, chaveLista: 'rev:' + b.id, tituloLista: b.titulo }, b.vaga === 'dia' ? 4 : 5);
+    if (l.length) await questoesDosAssuntos(l, { revisaoIds: l.map(a => a.id), modoRevisao: true, blocoId: b.id, chaveLista: 'rev:' + b.id, tituloLista: b.titulo }, b.vaga === 'dia' ? 4 : 5);
   },
-  fraco: el => { const a = achar(el.dataset.id); if (!a) return; a.fraco = !a.fraco; salvar(); ui.iaMsg = a.fraco ? `Anotado: "${a.titulo}" entra nas próximas revisões.` : 'Tirei a marca de fraco.'; fecharModal(); render(); },
+  fraco: el => { const a = achar(el.dataset.id); if (!a) return; a.fraco = !a.fraco; salvar(); ui.iaMsg = a.fraco ? `Anotado: "${a.titulo}" entra com prioridade na Revisão Inteligente.` : 'Tirei a marca de fraco.'; fecharModal(); render(); },
   diaRev: el => { const v = +el.dataset.v, l = diasRev(); S.perfil.diasRev = l.includes(v) ? l.filter(x => x !== v) : [...l, v].sort(); salvar(); render(); },
   revCfg: el => { S.perfil.revCfg = { ...cfgRev(), [el.dataset.k]: +el.dataset.v }; salvar(); render(); },
-  // ela escolhe os assuntos de uma vaga de revisão (a vaga continua com o mesmo tempo)
   revEscolher: el => {
     const b = diaHoje().blocos.find(x => x.id === el.dataset.b); if (!b) return;
-    const ordem = escolherRevisao(999), max = Math.max(1, Math.floor(b.min / (b.vaga === 'dia' ? 10 : 30)));
-    abrirModal(`<div class="entre"><h2>Escolher os assuntos</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
-      <p class="fraco" style="margin:0">Até ${max} ${max === 1 ? 'assunto cabe' : 'assuntos cabem'} nesta revisão (${fmtMin(b.min)}). Os primeiros da lista são os que o app acha mais importantes agora.</p>
-      ${ordem.length ? `<div class="rev-escolha">${ordem.map(a => `<label class="marca-q"><input type="checkbox" data-rev-esc="${a.id}" ${b.revisao.includes(a.id) ? 'checked' : ''}> <span><span class="tag" style="${cor(a.materia)}">${esc(a.materia)}</span> ${esc(nomeDe(a))}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}${a.rev?.prox && a.rev.prox <= hoje() ? ' · vencida' : ''}</span></label>`).join('')}</div>`
-        : '<p style="margin:0">Ainda não há assuntos estudados. Quando você marcar assuntos como feitos, eles aparecem aqui.</p>'}
+    const analise = analisarRevisoes(), max = Math.max(1, Math.floor(b.min / (b.vaga === 'dia' ? 12 : 22)));
+    abrirModal(`<div class="entre"><h2>Escolher assuntos da revisão</h2><button class="x" data-acao="fechar" aria-label="Fechar">×</button></div>
+      <p class="fraco" style="margin:0">Até ${max} ${max === 1 ? 'assunto cabe' : 'assuntos cabem'} nesta vaga (${fmtMin(b.min)}). Estão ordenados por prioridade de memória × peso na prova.</p>
+      ${analise.length ? `<div class="rev-escolha">${analise.map(x => `<label class="marca-q"><input type="checkbox" data-rev-esc="${x.a.id}" ${b.revisao.includes(x.a.id) ? 'checked' : ''}> <span><span class="tag" style="${cor(x.m)}">${esc(x.m)}</span> ${esc(nomeCanonicoRev(x.a))} · <b>${x.retencao}% retido</b>${x.pct != null ? ` · acerto ${x.pct}%` : ''}${x.a.fraco ? ' · fraco' : ''}</span></label>`).join('')}</div>`
+        : '<p style="margin:0">Ainda não há assuntos estudados. Quando você concluir assuntos, eles aparecem aqui.</p>'}
       <div class="linha"><button class="botao" data-acao="revEscolhidos" data-b="${b.id}" data-max="${max}">Usar estes</button></div>`);
   },
   revEscolhidos: el => {
     const b = diaHoje().blocos.find(x => x.id === el.dataset.b); if (!b) return;
     const ids = [...document.querySelectorAll('[data-rev-esc]:checked')].map(x => x.dataset.revEsc).slice(0, +el.dataset.max);
-    const l = ids.map(achar).filter(Boolean), novo = blocoRev(b.vaga === 'dia' ? `Revisão do dia: ${l.map(nomeDe).join(' · ') || 'sem assuntos'}` : b.titulo, l, b.min, b.vaga);
+    const l = ids.map(achar).filter(Boolean), novo = blocoRev(b.vaga === 'dia' ? `Revisão rápida: ${l.map(nomeCanonicoRev).join(' · ') || 'sem assuntos'}` : b.titulo, l, b.min, b.vaga);
     Object.assign(b, { revisao: novo.revisao, titulo: novo.titulo, materia: novo.materia, passos: novo.passos, escolhidos: true });
     if (S.listasAbertas?.['rev:' + b.id]) delete S.listasAbertas['rev:' + b.id];
     salvar(); fecharModal(); render();
@@ -280,7 +619,7 @@ Object.assign(ACOES, {
     const btnRev = ab?.itens?.length && !ab.fim
       ? `<button class="botao destaque" data-acao="qContinuarLista" data-k="rev:${b.id}">Continuar questões (${ab.itens.filter(q => q.resp != null).length}/${ab.itens.length})</button>`
       : l.length ? `<button class="botao claro" data-acao="qDaRevisao" data-b="${b.id}">Fazer ${window.questoesDoBloco ? window.questoesDoBloco(b) : l.length * 4} questões no app</button>` : '';
-    return h.replace('</article>', `<div class="rev-lista">${l.map(a => `<span class="tag" style="${cor(a.materia)}">${esc(nomeDe(a))}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}</span>`).join('')}</div>
+    return h.replace('</article>', `<div class="rev-lista">${l.map(a => `<span class="tag" style="${cor(a.materia)}">${esc(nomeCanonicoRev(a))}${a.fraco ? ' · fraco' : ''}${acertoDe(a) != null ? ` · ${acertoDe(a)}%` : ''}</span>`).join('')}</div>
       <div class="linha acoes-bloco">${btnRev}<button class="link" data-acao="revEscolher" data-b="${b.id}">${b.escolhidos ? 'Trocar os assuntos' : 'Escolher eu mesma'}</button></div></article>`);
   }
   const a = b.assuntoId && achar(b.assuntoId);
@@ -292,6 +631,7 @@ Object.assign(ACOES, {
     : `<button class="botao claro" data-acao="qDoAssunto" data-id="${a.id}" data-b="${b.id}">Fazer ${qMeta} questões no app</button>`;
   return h.replace('<div class="linha acoes-bloco">', `<div class="linha acoes-bloco">${btnAss}`);
 }; }
+
 { const m0 = modalAssunto; modalAssunto = function (a) {
   m0.apply(this, arguments);
   if (!ehConteudo(a) && !ehHabitoQ(a)) return;
@@ -304,22 +644,23 @@ Object.assign(ACOES, {
   if (qBtn && btnCont) qBtn.outerHTML = btnCont;
   else if (!qBtn) linha.insertAdjacentHTML('afterbegin', btnCont || `<button class="botao claro" data-acao="qDoAssunto" data-id="${a.id}">Fazer questões no app</button>`);
   if (!ehConteudo(a)) return;
-  const revTxt = a.rev ? (a.rev.prox ? `${a.rev.n === 0 ? '1ª volta' : `${a.rev.n + 1}ª volta`} em ${diaCurto(a.rev.prox)}` : a.rev.perdoada ? 'perdoada (volta na revisão geral)' : 'voltas concluídas') : '';
-  const rev = a.rev ? `<span class="fraco" style="font-size:14px">Revisão: ${revTxt}${acertoDe(a) != null ? ` · acerto ${acertoDe(a)}%` : ''}</span>` : '';
-  if (rev) linha.insertAdjacentHTML('beforebegin', rev);
+  const info = a.feito && ehFinalDoAssunto(a) ? analisarRevisoes().find(x => x.a.id === a.id) : null;
+  const revTxt = info ? `Retenção estimada: <b>${info.retencao}%</b> · ${info.status === 'agora' || info.ehFix ? 'melhor rever agora' : `próxima em ~${info.diasProx}d`}${info.pct != null ? ` · acerto ${info.pct}%` : ''}` : '';
+  if (revTxt) linha.insertAdjacentHTML('beforebegin', `<span class="fraco" style="font-size:14px">${revTxt}</span>`);
   const btnFraco = `<button class="botao contorno" data-acao="fraco" data-id="${a.id}">${a.fraco ? 'Não estou mais fraca nisso' : 'Estou fraca nisso'}</button>`;
   const remBtn = linha.querySelector('[data-acao="removerAssunto"]');
   if (remBtn) remBtn.insertAdjacentHTML('beforebegin', btnFraco); else linha.insertAdjacentHTML('beforeend', btnFraco);
 }; }
 
-// Ajustes: as vagas de revisão (tempo fixo) e os dias da revisão maior
+// Ajustes: orçamento fixo e anti-sufoco da Revisão Inteligente
 { const v0 = VIEWS.ajustes; VIEWS.ajustes = function () {
   const nomes = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'], c = cfgRev();
   const op = (k, vs) => vs.map(v => `<button class="chip" data-acao="revCfg" data-k="${k}" data-v="${v}" aria-pressed="${c[k] === v}">${v ? fmtMin(v) : 'nenhuma'}</button>`).join('');
-  return v0() + `<section class="cartao"><h2>Revisões</h2>
-    <p class="fraco" style="margin:0">As revisões têm hora marcada e tempo fixo: o resto do dia nunca é engolido por elas. O assunto estudado volta em 1 semana, 1 mês e ~70 dias (essa só para os que mais caem), e se adapta ao seu acerto; exatas ganham também uma revisão rápida 1 a 2 dias depois. Se acumular mais do que cabe, os que mais caem entram primeiro e os outros esperam a próxima vaga; revisão de assunto que cai pouco vencida há 3 semanas é perdoada.</p>
-    <span class="rotulo">revisão do dia (todo dia)</span><div class="linha">${op('diario', [0, 15, 20, 30, 45])}</div>
-    <span class="rotulo">revisão maior</span><div class="linha">${op('maior', [0, 60, 90, 120, 150, 180, 225])}</div>
+  const an = analisarRevisoes(), urg = an.filter(x => x.status === 'agora' || x.status === 'fixacao').length;
+  return v0() + `<section class="cartao"><h2>Revisão Inteligente</h2>
+    <p class="fraco" style="margin:0">As revisões usam memória adaptativa (FSRS leve) + peso nas provas de Medicina SP, com teto rígido: <b>nunca tomam mais de 32% do seu dia</b> enquanto houver conteúdo novo. Misturam erros antigos com questões inéditas e intercalam Exatas com Bio/Humanas.</p>
+    <span class="rotulo">micro-revisão diária</span><div class="linha">${op('diario', [0, 15, 20, 30])}</div>
+    <span class="rotulo">revisão maior (nos dias escolhidos)</span><div class="linha">${op('maior', [0, 45, 60, 90, 120, 150])}</div>
     <span class="rotulo">dias da revisão maior</span><div class="linha">${nomes.map((n, i) => `<button class="chip" data-acao="diaRev" data-v="${i}" aria-pressed="${diasRev().includes(i)}">${n}</button>`).join('')}</div>
-    <p class="fraco" style="margin:0;font-size:14px">Por semana: ${fmtMin(c.diario * 6 + c.maior * diasRev().length)} de revisão · ${estudados().length} assuntos já estudados · ${vencidas().length} vencidas hoje · ${estudados().filter(a => a.fraco).length} marcados como fracos</p></section>`;
+    <p class="fraco" style="margin:0;font-size:14px">Teto semanal: até ${fmtMin(c.diario * 6 + c.maior * diasRev().length)} · ${an.length} assuntos estudados · ${urg} prontos para rever · ${an.filter(x => x.a.fraco).length} marcados como fracos</p></section>`;
 }; }
