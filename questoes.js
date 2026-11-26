@@ -180,15 +180,11 @@ function fecharItem(s) {
 
 function assuntoCorrespondenteHoje(s, q) {
   if (s?.assuntoId) return achar(s.assuntoId);
-  const d = S.dias[hoje()]; if (!d?.blocos?.length) return null;
+  const d = S.dias[hoje()]; if (!d?.blocos?.length || !q.assunto) return null;
   const tagF = typeof tagDe === 'function' ? tagDe : a => a.tag || a.titulo;
   for (const b of d.blocos) {
     const a = b.assuntoId && achar(b.assuntoId);
-    if (a && ehConteudo(a) && a.materia === q.materia && q.assunto && tagF(a) === q.assunto) return a;
-  }
-  for (const b of d.blocos) {
-    const a = b.assuntoId && achar(b.assuntoId);
-    if (a && ehConteudo(a) && a.materia === q.materia && !a.feito) return a;
+    if (a && ehConteudo(a) && a.materia === q.materia && tagF(a) === q.assunto) return a;
   }
   return null;
 }
@@ -244,9 +240,9 @@ function contabilizarQuestaoRespondida(s, q) {
     // questão do banco: guarda só o essencial (a questão completa já está no banco do aparelho); o resto, cópia inteira
     else if (q.id && typeof BANCO !== 'undefined' && BANCO.itens.some(x => x.id === q.id)) S.erros.push(erroLeve({ id: uid(), dia: h, rev: somaDias(h, 3), vezes: 0, fonte: q.fonte, materia: q.materia, qid: q.id, resp: q.resp, gab: q.gab, tipo: q.tipo || '' }, q));
     else S.erros.push({ id: uid(), dia: h, rev: somaDias(h, 3), vezes: 0, fonte: q.fonte, materia: q.materia, enunciado: q.enunciado, alts: q.alts, gab: q.gab, resp: q.resp, coment: q.coment, qid: q.id || '', imagens: (q.imagens || []).filter(u => /^https:/.test(u)), modo: q.modo || '', img: q.img || '', w: q.w, h: q.h, corte: q.corte, prev: q.prev || '', dep: q.dep || 0, tipo: q.tipo || '' });
-  } else if (ja && s.revisao) S.erros = S.erros.filter(e => e !== ja);
+  } else if (ja && (s.revisao || s.modoRevisao || s.revisaoIds?.length)) S.erros = S.erros.filter(e => e !== ja);
 
-  const a = (s.simulado || s.eraSimulado) ? null : assuntoCorrespondenteHoje(s, q);
+  const a = (s.simulado || s.eraSimulado || s.revisao || s.modoRevisao || s.revisaoIds?.length) ? null : assuntoCorrespondenteHoje(s, q);
   if (a) {
     const ant = a.questoes || { feitas: 0, acertos: 0 };
     a.questoes = { feitas: ant.feitas + 1, acertos: ant.acertos + (q.certo ? 1 : 0) };

@@ -303,15 +303,17 @@ function qMontar() {
   const caixa = (rot, id, html, ativo, extra = '') => `<label class="filtro ${ativo ? 'ativo' : ''}"><span>${rot}</span><select data-qf="${id}" ${extra}>${html}</select></label>`;
   const nSt = v => semSt.filter(q => situacaoOk(v, q.id)).length;
   const nAno = d => semAno.filter(q => q.a >= d).length;
-  const algum = f.mat || f.assunto || f.sub || f.banca || f.ano || (f.st && f.st !== 'novas') || f.tag || f.res || f.soTexto || !f.semFig;
+  const algum = f.mat || f.assunto || f.sub || f.banca || f.ano || f.tipoQ || (f.st && f.st !== 'novas') || f.tag || f.res || f.soTexto || !f.semFig;
   const subHtml = !f.mat ? opcao('', 'Escolha a matéria antes', '') : subassuntosHtml(f.mat, f.assunto, f.sub, f.assunto ? semSub : semAssunto);
   const atalho = (k, rot, ativo) => `<button type="button" class="chip chip-mini" data-acao="qfPreset" data-v="${k}" aria-pressed="${!!ativo}">${rot}</button>`;
+  const temDisc = todos.some(q => q.ds);
   return `${listasAbertasHtml()}<section class="cartao escolher"><div class="entre"><h2>Escolher questões</h2>${algum ? '<button class="link" data-acao="qfLimpar">Limpar filtros</button>' : ''}</div>
     <div class="linha q-presets" style="gap:6px">
       ${atalho('spmed', '🎯 Medicina SP', f.banca === 'p:spmed')}
       ${atalho('enem', '🏫 ENEM', f.banca === 'b:ENEM')}
+      ${temDisc ? atalho('disc', '📝 Discursivas', f.tipoQ === 'disc') : ''}
       ${atalho('erradas', '🔁 Errei antes', f.st === 'erradas')}
-      ${atalho('novas', '✨ Só inéditas', f.st === 'novas' && !f.banca)}
+      ${atalho('novas', '✨ Só inéditas', f.st === 'novas' && !f.banca && !f.tipoQ)}
       ${atalho('recentes', '📅 2020+', f.ano === 'd:2020')}
     </div>
     <div class="filtros">
@@ -539,13 +541,14 @@ Object.assign(ACOES, {
     const r = ui.qPrevImg?.prev && await BD.get(ui.qPrevImg.prev);
     if (r) ui.qPrevImg = r; else ui.iaMsg = 'Não há questão antes desta no banco.'; render();
   },
-  qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', sub: '', banca: '', ano: '', st: 'novas', tag: '', semFig: true, soTexto: false, res: false }; ui.qPag = 0; render(); },
+  qfLimpar: () => { ui.qf = { ...ui.qf, mat: '', assunto: '', sub: '', banca: '', ano: '', tipoQ: '', st: 'novas', tag: '', semFig: true, soTexto: false, res: false }; ui.qPag = 0; render(); },
   qfPreset: el => {
     const v = el.dataset.v;
     if (v === 'spmed') ui.qf.banca = ui.qf.banca === 'p:spmed' ? '' : 'p:spmed';
     else if (v === 'enem') ui.qf.banca = ui.qf.banca === 'b:ENEM' ? '' : 'b:ENEM';
+    else if (v === 'disc') ui.qf.tipoQ = ui.qf.tipoQ === 'disc' ? '' : 'disc';
     else if (v === 'erradas') ui.qf.st = ui.qf.st === 'erradas' ? 'novas' : 'erradas';
-    else if (v === 'novas') { ui.qf.st = 'novas'; ui.qf.banca = ''; }
+    else if (v === 'novas') { ui.qf.st = 'novas'; ui.qf.banca = ''; ui.qf.tipoQ = ''; }
     else if (v === 'recentes') ui.qf.ano = ui.qf.ano === 'd:2020' ? '' : 'd:2020';
     ui.qPag = 0; render();
   },

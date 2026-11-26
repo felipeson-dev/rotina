@@ -168,6 +168,7 @@ Object.assign(ACOES, {
       const mensal = () => { const d = deIso(p.dia), base = p.diaMes ||= d.getDate(), ult = new Date(d.getFullYear(), d.getMonth() + 2, 0).getDate(); return iso(new Date(d.getFullYear(), d.getMonth() + 1, Math.min(base, ult))); };
       p.dia = p.repete === 'diaria' ? somaDias(p.dia, 1) : p.repete === 'semanal' ? somaDias(p.dia, 7) : mensal(); p.avisado = ''; ui.iaMsg = `Feita! Próxima: ${rotuloDia(p.dia)}.`; }
     else { p.feito = el.checked; p.feitoEm = el.checked ? hoje() : null; }
+    for (const ag of (S.dias[hoje()]?.agenda || [])) if (ag.pendId === p.id) ag.ok = !!el.checked;
     salvar(); render();
   },
   pendICS: el => { const p = S.pend.find(x => x.id === el.dataset.id); if (p) entregarIcs([p], 'pendencia'); },

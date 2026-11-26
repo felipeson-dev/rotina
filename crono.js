@@ -134,7 +134,7 @@ if (Array.isArray(S?.assuntos)) {
   for (const a of S.assuntos) for (const k of ['titulo', 'nome']) if (typeof a[k] === 'string' && a[k].startsWith('Revisão de base:')) a[k] = 'Base de Matemática:' + a[k].slice('Revisão de base:'.length);
   for (const a of S.assuntos) {
     if (window.limparNomeAssunto && a.tag) a.tag = window.limparNomeAssunto(a.tag);
-    if (ehConteudo(a)) {
+    if (ehConteudo(a) && !a.manual) {
       if (a.teoria != null && a.teoria < 25) a.teoria = 25;
       if (a.q != null && a.q < 8) a.q = 8;
     }

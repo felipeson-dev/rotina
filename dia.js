@@ -593,7 +593,7 @@ function programacaoHojeHtml(d) {
   return `<details class="cartao prog-hoje" data-k="prog-hoje" ${aberto ? 'open' : ''}>
     <summary><div class="entre" style="flex:1;flex-wrap:wrap;gap:8px">
       <div class="linha" style="gap:8px"><strong>🗓 Agenda do dia</strong><span class="fraco" style="font-size:13px">${esc(resumoHorarios || `${(d.agenda || []).length} blocos flexíveis`)}</span></div>
-      <span class="selo flexivel">${aberto ? 'recolher ▴' : 'ver / ajustar ▾'}</span>
+      <span class="selo flexivel"><span class="prog-abre">ver / ajustar ▾</span><span class="prog-fecha">recolher ▴</span></span>
     </div></summary>
     <div class="prog-hoje-corpo">
       <div class="entre" style="flex-wrap:wrap;gap:8px">

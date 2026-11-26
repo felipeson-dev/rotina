@@ -37,14 +37,17 @@ Responda SÓ com JSON: {"resposta":"1 ou 2 frases curtas","inicio":"AAAA-MM-DD",
 
 // ---------- proteções: o plano principal nunca se perde por engano ----------
 /** Cópia do plano (assuntos, períodos, meses, fases, provas) no aparelho: uma por dia e uma antes de cada mudança grande; guarda as 20 últimas. */
-async function copiarPlano(rotulo) {
+async function copiarPlano(rotulo, silencioso = false) {
   const nome = rotulo || hoje();
   await DB.set('d:bkp:' + nome, JSON.stringify({ assuntos: S.assuntos, periodos: S.periodos, meses: S.meses, fases: S.fases, provas: S.provas || [] }));
   S.bkps = [...(S.bkps || []).filter(x => x !== nome), nome].slice(-20);
   for (const velho of (S.bkpsTodos || []).filter(x => !S.bkps.includes(x))) DB.del('d:bkp:' + velho);
-  S.bkpsTodos = [...S.bkps]; salvar();
+  S.bkpsTodos = [...S.bkps];
+  if (silencioso) { window._salvarSilencioso = true; salvar(); window._salvarSilencioso = false; }
+  else salvar();
 }
-if (!(S.bkps || []).includes(hoje())) copiarPlano();
+// aguarda sync inicial antes de tirar a cópia diária (evita carimbar S._t no 2º aparelho antes do syncPull)
+setTimeout(() => { if (!(S.bkps || []).includes(hoje())) copiarPlano(null, true); }, 6000);
 const impactoPeriodo = p => S.assuntos.filter(a => !a.feito && !a.periodo && semDe(a) >= segunda(p.ini) && semDe(a) <= p.fim).length;
 const diasPeriodo = p => Math.round((deIso(p.fim) - deIso(p.ini)) / 864e5) + 1;
 
@@ -88,7 +91,7 @@ function vPlanejar() {
         <div class="linha"><button class="botao grande" data-acao="plAplicar">Usar este plano</button><button class="botao claro" data-acao="plAjustar">Pedir ajuste</button><button class="link" data-acao="plDescartar">Descartar</button></div></section>` : ''}
     <section class="cartao"><h2>Planejar um período</h2>
       <p class="fraco" style="margin:0">Escreva do seu jeito: até quando, o que quer estudar e quanto tempo tem. A IA distribui pelos dias, você confere e aplica.</p>
-      <textarea data-ui="plTexto" rows="4" placeholder="Ex.: De hoje até 7/11 quero revisar para o ENEM: ecologia, genética, funções, porcentagem, estequiometria e redação. Estudo umas 4h por dia, domingo só de manhã.">${esc(ui.plTexto)}</textarea>
+      <textarea data-ui="plTexto" rows="4" placeholder="Ex.: Nas próximas 2 semanas quero reforçar ecologia, genética, funções, estequiometria e redação Vunesp. Estudo 6h por dia, domingo livre.">${esc(ui.plTexto)}</textarea>
       <div class="linha"><button class="botao grande" data-acao="plPlanejar">Organizar com a IA</button></div></section>
     <section class="cartao"><h2>Mudar o cronograma</h2>
       <p class="fraco" style="margin:0">Para mexer no que já está planejado: viagem, faltas, adiantar ou atrasar assuntos, trocar a ordem.</p>
@@ -161,7 +164,10 @@ Object.assign(ACOES, {
     const raw = await DB.get('d:bkp:' + nome); if (!raw) { ui.iaMsg = 'Essa cópia não está mais no aparelho.'; render(); return; }
     const { chat: _c, ...resto } = S; ui.desfazer = JSON.stringify(resto);
     await copiarPlano(`${hoje()} ${agoraHm()} · antes de voltar`);
-    Object.assign(S, JSON.parse(raw)); ui.iaMsg = `Plano voltou para "${nome}".`; salvar(); render();
+    Object.assign(S, JSON.parse(raw));
+    const fp = (S.provas || []).find(p => p.nome === 'USP (Fuvest), 1ª fase' && p.data === '2027-11-07' && p.estimada);
+    if (fp) fp.data = '2027-11-21';
+    ui.iaMsg = `Plano voltou para "${nome}".`; salvar(); render();
   },
   plTirar: el => { const a0 = achar(el.dataset.id); comDesfazer(`Tirei "${a0?.titulo || 'o assunto'}" do plano.`, () => { S.assuntos = S.assuntos.filter(a => a.id !== el.dataset.id); }); },
   plApagar: el => {

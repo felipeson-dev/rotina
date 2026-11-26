@@ -53,8 +53,8 @@ class Quadro {
     if (this.sobre) {
       this.extra = ui.qRiscarExtra ?? 220;
       el.parentElement.style.paddingBottom = this.extra + 'px';
-      // se o fundo do app for escuro e a caneta estiver no preto padrão, escolhe uma cor clara visível
-      if (estadoQuadro.cor === '#22252B' && S.cores?.fundo && parseInt(S.cores.fundo.slice(1, 3), 16) < 80) estadoQuadro.cor = '#FFE066';
+      // se o fundo do app for escuro (tema Noite ou cor personalizada escura) e a caneta estiver no preto padrão, escolhe amarelo visível
+      if (estadoQuadro.cor === '#22252B' && (S.tema === 'noite' || (S.cores?.fundo && parseInt(S.cores.fundo.slice(1, 3), 16) < 80))) estadoQuadro.cor = '#FFE066';
     }
     this.W0 = 0; this.tr = []; this.refaz = []; this.atual = null; this.mudou = false;
     el.classList.add('quadro', 'fundo-' + this.fundo);
@@ -372,7 +372,7 @@ Object.assign(VIEWS, { caderno: vCaderno });
 Object.assign(ACOES, {
   aba: el => { ui.cad = el.dataset.v; ui.cartao = null; ui.novoCartao = false; ui.iaMsg = ''; render(); },
   rascunhoNova: async el => {
-    if (el.dataset.q === 'redacao') { await DB.del('d:redacao'); ui.redRes = null; }
+    if (el.dataset.q === 'redacao') { await DB.del('d:redacao'); ui.redRes = null; ui.redTexto = ''; ui.redTema = ''; ui.redAssunto = null; }
     else { await DB.del('d:rascunho'); ui.rascTarefas = null; }
     render();
   },
@@ -514,7 +514,9 @@ setTimeout(() => {
           const mc = /^d:([a-z0-9]+):[fv]$/i.exec(s);
           if (mc && !vivos.has(mc[1])) { st.delete(k); continue; }
           const mr = /^d:red:([a-z0-9]+)$/i.exec(s);
-          if (mr && !reds.has(mr[1])) st.delete(k);
+          if (mr && !reds.has(mr[1])) { st.delete(k); continue; }
+          const mf = /^foto:([a-z0-9]+):/i.exec(s);
+          if (mf && !reds.has(mf[1])) st.delete(k);
         }
       };
     }).catch(() => { });

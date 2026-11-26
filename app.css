@@ -122,7 +122,7 @@ main { padding: calc(30px + env(safe-area-inset-top, 0px)) clamp(16px, 4vw, 44px
 .chip[aria-pressed="true"] { background: var(--acento); color: var(--sobre-acento); }
 
 .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
-  color: color-mix(in srgb, var(--c) 78%, var(--texto)); background: color-mix(in srgb, var(--c) 16%, transparent); white-space: nowrap; }
+  color: color-mix(in srgb, var(--c) 78%, var(--texto)); background: color-mix(in srgb, var(--c) 16%, transparent); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .ponto { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
 
 input[type="text"], input[type="number"], input[type="date"], input[type="time"], input[type="password"], input[type="search"], select, textarea {
@@ -245,9 +245,10 @@ label.campo small { font-weight: 400; color: var(--fraco); }
 .coluna-barra i { display: block; width: 100%; background: var(--acento); border-radius: 10px; min-height: 0; transition: height .4s; }
 .de small { font-size: 12px; }
 
-.alterna { display: inline-flex; background: var(--painel); border-radius: 999px; padding: 4px; gap: 2px; }
+.alterna { display: inline-flex; flex-wrap: wrap; max-width: 100%; background: var(--painel); border-radius: 22px; padding: 4px; gap: 2px; }
 .alterna button { border: 0; background: none; padding: 8px 14px; border-radius: 999px; min-height: 40px; font-weight: 700; color: var(--fraco); }
 .alterna button[aria-pressed="true"] { background: var(--acento); color: var(--sobre-acento); }
+@media (max-width: 520px) { .alterna button { padding: 7px 11px; font-size: 14px; min-height: 36px; } }
 
 .mapa-rolagem { overflow-x: auto; margin: 0 -22px; padding: 4px 22px 10px; }
 .mapa { display: flex; gap: 10px; min-width: min-content; }
@@ -367,10 +368,11 @@ details summary { cursor: pointer; }
 .resumo-dia > div { background: var(--painel2); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; }
 .resumo-dia strong { font-size: 24px; } .resumo-dia span { font-size: 13px; color: var(--fraco); }
 .agenda { display: flex; flex-direction: column; gap: 8px; }
-.ag { display: grid; grid-template-columns: 62px 1fr; gap: 12px; padding: 10px 12px; border-radius: 16px; background: var(--painel2); border-left: 5px solid var(--linha); }
+.ag { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 12px; padding: 10px 12px; border-radius: 16px; background: var(--painel2); border-left: 5px solid var(--linha); }
 .ag-h { font-weight: 800; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; line-height: 1.2; } .ag-h small { color: var(--fraco); font-weight: 500; }
 .ag-c { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.ag-ass { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.ag-ass { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; min-width: 0; }
+.ag-ass .tag { white-space: normal; border-radius: 12px; line-height: 1.25; }
 .ag.estudo { border-left-color: var(--acento); background: color-mix(in srgb, var(--acento) 9%, var(--bg)); }
 .ag.refeicao { border-left-color: #E8890C; } .ag.exercicio { border-left-color: #2B8A3E; } .ag.compromisso, .ag.trabalho { border-left-color: #3B5BDB; } .ag.pausa, .ag.lazer { border-left-color: #A9B0C2; }
 
@@ -679,6 +681,7 @@ body.em-questao #rascunho-botao, body.em-questao #ia-botao { display: none; }   
 .check-ag { width: 18px; height: 18px; accent-color: var(--acento); cursor: pointer; flex: none; }
 .ag.ag-ok strong { text-decoration: line-through; opacity: .65; }
 .selo.flexivel { background: color-mix(in srgb, var(--acento) 14%, var(--painel2)); color: var(--tinta); font-weight: 600; }
+details.prog-hoje[open] .prog-abre, details.prog-hoje:not([open]) .prog-fecha { display: none; }
 .ag-ass-lista { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: var(--painel); border: 1px solid var(--linha); }
 .ag-ass-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px; border-radius: 10px; background: var(--painel2); font-size: 13px; }
 .ag-ass-item.continua { border-left: 4px dashed var(--c, var(--acento)); background: transparent; border-top: 1px dashed var(--linha); border-right: 1px dashed var(--linha); border-bottom: 1px dashed var(--linha); }

@@ -5,7 +5,7 @@ const CHAVE = 'rotina.dados';
 const CHAVE_IA = 'rotina.chaves';
 // Versão do app (TEM QUE SER IGUAL ao VERSAO do sw.js). Fica aqui no topo: a 1ª renderização pode abrir em #ajustes e ler esta constante;
 // declarada no fim do arquivo ela ainda não existia e a tela ficava em branco (ReferenceError).
-const APP_V = 'rotina-66';
+const APP_V = 'rotina-67';
 
 // ---------- utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -156,7 +156,9 @@ const ui = { view: 'hoje', mesModo: 'lista', qs: null, mes: mesDe(hoje()), seman
 const MIN_Q = { 'Matemática': 4.5, 'Física': 4.2, 'Química': 3.5, 'Biologia': 2.8, 'História': 2.6, 'Geografia': 2.7, 'Português': 2.8, 'Literatura': 2.6, 'Inglês': 2.5, 'Filosofia': 2.5, 'Sociologia': 2.5, 'Artes': 2.6 };
 const Q_PADRAO = { 'Matemática': 25, 'Física': 20, 'Química': 20, 'Biologia': 25, 'História': 20, 'Geografia': 20, 'Português': 15, 'Literatura': 10, 'Inglês': 10, 'Filosofia': 10, 'Sociologia': 10, 'Artes': 10 };
 const minPorQ = m => { if (S.minQ?.[m] > 0) return S.minQ[m]; const t = S.tq?.[m]; return t && t.n >= 8 ? Math.max(0.8, Math.min(12, t.seg / 60)) : MIN_Q[m] ?? 2.8; }; // aprende com o tempo real das listas de questões
-const tempoDe = a => ({ t: Math.max(25, a.teoria ?? 60), q: Math.max(8, a.q ?? Q_PADRAO[a.materia] ?? 15) });
+const tempoDe = a => a?.manual
+  ? ({ t: Math.max(5, a.teoria ?? 60), q: Math.max(0, a.q ?? Q_PADRAO[a.materia] ?? 15) })
+  : ({ t: Math.max(25, a.teoria ?? 60), q: Math.max(8, a.q ?? Q_PADRAO[a.materia] ?? 15) });
 const minDe = a => {
   if (a.min) {
     let m = a.min;
@@ -173,7 +175,7 @@ const minDe = a => {
     return m;
   }
   const { t, q } = tempoDe(a);
-  return Math.max(60, Math.round(t + q * minPorQ(a.materia) * 1.25));
+  return Math.max(a?.manual ? 10 : 60, Math.round(t + q * minPorQ(a.materia) * 1.25));
 };
 const ehConteudo = a => !!a && !a.min;
 const semAtual = () => segunda(hoje());
@@ -1144,7 +1146,7 @@ function vAjustes() {
     <section class="cartao"><h2>Cronograma e plano base</h2>
       <p class="fraco" style="margin:0">Você usa o cronograma oficial de Medicina em SP (com aulas do Ferretto). Restaurar o cronograma oficial reaplica os assuntos mantendo o que já foi marcado como feito.</p>
       <div class="linha">${typeof CRONOGRAMA !== 'undefined' ? '<button class="botao claro" data-acao="restaurarCrono">Restaurar cronograma oficial (Ferretto)</button>' : ''}</div>
-      ${typeof detalhe === 'function' ? detalhe('planoBaseAv', 'Modo antigo: gerar plano base genérico por data', `<label class="campo">Começar a estudar em<input type="date" id="base-inicio" value="${hoje() < '2026-11-17' ? '2026-11-17' : hoje()}"></label><div class="linha"><button class="botao contorno" data-acao="refazerBase">Refazer o plano base genérico</button></div>`) : `<label class="campo">Começar a estudar em<input type="date" id="base-inicio" value="${hoje() < '2026-11-17' ? '2026-11-17' : hoje()}"></label><div class="linha"><button class="botao claro" data-acao="refazerBase">Refazer o plano base</button></div>`}
+      ${typeof detalhe === 'function' ? detalhe('planoBaseAv', 'Modo antigo: gerar plano base genérico por data', `<label class="campo">Começar a estudar em<input type="date" id="base-inicio" value="${hoje() < '2026-11-30' ? '2026-11-30' : hoje()}"></label><div class="linha"><button class="botao contorno" data-acao="refazerBase">Refazer o plano base genérico</button></div>`) : `<label class="campo">Começar a estudar em<input type="date" id="base-inicio" value="${hoje() < '2026-11-30' ? '2026-11-30' : hoje()}"></label><div class="linha"><button class="botao claro" data-acao="refazerBase">Refazer o plano base</button></div>`}
     </section>
     <section class="cartao"><h2>Versão do app</h2>
       <p class="fraco" style="margin:0">Esta é a versão <b>${APP_V}</b>. O app se atualiza sozinho quando você volta para ele; se algo parecer desatualizado, toque abaixo. Não apaga nada.</p>

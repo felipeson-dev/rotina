@@ -60,7 +60,7 @@ async function syncPull(mostrar) {
 // mesma normalização do carregar() do app, a partir de um objeto
 function carregarDe(obj) { try { localStorage.setItem(CHAVE, JSON.stringify(obj)); } catch { } return carregar(); }
 
-{ const s0 = salvar; salvar = function () { if (!syncAplicando && !syncBoot) { S._t = Date.now(); syncSujo = true; } s0.apply(this, arguments); if (!syncAplicando && !syncBoot && lerSync().token) { clearTimeout(syncTimer); syncTimer = setTimeout(() => syncPush(false), 4000); } }; }
+{ const s0 = salvar; salvar = function () { const sil = !!window._salvarSilencioso; if (!syncAplicando && !syncBoot && !sil) { S._t = Date.now(); syncSujo = true; } s0.apply(this, arguments); if (!syncAplicando && !syncBoot && !sil && lerSync().token) { clearTimeout(syncTimer); syncTimer = setTimeout(() => syncPush(false), 4000); } }; }
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) syncPull();
   else { const c = lerSync(); if (c.token && (syncSujo || (S._t || 0) > (c.ult || 0))) syncPush(true); }
